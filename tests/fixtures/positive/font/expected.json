@@ -1,0 +1,22 @@
+{
+  "font": {
+    "display": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "Example Display",
+        "style": "oblique 10deg",
+        "weight": 600
+      }
+    },
+    "sans": {
+      "$type": "font",
+      "$value": {
+        "fontType": "ios.system",
+        "family": "SF Pro Text",
+        "style": "italic",
+        "weight": "bold"
+      }
+    }
+  }
+}

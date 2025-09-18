@@ -1,0 +1,7 @@
+{
+  "default": true,
+  "MD013": false,
+  "MD033": false,
+  "MD046": { "style": "fenced" },
+  "MD025": { "level": 1, "front_matter_title": "" }
+}

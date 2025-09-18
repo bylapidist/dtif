@@ -1,0 +1,91 @@
+{
+  "typography": {
+    "dp": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "dp",
+          "fontScale": false
+        }
+      }
+    },
+    "em": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 0.1,
+          "unit": "em"
+        }
+      }
+    },
+    "percent": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "%"
+        }
+      }
+    },
+    "rem": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 0.1,
+          "unit": "rem"
+        }
+      }
+    },
+    "sp": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "sp",
+          "fontScale": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "$version": "1.0.0",
+  "$extensions": {
+    "com.example": {
+      "export": true
+    }
+  },
+  "button": {
+    "$type": "color",
+    "$extensions": {
+      "com.example": {
+        "platform": "ios"
+      }
+    },
+    "padding": {
+      "$type": "dimension",
+      "$ref": "#/size/base"
+    },
+    "primary": {
+      "$type": "color",
+      "$ref": "#/color/brand"
+    },
+    "primary-hover": {
+      "$type": "color",
+      "$ref": "#/button/primary"
+    }
+  },
+  "color": {
+    "$type": "color",
+    "brand": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0, 0]
+      },
+      "$lastModified": "2024-01-02T00:00:00Z",
+      "$lastUsed": "2024-05-01T00:00:00Z",
+      "$usageCount": 120,
+      "$tags": ["brand"]
+    },
+    "brand-alt": {
+      "$type": "color",
+      "$ref": "#/color/brand",
+      "$deprecated": {
+        "$replacement": "#/color/brand"
+      }
+    }
+  },
+  "duration": {
+    "short": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.value-animator.duration",
+        "value": 150,
+        "unit": "ms"
+      }
+    }
+  },
+  "easing": {
+    "standard": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "cubic-bezier",
+        "parameters": [0.4, 0, 0.2, 1]
+      }
+    }
+  },
+  "elevation": {
+    "surface": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "css.box-shadow.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.2]
+        },
+        "offset": {
+          "dimensionType": "length",
+          "value": 6,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "font": {
+    "sans": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "Inter"
+      }
+    }
+  },
+  "gradient": {
+    "brand": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "stops": [
+          {
+            "position": 0,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [1, 0, 0]
+            }
+          },
+          {
+            "position": 1,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 0, 1]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "motion": {
+    "slide": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.translate",
+        "parameters": {
+          "x": {
+            "dimensionType": "length",
+            "value": 10,
+            "unit": "px"
+          },
+          "y": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      }
+    }
+  },
+  "opacity": {
+    "disabled": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "css.opacity",
+        "value": 0.5
+      }
+    }
+  },
+  "shadow": {
+    "card": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow",
+        "blur": {
+          "dimensionType": "length",
+          "value": 3,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.2]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        },
+        "spread": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "size": {
+    "base": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 4,
+        "unit": "pt"
+      }
+    }
+  },
+  "themes": {
+    "dark": {
+      "$type": "theme",
+      "$ref": "dark.tokens.json#"
+    },
+    "light": {
+      "$type": "theme",
+      "$ref": "light.tokens.json#"
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "lineHeight": 1.5,
+        "fontStyle": "italic",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 1]
+        },
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "caption",
+        "fontFamily": "Inter",
+        "textTransform": "uppercase",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        }
+      }
+    },
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "heading",
+        "fontFamily": "Inter",
+        "textDecoration": "underline",
+        "fontFeatures": ["smcp"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 32,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 40,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "z-index": {
+    "modal": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "css.z-index",
+        "value": 1300
+      }
+    }
+  }
+}

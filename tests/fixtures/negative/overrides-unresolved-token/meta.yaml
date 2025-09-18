@@ -1,0 +1,5 @@
+name: overrides-unresolved-token
+description: override $token pointers must resolve to existing tokens
+assertions:
+  - refs
+tags: [overrides]

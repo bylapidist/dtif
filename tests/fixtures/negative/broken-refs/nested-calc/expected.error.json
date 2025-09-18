@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_UNRESOLVED",
+    "path": "/token/$value/parameters/0/parameters/0/$ref",
+    "message": "unresolved pointer #/missing"
+  }
+}

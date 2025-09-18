@@ -1,0 +1,28 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "card": {
+    "$type": "shadow",
+    "$value": {
+      "shadowType": "css.box-shadow",
+      "blur": {
+        "dimensionType": "length",
+        "value": 3,
+        "unit": "px"
+      },
+      "color": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0, 0.2]
+      },
+      "offsetX": {
+        "dimensionType": "length",
+        "value": 0,
+        "unit": "px"
+      },
+      "offsetY": {
+        "dimensionType": "length",
+        "value": 1,
+        "unit": "px"
+      }
+    }
+  }
+}

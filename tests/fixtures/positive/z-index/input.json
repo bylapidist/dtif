@@ -1,0 +1,26 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "stack": {
+    "android-fab": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "android.view.translationz",
+        "value": 3.5
+      }
+    },
+    "css-modal": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "css.z-index",
+        "value": 1300
+      }
+    },
+    "ios-modal": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "ios.calayer.z-position",
+        "value": 4.5
+      }
+    }
+  }
+}

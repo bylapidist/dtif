@@ -1,0 +1,18 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "ratio": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "lineHeight": 1.2,
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

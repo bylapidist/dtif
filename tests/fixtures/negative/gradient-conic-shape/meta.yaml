@@ -1,0 +1,4 @@
+name: gradient conic shape
+description: conic gradients must not provide shape descriptors
+assertions:
+  - schema

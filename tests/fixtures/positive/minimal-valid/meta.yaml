@@ -1,0 +1,8 @@
+name: minimal-valid
+description: Minimal valid tokens document
+assertions:
+  - schema
+  - roundtrip
+  - type-compat
+  - ordering
+tags: [smoke]

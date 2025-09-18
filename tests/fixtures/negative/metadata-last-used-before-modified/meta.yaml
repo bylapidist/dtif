@@ -1,0 +1,6 @@
+name: metadata-last-used-before-modified
+description: $lastUsed must not be earlier than $lastModified
+assertions:
+  - metadata
+tags:
+  - metadata

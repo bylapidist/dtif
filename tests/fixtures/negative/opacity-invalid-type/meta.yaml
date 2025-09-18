@@ -1,0 +1,7 @@
+name: opacity-invalid-type
+description: opacityType must reference a platform property identifier
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [opacity]

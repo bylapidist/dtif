@@ -1,0 +1,33 @@
+{
+  "easing": {
+    "ease": {
+      "$type": "easing",
+      "$value": { "easingFunction": "ease" }
+    },
+    "easeInOut": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "cubic-bezier",
+        "parameters": [0.42, 0, 0.58, 1]
+      }
+    },
+    "linear": {
+      "$type": "easing",
+      "$value": { "easingFunction": "linear" }
+    },
+    "spring": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "spring",
+        "parameters": [0.5, 0.8, 0.3, 1]
+      }
+    },
+    "steps": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "steps",
+        "parameters": [5, "start"]
+      }
+    }
+  }
+}

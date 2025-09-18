@@ -1,0 +1,5 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "a": { "$type": "color", "$ref": "#/b" },
+  "b": { "$type": "color", "$ref": "#/a" }
+}

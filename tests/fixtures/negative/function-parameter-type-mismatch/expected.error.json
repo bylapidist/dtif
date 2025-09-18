@@ -1,0 +1,5 @@
+{
+  "code": "E_FUNCTION_REF_TYPE_MISMATCH",
+  "path": "/bad/$value/parameters/0/$ref",
+  "message": "function parameter ref #/swatch has type color, expected dimension"
+}

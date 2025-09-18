@@ -1,0 +1,223 @@
+{
+  "filter": {
+    "focus-android": {
+      "$type": "filter",
+      "$value": {
+        "filterType": "android.render-effect",
+        "operations": [
+          {
+            "fn": "blur",
+            "parameters": ["8dp"]
+          },
+          {
+            "fn": "brightness",
+            "parameters": [
+              {
+                "matrix": [0.95, 0, 0, 0, 0, 0, 0.95, 0, 0, 0, 0, 0, 0.95, 0, 0, 0, 0, 0, 1, 0]
+              }
+            ]
+          },
+          {
+            "fn": "drop-shadow",
+            "parameters": [
+              {
+                "$type": "shadow",
+                "$value": {
+                  "shadowType": "android.paint.shadow-layer.surface",
+                  "blur": {
+                    "dimensionType": "length",
+                    "value": 24,
+                    "unit": "dp"
+                  },
+                  "color": {
+                    "colorSpace": "srgb",
+                    "components": [0.059, 0.09, 0.165, 0.2]
+                  },
+                  "offsetX": {
+                    "dimensionType": "length",
+                    "value": 0,
+                    "unit": "dp"
+                  },
+                  "offsetY": {
+                    "dimensionType": "length",
+                    "value": 12,
+                    "unit": "dp"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "focus-css": {
+      "$type": "filter",
+      "$value": {
+        "filterType": "css.filter",
+        "operations": [
+          {
+            "fn": "blur",
+            "parameters": ["8px"]
+          },
+          {
+            "fn": "brightness",
+            "parameters": [0.95]
+          },
+          {
+            "fn": "drop-shadow",
+            "parameters": [
+              {
+                "$type": "shadow",
+                "$value": {
+                  "shadowType": "css.box-shadow.surface",
+                  "blur": {
+                    "dimensionType": "length",
+                    "value": 24,
+                    "unit": "px"
+                  },
+                  "color": {
+                    "colorSpace": "srgb",
+                    "components": [0.059, 0.09, 0.165, 0.2]
+                  },
+                  "offsetX": {
+                    "dimensionType": "length",
+                    "value": 0,
+                    "unit": "px"
+                  },
+                  "offsetY": {
+                    "dimensionType": "length",
+                    "value": 12,
+                    "unit": "px"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "focus-ios": {
+      "$type": "filter",
+      "$value": {
+        "filterType": "ios.cifilter",
+        "operations": [
+          {
+            "fn": "blur",
+            "parameters": ["8pt"]
+          },
+          {
+            "fn": "brightness",
+            "parameters": [-0.05]
+          },
+          {
+            "fn": "drop-shadow",
+            "parameters": [
+              {
+                "$type": "shadow",
+                "$value": {
+                  "shadowType": "ios.layer.surface",
+                  "blur": {
+                    "dimensionType": "length",
+                    "value": 24,
+                    "unit": "pt"
+                  },
+                  "color": {
+                    "colorSpace": "srgb",
+                    "components": [0.059, 0.09, 0.165, 0.2]
+                  },
+                  "offsetX": {
+                    "dimensionType": "length",
+                    "value": 0,
+                    "unit": "pt"
+                  },
+                  "offsetY": {
+                    "dimensionType": "length",
+                    "value": 12,
+                    "unit": "pt"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "shadow": {
+    "focus-android": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "android.paint.shadow-layer.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "dp"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.2]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "dp"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "dp"
+        }
+      }
+    },
+    "focus-css": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.2]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        }
+      }
+    },
+    "focus-ios": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "ios.layer.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "pt"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.2]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "pt"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "pt"
+        }
+      }
+    }
+  }
+}

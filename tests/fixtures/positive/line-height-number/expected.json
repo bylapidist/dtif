@@ -1,0 +1,17 @@
+{
+  "typography": {
+    "ratio": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "lineHeight": 1.2,
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

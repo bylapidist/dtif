@@ -1,0 +1,5 @@
+name: font-size-invalid-unit
+description: fontSize dimension must use length units
+assertions:
+  - schema
+tags: [typography]

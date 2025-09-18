@@ -1,0 +1,4 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "remote": { "$type": "color", "$ref": "ftp://example.com/tokens.json#/color/blue" }
+}

@@ -1,0 +1,6 @@
+name: deprecated-replacement-type-mismatch
+description: $deprecated replacement target must declare the same $type as the token
+assertions:
+  - type-compat
+tags:
+  - metadata:deprecated

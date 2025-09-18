@@ -1,0 +1,5 @@
+name: font-features-invalid-type
+description: fontFeatures must be an array of strings
+assertions:
+  - schema
+tags: [typography]

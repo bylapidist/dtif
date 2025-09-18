@@ -1,0 +1,100 @@
+{
+  "$version": "1.0.0",
+  "color": {
+    "cta": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0.5, 1]
+      },
+      "$extensions": {
+        "org.example.ai": {
+          "intent": "primary action"
+        }
+      }
+    },
+    "link": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 1]
+      },
+      "$extensions": {
+        "org.example.a11y": {
+          "wcagContrast": 4.5
+        }
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "background": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [0.2, 0.4, 0.6]
+            }
+          },
+          "border": {
+            "$type": "dimension",
+            "$value": {
+              "dimensionType": "length",
+              "value": 1,
+              "unit": "px"
+            }
+          },
+          "text": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [1, 1, 1]
+            }
+          }
+        }
+      }
+    }
+  },
+  "motion": {
+    "fade": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 200,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "org.example.a11y": {
+          "prefers-reduced-motion": true
+        }
+      }
+    }
+  },
+  "spacing": {
+    "responsive": {
+      "$type": "dimension",
+      "$value": {
+        "fn": "clamp",
+        "parameters": [
+          {
+            "dimensionType": "length",
+            "value": 8,
+            "unit": "px"
+          },
+          {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "vw"
+          },
+          {
+            "dimensionType": "length",
+            "value": 16,
+            "unit": "px"
+          }
+        ]
+      }
+    }
+  }
+}

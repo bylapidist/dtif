@@ -1,0 +1,1426 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "$extensions": {
+    "com.example": {
+      "root": true
+    }
+  },
+  "border": {
+    "$description": "Border tokens",
+    "android-card-outline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "android.drawable.stroke",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.109, 0.231, 0.4, 1]
+        },
+        "radius": {
+          "bottomEnd": {
+            "x": {
+              "dimensionType": "length",
+              "value": 16,
+              "unit": "dp"
+            }
+          },
+          "topStart": {
+            "x": {
+              "dimensionType": "length",
+              "value": 12,
+              "unit": "dp"
+            },
+            "y": {
+              "dimensionType": "length",
+              "value": 8,
+              "unit": "dp"
+            }
+          }
+        },
+        "style": "dotted",
+        "width": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "dp"
+        }
+      },
+      "$description": "Android card outline",
+      "$lastModified": "2024-04-03T00:00:00Z",
+      "$lastUsed": "2024-05-25T00:00:00Z",
+      "$usageCount": 4,
+      "$author": "Designer",
+      "$tags": ["android", "border"],
+      "$hash": "f14a2fbc848c5ad0b52d85bdc6e5e39659b6f56e6d46866f7bcac28cf38359fb"
+    },
+    "focus-ring": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.231, 0.51, 0.964, 1]
+        },
+        "radius": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "pt"
+        },
+        "style": "solid",
+        "width": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "pt"
+        }
+      },
+      "$description": "Focus ring border",
+      "$lastModified": "2024-04-01T00:00:00Z",
+      "$lastUsed": "2024-05-20T00:00:00Z",
+      "$usageCount": 12,
+      "$author": "Designer",
+      "$tags": ["focus", "css"],
+      "$hash": "f9f7c1f1e5a2c7e4c21bc9f2ed2bb08d1f38a3af2d6b3f2039c719a6b5fb65ce"
+    },
+    "ios-card-outline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "ios.layer",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.141, 0.286, 0.486, 1]
+        },
+        "radius": {
+          "bottomLeft": {
+            "x": {
+              "dimensionType": "length",
+              "value": 18,
+              "unit": "pt"
+            },
+            "y": {
+              "dimensionType": "length",
+              "value": 12,
+              "unit": "pt"
+            }
+          },
+          "topLeft": {
+            "x": {
+              "dimensionType": "length",
+              "value": 10,
+              "unit": "pt"
+            },
+            "y": {
+              "dimensionType": "length",
+              "value": 6,
+              "unit": "pt"
+            }
+          },
+          "topRight": {
+            "x": {
+              "dimensionType": "length",
+              "value": 18,
+              "unit": "pt"
+            }
+          }
+        },
+        "style": "dashed",
+        "width": {
+          "dimensionType": "length",
+          "value": 1.5,
+          "unit": "pt"
+        }
+      },
+      "$description": "iOS card outline",
+      "$lastModified": "2024-04-02T00:00:00Z",
+      "$lastUsed": "2024-05-22T00:00:00Z",
+      "$usageCount": 6,
+      "$author": "Designer",
+      "$tags": ["ios", "border"],
+      "$hash": "1f9bc7e9f44d7f3310aeb04068a0ef8588ef57c079b1f5ef5bd2a0c2a64fe59f"
+    }
+  },
+  "color": {
+    "$type": "color",
+    "$description": "Color tokens",
+    "$extensions": {
+      "com.example": {
+        "category": "color"
+      }
+    },
+    "accent": {
+      "$value": {
+        "colorSpace": "hsl",
+        "components": [240, 100, 50, 1]
+      },
+      "$description": "Accent HSL color",
+      "$lastModified": "2024-01-13T00:00:00Z",
+      "$lastUsed": "2024-05-06T00:00:00Z",
+      "$usageCount": 20,
+      "$author": "Designer",
+      "$tags": ["hsl", "accent"],
+      "$hash": "eea510ab4501ceb19b82173a9fa9bada2d78c7d57c735ff49a754b1c779504c1"
+    },
+    "display-p3": {
+      "$value": {
+        "colorSpace": "display-p3",
+        "components": [0, 1, 0, 1]
+      },
+      "$description": "Display P3 color",
+      "$lastModified": "2024-01-12T00:00:00Z",
+      "$lastUsed": "2024-05-06T00:00:00Z",
+      "$usageCount": 50,
+      "$author": "Designer",
+      "$tags": ["display-p3"],
+      "$hash": "f35db440485ceb0224e6103cbfe2ea15c485841e5bb4bf62bde065592c89bb99"
+    },
+    "primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0.5, 1, 1]
+      },
+      "$description": "Primary color",
+      "$extensions": {
+        "com.example": {
+          "role": "primary"
+        }
+      },
+      "$lastModified": "2024-01-10T00:00:00Z",
+      "$lastUsed": "2024-05-05T00:00:00Z",
+      "$usageCount": 100,
+      "$author": "Designer",
+      "$tags": ["brand", "ui"],
+      "$hash": "489fc46d6bafc3fbf278595ca8f4d06019c75c6151ad2c5eece4544e44cd9164"
+    },
+    "primary-alias": {
+      "$value": {
+        "$ref": "#/color/primary"
+      },
+      "$description": "Alias to primary",
+      "$deprecated": true,
+      "$lastModified": "2024-02-10T00:00:00Z",
+      "$lastUsed": "2024-04-01T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["alias"],
+      "$hash": "9dc8c41461c15799aada71f12222110b12b40ccbd6eda10858ca5db79d5a667f"
+    },
+    "secondary": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0, 0, 1]
+      },
+      "$description": "Secondary color",
+      "$lastModified": "2024-01-11T00:00:00Z",
+      "$lastUsed": "2024-05-06T00:00:00Z",
+      "$usageCount": 80,
+      "$author": "Designer",
+      "$tags": ["brand", "ui"],
+      "$hash": "aceb4d2db72a92609ff264b2a0d6d8c169cc05f3da112f19fe8c484116743ff6"
+    }
+  },
+  "component": {
+    "$description": "Component tokens",
+    "button": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "background": {
+            "$type": "color",
+            "$ref": "#/color/primary",
+            "$extensions": {
+              "org.example.a11y": {
+                "wcagContrast": 4.5
+              }
+            }
+          },
+          "border": {
+            "$type": "border",
+            "$ref": "#/border/focus-ring"
+          },
+          "text": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [1, 1, 1, 1]
+            },
+            "$extensions": {
+              "org.example.ai": {
+                "intent": "primary action"
+              }
+            }
+          }
+        }
+      },
+      "$description": "Button component tokens",
+      "$lastModified": "2024-03-05T00:00:00Z",
+      "$lastUsed": "2024-05-16T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["component"],
+      "$hash": "4481b151c3c7c2e6d059e47d674d5e8d1ea60c913941be4c02e3e0623c85e1ba"
+    },
+    "button-alias": {
+      "$type": "component",
+      "$ref": "#/component/button",
+      "$description": "Alias to button component",
+      "$lastModified": "2024-03-31T00:00:00Z",
+      "$lastUsed": "2024-05-31T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "component"],
+      "$hash": "61cc9c6d6f80176dbb4238e57488268bd8b0059081fd3831c3e6ddf5a7fdc4ec"
+    }
+  },
+  "cursor": {
+    "$description": "Cursor tokens",
+    "link": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "css.cursor",
+        "value": "pointer, url('/cursors/link.svg') 8 0"
+      },
+      "$description": "CSS pointer cursor with fallback image",
+      "$tags": ["css", "cursor"],
+      "$hash": "c87f7a0e4bb5887dcb97efb0401c19f7a2b58e62eeadb5f3bc95e87f877dc6c4"
+    },
+    "link-icon": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "android.pointer-icon",
+        "parameters": {
+          "hotspot": {
+            "x": { "dimensionType": "length", "value": 8, "unit": "dp" },
+            "y": { "dimensionType": "length", "value": 0, "unit": "dp" }
+          }
+        },
+        "value": "TYPE_HAND"
+      },
+      "$description": "Android link pointer icon",
+      "$tags": ["android", "pointer"],
+      "$hash": "ed6f9f5361b6110ca864e9111f67b130f87191eed3a1a19f0b1db03278f87f88"
+    },
+    "text-beam": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "ios.uipointerstyle",
+        "parameters": {
+          "preferredLength": {
+            "dimensionType": "length",
+            "value": 28,
+            "unit": "pt"
+          }
+        },
+        "value": {
+          "axis": "vertical",
+          "style": "beam"
+        }
+      },
+      "$description": "UIKit text beam pointer",
+      "$tags": ["ios", "pointer"],
+      "$hash": "b1c3478233e99e3c9f98e62b1f9c62ae272a3372f9635cc3d9c5bded0f7e1c9c"
+    }
+  },
+  "dimension": {
+    "$description": "Dimension tokens",
+    "angle": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "angle",
+        "value": 45,
+        "unit": "deg"
+      },
+      "$description": "Angle dimension",
+      "$lastModified": "2024-03-10T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["angle"],
+      "$hash": "a1bb5e87260f64a864f6d467831338d98021e722739f7a1b356110bf75613392"
+    },
+    "custom": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "custom",
+        "value": 50,
+        "unit": "com.example.tokens.scale"
+      },
+      "$description": "Custom dimension",
+      "$lastModified": "2024-03-12T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["custom"],
+      "$hash": "d68f178b0dbd92609f18fbf99af4773c798bc3165b4cd4732fc1cc5ed34e88ea"
+    },
+    "em": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 1.5,
+        "unit": "em"
+      },
+      "$description": "Em dimension",
+      "$lastModified": "2024-03-14T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["em"],
+      "$hash": "ac8c7e0e38afd4f1477d1f64192acc76a91b8247ab41c9e3d9053f8d274364cc"
+    },
+    "rem": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 1,
+        "unit": "rem"
+      },
+      "$description": "Rem dimension",
+      "$lastModified": "2024-03-13T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["rem"],
+      "$hash": "eae2693baf382ebeb52b949884a7d223ae09d1591e7daa6fbe3208477c1b5f9b"
+    },
+    "resolution": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "resolution",
+        "value": 2,
+        "unit": "dppx"
+      },
+      "$description": "Resolution dimension",
+      "$lastModified": "2024-03-11T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["resolution"],
+      "$hash": "5ee6268214712430dd114e3187d020f0e1365b7039444f9f20536b2535199846"
+    },
+    "responsive": {
+      "$type": "dimension",
+      "$value": {
+        "fn": "clamp",
+        "parameters": [
+          {
+            "dimensionType": "length",
+            "value": 8,
+            "unit": "px"
+          },
+          {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "vw"
+          },
+          {
+            "dimensionType": "length",
+            "value": 16,
+            "unit": "px"
+          }
+        ]
+      },
+      "$description": "Responsive dimension",
+      "$lastModified": "2024-03-05T00:00:00Z",
+      "$lastUsed": "2024-05-16T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["responsive"],
+      "$hash": "67d3f9a4cc542c6522a1584bd76e45ef09d506b429ec3251b89c213bbadafba0"
+    },
+    "spacing": {
+      "$type": "dimension",
+      "$description": "Spacing scale",
+      "$author": "Designer",
+      "$tags": ["spacing"],
+      "base": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "pt"
+        },
+        "$description": "Base spacing",
+        "$lastModified": "2024-01-15T00:00:00Z",
+        "$lastUsed": "2024-05-04T00:00:00Z",
+        "$usageCount": 40,
+        "$author": "Designer",
+        "$tags": ["base"],
+        "$hash": "e1e093989279dfe8d629c7b40e17a038e9f346c43899d53de9f22ff252dd0e1c"
+      },
+      "base-alias": {
+        "$type": "dimension",
+        "$ref": "#/dimension/spacing/base",
+        "$description": "Alias to base spacing",
+        "$lastModified": "2024-03-20T00:00:00Z",
+        "$lastUsed": "2024-05-20T00:00:00Z",
+        "$usageCount": 1,
+        "$author": "Designer",
+        "$tags": ["alias", "dimension"],
+        "$hash": "1c7f54c8b329d95000b005cc413e88f0dcb2773fcb01f3d9d0eef67dd21d9d03"
+      }
+    },
+    "vh": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 50,
+        "unit": "vh"
+      },
+      "$description": "Viewport height dimension",
+      "$lastModified": "2024-03-15T00:00:00Z",
+      "$lastUsed": "2024-05-17T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["vh"],
+      "$hash": "97c43662922e608c0246c4d2a7dbfc8abda1cebdaf4597f9399083b723fb0368"
+    }
+  },
+  "duration": {
+    "$description": "Duration tokens",
+    "frame": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.cadisplaylink.frame-count",
+        "value": 10,
+        "unit": "frames"
+      },
+      "$description": "Frame duration",
+      "$lastModified": "2024-02-12T00:00:00Z",
+      "$lastUsed": "2024-05-11T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["duration", "frame"],
+      "$hash": "93a1b377dc369cf0d4ec604bdadbc5d6a554558b1746b549678eee8ef1f11390"
+    },
+    "long": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 2,
+        "unit": "s"
+      },
+      "$description": "Long duration",
+      "$lastModified": "2024-02-11T00:00:00Z",
+      "$lastUsed": "2024-05-11T00:00:00Z",
+      "$usageCount": 4,
+      "$author": "Designer",
+      "$tags": ["duration", "time"],
+      "$hash": "de830e4f6851e739913bfa9451384e912f30d9ced22d23d02187bce6f245e907"
+    },
+    "relative": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.timeline.progress",
+        "value": 50,
+        "unit": "%"
+      },
+      "$description": "Relative duration",
+      "$lastModified": "2024-02-13T00:00:00Z",
+      "$lastUsed": "2024-05-11T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["duration", "relative"],
+      "$hash": "054eb02bd1854e26711861efe690cdcd0b7110bf640f37f42a011abaa2833f3e"
+    },
+    "short": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.value-animator.duration",
+        "value": 150,
+        "unit": "ms"
+      },
+      "$description": "Short duration",
+      "$lastModified": "2024-02-10T00:00:00Z",
+      "$lastUsed": "2024-05-11T00:00:00Z",
+      "$usageCount": 8,
+      "$author": "Designer",
+      "$tags": ["duration"],
+      "$hash": "d884f85e78b0338a120313516ac88704673d1184b0092e70c3dd0942ab2f1fb8"
+    },
+    "short-alias": {
+      "$type": "duration",
+      "$ref": "#/duration/short",
+      "$description": "Alias to short duration",
+      "$lastModified": "2024-03-26T00:00:00Z",
+      "$lastUsed": "2024-05-26T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "duration"],
+      "$hash": "85cc18123d5656845c6ad509da946cb5881469f52cdcd20cb32770328e663901"
+    }
+  },
+  "easing": {
+    "$description": "Easing tokens",
+    "spring": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "spring",
+        "parameters": [0.5, 0.8, 0.3, 1]
+      },
+      "$description": "Spring easing",
+      "$lastModified": "2024-02-17T00:00:00Z",
+      "$lastUsed": "2024-05-12T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["easing", "spring"],
+      "$hash": "ca1d2ea827aeb1e4cf7f3d7bd71a7d8a854d0fea4c0facebfa22ce13a9dcd143"
+    },
+    "standard": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "cubic-bezier",
+        "parameters": [0.4, 0, 0.2, 1]
+      },
+      "$description": "Standard easing",
+      "$lastModified": "2024-02-15T00:00:00Z",
+      "$lastUsed": "2024-05-12T00:00:00Z",
+      "$usageCount": 7,
+      "$author": "Designer",
+      "$tags": ["easing"],
+      "$hash": "cd2013cdc1ff0abf7ac5e814d2ecdecd6dc000b92ba20641dc9d218f3365ca3d"
+    },
+    "standard-alias": {
+      "$type": "easing",
+      "$ref": "#/easing/standard",
+      "$description": "Alias to standard easing",
+      "$lastModified": "2024-03-27T00:00:00Z",
+      "$lastUsed": "2024-05-27T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "easing"],
+      "$hash": "c3691922c54c6cb90f02ca584c362a6a4798c2a7abcd21c3616faeacf22d124d"
+    },
+    "steps": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "steps",
+        "parameters": [4]
+      },
+      "$description": "Step easing",
+      "$lastModified": "2024-02-16T00:00:00Z",
+      "$lastUsed": "2024-05-12T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["easing", "steps"],
+      "$hash": "ad51b72e8d47719f90c541a2e08c1e6eecc7a9ef1d32e397c4e14c15e48975c9"
+    }
+  },
+  "elevation": {
+    "$description": "Elevation tokens",
+    "overlay": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "css.box-shadow.overlay",
+        "blur": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.3]
+        },
+        "offset": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "$description": "Overlay elevation",
+      "$lastModified": "2024-03-02T00:00:00Z",
+      "$lastUsed": "2024-05-15T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["elevation", "overlay"],
+      "$hash": "769bc4382fcc150f5f4d83213a1330fbb48783067f6c4c594cc621a1d89fee94"
+    },
+    "surface": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "css.box-shadow.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.18]
+        },
+        "offset": {
+          "dimensionType": "length",
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "$description": "Surface elevation",
+      "$lastModified": "2024-03-01T00:00:00Z",
+      "$lastUsed": "2024-05-15T00:00:00Z",
+      "$usageCount": 4,
+      "$author": "Designer",
+      "$tags": ["elevation"],
+      "$hash": "7b2b434c8e37214fe7b87e42d689c5e8b2331c7154d96f09f78c437fdfb42ae9"
+    },
+    "surface-alias": {
+      "$type": "elevation",
+      "$ref": "#/elevation/surface",
+      "$description": "Alias to surface elevation",
+      "$lastModified": "2024-03-30T00:00:00Z",
+      "$lastUsed": "2024-05-30T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "elevation"],
+      "$hash": "08b3732a039489d9fd64a46c02b68559475c9b696cfd1609f52403b41bf79b07"
+    },
+    "surface-android": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "android.paint.shadow-layer.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "dp"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.18]
+        },
+        "offset": {
+          "dimensionType": "length",
+          "value": 8,
+          "unit": "dp"
+        }
+      },
+      "$description": "Android surface elevation",
+      "$lastModified": "2024-03-05T00:00:00Z",
+      "$lastUsed": "2024-05-20T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["elevation", "android"],
+      "$hash": "91f5c4d933cf0d6b6c1fa9c9b38ed0ec5b45f612ff3bba1372d1b7f4cbf612e1"
+    },
+    "surface-ios": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "ios.layer.surface",
+        "blur": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "pt"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.18]
+        },
+        "offset": {
+          "dimensionType": "length",
+          "value": 8,
+          "unit": "pt"
+        }
+      },
+      "$description": "iOS surface elevation",
+      "$lastModified": "2024-03-04T00:00:00Z",
+      "$lastUsed": "2024-05-15T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["elevation", "ios"],
+      "$hash": "5a30c0b55e1c9f1f25b8e560b830b028a9321fdb8ad4f3b3d4e5c2f8aaf9c1a3"
+    }
+  },
+  "font": {
+    "$description": "Font tokens",
+    "local": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.local",
+        "family": "Helvetica",
+        "style": "italic",
+        "weight": 700
+      },
+      "$description": "Local font",
+      "$lastModified": "2024-02-02T00:00:00Z",
+      "$lastUsed": "2024-05-10T00:00:00Z",
+      "$usageCount": 10,
+      "$author": "Designer",
+      "$tags": ["font", "local"],
+      "$hash": "6b122281df4dd0b2e3da21036bb7439320abf402d110104207e4d965ec2fd0d6"
+    },
+    "resource": {
+      "$type": "font",
+      "$value": {
+        "fontType": "android.font-resource",
+        "family": "Roboto",
+        "style": "normal",
+        "weight": 400
+      },
+      "$description": "Android font resource",
+      "$lastModified": "2024-02-01T00:00:00Z",
+      "$lastUsed": "2024-05-10T00:00:00Z",
+      "$usageCount": 20,
+      "$author": "Designer",
+      "$tags": ["font", "android"],
+      "$hash": "43f5c4085201cd1311e89237cff561c4eecefac005a1ec6d55b586e7644f1bf9"
+    },
+    "sans": {
+      "$type": "font",
+      "$value": {
+        "fontType": "android.system",
+        "family": "sans-serif",
+        "style": "normal",
+        "weight": 400
+      },
+      "$description": "Sans serif font",
+      "$lastModified": "2024-01-20T00:00:00Z",
+      "$lastUsed": "2024-05-06T00:00:00Z",
+      "$usageCount": 30,
+      "$author": "Designer",
+      "$tags": ["font"],
+      "$hash": "993ccf5094d46998be434c8971a062990d57498a596fc156d7e91cc618a013f6"
+    },
+    "sans-alias": {
+      "$type": "font",
+      "$ref": "#/font/sans",
+      "$description": "Alias to sans font",
+      "$lastModified": "2024-03-21T00:00:00Z",
+      "$lastUsed": "2024-05-21T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "font"],
+      "$hash": "79168e6de785ad8274c9ebfc09ef4f409b43cc7b19aedee09145a8dae39093f7"
+    }
+  },
+  "gradient": {
+    "$description": "Gradient tokens",
+    "brand": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "angle": 90,
+        "stops": [
+          {
+            "position": 0,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [1, 0, 0, 1]
+            }
+          },
+          {
+            "position": 1,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 0, 1, 1]
+            }
+          }
+        ]
+      },
+      "$description": "Brand gradient",
+      "$lastModified": "2024-02-01T00:00:00Z",
+      "$lastUsed": "2024-05-09T00:00:00Z",
+      "$usageCount": 15,
+      "$author": "Designer",
+      "$tags": ["gradient"],
+      "$hash": "215b68d1a969153507e0d34cd5a7d5f90c24a8e3e07165691ef65d72574c6cc4"
+    },
+    "brand-alias": {
+      "$type": "gradient",
+      "$ref": "#/gradient/brand",
+      "$description": "Alias to brand gradient",
+      "$lastModified": "2024-03-24T00:00:00Z",
+      "$lastUsed": "2024-05-24T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "gradient"],
+      "$hash": "a867e10978812cd871c6840eb1ea406331e1157a1cfdfe0ae7859c43f6063401"
+    },
+    "conic": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "conic",
+        "angle": 180,
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "stops": [
+          {
+            "position": 0,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [1, 0, 0, 1]
+            }
+          },
+          {
+            "position": 1,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 1, 1, 1]
+            }
+          }
+        ]
+      },
+      "$description": "Conic gradient",
+      "$lastModified": "2024-02-03T00:00:00Z",
+      "$lastUsed": "2024-05-09T00:00:00Z",
+      "$usageCount": 5,
+      "$author": "Designer",
+      "$tags": ["gradient", "conic"],
+      "$hash": "5d463aebafa6dfab61c972dd75743b1e6424bf3e8b19ba325e0f5269d6433919"
+    },
+    "radial": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "radial",
+        "shape": "circle",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "stops": [
+          {
+            "position": 0,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [1, 1, 0, 1]
+            }
+          },
+          {
+            "position": 1,
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 1, 0, 1]
+            }
+          }
+        ]
+      },
+      "$description": "Radial gradient",
+      "$lastModified": "2024-02-02T00:00:00Z",
+      "$lastUsed": "2024-05-09T00:00:00Z",
+      "$usageCount": 10,
+      "$author": "Designer",
+      "$tags": ["gradient", "radial"],
+      "$hash": "66a246ede4b5f37d86193f691727684dd28c06c42ec3e3e7cc8058d4b91ff6ab"
+    }
+  },
+  "metadata": {
+    "$description": "Demonstrates all collection metadata fields",
+    "$deprecated": false,
+    "$lastModified": "2024-01-02T00:00:00Z",
+    "$lastUsed": "2024-05-01T00:00:00Z",
+    "$usageCount": 12,
+    "$author": "Designer",
+    "$tags": ["example", "metadata"],
+    "$hash": "5ffe231bb2bf22de48473d61330368f36a0fb48ea41990fb4f06e30443a5e05e",
+    "$extensions": {
+      "com.example": {
+        "category": "meta"
+      }
+    },
+    "token-alias": {
+      "$type": "color",
+      "$ref": "#/color/primary",
+      "$description": "Alias using $ref",
+      "$lastModified": "2024-03-10T00:00:00Z",
+      "$lastUsed": "2024-05-18T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias"],
+      "$hash": "ca7fd2c1ba16f18f413f6d2815a5bf3d3478080470d281eebf94812b984ff207"
+    },
+    "token-color-function": {
+      "$type": "color",
+      "$value": {
+        "fn": "mix",
+        "parameters": [
+          {
+            "$ref": "#/color/primary"
+          },
+          {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1, 1]
+          },
+          0.5
+        ]
+      },
+      "$description": "Color computed from function",
+      "$lastModified": "2024-03-12T00:00:00Z",
+      "$lastUsed": "2024-05-19T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["function", "color"],
+      "$hash": "516edcb782ec7b343b07d102d58a2ea61e94d7b7c79355c64a61789ac1d229c8"
+    },
+    "token-full": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 1, 0, 1]
+      },
+      "$description": "Token with every metadata field",
+      "$extensions": {
+        "com.example": {
+          "token": true
+        }
+      },
+      "$deprecated": true,
+      "$lastModified": "2024-01-02T00:00:00Z",
+      "$lastUsed": "2024-05-01T00:00:00Z",
+      "$usageCount": 10,
+      "$author": "Designer",
+      "$tags": ["all", "metadata"],
+      "$hash": "ccba25e9ec7bd824eb7f517ecc808ab5aee71aac49996948688468f2ea612d0b"
+    },
+    "token-function": {
+      "$type": "dimension",
+      "$value": {
+        "fn": "multiply",
+        "parameters": [
+          {
+            "$ref": "#/dimension/spacing/base"
+          },
+          2
+        ]
+      },
+      "$description": "Computed from another token",
+      "$extensions": {
+        "com.example": {
+          "computed": true
+        }
+      },
+      "$deprecated": false,
+      "$lastModified": "2024-03-01T00:00:00Z",
+      "$lastUsed": "2024-05-03T00:00:00Z",
+      "$usageCount": 5,
+      "$author": "Designer",
+      "$tags": ["function"],
+      "$hash": "3458ce227f90af6ad7fdcd91a3fc9abe3d1001217b36ec466c10eff8997d4f8d"
+    }
+  },
+  "motion": {
+    "$description": "Motion tokens",
+    "path": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.offset-path",
+        "parameters": {
+          "points": [
+            {
+              "time": 0,
+              "position": {
+                "x": {
+                  "dimensionType": "length",
+                  "value": 0,
+                  "unit": "px"
+                },
+                "y": {
+                  "dimensionType": "length",
+                  "value": 0,
+                  "unit": "px"
+                }
+              }
+            },
+            {
+              "time": 1,
+              "position": {
+                "x": {
+                  "dimensionType": "length",
+                  "value": 10,
+                  "unit": "px"
+                },
+                "y": {
+                  "dimensionType": "length",
+                  "value": 10,
+                  "unit": "px"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "$description": "Path motion",
+      "$lastModified": "2024-02-28T00:00:00Z",
+      "$lastUsed": "2024-05-14T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["motion", "path"],
+      "$hash": "3313d03db851f5d85c64cf4b844995f27e98dc66cd821259bc6dcdd39f32a0e8"
+    },
+    "rotate": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.rotate3d",
+        "parameters": {
+          "angle": {
+            "dimensionType": "angle",
+            "value": 90,
+            "unit": "deg"
+          },
+          "axis": {
+            "x": 0,
+            "y": 0,
+            "z": 1
+          }
+        }
+      },
+      "$description": "Rotate motion",
+      "$lastModified": "2024-02-26T00:00:00Z",
+      "$lastUsed": "2024-05-14T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["motion", "rotation"],
+      "$hash": "25e6fdaafc021f33ad2451acbdbede499b04b77b3463c0a2bd26b59c9a34793b"
+    },
+    "scale": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.scale",
+        "parameters": {
+          "x": 1.2,
+          "y": 1.2
+        }
+      },
+      "$description": "Scale motion",
+      "$lastModified": "2024-02-27T00:00:00Z",
+      "$lastUsed": "2024-05-14T00:00:00Z",
+      "$usageCount": 2,
+      "$author": "Designer",
+      "$tags": ["motion", "scale"],
+      "$hash": "410659b6bc9d8ad1e6fbc9fb15ee44f7c9320b4daa568beb66eb409c8a3bdd31"
+    },
+    "slide": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.translate",
+        "parameters": {
+          "x": {
+            "dimensionType": "length",
+            "value": 10,
+            "unit": "px"
+          },
+          "y": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "$description": "Slide motion",
+      "$extensions": {
+        "com.example": {
+          "motion": true
+        },
+        "org.example.a11y": {
+          "prefers-reduced-motion": true
+        }
+      },
+      "$lastModified": "2024-02-25T00:00:00Z",
+      "$lastUsed": "2024-05-14T00:00:00Z",
+      "$usageCount": 5,
+      "$author": "Designer",
+      "$tags": ["motion"],
+      "$hash": "c6f35f017041600d6174c379db8be30ed75c7066895052d86ff55ecbc1c30114"
+    },
+    "slide-alias": {
+      "$type": "motion",
+      "$ref": "#/motion/slide",
+      "$description": "Alias to slide motion",
+      "$lastModified": "2024-03-29T00:00:00Z",
+      "$lastUsed": "2024-05-29T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "motion"],
+      "$hash": "4da05fba5d1f18b8b15d4b0fadd7bfdf8875f853f2b7ce45ec343e9f730ce9a0"
+    }
+  },
+  "opacity": {
+    "$description": "Opacity tokens",
+    "disabled": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "css.opacity",
+        "value": 0.5
+      },
+      "$description": "Disabled state opacity",
+      "$lastModified": "2024-02-05T00:00:00Z",
+      "$lastUsed": "2024-05-10T00:00:00Z",
+      "$usageCount": 12,
+      "$author": "Designer",
+      "$tags": ["opacity"],
+      "$hash": "b0a0060fdd0c3844a44699cc02011d8605bf2e91e84f626f6f81609ee776fd16"
+    },
+    "disabled-alias": {
+      "$type": "opacity",
+      "$ref": "#/opacity/disabled",
+      "$description": "Alias to disabled opacity",
+      "$lastModified": "2024-03-25T00:00:00Z",
+      "$lastUsed": "2024-05-25T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "opacity"],
+      "$hash": "4f20db1c05f6c850154171d3f7f8a0a6f632b266994a90704ba37249eba2d1d3"
+    },
+    "highlight": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "android.view.alpha",
+        "value": "72%"
+      },
+      "$description": "Highlight opacity",
+      "$lastModified": "2024-02-06T00:00:00Z",
+      "$lastUsed": "2024-05-10T00:00:00Z",
+      "$usageCount": 3,
+      "$author": "Designer",
+      "$tags": ["opacity", "android"],
+      "$hash": "c36f89e961bc9db55e81632bce882a6637fc596ebc1062136bcb67d14423bcc3"
+    }
+  },
+  "shadow": {
+    "$description": "Shadow tokens",
+    "card": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow",
+        "blur": {
+          "dimensionType": "length",
+          "value": 3,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.2]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        },
+        "spread": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Card shadow",
+      "$lastModified": "2024-01-30T00:00:00Z",
+      "$lastUsed": "2024-05-08T00:00:00Z",
+      "$usageCount": 20,
+      "$author": "Designer",
+      "$tags": ["shadow"],
+      "$hash": "2870e17b9ee54b05fac32935a99d1919c1d6fa97da4086167ee27252e3ade861"
+    },
+    "card-alias": {
+      "$type": "shadow",
+      "$ref": "#/shadow/card",
+      "$description": "Alias to card shadow",
+      "$lastModified": "2024-03-23T00:00:00Z",
+      "$lastUsed": "2024-05-23T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "shadow"],
+      "$hash": "945ce27da27683247c55983dcba2b094124bf5fd1c643eebef5d9bb8c2da5f46"
+    },
+    "inner": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow.inset",
+        "blur": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.3]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        },
+        "spread": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        }
+      },
+      "$description": "Inner shadow",
+      "$lastModified": "2024-02-02T00:00:00Z",
+      "$lastUsed": "2024-05-08T00:00:00Z",
+      "$usageCount": 10,
+      "$author": "Designer",
+      "$tags": ["shadow", "inner"],
+      "$hash": "33aa04418deebfbd8e0574e638607ce63a4df8a3ea00bafbb4f9751b7c34d3f7"
+    }
+  },
+  "themes": {
+    "$description": "External references",
+    "dark": {
+      "$type": "theme",
+      "$ref": "dark.tokens.json#"
+    },
+    "light": {
+      "$type": "theme",
+      "$ref": "light.tokens.json#"
+    }
+  },
+  "typography": {
+    "$description": "Typography tokens",
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "lineHeight": 1.5,
+        "fontStyle": "italic",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 1]
+        },
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 0.5,
+          "unit": "px"
+        }
+      },
+      "$description": "Body style",
+      "$lastModified": "2024-01-25T00:00:00Z",
+      "$lastUsed": "2024-05-07T00:00:00Z",
+      "$usageCount": 25,
+      "$author": "Designer",
+      "$tags": ["typography"],
+      "$hash": "87a430a4544aa6f980da06b3b98f0074f6497a89127a8cb3362dc4788365d462"
+    },
+    "body-alias": {
+      "$type": "typography",
+      "$ref": "#/typography/body",
+      "$description": "Alias to body style",
+      "$lastModified": "2024-03-22T00:00:00Z",
+      "$lastUsed": "2024-05-22T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "typography"],
+      "$hash": "c311de47f417c14fcad10f53551bdc6bbd0eca05c77a827d4614e5c9ad8e66e7"
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "caption",
+        "fontFamily": "Inter",
+        "letterSpacing": "normal",
+        "textTransform": "uppercase",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "$description": "Caption style",
+      "$lastModified": "2024-01-27T00:00:00Z",
+      "$lastUsed": "2024-05-07T00:00:00Z",
+      "$usageCount": 10,
+      "$author": "Designer",
+      "$tags": ["typography", "caption"],
+      "$hash": "7706ada035fde083d76a9dc5a55ccfb862165a2f08823b7179d2d3bb02b259b7"
+    },
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "heading",
+        "fontFamily": "Inter",
+        "textDecoration": "underline",
+        "fontFeatures": ["smcp"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 32,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "$description": "Heading style",
+      "$lastModified": "2024-01-26T00:00:00Z",
+      "$lastUsed": "2024-05-07T00:00:00Z",
+      "$usageCount": 15,
+      "$author": "Designer",
+      "$tags": ["typography", "heading"],
+      "$hash": "7806eba6797182458bd8149fcea51b9d1ff8d4465724c81cda74454bb612b9c6"
+    }
+  },
+  "z-index": {
+    "$description": "Z-index tokens",
+    "layer": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "css.z-index",
+        "value": 100
+      },
+      "$description": "Base layer",
+      "$lastModified": "2024-02-22T00:00:00Z",
+      "$lastUsed": "2024-05-13T00:00:00Z",
+      "$usageCount": 5,
+      "$author": "Designer",
+      "$tags": ["z-index", "layer"],
+      "$hash": "621324a471f61089d5042764af9cfb5705c01f9b0b5e6220a60fec0f03ff66f4"
+    },
+    "modal": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "css.z-index",
+        "value": 1300
+      },
+      "$description": "Modal layer",
+      "$lastModified": "2024-02-20T00:00:00Z",
+      "$lastUsed": "2024-05-13T00:00:00Z",
+      "$usageCount": 6,
+      "$author": "Designer",
+      "$tags": ["z-index"],
+      "$hash": "46b753770d06ab19337d0081b0ac223a0933206e8389563a1c4aee2ee3731216"
+    },
+    "modal-alias": {
+      "$type": "z-index",
+      "$ref": "#/z-index/modal",
+      "$description": "Alias to modal layer",
+      "$lastModified": "2024-03-28T00:00:00Z",
+      "$lastUsed": "2024-05-28T00:00:00Z",
+      "$usageCount": 1,
+      "$author": "Designer",
+      "$tags": ["alias", "z-index"],
+      "$hash": "77e2d49f368ff3a34353ef00f01807a872a70a80e6c786df727eee48bdeaf028"
+    },
+    "overlay": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "android.view.translationz",
+        "value": 4
+      },
+      "$description": "Overlay layer",
+      "$lastModified": "2024-02-21T00:00:00Z",
+      "$lastUsed": "2024-05-13T00:00:00Z",
+      "$usageCount": 4,
+      "$author": "Designer",
+      "$tags": ["z-index", "overlay"],
+      "$hash": "e9c829823667f5ee04713b81f9774ec382b5365063f7508715f994e9c05733d0"
+    }
+  }
+}

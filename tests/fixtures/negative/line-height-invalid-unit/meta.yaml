@@ -1,0 +1,5 @@
+name: line-height-invalid-unit
+description: lineHeight dimension must use length units
+assertions:
+  - schema
+tags: [typography]

@@ -1,0 +1,8 @@
+name: deprecated-boolean
+description: token deprecated with boolean flag
+assertions:
+  - schema
+  - roundtrip
+  - refs
+  - type-compat
+  - ordering

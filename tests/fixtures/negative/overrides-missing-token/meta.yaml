@@ -1,0 +1,5 @@
+name: overrides-missing-token
+description: override objects require a $token pointer
+assertions:
+  - schema
+tags: [overrides]

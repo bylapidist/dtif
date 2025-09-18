@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "brand": {
+      "base": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0, 0, 0, 1] } }
+    }
+  },
+  "$overrides": [
+    {
+      "$token": "#/color/brand/base",
+      "$ref": "#/color/brand/base"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+name: deprecated-invalid-replacement
+description: $deprecated $replacement must be a valid JSON Pointer
+assertions:
+  - schema
+tags: [metadata:deprecated]

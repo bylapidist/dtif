@@ -1,0 +1,30 @@
+{
+  "$overrides": [
+    {
+      "$token": "#/color/a",
+      "$when": { "mode": "dark" },
+      "$fallback": { "$ref": "#/color/b" }
+    },
+    {
+      "$token": "#/color/b",
+      "$when": { "mode": "dark" },
+      "$fallback": { "$ref": "#/color/a" }
+    }
+  ],
+  "color": {
+    "a": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0, 0, 1]
+      }
+    },
+    "b": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 1, 1]
+      }
+    }
+  }
+}

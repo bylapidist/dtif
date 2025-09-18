@@ -1,0 +1,11 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "spacing": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 10,
+      "unit": "px"
+    }
+  }
+}

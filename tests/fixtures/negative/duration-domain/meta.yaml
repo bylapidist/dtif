@@ -1,0 +1,3 @@
+name: duration-domain
+description: duration tokens reject negative times and non-integer frame counts
+tags: [duration]

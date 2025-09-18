@@ -1,0 +1,4 @@
+name: token path traversal
+description: overrides block path traversal in $token
+assertions:
+  - refs

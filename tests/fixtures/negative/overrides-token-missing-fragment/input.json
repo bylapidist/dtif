@@ -1,0 +1,16 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "button": {
+    "bg": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [1, 1, 1, 1] }
+    }
+  },
+  "$overrides": [
+    {
+      "$token": "button/bg",
+      "$when": {},
+      "$ref": "#/button/bg"
+    }
+  ]
+}

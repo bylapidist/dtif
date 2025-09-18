@@ -1,0 +1,5 @@
+name: deprecated-missing-replacement
+description: $deprecated object must specify $replacement
+assertions:
+  - schema
+tags: [metadata:deprecated]

@@ -1,0 +1,7 @@
+name: clamp-nested-calc
+description: valid clamp with nested calc
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [function:clamp, function:calc, type:dimension]

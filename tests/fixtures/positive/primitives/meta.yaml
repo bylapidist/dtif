@@ -1,0 +1,7 @@
+name: numeric-magnitudes
+description: Numeric primitives at extreme magnitudes
+assertions:
+  - schema
+  - roundtrip
+  - type-compat
+tags: [type:dimension]

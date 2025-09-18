@@ -1,0 +1,11 @@
+name: color-range-coverage
+description: validates supported colour space ranges including optional alpha omission
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:color
+  - color-space

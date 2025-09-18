@@ -1,0 +1,5 @@
+{
+  "code": "E_COLLECTION_ORDER",
+  "message": "collection members must be sorted lexicographically",
+  "path": ""
+}

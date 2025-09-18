@@ -1,0 +1,7 @@
+name: override-missing-ref-and-value
+description: override entry missing both $ref and $value should fail schema
+assertions:
+  - schema
+  - refs
+tags:
+  - override

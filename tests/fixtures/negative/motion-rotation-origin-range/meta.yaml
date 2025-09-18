@@ -1,0 +1,4 @@
+name: motion-rotation-origin-range
+description: rotation origins must stay within the unit cube
+tags:
+  - motion

@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_PATH_START",
+  "message": "motion path must start at time 0",
+  "path": "/problem/$value/parameters/points/0/time"
+}

@@ -1,0 +1,4 @@
+name: overrides-token-missing-fragment
+description: override $token without a JSON Pointer fragment should fail schema validation
+assertions:
+  - schema

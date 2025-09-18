@@ -1,0 +1,107 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "ch": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 3,
+          "unit": "ch"
+        }
+      }
+    },
+    "ex": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "ex"
+        }
+      }
+    },
+    "pt": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 18,
+          "unit": "pt"
+        }
+      }
+    },
+    "px": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    },
+    "vh": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "vh"
+        }
+      }
+    },
+    "vw": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "vw"
+        }
+      }
+    }
+  }
+}

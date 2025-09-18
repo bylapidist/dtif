@@ -1,0 +1,6 @@
+name: override-missing-when
+description: override entry without $when should fail schema
+assertions:
+  - schema
+tags:
+  - override

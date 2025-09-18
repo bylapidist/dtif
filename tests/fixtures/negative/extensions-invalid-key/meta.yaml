@@ -1,0 +1,5 @@
+name: extensions-invalid-key
+description: $extensions keys must use lower-case reverse domain notation
+assertions:
+  - schema
+tags: [extensions]

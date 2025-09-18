@@ -1,0 +1,7 @@
+name: broken-ref-nested-calc
+description: broken $ref inside nested calc parameters must error
+assertions:
+  - refs
+tags:
+  - ref
+  - function:calc

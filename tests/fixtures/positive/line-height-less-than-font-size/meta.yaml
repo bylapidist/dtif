@@ -1,0 +1,7 @@
+name: line-height-less-than-font-size
+description: typography token with lineHeight smaller than fontSize
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

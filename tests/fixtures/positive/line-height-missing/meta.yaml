@@ -1,0 +1,7 @@
+name: line-height-missing
+description: typography token without lineHeight
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,7 @@
+name: font-weight-number
+description: typography token with numeric fontWeight
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,5 @@
+name: font-weight-invalid-keyword
+description: unrecognised fontWeight keyword
+assertions:
+  - type-compat
+tags: [typography]

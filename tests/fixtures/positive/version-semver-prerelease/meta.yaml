@@ -1,0 +1,5 @@
+name: version-semver-prerelease
+description: $version accepts pre-release and build metadata
+assertions:
+  - schema
+tags: [versioning]

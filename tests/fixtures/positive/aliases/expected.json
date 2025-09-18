@@ -1,0 +1,16 @@
+{
+  "alias": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 1, 1, 1]
+    }
+  },
+  "base": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 1, 1, 1]
+    }
+  }
+}

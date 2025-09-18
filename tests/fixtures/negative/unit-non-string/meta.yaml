@@ -1,0 +1,5 @@
+name: unit-non-string
+description: dimension units must be strings; zero and negative numbers are invalid
+assertions:
+  - schema
+tags: [type:dimension]

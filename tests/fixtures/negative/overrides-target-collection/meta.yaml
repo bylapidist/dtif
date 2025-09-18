@@ -1,0 +1,4 @@
+name: overrides-target-collection
+description: override $token pointers must not target collections
+tags:
+  - overrides

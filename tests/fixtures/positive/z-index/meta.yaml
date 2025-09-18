@@ -1,0 +1,7 @@
+name: z-index
+description: valid z-index tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [z-index]

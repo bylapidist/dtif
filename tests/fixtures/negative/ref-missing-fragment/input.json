@@ -1,0 +1,4 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "theme": { "$type": "theme", "$ref": "dark.tokens.json" }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@lapidist/dtif",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
+    "format": "prettier -w .",
+    "format:check": "prettier -c .",
+    "lint": "markdownlint \"**/*.md\" --ignore \"**/node_modules/**\"",
+    "lint:fix": "markdownlint --fix \"**/*.md\" --ignore \"**/node_modules/**\"",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "lint:docs": "markdownlint \"docs/**/*.md\""
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "ajv-cli": "^5.0.0",
+    "ajv-formats": "^3.0.1",
+    "markdownlint-cli": "^0.45.0",
+    "prettier": "^3.6.2",
+    "vitepress": "^1.6.4"
+  }
+}

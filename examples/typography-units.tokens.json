@@ -1,0 +1,100 @@
+{
+  "$version": "1.0.0",
+  "typography": {
+    "ch": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 30,
+          "unit": "ch"
+        }
+      }
+    },
+    "ex": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "ex"
+        }
+      }
+    },
+    "percent": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 120,
+          "unit": "%"
+        }
+      }
+    },
+    "points": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "SF Pro",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 14,
+          "unit": "pt",
+          "fontScale": true
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 20,
+          "unit": "pt",
+          "fontScale": true
+        }
+      }
+    },
+    "sp": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "sp",
+          "fontScale": true
+        }
+      }
+    },
+    "vh": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 10,
+          "unit": "vh"
+        }
+      }
+    },
+    "vw": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "vw"
+        }
+      }
+    }
+  }
+}

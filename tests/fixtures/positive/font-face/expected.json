@@ -1,0 +1,38 @@
+{
+  "fontFace": {
+    "brand": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Brand Sans",
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "fontStretch": "semi-expanded",
+        "unicodeRange": "U+000-5FF, U+13A0-13F5",
+        "fontDisplay": "swap",
+        "src": [
+          { "local": "Brand Sans" },
+          {
+            "url": "https://cdn.example.com/fonts/BrandSans-Regular.woff2",
+            "format": ["woff2"],
+            "tech": ["variations"]
+          }
+        ]
+      }
+    }
+  },
+  "typography": {
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "heading",
+        "lineHeight": 1.3,
+        "fontFamily": "Brand Sans",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

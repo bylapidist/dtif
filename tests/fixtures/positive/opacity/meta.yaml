@@ -1,0 +1,7 @@
+name: opacity
+description: valid opacity tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [opacity]

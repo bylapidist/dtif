@@ -1,0 +1,6 @@
+name: font-weight-negative-font
+description: font token weights must be non-negative
+assertions:
+  - schema
+tags:
+  - type:font

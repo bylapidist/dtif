@@ -1,0 +1,6 @@
+name: remote-ref-disabled
+description: remote references are rejected unless a fixture opts in explicitly
+assertions:
+  - schema
+  - refs
+tags: [security, ref, remote]

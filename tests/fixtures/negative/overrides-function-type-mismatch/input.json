@@ -1,0 +1,29 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "accent": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.2, 0.4, 0.6, 1] }
+    }
+  },
+  "spacing": {
+    "sm": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "length", "value": 4, "unit": "px" }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "length", "value": 8, "unit": "px" }
+    }
+  },
+  "$overrides": [
+    {
+      "$token": "#/spacing/md",
+      "$when": { "prefers-reduced-motion": "no-preference" },
+      "$value": {
+        "fn": "calc",
+        "parameters": [{ "$ref": "#/color/accent" }, "+", "2px"]
+      }
+    }
+  ]
+}

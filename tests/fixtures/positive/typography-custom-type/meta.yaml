@@ -1,0 +1,7 @@
+name: typography-custom-type
+description: typography token with custom typographyType
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

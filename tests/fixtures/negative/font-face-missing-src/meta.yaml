@@ -1,0 +1,6 @@
+name: font-face-missing-src
+description: fontFace tokens must declare a src array with at least one entry
+assertions:
+  - schema
+tags:
+  - fontFace

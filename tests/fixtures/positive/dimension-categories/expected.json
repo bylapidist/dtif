@@ -1,0 +1,26 @@
+{
+  "angle": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "angle",
+      "value": 120,
+      "unit": "deg"
+    }
+  },
+  "custom": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "custom",
+      "value": 1.25,
+      "unit": "com.example.tokens.scale"
+    }
+  },
+  "resolution": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "resolution",
+      "value": 2,
+      "unit": "dppx"
+    }
+  }
+}

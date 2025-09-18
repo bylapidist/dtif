@@ -1,0 +1,8 @@
+name: hash-whitespace
+description: $hash must not contain whitespace
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

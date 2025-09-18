@@ -1,0 +1,7 @@
+name: motion
+description: valid motion tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [motion]

@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_PATH_TRAVERSAL",
+    "path": "/$overrides/0/$token",
+    "message": "path traversal not allowed: ../secrets.json#/token"
+  }
+}

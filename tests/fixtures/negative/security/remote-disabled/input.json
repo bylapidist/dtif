@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "remote": {
+      "$type": "color",
+      "$ref": "https://cdn.example.com/themes/dark.json#/color/button-bg"
+    }
+  }
+}

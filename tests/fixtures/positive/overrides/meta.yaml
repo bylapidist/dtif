@@ -1,0 +1,7 @@
+name: overrides
+description: root-level overrides remap tokens by context via references or values
+assertions:
+  - schema
+  - refs
+tags:
+  - override

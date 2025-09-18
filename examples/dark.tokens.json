@@ -1,0 +1,12 @@
+{
+  "$version": "1.0.0",
+  "color": {
+    "$type": "color",
+    "brand": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.8, 0, 0]
+      }
+    }
+  }
+}

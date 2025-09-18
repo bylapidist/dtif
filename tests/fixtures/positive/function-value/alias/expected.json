@@ -1,0 +1,28 @@
+{
+  "base": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 4,
+      "unit": "px"
+    }
+  },
+  "composed": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": [
+        {
+          "$type": "dimension",
+          "$value": {
+            "dimensionType": "length",
+            "value": 4,
+            "unit": "px"
+          }
+        },
+        "+",
+        "2px"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "typography": {
+    "keyword": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "letterSpacing": "normal",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "android-elevation": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "android.viewpropertyanimator.translationz",
+      "parameters": {
+        "z": { "dimensionType": "length", "value": 4, "unit": "dp" }
+      }
+    }
+  },
+  "ios-card-pop": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "ios.catransform3d.scale",
+      "parameters": {
+        "uniform": 1.08
+      }
+    }
+  },
+  "orbit": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "ios.cakeyframeanimation.path",
+      "parameters": {
+        "points": [
+          {
+            "time": 0,
+            "position": {
+              "x": { "dimensionType": "length", "value": 0, "unit": "px" },
+              "y": { "dimensionType": "length", "value": 0, "unit": "px" }
+            }
+          },
+          {
+            "time": 0.5,
+            "easing": "#/timing",
+            "position": {
+              "x": { "dimensionType": "length", "value": 40, "unit": "%" },
+              "y": { "dimensionType": "length", "value": -16, "unit": "px" }
+            }
+          },
+          {
+            "time": 1,
+            "position": {
+              "x": { "dimensionType": "length", "value": 0, "unit": "px" },
+              "y": { "dimensionType": "length", "value": 0, "unit": "px" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "slide-in": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.translate3d",
+      "parameters": {
+        "x": { "dimensionType": "length", "value": 24, "unit": "px" },
+        "y": { "dimensionType": "length", "value": 0, "unit": "px" },
+        "z": { "dimensionType": "length", "value": 0, "unit": "px" }
+      }
+    }
+  },
+  "spin": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.rotate3d",
+      "parameters": {
+        "angle": { "dimensionType": "angle", "value": 22.5, "unit": "deg" },
+        "axis": { "x": 0, "y": 0, "z": 1 },
+        "origin": { "x": 0.5, "y": 0.5 }
+      }
+    }
+  },
+  "timing": {
+    "$type": "easing",
+    "$value": {
+      "easingFunction": "cubic-bezier",
+      "parameters": [0.4, 0, 0.2, 1]
+    }
+  }
+}

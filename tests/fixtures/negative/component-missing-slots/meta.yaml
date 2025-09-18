@@ -1,0 +1,6 @@
+name: component-missing-slots
+description: component tokens must declare a $slots map
+assertions:
+  - schema
+tags:
+  - component

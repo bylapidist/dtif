@@ -1,0 +1,8 @@
+name: tags-non-string-item
+description: $tags items must be strings
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

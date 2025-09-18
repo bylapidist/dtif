@@ -1,0 +1,12 @@
+name: line-height snapshots
+description: typography tokens with unitless and absolute lineHeight values
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+  - snapshot:css
+tags:
+  - type:typography
+  - snapshot

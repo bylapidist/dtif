@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_PATH_ORDER",
+  "message": "motion path keyframes must increase monotonically",
+  "path": "/problem/$value/parameters/points/2/time"
+}

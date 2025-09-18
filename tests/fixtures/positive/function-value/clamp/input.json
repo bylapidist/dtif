@@ -1,0 +1,17 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "clamped": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "clamp",
+      "parameters": [
+        "1px",
+        {
+          "fn": "calc",
+          "parameters": ["2px", "+", "2px"]
+        },
+        "10px"
+      ]
+    }
+  }
+}

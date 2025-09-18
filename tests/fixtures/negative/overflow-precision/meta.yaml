@@ -1,0 +1,9 @@
+name: overflow precision
+description: dimension with more than allowed decimal precision
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - type:dimension
+  - precision

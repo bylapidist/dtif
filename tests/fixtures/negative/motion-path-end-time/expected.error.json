@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_PATH_END",
+  "message": "motion path must end at time 1",
+  "path": "/problem/$value/parameters/points/2/time"
+}

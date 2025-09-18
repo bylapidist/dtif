@@ -1,0 +1,5 @@
+name: letter-spacing-invalid-unit
+description: letterSpacing must use font-dimension length units
+assertions:
+  - type-compat
+tags: [typography]

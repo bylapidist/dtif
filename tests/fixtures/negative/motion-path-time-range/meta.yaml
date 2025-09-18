@@ -1,0 +1,4 @@
+name: motion-path-time-range
+description: motion path keyframes must stay within the normalised timeline
+tags:
+  - motion

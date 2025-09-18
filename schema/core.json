@@ -1,0 +1,1456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dtif.lapidist.net/schema/core.json",
+  "title": "Design Token Interchange Format",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "$version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-(?:0|[1-9]\\d*|[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|[a-zA-Z-][0-9a-zA-Z-]*))*)?(?:\\+[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*)?$"
+    },
+    "$extensions": { "$ref": "#/$defs/extensions" },
+    "$overrides": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/override" }
+    }
+  },
+  "patternProperties": {
+    "^(?!\\$)": { "$ref": "#/$defs/node" },
+    "^\\$": {}
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "pointer": {
+      "type": "string",
+      "allOf": [
+        { "pattern": "^(?:#|[^#]+#)(?:\\/[^~\\/]*(?:~[01][^~\\/]*)*)*$" },
+        { "not": { "pattern": "(?:\\.\\.|%2e%2e)" } },
+        {
+          "if": { "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/" },
+          "then": { "pattern": "^https?:\/\/" }
+        }
+      ]
+    },
+    "override": {
+      "type": "object",
+      "properties": {
+        "$token": { "$ref": "#/$defs/pointer" },
+        "$when": { "type": "object" },
+        "$ref": { "$ref": "#/$defs/pointer" },
+        "$value": {
+          "$comment": "Inline override values must conform to the target token's $type."
+        },
+        "$fallback": { "$ref": "#/$defs/fallback" }
+      },
+      "required": ["$token", "$when"],
+      "oneOf": [
+        { "required": ["$ref"], "not": { "required": ["$value"] } },
+        { "required": ["$value"], "not": { "required": ["$ref"] } },
+        {
+          "required": ["$fallback"],
+          "not": { "anyOf": [{ "required": ["$ref"] }, { "required": ["$value"] }] }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "fallback": {
+      "oneOf": [
+        { "$ref": "#/$defs/fallbackEntry" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/fallbackEntry" }
+        }
+      ]
+    },
+    "fallbackEntry": {
+      "type": "object",
+      "properties": {
+        "$ref": { "$ref": "#/$defs/pointer" },
+        "$value": {
+          "$comment": "Fallback values must conform to the overridden token's $type."
+        },
+        "$fallback": { "$ref": "#/$defs/fallback" }
+      },
+      "oneOf": [
+        { "required": ["$ref"], "not": { "required": ["$value"] } },
+        { "required": ["$value"], "not": { "required": ["$ref"] } }
+      ],
+      "unevaluatedProperties": false
+    },
+    "node": {
+      "oneOf": [{ "$ref": "#/$defs/token" }, { "$ref": "#/$defs/collection" }]
+    },
+    "collection": {
+      "type": "object",
+      "patternProperties": {
+        "^(?!\\$)": { "$ref": "#/$defs/node" },
+        "^\\$": {}
+      },
+      "properties": {
+        "$extensions": { "$ref": "#/$defs/extensions" },
+        "$description": { "type": "string" },
+        "$deprecated": {
+          "oneOf": [
+            { "type": "boolean" },
+            {
+              "type": "object",
+              "required": ["$replacement"],
+              "properties": {
+                "$replacement": {
+                  "type": "string",
+                  "pattern": "^#(?:\\/[^~\\/]*(?:~[01][^~\\/]*)*)*$"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "$lastModified": { "type": "string", "format": "date-time" },
+        "$lastUsed": { "type": "string", "format": "date-time" },
+        "$usageCount": { "type": "integer", "minimum": 0 },
+        "$author": { "$ref": "#/$defs/trimmedString" },
+        "$tags": { "$ref": "#/$defs/tags" },
+        "$hash": { "$ref": "#/$defs/hashString" }
+      },
+      "unevaluatedProperties": false,
+      "allOf": [
+        { "not": { "required": ["$value"] } },
+        {
+          "if": { "minProperties": 1 },
+          "then": { "not": { "propertyNames": { "pattern": "^\\$" } } }
+        }
+      ]
+    },
+    "token": {
+      "type": "object",
+      "properties": {
+        "$type": { "type": "string", "pattern": "^[a-z0-9][a-zA-Z0-9_-]*$" },
+        "$value": {},
+        "$description": { "type": "string" },
+        "$extensions": { "$ref": "#/$defs/extensions" },
+        "$ref": { "$ref": "#/$defs/pointer" },
+        "$deprecated": {
+          "oneOf": [
+            { "type": "boolean" },
+            {
+              "type": "object",
+              "required": ["$replacement"],
+              "properties": {
+                "$replacement": {
+                  "type": "string",
+                  "pattern": "^#(?:\\/[^~\\/]*(?:~[01][^~\\/]*)*)*$"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "$lastModified": { "type": "string", "format": "date-time" },
+        "$lastUsed": { "type": "string", "format": "date-time" },
+        "$usageCount": { "type": "integer", "minimum": 0 },
+        "$author": { "$ref": "#/$defs/trimmedString" },
+        "$tags": { "$ref": "#/$defs/tags" },
+        "$hash": { "$ref": "#/$defs/hashString" }
+      },
+      "patternProperties": {
+        "^\\$": {}
+      },
+      "unevaluatedProperties": false,
+      "allOf": [
+        {
+          "oneOf": [
+            { "required": ["$value"], "not": { "required": ["$ref"] } },
+            { "required": ["$ref"], "not": { "required": ["$value"] } }
+          ]
+        },
+        {
+          "if": { "required": ["$ref"] },
+          "then": { "required": ["$type"] }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "dimension" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/dimension" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "color" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/color" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "font" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/font" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "fontFace" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/fontFace" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "typography" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/typography" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "border" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/border" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "cursor" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/cursor" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "shadow" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/shadow" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "gradient" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/gradient" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "filter" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/filter" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "opacity" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/opacity" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "duration" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/duration" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "easing" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/easing" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "z-index" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/z-index" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "motion" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": { "oneOf": [{ "$ref": "#/$defs/motion" }, { "$ref": "#/$defs/function" }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "$type": { "const": "elevation" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/elevation" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "$type": { "const": "component" } },
+            "required": ["$type", "$value"]
+          },
+          "then": {
+            "properties": {
+              "$value": {
+                "type": "object",
+                "required": ["$slots"],
+                "properties": {
+                  "$slots": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "propertyNames": { "pattern": "^(?!\\$)" },
+                    "patternProperties": {
+                      "^(?!\\$)": {
+                        "allOf": [
+                          { "$ref": "#/$defs/token" },
+                          {
+                            "not": {
+                              "properties": { "$type": { "const": "component" } },
+                              "required": ["$type"]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dimension": {
+      "type": "object",
+      "required": ["dimensionType", "value", "unit"],
+      "properties": {
+        "dimensionType": {
+          "type": "string",
+          "enum": ["length", "angle", "resolution", "custom"]
+        },
+        "value": { "type": "number" },
+        "unit": { "type": "string" },
+        "fontScale": {
+          "type": "boolean",
+          "description": "Whether the value scales with the user's font settings.",
+          "$comment": "When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP)."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "dimensionType": { "const": "length" } },
+            "required": ["dimensionType"]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+                "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "dimensionType": { "const": "angle" } },
+            "required": ["dimensionType"]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+                "$comment": "MUST conform to CSS <angle> production (css-values-4)."
+              }
+            },
+            "not": { "required": ["fontScale"] }
+          }
+        },
+        {
+          "if": {
+            "properties": { "dimensionType": { "const": "resolution" } },
+            "required": ["dimensionType"]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+                "$comment": "MUST conform to CSS <resolution> production (css-values-4)."
+              }
+            },
+            "not": { "required": ["fontScale"] }
+          }
+        },
+        {
+          "if": {
+            "properties": { "dimensionType": { "const": "custom" } },
+            "required": ["dimensionType"]
+          },
+          "then": {
+            "properties": {
+              "unit": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(?:\\.[a-z0-9-]+)+$"
+              }
+            },
+            "not": { "required": ["fontScale"] }
+          }
+        }
+      ]
+    },
+    "font-dimension": {
+      "type": "object",
+      "required": ["dimensionType", "value", "unit"],
+      "properties": {
+        "dimensionType": { "const": "length" },
+        "value": { "type": "number" },
+        "unit": {
+          "type": "string",
+          "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+          "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
+        },
+        "fontScale": {
+          "type": "boolean",
+          "description": "Whether the value scales with the user's font settings.",
+          "$comment": "When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "length-dimension": {
+      "type": "object",
+      "required": ["dimensionType", "value", "unit"],
+      "properties": {
+        "dimensionType": { "const": "length" },
+        "value": { "type": "number" },
+        "unit": {
+          "type": "string",
+          "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+          "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
+        },
+        "fontScale": {
+          "type": "boolean",
+          "description": "Whether the value scales with the user's font settings.",
+          "$comment": "When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "angle-dimension": {
+      "type": "object",
+      "required": ["dimensionType", "value", "unit"],
+      "properties": {
+        "dimensionType": { "const": "angle" },
+        "value": { "type": "number" },
+        "unit": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "$comment": "MUST conform to CSS <angle> production (css-values-4)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "line-height": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Unitless ratio multiplied by fontSize to compute baseline-to-baseline distance."
+    },
+    "color": {
+      "type": "object",
+      "required": ["colorSpace", "components"],
+      "properties": {
+        "colorSpace": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "$comment": "MUST be a CSS <ident> naming a colour space defined by CSS Color 4 or registered via @color-profile (css-color-4)."
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "number" },
+          "$comment": "Channel order, ranges, and optional alpha MUST follow CSS Color 4 for the referenced colour space (css-color-4)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "cursor": {
+      "type": "object",
+      "required": ["cursorType", "value"],
+      "properties": {
+        "cursorType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST identify pointer contexts defined by CSS cursor grammars, UIKit UIPointerStyle APIs, or Android PointerIcon classes (e.g. css.cursor, ios.uipointerstyle, android.pointer-icon)."
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "$comment": "String values MUST conform to the CSS <cursor> production (css-ui-4#propdef-cursor) or name native pointer styles/icons published by UIPointerStyle and PointerIcon."
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "$comment": "Object values MAY encode structured pointer metadata (for example UIPointerStyle.shape or PointerIcon hotspots) and MUST follow the platform APIs they reference.",
+              "additionalProperties": true
+            }
+          ]
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "$comment": "Optional parameters supply reusable inputs such as hotspot coordinates or referenced tokens consumed by pointer APIs."
+        }
+      },
+      "additionalProperties": false
+    },
+    "font": {
+      "type": "object",
+      "required": ["fontType", "family"],
+      "properties": {
+        "fontType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST identify platform context and asset source using dot-separated identifiers aligned with CSS Fonts src descriptors, UIKit UIFont APIs, or Android font resource/typeface loaders."
+        },
+        "family": {
+          "type": "string",
+          "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+        },
+        "style": {
+          "type": "string",
+          "pattern": "^(?:[A-Za-z][A-Za-z0-9-]*)(?:\\s+-?(?:\\d+(?:\\.\\d+)?)(?:deg|grad|rad|turn)?)?$",
+          "$comment": "MUST conform to CSS <font-style-absolute> grammar (css-fonts-4); angles MUST follow <angle> (css-values-4)."
+        },
+        "weight": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "$comment": "Numeric weights MUST follow the 1..1000 range defined by CSS Fonts (css-fonts-4)."
+            },
+            {
+              "type": "string",
+              "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "fontFace": {
+      "type": "object",
+      "required": ["src", "fontFamily"],
+      "properties": {
+        "src": {
+          "type": "array",
+          "minItems": 1,
+          "$comment": "Entries MUST correspond to CSS @font-face src descriptors (css-fonts-4) and map to bundled/downloadable font resources registered through iOS font catalogs and Android font resources (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "$comment": "Font URLs MUST resolve to resources used by CSS url() and native registration APIs (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+                  },
+                  "format": {
+                    "oneOf": [
+                      { "type": "string" },
+                      {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": { "type": "string" }
+                      }
+                    ],
+                    "$comment": "Font format hints MUST match CSS src format() descriptors (css-fonts-4)."
+                  },
+                  "tech": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "type": "string" },
+                    "$comment": "Technology hints MUST align with CSS src tech() identifiers (css-fonts-4#font-tech-values)."
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "required": ["local"],
+                "properties": {
+                  "local": {
+                    "type": "string",
+                    "$comment": "Local font references MUST match CSS src local() <family-name> grammar and platform catalog registrations (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "fontFamily": {
+          "type": "string",
+          "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+        },
+        "fontWeight": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "$comment": "Numeric weights MUST follow the 1..1000 range defined by CSS Fonts (css-fonts-4)."
+            },
+            {
+              "type": "string",
+              "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
+            }
+          ]
+        },
+        "fontStyle": {
+          "type": "string",
+          "$comment": "MUST conform to CSS font-style descriptor grammar (css-fonts-4); oblique angles map to the slnt variation axis per UIFontDescriptor.AttributeName.variations and Typeface.Builder#setFontVariationSettings (IOS-FONT-VARIATIONS, ANDROID-FONT-VARIATION)."
+        },
+        "fontStretch": {
+          "type": "string",
+          "$comment": "Stretch keywords MUST follow CSS <font-stretch-absolute> grammar (css-fonts-4)."
+        },
+        "unicodeRange": {
+          "type": "string",
+          "pattern": "^(?:U\\+[0-9A-F?]{1,6}(?:-[0-9A-F?]{1,6})?)(?:\\s*,\\s*U\\+[0-9A-F?]{1,6}(?:-[0-9A-F?]{1,6})?)*$",
+          "$comment": "Ranges MUST conform to the CSS unicode-range descriptor grammar (css-fonts-4)."
+        },
+        "fontDisplay": {
+          "type": "string",
+          "$comment": "Display strategy MUST use the css-fonts-4 font-display keywords; native runtimes map these hints to preload/async policies."
+        }
+      },
+      "additionalProperties": false
+    },
+    "typography": {
+      "type": "object",
+      "required": ["fontFamily", "fontSize"],
+      "properties": {
+        "typographyType": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][\\w-]*$",
+          "description": "Canonical values such as 'body', 'heading', and 'caption' are registered. Custom values matching this pattern MAY be used; consumers MUST ignore unrecognised types to preserve compatibility."
+        },
+        "fontFamily": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "required": ["$ref"],
+              "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "fontSize": { "$ref": "#/$defs/dimension" },
+        "lineHeight": {
+          "description": "Baseline-to-baseline distance as a ratio or font-dimension.",
+          "oneOf": [
+            { "$ref": "#/$defs/line-height" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/font-dimension" },
+                { "properties": { "value": { "minimum": 0 } } }
+              ]
+            }
+          ]
+        },
+        "letterSpacing": {
+          "$comment": "MUST follow CSS letter-spacing grammar and reuse font-dimension unit conversions.",
+          "oneOf": [
+            { "$ref": "#/$defs/font-dimension" },
+            {
+              "type": "string",
+              "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 letter-spacing grammar."
+            }
+          ]
+        },
+        "wordSpacing": {
+          "$comment": "MUST conform to CSS word-spacing <length-percentage> grammar and platform unit semantics.",
+          "oneOf": [
+            { "$ref": "#/$defs/dimension" },
+            {
+              "type": "string",
+              "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 word-spacing grammar."
+            }
+          ]
+        },
+        "fontWeight": {
+          "$comment": "MUST match CSS font-weight absolute or relative productions and map to platform weight APIs.",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 1000,
+              "$comment": "MUST be within the CSS absolute weight range of 1-1000 and MAY include fractional values for variable fonts."
+            },
+            {
+              "type": "string",
+              "$comment": "MUST conform to CSS font-weight keyword grammar including relative weights."
+            }
+          ]
+        },
+        "fontStyle": {
+          "type": "string",
+          "$comment": "MUST conform to CSS font-style grammar and map to native italic traits or the slnt variation axis (css-fonts-4, IOS-FONT-TRAITS, IOS-FONT-VARIATIONS, ANDROID-FONT-SLANT, ANDROID-FONT-VARIATION)."
+        },
+        "fontVariant": {
+          "type": "string",
+          "$comment": "MUST match the CSS font-variant grammar when present."
+        },
+        "fontStretch": {
+          "type": "string",
+          "$comment": "MUST match the CSS font-stretch grammar when present."
+        },
+        "textDecoration": {
+          "type": "string",
+          "$comment": "MUST encode the CSS text-decoration shorthand and associated line/style/thickness grammar."
+        },
+        "textTransform": {
+          "type": "string",
+          "$comment": "MUST conform to the CSS text-transform list grammar and preserve locale-sensitive casing."
+        },
+        "color": { "$ref": "#/$defs/color" },
+        "fontFeatures": {
+          "type": "array",
+          "$comment": "MUST contain OpenType feature tags per CSS font-feature-settings and the OpenType registry.",
+          "items": {
+            "type": "string",
+            "$comment": "MUST be a registered OpenType feature tag or a documented font-specific tag."
+          }
+        },
+        "underlineThickness": { "$ref": "#/$defs/font-dimension" },
+        "underlineOffset": { "$ref": "#/$defs/font-dimension" },
+        "overlineThickness": { "$ref": "#/$defs/font-dimension" },
+        "overlineOffset": { "$ref": "#/$defs/font-dimension" }
+      },
+      "additionalProperties": true
+    },
+    "borderCornerRadius": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Single value MUST follow the <length-percentage> grammar defined for CSS border-radius."
+        },
+        {
+          "type": "object",
+          "required": ["x"],
+          "properties": {
+            "x": {
+              "$ref": "#/$defs/dimension",
+              "$comment": "Horizontal radius MUST conform to CSS <length-percentage> and native point/density semantics."
+            },
+            "y": {
+              "$ref": "#/$defs/dimension",
+              "$comment": "Optional vertical radius MUST conform to CSS <length-percentage>; when omitted, consumers reuse the horizontal value."
+            }
+          },
+          "additionalProperties": false,
+          "$comment": "Encodes the <length-percentage>{1,2} grammar used by border-top-left-radius and related properties."
+        }
+      ]
+    },
+    "border": {
+      "type": "object",
+      "required": ["borderType", "width", "style", "color"],
+      "properties": {
+        "borderType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9-]+)+$",
+          "$comment": "MUST identify CSS border/outline contexts or native stroke APIs such as CALayer and GradientDrawable."
+        },
+        "width": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Width MUST follow the <line-width> grammar and respect point/density conversions for pt, dp, and sp units."
+        },
+        "style": {
+          "type": "string",
+          "pattern": "^[a-z-]+$",
+          "$comment": "MUST match CSS <line-style> keywords; native implementations map them to dash patterns or fall back to solid."
+        },
+        "color": {
+          "$ref": "#/$defs/color",
+          "$comment": "Border colour MUST conform to CSS <color> values and convert to CGColor or Android colour integers."
+        },
+        "radius": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/dimension",
+              "$comment": "Uniform radius MUST follow the border-radius <length-percentage> grammar."
+            },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "topLeft": { "$ref": "#/$defs/borderCornerRadius" },
+                "topRight": { "$ref": "#/$defs/borderCornerRadius" },
+                "bottomRight": { "$ref": "#/$defs/borderCornerRadius" },
+                "bottomLeft": { "$ref": "#/$defs/borderCornerRadius" },
+                "topStart": { "$ref": "#/$defs/borderCornerRadius" },
+                "topEnd": { "$ref": "#/$defs/borderCornerRadius" },
+                "bottomStart": { "$ref": "#/$defs/borderCornerRadius" },
+                "bottomEnd": { "$ref": "#/$defs/borderCornerRadius" }
+              },
+              "additionalProperties": false,
+              "$comment": "Per-corner entries MUST follow border-radius semantics with names matching physical or logical corners."
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "shadow": {
+      "type": "object",
+      "required": ["shadowType", "offsetX", "offsetY", "blur", "color"],
+      "properties": {
+        "shadowType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*$",
+          "$comment": "MUST identify the rendering context defined by CSS <shadow> grammars, UIKit CALayer/NSShadow APIs, or Android View/Paint shadow documentation (e.g. css.box-shadow, css.text-shadow, css.filter.drop-shadow, ios.layer, ios.text, android.view.elevation)."
+        },
+        "offsetX": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Horizontal offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
+        },
+        "offsetY": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Vertical offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
+        },
+        "blur": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
+        },
+        "spread": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Optional spread MUST follow the final <length> of CSS <shadow> and is realised via CALayer.shadowPath or Android outline inflation."
+        },
+        "color": {
+          "$ref": "#/$defs/color",
+          "$comment": "Shadow colour MUST conform to CSS <color> values and map to CGColor / Android colour integers."
+        }
+      },
+      "additionalProperties": false
+    },
+    "gradient": {
+      "type": "object",
+      "required": ["gradientType", "stops"],
+      "properties": {
+        "gradientType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*$",
+          "$comment": "MUST correspond to gradient function identifiers defined in CSS Images Module Level 4 or platform equivalents such as CAGradientLayer.type and Android shader classes."
+        },
+        "stops": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["position", "color"],
+            "properties": {
+              "position": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "$comment": "Normalised offsets align with CAGradientLayer.locations and Android shader stop arrays."
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "$comment": "MUST conform to the <color-stop-length> production defined in CSS Images Module Level 4."
+                  }
+                ]
+              },
+              "hint": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "$comment": "Normalised hints map to native midpoint interpolation controls."
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "$comment": "MUST conform to the <color-hint> productions described in CSS Images Module Level 4."
+                  }
+                ]
+              },
+              "color": { "$ref": "#/$defs/color" }
+            },
+            "additionalProperties": false
+          },
+          "$comment": "Represents the CSS <color-stop-list> grammar and corresponding native stop arrays."
+        },
+        "angle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S",
+              "$comment": "MUST conform to the linear-gradient line syntax using CSS <angle> or <side-or-corner> tokens."
+            },
+            {
+              "type": "number",
+              "$comment": "Represents native rotation values interpreted in degrees when numeric."
+            }
+          ]
+        },
+        "center": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": ["x", "y"],
+              "properties": {
+                "x": { "type": "number", "minimum": 0, "maximum": 1 },
+                "y": { "type": "number", "minimum": 0, "maximum": 1 }
+              },
+              "additionalProperties": false,
+              "$comment": "Unit-square coordinates map to CAGradientLayer start/end points and Android radial or conic gradient centres."
+            },
+            {
+              "type": "string",
+              "pattern": "\\S",
+              "$comment": "MUST conform to the CSS <position> production for radial and conic gradients."
+            }
+          ]
+        },
+        "shape": {
+          "type": "string",
+          "pattern": "\\S",
+          "$comment": "MUST match <rg-ending-shape> keywords defined for radial-gradient() in CSS Images Module Level 3."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "angle": {} }, "required": ["angle"] },
+          "then": {
+            "properties": {
+              "gradientType": {
+                "not": { "const": "radial" },
+                "$comment": "Radial gradients do not accept an initial angle per CSS Images Module Level 4."
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "center": {} }, "required": ["center"] },
+          "then": {
+            "properties": {
+              "gradientType": {
+                "enum": ["radial", "conic"],
+                "$comment": "Only radial-gradient() and conic-gradient() accept a centre position in CSS Images Module Level 4."
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "shape": {} }, "required": ["shape"] },
+          "then": {
+            "properties": {
+              "gradientType": {
+                "const": "radial",
+                "$comment": "<rg-ending-shape> keywords are valid exclusively on radial-gradient() per CSS Images Module Level 3."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "required": ["filterType", "operations"],
+      "properties": {
+        "filterType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9-]+)+$",
+          "$comment": "MUST identify the rendering context defined by CSS filter(), Core Image CIFilter pipelines, or Android RenderEffect chains (for example css.filter, ios.cifilter, android.render-effect)."
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["fn"],
+            "properties": {
+              "fn": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9-]*(?:\\.[A-Za-z0-9-]+)*$",
+                "$comment": "MUST reference a filter function from CSS Filter Effects Module Level 1 or its native analogue (for example blur, brightness, drop-shadow)."
+              },
+              "parameters": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/function-parameter" },
+                "default": [],
+                "$comment": "Arguments MUST satisfy the grammar of the referenced filter function (e.g. CSS blur() <length>, brightness() numbers, drop-shadow() <shadow>) and map to CIFilter / RenderEffect parameters."
+              }
+            },
+            "additionalProperties": false
+          },
+          "$comment": "Represents the ordered <filter-function-list> grammar from CSS Filter Effects."
+        }
+      },
+      "additionalProperties": false
+    },
+    "opacity": {
+      "type": "object",
+      "required": ["opacityType", "value"],
+      "properties": {
+        "opacityType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST name a platform opacity property such as css.opacity (css-color-4#propdef-opacity), ios.uiview.alpha (IOS-UIVIEW-ALPHA), ios.layer.opacity (IOS-CALAYER), or android.view.alpha (ANDROID-VIEW-ALPHA)."
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "$comment": "Numeric form MUST satisfy the <alpha-value> range defined by CSS Color Module Level 4 (css-color-4#typedef-alpha-value), UIView.alpha (IOS-UIVIEW-ALPHA), and View#setAlpha (ANDROID-VIEW-ALPHA)."
+            },
+            {
+              "type": "string",
+              "pattern": "^(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)%?|[A-Za-z-]+\\(.+\\))$",
+              "$comment": "String form MUST conform to the CSS <alpha-value> production (css-color-4#typedef-alpha-value)."
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "duration": {
+      "type": "object",
+      "required": ["durationType", "value", "unit"],
+      "properties": {
+        "durationType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST identify a duration context defined by CSS Transitions/Animations, Core Animation, UIViewPropertyAnimator, or Android animator APIs (for example css.transition-duration, ios.caanimation.duration, android.value-animator.duration, ios.cadisplaylink.frame-count)."
+        },
+        "value": { "type": "number" },
+        "unit": {
+          "type": "string",
+          "pattern": "^\\S+$",
+          "$comment": "MUST serialise the unit token defined by the referenced duration grammar (css-values-4#time-value, css-values-4#percentages, IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER)."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "durationType": {
+                "pattern": "^(?:css\\.(?:transition|animation)-duration|ios\\.caanimation\\.duration|android\\.value-animator\\.duration)$"
+              }
+            },
+            "required": ["durationType"]
+          },
+          "then": {
+            "$comment": "Duration contexts MUST encode non-negative CSS <time> values as defined by CSS Values & Units, Core Animation, and Android animator APIs (css-values-4#time-value, css-transitions-2, css-animations-2, IOS-CAANIMATION, ANDROID-VALUE-ANIMATOR).",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 0,
+                "$comment": "Non-negative durations matching the CSS <time> production."
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "durationType": {
+                "pattern": "^(?:ios\\.cadisplaylink\\.frame-count|android\\.choreographer\\.frame-count)$"
+              }
+            },
+            "required": ["durationType"]
+          },
+          "then": {
+            "$comment": "Frame-count durations carry platform refresh steps as described by CADisplayLink and Choreographer (IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER).",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "$comment": "Non-negative integer frame counts from the referenced timing API."
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "durationType": {
+                "pattern": "^(?:css\\.timeline\\.progress|ios\\.uianimation\\.fraction|android\\.animator-set\\.fraction)$"
+              }
+            },
+            "required": ["durationType"]
+          },
+          "then": {
+            "$comment": "Fraction/progress contexts serialise CSS <percentage> values used by timelines and native animation fractions (css-values-4#percentages, IOS-UIVIEWPROPERTYANIMATOR, ANDROID-OBJECTANIMATOR).",
+            "properties": {
+              "value": {
+                "type": "number",
+                "$comment": "Numeric percentage matching the CSS <percentage> grammar."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "easing": {
+      "type": "object",
+      "required": ["easingFunction"],
+      "properties": {
+        "easingFunction": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "$comment": "MUST name a CSS <single-easing-function> production or a documented native analogue."
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "anyOf": [{ "type": "number" }, { "type": "string" }]
+          },
+          "default": [],
+          "$comment": "When present, MUST satisfy the argument grammar defined for the referenced easing function in CSS Easing Functions or platform timing APIs."
+        }
+      },
+      "additionalProperties": false
+    },
+    "z-index": {
+      "type": "object",
+      "required": ["zIndexType", "value"],
+      "properties": {
+        "zIndexType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST name a stacking context primitive such as css.z-index, ios.calayer.z-position, android.view.z, or android.view.translationz as defined by CSS Positioned Layout Module Level 3 (css-position-3#propdef-z-index), CALayer.zPosition (IOS-CALAYER), and Android View Z APIs (ANDROID-VIEW-SETZ, ANDROID-VIEW-TRANSLATIONZ)."
+        },
+        "value": {
+          "type": "number",
+          "$comment": "MUST conform to CSS <integer> (css-position-3#propdef-z-index, css-values-4#integer-value), CALayer.zPosition (IOS-CALAYER), or Android View Z APIs (ANDROID-VIEW-SETZ, ANDROID-VIEW-TRANSLATIONZ) depending on the referenced platform."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "zIndexType": { "pattern": "^css\\." } },
+            "required": ["zIndexType"]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "$comment": "CSS z-index values MUST be integers per css-position-3#propdef-z-index."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "motion": {
+      "type": "object",
+      "required": ["motionType", "parameters"],
+      "properties": {
+        "motionType": {
+          "type": "string",
+          "pattern": "^(?:css|ios|android)(?:\\.[A-Za-z0-9_-]+)+$",
+          "$comment": "MUST name a platform transform such as css.translate, ios.catransform3d.rotate, or android.viewpropertyanimator.scalex as defined by CSS Transforms Module Level 2 (css-transforms-2#transform-functions), Core Animation (IOS-CGAFFINETRANSFORM, IOS-CATRANSFORM3D, IOS-CAKEYFRAMEANIMATION), and Android animation APIs (ANDROID-VIEWPROPERTYANIMATOR, ANDROID-OBJECTANIMATOR)."
+        },
+        "parameters": {
+          "type": "object",
+          "$comment": "Members MUST align with the grammar of the referenced transform function."
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "motionType": {
+                "pattern": "\\.(?:translate(?:[-a-z0-9]*)?|translation(?:[-a-z0-9]*)?)$"
+              }
+            },
+            "required": ["motionType"]
+          },
+          "then": {
+            "properties": {
+              "parameters": { "$ref": "#/$defs/motion-translation" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "motionType": {
+                "pattern": "\\.(?:rotate(?:[-a-z0-9]*)?|rotation(?:[-a-z0-9]*)?)$"
+              }
+            },
+            "required": ["motionType"]
+          },
+          "then": {
+            "properties": {
+              "parameters": { "$ref": "#/$defs/motion-rotation" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "motionType": { "pattern": "\\.(?:scale(?:[-a-z0-9]*)?)$" }
+            },
+            "required": ["motionType"]
+          },
+          "then": {
+            "properties": {
+              "parameters": { "$ref": "#/$defs/motion-scale" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "motionType": { "pattern": "\\.(?:path|offset-path|motion-path)$" }
+            },
+            "required": ["motionType"]
+          },
+          "then": {
+            "properties": {
+              "parameters": { "$ref": "#/$defs/motion-path" }
+            }
+          }
+        }
+      ]
+    },
+    "motion-length": {
+      "oneOf": [{ "$ref": "#/$defs/length-dimension" }, { "$ref": "#/$defs/function" }],
+      "$comment": "MUST evaluate to a CSS <length-percentage> (css-values-4#typedef-length-percentage) or equivalent platform distance for translation and path coordinates."
+    },
+    "motion-angle": {
+      "oneOf": [{ "$ref": "#/$defs/angle-dimension" }, { "$ref": "#/$defs/function" }],
+      "$comment": "MUST evaluate to a CSS <angle> (css-values-4#angles) compatible with Core Animation and Android rotation APIs."
+    },
+    "motion-translation": {
+      "type": "object",
+      "properties": {
+        "x": { "$ref": "#/$defs/motion-length" },
+        "y": { "$ref": "#/$defs/motion-length" },
+        "z": { "$ref": "#/$defs/motion-length" }
+      },
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["x"] }, { "required": ["y"] }, { "required": ["z"] }]
+    },
+    "motion-origin": {
+      "type": "object",
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "z": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["x"] }, { "required": ["y"] }, { "required": ["z"] }],
+      "$comment": "Normalised fractions (0-1) representing transform-origin percentages, CALayer.anchorPoint, and View#setPivotX/Y."
+    },
+    "motion-rotation": {
+      "type": "object",
+      "required": ["angle"],
+      "properties": {
+        "angle": { "$ref": "#/$defs/motion-angle" },
+        "axis": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" }
+          },
+          "additionalProperties": false,
+          "minProperties": 1,
+          "$comment": "Components describe the rotation vector consumed by rotate3d() (css-transforms-2#funcdef-rotate3d) and CATransform3DRotate."
+        },
+        "origin": { "$ref": "#/$defs/motion-origin" }
+      },
+      "additionalProperties": false
+    },
+    "motion-scale-factor": {
+      "type": "number",
+      "minimum": 0,
+      "$comment": "Non-negative multiplier matching CSS scale() arguments and native scale factors; negative multipliers remain invalid."
+    },
+    "motion-scale": {
+      "type": "object",
+      "properties": {
+        "x": { "$ref": "#/$defs/motion-scale-factor" },
+        "y": { "$ref": "#/$defs/motion-scale-factor" },
+        "z": { "$ref": "#/$defs/motion-scale-factor" },
+        "uniform": { "$ref": "#/$defs/motion-scale-factor" }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["uniform"] },
+        { "required": ["x"] },
+        { "required": ["y"] },
+        { "required": ["z"] }
+      ]
+    },
+    "motion-path": {
+      "type": "object",
+      "required": ["points"],
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/motion-path-point" }
+        }
+      },
+      "additionalProperties": false,
+      "$comment": "Path definitions align with CSS offset-path path() geometry, CAKeyframeAnimation.path, and android.graphics.Path."
+    },
+    "motion-path-point": {
+      "type": "object",
+      "required": ["time", "position"],
+      "properties": {
+        "time": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "$comment": "Normalised progress matching CAKeyframeAnimation.keyTimes and ObjectAnimator fractions."
+        },
+        "position": { "$ref": "#/$defs/motion-path-position" },
+        "easing": { "$ref": "#/$defs/pointer" }
+      },
+      "additionalProperties": false
+    },
+    "motion-path-position": {
+      "type": "object",
+      "properties": {
+        "x": { "$ref": "#/$defs/motion-length" },
+        "y": { "$ref": "#/$defs/motion-length" },
+        "z": { "$ref": "#/$defs/motion-length" }
+      },
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["x"] }, { "required": ["y"] }, { "required": ["z"] }],
+      "$comment": "Each axis resolves to <length-percentage> coordinates evaluated along the referenced path geometry."
+    },
+    "elevation": {
+      "type": "object",
+      "required": ["elevationType", "offset", "blur", "color"],
+      "properties": {
+        "elevationType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*$",
+          "$comment": "MUST identify the rendering context defined by CSS <shadow> functions, UIKit CALayer/NSShadow properties, or Android elevation/shadow APIs (for example css.box-shadow.surface, ios.layer.surface, android.paint.shadow-layer.surface)."
+        },
+        "offset": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Vertical offset MUST conform to CSS <length> grammar and map to CALayer.shadowOffset.height, Paint#setShadowLayer dy, or View#setElevation displacement."
+        },
+        "blur": {
+          "$ref": "#/$defs/dimension",
+          "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
+        },
+        "color": {
+          "$ref": "#/$defs/color",
+          "$comment": "Shadow colour MUST conform to CSS <color> values and map to CGColor / Android colour integers used for Paint#setShadowLayer or elevation overlays."
+        }
+      },
+      "additionalProperties": false
+    },
+    "trimmedString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!\\s)(?:.*\\S)?$"
+    },
+    "hashString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S+$"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/trimmedString" },
+      "uniqueItems": true
+    },
+    "function": {
+      "type": "object",
+      "required": ["fn", "parameters"],
+      "properties": {
+        "fn": { "type": "string" },
+        "parameters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/function-parameter" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "function-parameter": {
+      "anyOf": [
+        { "type": ["string", "number", "boolean", "null"] },
+        { "$ref": "#/$defs/function" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/function-parameter" }
+        },
+        {
+          "type": "object",
+          "required": ["$ref"],
+          "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "not": { "required": ["$ref"] },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)+$" },
+      "additionalProperties": true
+    }
+  }
+}

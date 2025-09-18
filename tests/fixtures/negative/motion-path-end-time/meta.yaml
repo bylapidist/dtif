@@ -1,0 +1,4 @@
+name: motion-path-end-time
+description: motion paths must finish with a keyframe at t=1
+tags:
+  - motion

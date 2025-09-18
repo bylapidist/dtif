@@ -1,0 +1,13 @@
+{
+  "$version": "1.0.0",
+  "spacing": {
+    "small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    }
+  }
+}

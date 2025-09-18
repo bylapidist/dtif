@@ -1,0 +1,100 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "conic": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "conic",
+      "angle": "45deg",
+      "center": {
+        "x": 0.25,
+        "y": 0.75
+      },
+      "stops": [
+        {
+          "position": 0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.2, 0.6, 1, 1]
+          }
+        },
+        {
+          "position": "0.25 0.4",
+          "hint": "50%",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.8, 0.2, 0.6, 1]
+          }
+        },
+        {
+          "position": 1,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0.1, 0.2, 1]
+          }
+        }
+      ]
+    }
+  },
+  "linear": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "angle": "135deg",
+      "stops": [
+        {
+          "position": "0%",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 0, 0, 1]
+          }
+        },
+        {
+          "position": 0.5,
+          "hint": 0.6,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 0, 1]
+          }
+        },
+        {
+          "position": "calc(100% - 0.25rem)",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 1, 1]
+          }
+        }
+      ]
+    }
+  },
+  "radial": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "radial",
+      "shape": "ellipse",
+      "center": "center 25%",
+      "stops": [
+        {
+          "position": 0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1, 1]
+          }
+        },
+        {
+          "position": 0.4,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.8, 0.4, 0.2, 1]
+          }
+        },
+        {
+          "position": 1,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.2, 0.2, 0.2, 1]
+          }
+        }
+      ]
+    }
+  }
+}

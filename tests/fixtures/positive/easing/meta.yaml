@@ -1,0 +1,7 @@
+name: easing
+description: valid easing tokens across supported functions
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [easing]

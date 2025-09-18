@@ -1,0 +1,70 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$overrides": [
+    {
+      "$token": "#/button/bg",
+      "$when": {
+        "prefers-color-scheme": "dark"
+      },
+      "$ref": "#/color/brand/dark",
+      "$fallback": {
+        "$ref": "#/color/brand/mid"
+      }
+    },
+    {
+      "$token": "#/button/text",
+      "$when": {
+        "prefers-color-scheme": "dark"
+      },
+      "$fallback": [
+        {
+          "$ref": "#/color/brand/mid"
+        },
+        {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1, 1]
+          }
+        }
+      ]
+    }
+  ],
+  "button": {
+    "bg": {
+      "$type": "color",
+      "$ref": "#/color/brand/light"
+    },
+    "text": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0, 1]
+      }
+    }
+  },
+  "color": {
+    "brand": {
+      "dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 1]
+        }
+      },
+      "light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1, 1]
+        }
+      },
+      "mid": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.5, 0.5, 0.5, 1]
+        }
+      }
+    }
+  }
+}

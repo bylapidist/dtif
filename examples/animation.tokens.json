@@ -1,0 +1,56 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$description": "Animation timings that align CSS durations and easing functions with iOS and Android animation APIs.",
+  "duration": {
+    "entry": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.cadisplaylink.frame-count",
+        "value": 6,
+        "unit": "frames"
+      }
+    },
+    "long": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.value-animator.duration",
+        "value": 320,
+        "unit": "ms"
+      }
+    },
+    "medium": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 0.2,
+        "unit": "s"
+      }
+    },
+    "stagger": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.timeline.progress",
+        "value": 150,
+        "unit": "%"
+      }
+    }
+  },
+  "easing": {
+    "ease": {
+      "$type": "easing",
+      "$value": { "easingFunction": "ease" }
+    },
+    "emphasized": {
+      "$type": "easing",
+      "$value": { "easingFunction": "cubic-bezier", "parameters": [0.4, 0, 0.2, 1] }
+    },
+    "springy": {
+      "$type": "easing",
+      "$value": { "easingFunction": "spring", "parameters": [1, 180, 24, 0.2] }
+    },
+    "stepped": {
+      "$type": "easing",
+      "$value": { "easingFunction": "steps", "parameters": [4, "jump-end"] }
+    }
+  }
+}

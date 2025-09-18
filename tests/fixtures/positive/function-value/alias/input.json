@@ -1,0 +1,24 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "base": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 4,
+      "unit": "px"
+    }
+  },
+  "composed": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": [
+        {
+          "$ref": "#/base"
+        },
+        "+",
+        "2px"
+      ]
+    }
+  }
+}

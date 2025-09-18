@@ -1,0 +1,6 @@
+name: motion-scale-negative
+description: scaleX transform with a negative multiplier
+assertions:
+  - schema
+  - type-compat
+  - refs

@@ -1,0 +1,5 @@
+name: line-height-negative
+description: lineHeight must be non-negative
+assertions:
+  - schema
+tags: [typography]

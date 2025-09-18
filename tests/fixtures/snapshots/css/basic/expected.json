@@ -1,0 +1,10 @@
+{
+  "spacing": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 10,
+      "unit": "px"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "opacity": {
+    "bad": { "$type": "opacity", "$value": { "opacityType": "gamma", "value": 0.5 } }
+  }
+}

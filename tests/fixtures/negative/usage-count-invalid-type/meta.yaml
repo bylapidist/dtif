@@ -1,0 +1,8 @@
+name: usage-count-invalid-type
+description: $usageCount must be a non-negative integer
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_ROUNDTRIP_MISMATCH",
+    "path": "",
+    "message": "document differs after JSON roundtrip"
+  }
+}

@@ -1,0 +1,8 @@
+name: tags-duplicate
+description: $tags must not contain duplicate entries
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

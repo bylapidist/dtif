@@ -1,0 +1,5 @@
+name: version-leading-zero
+description: core numeric identifiers MUST NOT include leading zeros
+assertions:
+  - schema
+tags: [versioning]

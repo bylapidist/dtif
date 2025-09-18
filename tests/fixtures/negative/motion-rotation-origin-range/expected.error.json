@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_ORIGIN_RANGE",
+  "message": "rotation origin coordinates must be between 0 and 1",
+  "path": "/problem/$value/parameters/origin/x"
+}

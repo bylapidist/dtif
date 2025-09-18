@@ -1,0 +1,5 @@
+{
+  "code": "E_OVERRIDE_TYPE_MISMATCH",
+  "path": "/$overrides/0/$value",
+  "message": "override value must be valid for type color"
+}

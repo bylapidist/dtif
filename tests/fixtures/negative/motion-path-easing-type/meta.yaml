@@ -1,0 +1,4 @@
+name: motion-path-easing-type
+description: motion path easing references must resolve to easing tokens
+tags:
+  - motion

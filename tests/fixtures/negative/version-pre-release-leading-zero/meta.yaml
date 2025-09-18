@@ -1,0 +1,5 @@
+name: version-pre-release-leading-zero
+description: pre-release numeric identifiers MUST NOT include leading zeros
+assertions:
+  - schema
+tags: [versioning]

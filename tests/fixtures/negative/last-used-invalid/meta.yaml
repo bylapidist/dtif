@@ -1,0 +1,8 @@
+name: last-used-invalid
+description: $lastUsed not RFC 3339 date-time
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

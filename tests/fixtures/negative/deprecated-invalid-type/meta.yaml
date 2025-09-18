@@ -1,0 +1,5 @@
+name: deprecated-invalid-type
+description: $deprecated must be boolean or object with $replacement
+assertions:
+  - schema
+tags: [metadata:deprecated]

@@ -1,0 +1,10 @@
+name: structured gradients
+description: structured gradient tokens exercising all gradient variants
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:gradient

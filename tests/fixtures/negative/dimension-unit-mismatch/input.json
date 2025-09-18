@@ -1,0 +1,24 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "lengthAsAngle": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "length", "value": 8, "unit": "deg" }
+  },
+  "angleAsLength": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "angle", "value": 90, "unit": "px" }
+  },
+  "resolutionAsPercent": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "resolution", "value": 1.5, "unit": "%" }
+  },
+  "customWithFontScale": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "custom",
+      "value": 1,
+      "unit": "com.example.tokens.scale",
+      "fontScale": true
+    }
+  }
+}

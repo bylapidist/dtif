@@ -1,0 +1,114 @@
+{
+  "typography": {
+    "absolutePx": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example",
+        "textTransform": "uppercase",
+        "fontFeatures": ["liga", "kern"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "sp",
+          "fontScale": true
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        },
+        "wordSpacing": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "dp",
+          "fontScale": false
+        }
+      }
+    },
+    "inherit": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example",
+        "fontFeatures": ["tnum"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    },
+    "ratio": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example",
+        "lineHeight": 1.5,
+        "textDecoration": "underline",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.2, 0.25, 0.3, 1]
+        },
+        "fontFeatures": ["smcp"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        },
+        "wordSpacing": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        }
+      }
+    },
+    "relativeEm": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example",
+        "fontFeatures": ["onum"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 1.4,
+          "unit": "em"
+        }
+      }
+    },
+    "scaledSp": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "sp",
+          "fontScale": true
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "sp",
+          "fontScale": true
+        }
+      }
+    }
+  }
+}

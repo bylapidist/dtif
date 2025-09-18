@@ -1,0 +1,7 @@
+name: border
+description: valid border tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [border]

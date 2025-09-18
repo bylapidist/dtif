@@ -1,0 +1,6 @@
+name: override-ref-and-value
+description: override entry with both $ref and $value should fail schema
+assertions:
+  - schema
+tags:
+  - override

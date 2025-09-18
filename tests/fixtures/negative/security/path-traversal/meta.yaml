@@ -1,0 +1,7 @@
+name: path traversal
+description: block directory traversal in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security

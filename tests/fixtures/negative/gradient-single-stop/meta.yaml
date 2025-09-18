@@ -1,0 +1,4 @@
+name: gradient single stop
+description: gradients must include at least two color stops
+assertions:
+  - schema

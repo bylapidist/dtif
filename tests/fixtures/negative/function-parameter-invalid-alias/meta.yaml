@@ -1,0 +1,6 @@
+name: function-parameter-invalid-alias
+description: calc parameter alias must use a pointer string
+assertions:
+  - schema
+tags:
+  - function:calc

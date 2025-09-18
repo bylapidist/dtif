@@ -1,0 +1,112 @@
+{
+  "border": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#border-tokens"
+  },
+  "color": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#color"
+  },
+  "component": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#component-tokens"
+  },
+  "cursor": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#cursor"
+  },
+  "dimension": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#dimension"
+  },
+  "duration": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#duration"
+  },
+  "easing": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#easing"
+  },
+  "elevation": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#elevation-tokens"
+  },
+  "filter": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#filter-tokens"
+  },
+  "font": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#font"
+  },
+  "fontFace": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/typography.md#font-face"
+  },
+  "gradient": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#gradient-tokens"
+  },
+  "line-height": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/typography.md#line-height"
+  },
+  "motion": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#motion-tokens"
+  },
+  "opacity": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#opacity"
+  },
+  "shadow": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#shadow-tokens"
+  },
+  "typography": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/typography.md#typography",
+    "canonical": ["body", "heading", "caption"],
+    "extensions": "Custom typographyType values MUST match ^[a-zA-Z][\\w-]*$ and MAY be registered with this registry."
+  },
+  "z-index": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#z-index"
+  }
+}

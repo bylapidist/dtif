@@ -1,0 +1,53 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$overrides": [
+    {
+      "$token": "#/button/bg",
+      "$when": {
+        "prefers-color-scheme": "dark"
+      },
+      "$ref": "#/color/brand/dark"
+    },
+    {
+      "$token": "#/button/text",
+      "$when": {
+        "prefers-color-scheme": "dark"
+      },
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 1, 1, 1]
+      }
+    }
+  ],
+  "button": {
+    "bg": {
+      "$type": "color",
+      "$ref": "#/color/brand/light"
+    },
+    "text": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0, 1]
+      }
+    }
+  },
+  "color": {
+    "brand": {
+      "dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 1]
+        }
+      },
+      "light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1, 1]
+        }
+      }
+    }
+  }
+}

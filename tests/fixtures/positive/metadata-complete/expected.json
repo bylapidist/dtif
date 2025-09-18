@@ -1,0 +1,19 @@
+{
+  "color": {
+    "primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0, 0, 1]
+      },
+      "$description": "Primary brand colour",
+      "$deprecated": false,
+      "$lastModified": "2024-01-01T00:00:00Z",
+      "$lastUsed": "2024-06-01T00:00:00Z",
+      "$usageCount": 5,
+      "$author": "Alice",
+      "$tags": ["brand", "primary"],
+      "$hash": "abc123"
+    }
+  }
+}

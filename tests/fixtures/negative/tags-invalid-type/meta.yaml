@@ -1,0 +1,8 @@
+name: tags-invalid-type
+description: $tags must be an array of strings
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

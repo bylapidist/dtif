@@ -1,0 +1,5 @@
+name: deprecated-replacement-target-missing
+description: $deprecated $replacement must resolve to an existing token
+assertions:
+  - refs
+tags: [metadata:deprecated]

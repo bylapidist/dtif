@@ -1,0 +1,10 @@
+{
+  "size": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 16,
+      "unit": "px"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+name: letter-spacing-negative
+description: typography token with negative letterSpacing
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "font": {
+    "brand": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "Brand Sans",
+        "style": "oblique 12deg",
+        "weight": 600
+      }
+    },
+    "system": {
+      "$type": "font",
+      "$value": {
+        "fontType": "ios.system",
+        "family": "SF Pro Text"
+      }
+    },
+    "web": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.local",
+        "family": "Example Display",
+        "style": "italic",
+        "weight": "bold"
+      }
+    }
+  }
+}

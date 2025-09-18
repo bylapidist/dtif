@@ -1,0 +1,10 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "sunset": {
+    "$type": "color",
+    "$value": {
+      "fn": "linear-gradient",
+      "parameters": ["to bottom", "#ff0 0%", "#f00 100%"]
+    }
+  }
+}

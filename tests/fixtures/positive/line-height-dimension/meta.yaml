@@ -1,0 +1,7 @@
+name: line-height-dimension
+description: typography tokens with dimension lineHeight using valid units
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "cursor": {
+    "link": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "css.cursor",
+        "value": "pointer, url('/cursors/link.svg') 8 0"
+      }
+    },
+    "link-icon": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "android.pointer-icon",
+        "parameters": {
+          "hotspot": {
+            "x": { "dimensionType": "length", "value": 8, "unit": "dp" },
+            "y": { "dimensionType": "length", "value": 0, "unit": "dp" }
+          }
+        },
+        "value": "TYPE_HAND"
+      }
+    },
+    "text-beam": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "ios.uipointerstyle",
+        "parameters": {
+          "preferredLength": {
+            "dimensionType": "length",
+            "value": 28,
+            "unit": "pt"
+          }
+        },
+        "value": {
+          "axis": "vertical",
+          "style": "beam"
+        }
+      }
+    }
+  }
+}

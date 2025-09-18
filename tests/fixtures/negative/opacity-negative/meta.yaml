@@ -1,0 +1,6 @@
+name: opacity-negative
+description: opacity value below 0
+assertions:
+  - schema
+  - type-compat
+  - refs

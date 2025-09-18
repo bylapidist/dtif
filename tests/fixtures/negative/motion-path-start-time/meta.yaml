@@ -1,0 +1,4 @@
+name: motion-path-start-time
+description: motion path animations must begin at t=0
+tags:
+  - motion

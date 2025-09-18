@@ -1,0 +1,8 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "base": {
+    "$type": "color",
+    "$value": { "colorSpace": "srgb", "components": [1, 1, 1, 1] }
+  },
+  "alias": { "$ref": "#/base" }
+}

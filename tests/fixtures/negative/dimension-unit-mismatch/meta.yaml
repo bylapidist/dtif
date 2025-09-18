@@ -1,0 +1,5 @@
+name: dimension-unit-mismatch
+description: Dimension tokens must pair units and fontScale with the declared dimensionType
+assertions:
+  - schema
+tags: [type:dimension]

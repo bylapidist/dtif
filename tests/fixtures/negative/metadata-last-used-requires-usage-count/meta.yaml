@@ -1,0 +1,6 @@
+name: metadata-last-used-requires-usage-count
+description: $lastUsed requires accompanying non-zero $usageCount
+assertions:
+  - metadata
+tags:
+  - metadata

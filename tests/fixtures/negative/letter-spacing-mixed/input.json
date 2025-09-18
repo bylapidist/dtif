@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "bad": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "letterSpacing": ["normal", { "dimensionType": "length", "value": 0.2, "unit": "px" }]
+      }
+    }
+  }
+}

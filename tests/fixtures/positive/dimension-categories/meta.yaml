@@ -1,0 +1,8 @@
+name: dimension-categories
+description: Dimension tokens with angle, resolution, and custom unit coverage
+assertions:
+  - schema
+  - roundtrip
+  - type-compat
+  - ordering
+tags: [type:dimension]

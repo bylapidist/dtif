@@ -1,0 +1,8 @@
+name: tags-leading-space
+description: $tags entries must not include leading or trailing whitespace
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

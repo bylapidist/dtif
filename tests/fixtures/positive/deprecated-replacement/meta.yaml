@@ -1,0 +1,6 @@
+name: deprecated-replacement
+description: token deprecated with replacement pointer
+assertions:
+  - schema
+  - roundtrip
+  - refs

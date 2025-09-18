@@ -1,0 +1,10 @@
+{
+  "$version": "1.0.0",
+  "color": {
+    "brand": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [1, 0, 0] } },
+    "brand-old": {
+      "$ref": "#/color/brand",
+      "$deprecated": { "$replacement": "#/color/missing" }
+    }
+  }
+}

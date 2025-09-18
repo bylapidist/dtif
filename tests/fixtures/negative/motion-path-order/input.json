@@ -1,0 +1,31 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "problem": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.offset-path",
+      "parameters": {
+        "points": [
+          {
+            "time": 0.2,
+            "position": {
+              "x": { "dimensionType": "length", "value": 0, "unit": "px" }
+            }
+          },
+          {
+            "time": 0.6,
+            "position": {
+              "x": { "dimensionType": "length", "value": 10, "unit": "px" }
+            }
+          },
+          {
+            "time": 0.5,
+            "position": {
+              "x": { "dimensionType": "length", "value": 20, "unit": "px" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

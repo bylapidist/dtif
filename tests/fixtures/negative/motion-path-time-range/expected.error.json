@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_PATH_TIME_RANGE",
+  "message": "motion path keyframe time must be between 0 and 1",
+  "path": "/problem/$value/parameters/points/2/time"
+}

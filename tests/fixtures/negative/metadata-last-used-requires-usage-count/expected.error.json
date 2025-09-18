@@ -1,0 +1,5 @@
+{
+  "code": "E_METADATA_USAGE_COUNT",
+  "path": "/color/primary",
+  "message": "$lastUsed requires $usageCount greater than zero"
+}

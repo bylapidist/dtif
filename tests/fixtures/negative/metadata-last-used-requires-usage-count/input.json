@@ -1,0 +1,10 @@
+{
+  "color": {
+    "primary": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [1, 0, 0, 1] },
+      "$lastModified": "2024-01-01T00:00:00Z",
+      "$lastUsed": "2024-06-01T00:00:00Z"
+    }
+  }
+}

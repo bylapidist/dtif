@@ -1,0 +1,5 @@
+name: extensions-invalid-type
+description: $extensions must be an object
+assertions:
+  - schema
+tags: [extensions]

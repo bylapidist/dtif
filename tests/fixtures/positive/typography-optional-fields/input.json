@@ -1,0 +1,50 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "optional": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontStyle": "italic",
+        "fontVariant": "small-caps",
+        "fontStretch": "condensed",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 1]
+        },
+        "fontFeatures": ["smcp"],
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "overlineOffset": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "px"
+        },
+        "overlineThickness": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        },
+        "underlineOffset": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        },
+        "underlineThickness": {
+          "dimensionType": "length",
+          "value": 1,
+          "unit": "px"
+        },
+        "wordSpacing": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

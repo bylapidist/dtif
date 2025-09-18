@@ -1,0 +1,8 @@
+name: last-modified-invalid
+description: $lastModified not RFC 3339 date-time
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

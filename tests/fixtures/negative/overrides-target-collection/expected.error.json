@@ -1,0 +1,5 @@
+{
+  "code": "E_OVERRIDE_TARGET_UNTYPED",
+  "path": "/$overrides/0/$token",
+  "message": "override $token #/color/brand must resolve to a token that declares $type"
+}

@@ -1,0 +1,7 @@
+name: letter-spacing-keyword
+description: typography token with keyword letterSpacing
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

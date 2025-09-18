@@ -1,0 +1,12 @@
+name: css snapshot
+description: basic css codegen snapshot
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+  - snapshot:css
+tags:
+  - type:dimension
+  - snapshot

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$extensions": { "Com.Example": { "export": true } },
+  "brand-color": {
+    "$type": "color",
+    "$value": { "colorSpace": "srgb", "components": [1, 0, 0, 1] }
+  }
+}

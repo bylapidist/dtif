@@ -1,0 +1,7 @@
+name: remote-ref-ftp-scheme
+description: remote refs with unsupported ftp scheme are rejected
+allowRemote: true
+assertions:
+  - schema
+  - refs
+tags: [security, ref, remote]

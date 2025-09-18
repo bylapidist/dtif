@@ -1,0 +1,3 @@
+{
+  "error": "Schema validation error: $deprecated must be a boolean or object with $replacement"
+}

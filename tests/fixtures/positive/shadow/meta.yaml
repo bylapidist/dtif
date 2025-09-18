@@ -1,0 +1,7 @@
+name: shadow
+description: valid shadow tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [shadow]

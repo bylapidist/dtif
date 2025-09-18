@@ -1,0 +1,5 @@
+name: letter-spacing-mixed
+description: letterSpacing must not mix keyword and dimension
+assertions:
+  - schema
+tags: [typography]

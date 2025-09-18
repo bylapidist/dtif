@@ -1,0 +1,8 @@
+name: usage-count-negative
+description: negative $usageCount should fail schema
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

@@ -1,0 +1,7 @@
+name: typography-unknown-property
+description: unrecognised typography property is ignored
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

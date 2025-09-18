@@ -1,0 +1,7 @@
+name: letter-spacing-units
+description: typography tokens with various letterSpacing units
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,7 @@
+name: component
+description: component tokens expose slot maps built from primitives
+assertions:
+  - schema
+  - refs
+tags:
+  - component

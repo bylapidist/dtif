@@ -1,0 +1,7 @@
+name: duration
+description: valid duration tokens covering time, frame, and relative units
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [duration]

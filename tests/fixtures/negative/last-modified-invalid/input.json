@@ -1,0 +1,10 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "example": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [1, 0, 0] },
+      "$lastModified": "yesterday"
+    }
+  }
+}

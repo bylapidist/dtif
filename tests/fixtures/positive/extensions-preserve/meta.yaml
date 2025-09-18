@@ -1,0 +1,6 @@
+name: extensions-preserve
+description: unknown extensions are preserved
+assertions:
+  - schema
+tags:
+  - extensions

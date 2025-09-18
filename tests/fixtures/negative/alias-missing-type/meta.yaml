@@ -1,0 +1,4 @@
+name: alias-missing-type
+description: alias token without $type should fail schema validation
+assertions:
+  - schema

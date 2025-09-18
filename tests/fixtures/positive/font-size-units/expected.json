@@ -1,0 +1,77 @@
+{
+  "typography": {
+    "ch": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 30,
+          "unit": "ch"
+        }
+      }
+    },
+    "ex": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "ex"
+        }
+      }
+    },
+    "percent": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 120,
+          "unit": "%"
+        }
+      }
+    },
+    "sp": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "sp",
+          "fontScale": true
+        }
+      }
+    },
+    "vh": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 10,
+          "unit": "vh"
+        }
+      }
+    },
+    "vw": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 5,
+          "unit": "vw"
+        }
+      }
+    }
+  }
+}

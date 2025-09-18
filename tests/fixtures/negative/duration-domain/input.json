@@ -1,0 +1,21 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "duration": {
+    "negativeTime": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": -0.2,
+        "unit": "s"
+      }
+    },
+    "fractionalFrameCount": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.cadisplaylink.frame-count",
+        "value": 1.5,
+        "unit": "frames"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_OVERRIDE_CIRCULAR",
+    "path": "/$overrides/0/$token",
+    "message": "override cycle #/color/a -> #/color/b -> #/color/a"
+  }
+}

@@ -1,0 +1,7 @@
+name: filter
+description: valid filter tokens for CSS, Core Image, and RenderEffect pipelines
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [filter]

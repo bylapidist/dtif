@@ -1,0 +1,24 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "bad": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "stops": [
+        {
+          "position": 0,
+          "color": { "colorSpace": "srgb", "components": [1, 0, 0, 1] }
+        },
+        {
+          "position": 0.4,
+          "color": { "colorSpace": "srgb", "components": [0, 1, 0, 1] }
+        },
+        {
+          "position": 0.3,
+          "color": { "colorSpace": "srgb", "components": [0, 0, 1, 1] }
+        }
+      ],
+      "angle": 30
+    }
+  }
+}

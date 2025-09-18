@@ -1,0 +1,5 @@
+{
+  "code": "E_FUNCTION_REF_TYPE_MISMATCH",
+  "path": "/$overrides/0/$value/parameters/0/$ref",
+  "message": "function parameter ref #/color/accent has type color, expected dimension"
+}

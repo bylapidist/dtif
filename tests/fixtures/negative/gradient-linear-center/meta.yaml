@@ -1,0 +1,4 @@
+name: gradient linear center
+description: linear gradients must not declare centers
+assertions:
+  - schema

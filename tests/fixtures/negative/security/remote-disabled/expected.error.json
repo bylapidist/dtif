@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_REMOTE_DISABLED",
+    "path": "/color/remote/$ref",
+    "message": "remote refs not allowed: https://cdn.example.com/themes/dark.json#/color/button-bg"
+  }
+}

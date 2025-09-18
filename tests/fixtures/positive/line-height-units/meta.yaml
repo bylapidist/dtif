@@ -1,0 +1,7 @@
+name: line-height-units
+description: typography tokens with various lineHeight units
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

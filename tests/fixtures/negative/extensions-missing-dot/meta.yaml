@@ -1,0 +1,5 @@
+name: extensions-missing-dot
+description: $extensions keys must contain at least one dot
+assertions:
+  - schema
+tags: [extensions]

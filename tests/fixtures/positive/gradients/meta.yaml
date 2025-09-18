@@ -1,0 +1,11 @@
+name: linear gradient
+description: simple linear gradient color token
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:color
+  - function:linear-gradient

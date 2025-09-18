@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_UNSUPPORTED_SCHEME",
+    "path": "/remote/$ref",
+    "message": "unsupported remote scheme ftp://example.com/tokens.json#/color/blue"
+  }
+}

@@ -1,0 +1,8 @@
+name: function-parameter-type-mismatch
+description: calc parameters must only reference tokens of the same type
+assertions:
+  - type-compat
+tags:
+  - function:calc
+  - type:dimension
+  - refs

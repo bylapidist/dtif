@@ -1,0 +1,37 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "duration": {
+    "frames": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.cadisplaylink.frame-count",
+        "value": 2,
+        "unit": "frames"
+      }
+    },
+    "long": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.animation-duration",
+        "value": 0.5,
+        "unit": "s"
+      }
+    },
+    "relative": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.timeline.progress",
+        "value": 50,
+        "unit": "%"
+      }
+    },
+    "short": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.value-animator.duration",
+        "value": 200,
+        "unit": "ms"
+      }
+    }
+  }
+}

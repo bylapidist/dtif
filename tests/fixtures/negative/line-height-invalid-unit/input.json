@@ -1,0 +1,23 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "deg": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "lineHeight": { "dimensionType": "angle", "value": 90, "unit": "deg" }
+      }
+    },
+    "dppx": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "lineHeight": { "dimensionType": "length", "value": 2, "unit": "dppx" }
+      }
+    }
+  }
+}

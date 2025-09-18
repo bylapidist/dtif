@@ -1,0 +1,6 @@
+name: component-slot-component
+description: component slots must not contain nested component tokens
+assertions:
+  - schema
+tags:
+  - component

@@ -1,0 +1,5 @@
+name: overflow-magnitude
+description: dimension with value too large to roundtrip
+assertions:
+  - roundtrip
+tags: [type:dimension]

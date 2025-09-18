@@ -1,0 +1,6 @@
+name: extensions-invalid-namespace
+description: extension keys must be namespaced
+assertions:
+  - schema
+tags:
+  - extensions

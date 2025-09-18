@@ -1,0 +1,13 @@
+name: remote-refs
+description: remote references resolve schema and ordering checks while leaving external values untouched
+allowRemote: true
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - ordering
+  - roundtrip
+tags:
+  - ref
+  - remote
+  - overrides

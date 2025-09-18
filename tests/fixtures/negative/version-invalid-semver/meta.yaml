@@ -1,0 +1,5 @@
+name: version-invalid-semver
+description: $version must follow Semantic Versioning
+assertions:
+  - schema
+tags: [versioning]

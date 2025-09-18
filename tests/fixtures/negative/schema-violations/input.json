@@ -1,0 +1,7 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "bad": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "length", "value": 12 }
+  }
+}

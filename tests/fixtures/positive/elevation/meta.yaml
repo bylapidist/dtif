@@ -1,0 +1,7 @@
+name: elevation
+description: valid elevation tokens
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [elevation]

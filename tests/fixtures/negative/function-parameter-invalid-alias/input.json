@@ -1,0 +1,9 @@
+{
+  "bad": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": [{ "$ref": 42 }, "1px"]
+    }
+  }
+}

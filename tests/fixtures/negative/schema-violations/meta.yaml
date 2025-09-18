@@ -1,0 +1,5 @@
+name: missing-unit
+description: Dimension token missing unit should fail schema
+assertions:
+  - schema
+tags: [type:dimension]

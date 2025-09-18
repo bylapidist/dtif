@@ -1,0 +1,6 @@
+name: opacity-out-of-range
+description: opacity value above 1
+assertions:
+  - schema
+  - type-compat
+  - refs

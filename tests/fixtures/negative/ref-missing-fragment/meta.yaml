@@ -1,0 +1,4 @@
+name: ref-missing-fragment
+description: $ref without a JSON Pointer fragment should fail schema validation
+assertions:
+  - schema

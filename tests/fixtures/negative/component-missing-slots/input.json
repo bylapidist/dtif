@@ -1,0 +1,11 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "component": {
+    "card": {
+      "$type": "component",
+      "$value": {
+        "$description": "missing slots"
+      }
+    }
+  }
+}

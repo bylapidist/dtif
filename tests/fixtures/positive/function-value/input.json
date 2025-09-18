@@ -1,0 +1,10 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "double": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": ["1px", "1px"]
+    }
+  }
+}

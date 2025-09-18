@@ -1,0 +1,30 @@
+{
+  "$schema": "https://design-tokens.github.io/dtif/schema/core.json",
+  "$description": "Cross-platform z-index tokens",
+  "z-index": {
+    "android-fab": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "android.view.translationz",
+        "value": 3.5
+      },
+      "$description": "Floating action button translationZ for prominence"
+    },
+    "ios-dialog": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "ios.calayer.z-position",
+        "value": 4
+      },
+      "$description": "Layer.zPosition used to raise iOS dialogs above scrims"
+    },
+    "modal": {
+      "$type": "z-index",
+      "$value": {
+        "zIndexType": "css.z-index",
+        "value": 1300
+      },
+      "$description": "CSS stacking context for modal dialogs"
+    }
+  }
+}

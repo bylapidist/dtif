@@ -1,0 +1,10 @@
+name: metadata-complete
+description: token including all metadata fields
+assertions:
+  - schema
+  - roundtrip
+  - refs
+  - type-compat
+  - ordering
+tags:
+  - metadata

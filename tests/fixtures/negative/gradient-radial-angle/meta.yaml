@@ -1,0 +1,4 @@
+name: gradient radial angle
+description: radial gradients must not declare angles
+assertions:
+  - schema

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "fontFace": {
+    "invalid": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Brand",
+        "fontWeight": 400
+      }
+    }
+  }
+}

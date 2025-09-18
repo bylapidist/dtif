@@ -1,0 +1,7 @@
+name: font-scale
+description: dimension tokens using fontScale to control user scaling
+assertions:
+  - schema
+  - roundtrip
+  - type-compat
+tags: [type:dimension]

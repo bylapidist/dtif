@@ -1,0 +1,11 @@
+name: font-face
+description: font face tokens resolve fontFamily references in typography tokens
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - ordering
+  - roundtrip
+tags:
+  - fontFace
+  - typography

@@ -1,0 +1,5 @@
+name: component slot component ref
+description: component slots must not reference component tokens
+assertions:
+  - schema
+  - type-compat

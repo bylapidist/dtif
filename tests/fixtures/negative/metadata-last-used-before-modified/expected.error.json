@@ -1,0 +1,5 @@
+{
+  "code": "E_METADATA_TEMPORAL_ORDER",
+  "path": "/color/primary",
+  "message": "$lastUsed must not precede $lastModified"
+}

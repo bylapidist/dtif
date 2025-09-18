@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_PATH_EASING_TYPE",
+  "message": "motion path easing #/palette/background must reference an easing token",
+  "path": "/problem/$value/parameters/points/1/easing"
+}

@@ -1,0 +1,7 @@
+name: line-height-number
+description: typography token with unitless lineHeight
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

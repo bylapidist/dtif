@@ -1,0 +1,8 @@
+{
+  "experimental": {
+    "foo": {
+      "$type": "bogus",
+      "$value": "bar"
+    }
+  }
+}

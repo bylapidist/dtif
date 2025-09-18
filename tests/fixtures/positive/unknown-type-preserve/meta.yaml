@@ -1,0 +1,6 @@
+name: unknown-type-preserve
+description: unknown $type is preserved without error
+assertions:
+  - schema
+tags:
+  - core

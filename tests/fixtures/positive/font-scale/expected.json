@@ -1,0 +1,20 @@
+{
+  "dp": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 16,
+      "unit": "dp",
+      "fontScale": false
+    }
+  },
+  "sp": {
+    "$type": "dimension",
+    "$value": {
+      "dimensionType": "length",
+      "value": 16,
+      "unit": "sp",
+      "fontScale": true
+    }
+  }
+}

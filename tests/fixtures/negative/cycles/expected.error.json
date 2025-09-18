@@ -1,0 +1,3 @@
+{
+  "message": "circular reference #/b -> #/a -> #/b"
+}

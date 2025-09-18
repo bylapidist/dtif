@@ -1,0 +1,5 @@
+name: typography-invalid-type
+description: typographyType must match naming pattern
+assertions:
+  - schema
+tags: [typography]

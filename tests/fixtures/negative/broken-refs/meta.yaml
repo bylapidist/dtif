@@ -1,0 +1,6 @@
+name: broken-refs
+description: reference points to missing token
+assertions:
+  - refs
+tags:
+  - ref

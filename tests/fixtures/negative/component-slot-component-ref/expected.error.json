@@ -1,0 +1,5 @@
+{
+  "code": "E_COMPONENT_SLOT_TYPE",
+  "path": "/component/invalid/$value/$slots/background/$ref",
+  "message": "component slot background must not reference a component token"
+}

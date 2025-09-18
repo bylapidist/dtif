@@ -1,0 +1,25 @@
+{
+  "opacity": {
+    "android-scrim": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "android.view.alpha",
+        "value": "72%"
+      }
+    },
+    "disabled": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "css.opacity",
+        "value": 0.5
+      }
+    },
+    "ios-overlay": {
+      "$type": "opacity",
+      "$value": {
+        "opacityType": "ios.uiview.alpha",
+        "value": 0.75
+      }
+    }
+  }
+}

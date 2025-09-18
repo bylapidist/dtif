@@ -1,0 +1,6 @@
+name: ref-cycle
+description: mutually recursive references
+assertions:
+  - schema
+  - refs
+tags: [ref, cycle]

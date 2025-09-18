@@ -1,0 +1,5 @@
+name: gradient stop ordering
+description: gradient stops must be sorted by position
+assertions:
+  - schema
+  - type-compat

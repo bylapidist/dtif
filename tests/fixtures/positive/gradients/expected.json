@@ -1,0 +1,9 @@
+{
+  "sunset": {
+    "$type": "color",
+    "$value": {
+      "fn": "linear-gradient",
+      "parameters": ["to bottom", "#ff0 0%", "#f00 100%"]
+    }
+  }
+}

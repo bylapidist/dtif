@@ -1,0 +1,8 @@
+name: unit-mismatch
+description: calc mixes incompatible units
+assertions:
+  - type-compat
+  - schema
+  - refs
+tags:
+  - function:calc

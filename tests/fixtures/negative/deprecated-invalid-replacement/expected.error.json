@@ -1,0 +1,3 @@
+{
+  "error": "Schema validation error: $replacement must be a valid JSON Pointer"
+}

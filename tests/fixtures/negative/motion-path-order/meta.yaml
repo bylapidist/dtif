@@ -1,0 +1,4 @@
+name: motion-path-order
+description: path keyframes must be sorted and cover the full timeline
+tags:
+  - motion

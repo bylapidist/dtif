@@ -1,0 +1,8 @@
+name: author-leading-space
+description: $author must be trimmed
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

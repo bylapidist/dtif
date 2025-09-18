@@ -1,0 +1,86 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$overrides": [
+    {
+      "$token": "#/button/bg",
+      "$when": { "prefers-color-scheme": "dark" },
+      "$ref": "https://cdn.example.com/themes/dark.json#/color/button-bg",
+      "$fallback": {
+        "$ref": "palette.json#/colors/brand-primary"
+      }
+    },
+    {
+      "$token": "#/button/spacing",
+      "$when": { "platform": "ios" },
+      "$value": {
+        "fn": "calc",
+        "parameters": [{ "$ref": "#/spacing/md" }, "+", "2px"]
+      },
+      "$fallback": [
+        { "$ref": "tokens/spacing.json#/spacing/xl" },
+        {
+          "$value": {
+            "dimensionType": "length",
+            "value": 20,
+            "unit": "px"
+          }
+        }
+      ]
+    }
+  ],
+  "button": {
+    "bg": {
+      "$type": "color",
+      "$ref": "#/color/base"
+    },
+    "focus": {
+      "$type": "color",
+      "$ref": "https://cdn.example.com/themes/light.json#/color/focus-ring"
+    },
+    "spacing": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 16,
+        "unit": "px"
+      }
+    }
+  },
+  "color": {
+    "base": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.12, 0.34, 0.56, 1]
+      }
+    },
+    "brand": {
+      "$type": "color",
+      "$ref": "palette.json#/colors/brand-primary"
+    },
+    "legacy": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.9, 0.9, 0.9, 1]
+      },
+      "$deprecated": {
+        "$replacement": "#/color/base"
+      }
+    }
+  },
+  "spacing": {
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$ref": "tokens/spacing.json#/spacing/xl"
+    }
+  }
+}

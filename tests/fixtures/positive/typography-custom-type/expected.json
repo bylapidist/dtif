@@ -1,0 +1,16 @@
+{
+  "typography": {
+    "custom": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "promo-heading",
+        "fontFamily": "Acme",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

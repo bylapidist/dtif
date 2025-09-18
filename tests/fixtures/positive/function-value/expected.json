@@ -1,0 +1,9 @@
+{
+  "double": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": ["1px", "1px"]
+    }
+  }
+}

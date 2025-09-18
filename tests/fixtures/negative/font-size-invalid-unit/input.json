@@ -1,0 +1,21 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "pc": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "pc" }
+      }
+    },
+    "dpi": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "resolution", "value": 2, "unit": "dpi" }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+name: typography-optional-fields
+description: typography token with new optional fields
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

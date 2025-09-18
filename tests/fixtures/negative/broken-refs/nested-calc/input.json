@@ -1,0 +1,9 @@
+{
+  "token": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": [{ "fn": "calc", "parameters": [{ "$ref": "#/missing" }, "1px"] }, "2px"]
+    }
+  }
+}

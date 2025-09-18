@@ -1,0 +1,26 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "component": {
+    "card": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "cta": {
+            "$type": "component",
+            "$value": {
+              "$slots": {
+                "background": {
+                  "$type": "color",
+                  "$value": {
+                    "colorSpace": "srgb",
+                    "components": [0.1, 0.1, 0.1, 1]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

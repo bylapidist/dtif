@@ -1,0 +1,11 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "zero": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "length", "value": 12, "unit": 0 }
+  },
+  "negative": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "length", "value": 12, "unit": -1 }
+  }
+}

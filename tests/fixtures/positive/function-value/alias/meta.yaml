@@ -1,0 +1,7 @@
+name: calc-alias-parameter
+description: calc mixes alias parameter with literal operand
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [function:calc, type:dimension, refs]

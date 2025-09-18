@@ -1,0 +1,7 @@
+name: cursor
+description: valid cursor tokens referencing CSS, iOS, and Android pointer APIs
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [cursor]

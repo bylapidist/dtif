@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "swatch": {
+    "$type": "color",
+    "$value": { "colorSpace": "srgb", "components": [1, 0, 0, 1] }
+  },
+  "bad": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "calc",
+      "parameters": [{ "$ref": "#/swatch" }, "+", "1px"]
+    }
+  }
+}

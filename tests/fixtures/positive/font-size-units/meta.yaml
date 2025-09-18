@@ -1,0 +1,7 @@
+name: font-size-units
+description: typography tokens with various fontSize units
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

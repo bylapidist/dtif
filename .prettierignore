@@ -1,0 +1,5 @@
+package-lock.json
+node_modules
+LICENSE
+tests/fixtures/snapshots
+docs/.vitepress/cache

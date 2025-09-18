@@ -1,0 +1,9 @@
+name: overrides-fallback-cycle
+description: override fallback chains must detect cycles
+assertions:
+  - schema
+  - refs
+tags:
+  - override
+  - ref
+  - cycle

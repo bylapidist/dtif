@@ -1,0 +1,7 @@
+name: line-height-zero
+description: typography token with zero lineHeight
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "brand": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [1, 1, 1, 1] } }
+  },
+  "button": {
+    "bg": { "$type": "color", "$ref": "#/color/brand" }
+  },
+  "$overrides": [
+    {
+      "$token": "#/button/missing",
+      "$when": { "prefers-color-scheme": "dark" },
+      "$ref": "#/color/brand"
+    }
+  ]
+}

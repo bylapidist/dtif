@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_DEPRECATED_REPLACEMENT_TYPE_MISMATCH",
+    "path": "/color/brand-legacy/$deprecated/$replacement",
+    "message": "deprecated replacement #/opacity/transparent has type opacity, expected color"
+  }
+}

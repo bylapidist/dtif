@@ -1,0 +1,11 @@
+{
+  "$version": "1.0.0",
+  "typography": {
+    "body": {
+      "$value": {
+        "fontWeight": 700,
+        "lineHeight": 1.5
+      }
+    }
+  }
+}

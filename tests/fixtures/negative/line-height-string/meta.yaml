@@ -1,0 +1,5 @@
+name: line-height-string
+description: lineHeight must be number or dimension
+assertions:
+  - schema
+tags: [typography]

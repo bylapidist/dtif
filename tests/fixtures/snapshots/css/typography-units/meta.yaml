@@ -1,0 +1,12 @@
+name: typography-units snapshots
+description: typography tokens using viewport and percentage units with optional properties
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+  - snapshot:css
+tags:
+  - type:typography
+  - snapshot

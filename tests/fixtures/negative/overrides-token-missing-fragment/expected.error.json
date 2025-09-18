@@ -1,0 +1,1 @@
+{ "error": "Schema validation error: $token must include a JSON Pointer fragment" }

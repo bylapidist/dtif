@@ -1,0 +1,7 @@
+name: overrides-fallback
+description: overrides support fallback chains
+assertions:
+  - schema
+  - refs
+tags:
+  - override

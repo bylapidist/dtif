@@ -1,0 +1,7 @@
+name: aliases
+description: simple intra-document aliasing
+assertions:
+  - schema
+  - refs
+tags:
+  - ref

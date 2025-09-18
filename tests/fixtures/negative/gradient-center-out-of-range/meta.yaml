@@ -1,0 +1,4 @@
+name: gradient center out of range
+description: gradient centers must use normalized coordinates
+assertions:
+  - schema

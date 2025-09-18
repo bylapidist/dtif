@@ -1,0 +1,7 @@
+name: calc-lengths
+description: valid calc with matching length units
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [function:calc, type:dimension]

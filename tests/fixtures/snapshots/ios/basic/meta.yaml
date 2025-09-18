@@ -1,0 +1,12 @@
+name: ios snapshot
+description: basic ios codegen snapshot
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+  - snapshot:ios
+tags:
+  - type:dimension
+  - snapshot

@@ -1,0 +1,7 @@
+name: clamp-min-greater-max
+description: clamp with min greater than max should error
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [function:clamp, type:dimension]

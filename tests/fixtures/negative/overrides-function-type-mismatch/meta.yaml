@@ -1,0 +1,9 @@
+name: overrides-function-type-mismatch
+description: overrides using functions must reference tokens of the overridden type
+assertions:
+  - type-compat
+tags:
+  - overrides
+  - function:calc
+  - type:dimension
+  - refs

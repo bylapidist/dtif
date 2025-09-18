@@ -1,0 +1,49 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "background": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.2, 0.4, 0.6, 1]
+      }
+    },
+    "text": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 1, 1, 1]
+      }
+    }
+  },
+  "component": {
+    "banner": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "background": {
+            "$type": "color",
+            "$ref": "#/color/background"
+          },
+          "headline": {
+            "$type": "color",
+            "$ref": "#/color/text"
+          },
+          "padding": {
+            "$type": "dimension",
+            "$value": {
+              "dimensionType": "length",
+              "value": 24,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "$description": "Banner component slots"
+    },
+    "banner-alias": {
+      "$type": "component",
+      "$ref": "#/component/banner"
+    }
+  }
+}

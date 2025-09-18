@@ -1,0 +1,8 @@
+name: font tokens
+description: validates base font tokens with non-negative weights
+assertions:
+  - schema
+  - roundtrip
+  - ordering
+tags:
+  - type:font

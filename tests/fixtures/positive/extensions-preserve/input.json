@@ -1,0 +1,20 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$extensions": {
+    "com.example": {
+      "export": true
+    }
+  },
+  "brand-color": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 0, 0, 1]
+    },
+    "$extensions": {
+      "org.example.a11y": {
+        "wcagContrast": 4.5
+      }
+    }
+  }
+}

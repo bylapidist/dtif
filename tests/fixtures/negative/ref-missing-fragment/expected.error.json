@@ -1,0 +1,1 @@
+{ "error": "Schema validation error: $ref must include a JSON Pointer fragment" }

@@ -1,0 +1,8 @@
+name: hash-non-string
+description: $hash must be a string
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - metadata

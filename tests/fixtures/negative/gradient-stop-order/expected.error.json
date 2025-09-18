@@ -1,0 +1,5 @@
+{
+  "code": "E_GRADIENT_STOP_ORDER",
+  "path": "/bad/$value/stops/2/position",
+  "message": "gradient stops must be sorted in ascending order"
+}

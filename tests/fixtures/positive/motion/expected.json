@@ -1,0 +1,129 @@
+{
+  "grow": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.scale",
+      "parameters": {
+        "x": 1.1,
+        "y": 1.1
+      }
+    }
+  },
+  "halt": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.scale",
+      "parameters": {
+        "uniform": 0
+      }
+    }
+  },
+  "move": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.translate3d",
+      "parameters": {
+        "x": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "y": {
+          "dimensionType": "length",
+          "value": 50,
+          "unit": "%"
+        },
+        "z": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "orbit": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.offset-path",
+      "parameters": {
+        "points": [
+          {
+            "time": 0,
+            "position": {
+              "x": {
+                "dimensionType": "length",
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "dimensionType": "length",
+                "value": 0,
+                "unit": "px"
+              }
+            }
+          },
+          {
+            "time": 0.5,
+            "easing": "#/timing",
+            "position": {
+              "x": {
+                "dimensionType": "length",
+                "value": 50,
+                "unit": "%"
+              },
+              "y": {
+                "dimensionType": "length",
+                "value": 20,
+                "unit": "px"
+              }
+            }
+          },
+          {
+            "time": 1,
+            "position": {
+              "x": {
+                "dimensionType": "length",
+                "value": 0,
+                "unit": "px"
+              },
+              "y": {
+                "dimensionType": "length",
+                "value": 40,
+                "unit": "px"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "spin": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.rotate3d",
+      "parameters": {
+        "angle": {
+          "dimensionType": "angle",
+          "value": 90,
+          "unit": "deg"
+        },
+        "axis": {
+          "x": 0,
+          "y": 0,
+          "z": 1
+        },
+        "origin": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      }
+    }
+  },
+  "timing": {
+    "$type": "easing",
+    "$value": {
+      "easingFunction": "cubic-bezier",
+      "parameters": [0.2, 0.8, 0.4, 1]
+    }
+  }
+}

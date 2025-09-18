@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "opacity": {
+    "transparent": {
+      "$type": "opacity",
+      "$value": { "opacityType": "css.opacity", "value": 2 }
+    }
+  }
+}

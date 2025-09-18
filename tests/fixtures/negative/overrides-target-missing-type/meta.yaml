@@ -1,0 +1,4 @@
+name: overrides-target-missing-type
+description: override targets must resolve to typed token definitions
+tags:
+  - overrides
