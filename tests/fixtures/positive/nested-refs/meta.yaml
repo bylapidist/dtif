@@ -1,0 +1,11 @@
+name: nested refs
+description: composite tokens using shared color and dimension tokens through $ref
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - refs
+  - composite

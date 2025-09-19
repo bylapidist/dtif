@@ -1,0 +1,9 @@
+name: typography ref type mismatch
+description: typography fontSize references a color token instead of a dimension
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - typography
+  - refs

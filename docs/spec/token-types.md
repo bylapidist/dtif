@@ -532,6 +532,10 @@ GradientDrawable#setStroke.
 | `color`       | `border-color` using `<color>` values.                                                            | CALayer.borderColor (`CGColor`).                                               | Colour argument of GradientDrawable#setStroke.                                                |
 | `radius`      | `border-radius` shorthand and `border-*-radius` longhands.                                        | CALayer.cornerRadius and UIBezierPath rounded-rect paths for per-corner radii. | GradientDrawable#setCornerRadius and `setCornerRadii` arrays.                                 |
 
+`color` and `width` MAY appear as alias objects whose only member is `$ref`. Those
+aliases _MUST_ resolve to `color` and `dimension` tokens so that palette and spacing
+values can be shared across borders without duplicating their payloads.
+
 The `width` member _MUST_ use values that conform to
 the
 `<line-width>`
@@ -657,6 +661,10 @@ Paint#setShadowLayer.
 | `spread`             | Optional final `<length>` in `<shadow>`.                                                                                 | Consumers _MUST_ express spread by adjusting CALayer.shadowPath or related masks.          | Implemented via outline manipulation using ViewOutlineProvider or vector path inflation before calling Paint#setShadowLayer. |
 | `color`              | `<color>` values inside `<shadow>`.                                                                                      | Converted to `CGColor` instances applied to CALayer.shadowColor or NSShadow.shadowColor.   | Packed into ARGB integers for Paint#setShadowLayer or elevation ambient/spot colours.                                        |
 
+`offsetX`, `offsetY`, `blur`, `spread`, and `color` MAY be alias objects with only `$ref`. These aliases
+_MUST_ resolve to `dimension` or `color` tokens so the same measurements or palette entries can be reused
+across multiple shadow layers.
+
 Offsets, blur radii, and spreads _MUST_ use values conforming
 to the `<length>` production or
 platform-native units such as iOS points defined in
@@ -697,6 +705,9 @@ Gradient member references
 | `stops[].position` | `<color-stop-length>` from the `<color-stop-list>` grammar.                   | Normalised offsets mapped to `locations` on CAGradientLayer.                                                 | Stop offsets supplied to shader position arrays for Android gradients.                            |
 | `stops[].hint`     | Optional `<color-hint>` values.                                               | Drives midpoint interpolation when converting to CAGradientLayer animation keyframes.                        | Translates to intermediate offsets for Android shader stop arrays.                                |
 | `stops[].color`    | `<color>` values.                                                             | Converted to `CGColor` instances on CAGradientLayer.                                                         | Packed into the colour arrays consumed by Android gradient shaders.                               |
+
+`stops[].color` MAY use an alias object containing only `$ref`. The pointer _MUST_ resolve to a
+`color` token so gradient stops can reuse shared palette entries without duplicating channel data.
 
 When authors provide `angle`, `center`, `shape`,
 `stops[].position`, or `stops[].hint` as strings they
@@ -896,6 +907,10 @@ members
 | `offset`        | Second `<length>` in the `<shadow>` production describing the vertical displacement; horizontal offset _MUST_ be zero for elevation contexts. | Maps to the `height` component of CALayer.shadowOffset with `width = 0`. | Provides the `dy` argument to Paint#setShadowLayer and, when targeting View#setElevation, the converted elevation distance.                                  |
 | `blur`          | Third `<length>` in the `<shadow>` grammar describing blur radius.                                                                            | Sets CALayer.shadowRadius in points.                                     | Supplies the `radius` argument to Paint#setShadowLayer; when using View#setElevation, it documents the expected ambient blur derived by the system renderer. |
 | `color`         | `<color>` values inside `<shadow>`.                                                                                                           | Converted to `CGColor` for CALayer.shadowColor or NSShadow.shadowColor.  | Packed into ARGB integers for Paint#setShadowLayer and to inform elevation overlay colours.                                                                  |
+
+`offset`, `blur`, and `color` MAY reuse shared measurements or palette entries by supplying alias
+objects whose only member is `$ref`. These aliases _MUST_ resolve to `dimension` and `color` tokens
+before consumers apply the elevation.
 
 Elevation offsets and blur radii _MUST_ use values conforming
 to the `<length>` production or

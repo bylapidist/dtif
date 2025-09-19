@@ -1,0 +1,9 @@
+name: border ref type mismatch
+description: border color $ref must point to a color token
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - border
+  - refs

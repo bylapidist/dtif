@@ -1,21 +1,33 @@
 {
   "$version": "1.0.0",
+  "color": {
+    "focus-outline": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0, 1.0]
+      }
+    }
+  },
+  "dimension": {
+    "focus-outline-width": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    }
+  },
   "border": {
     "focus-outline": {
       "$type": "border",
       "$value": {
         "borderType": "css.border",
-        "color": {
-          "colorSpace": "srgb",
-          "components": [0.0, 0.435, 1.0, 1.0]
-        },
+        "color": { "$ref": "#/color/focus-outline" },
         "style": "solid",
         "strokeStyle": { "$ref": "#/strokeStyle/focus" },
-        "width": {
-          "dimensionType": "length",
-          "value": 2,
-          "unit": "px"
-        }
+        "width": { "$ref": "#/dimension/focus-outline-width" }
       }
     }
   },

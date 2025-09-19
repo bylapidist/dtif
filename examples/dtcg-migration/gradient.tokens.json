@@ -1,5 +1,21 @@
 {
   "$version": "1.0.0",
+  "color": {
+    "hero-start": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.541, 0.0, 1.0]
+      }
+    },
+    "hero-end": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.929, 0.098, 0.792, 1.0]
+      }
+    }
+  },
   "gradient": {
     "hero-background": {
       "$type": "gradient",
@@ -7,20 +23,8 @@
         "gradientType": "linear",
         "angle": "to top right",
         "stops": [
-          {
-            "position": "0%",
-            "color": {
-              "colorSpace": "srgb",
-              "components": [1.0, 0.541, 0.0, 1.0]
-            }
-          },
-          {
-            "position": "100%",
-            "color": {
-              "colorSpace": "srgb",
-              "components": [0.929, 0.098, 0.792, 1.0]
-            }
-          }
+          { "position": "0%", "color": { "$ref": "#/color/hero-start" } },
+          { "position": "100%", "color": { "$ref": "#/color/hero-end" } }
         ]
       }
     }

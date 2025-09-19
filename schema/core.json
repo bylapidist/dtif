@@ -32,6 +32,27 @@
         }
       ]
     },
+    "reference": {
+      "type": "object",
+      "required": ["$ref"],
+      "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
+      "additionalProperties": false
+    },
+    "colorReference": {
+      "oneOf": [{ "$ref": "#/$defs/color" }, { "$ref": "#/$defs/reference" }]
+    },
+    "dimensionReference": {
+      "oneOf": [{ "$ref": "#/$defs/dimension" }, { "$ref": "#/$defs/reference" }]
+    },
+    "fontDimensionReference": {
+      "oneOf": [{ "$ref": "#/$defs/font-dimension" }, { "$ref": "#/$defs/reference" }]
+    },
+    "lengthDimensionReference": {
+      "oneOf": [{ "$ref": "#/$defs/length-dimension" }, { "$ref": "#/$defs/reference" }]
+    },
+    "angleDimensionReference": {
+      "oneOf": [{ "$ref": "#/$defs/angle-dimension" }, { "$ref": "#/$defs/reference" }]
+    },
     "css-ident": {
       "type": "string",
       "pattern": "^-{0,2}[A-Za-z_][A-Za-z0-9_-]*$",
@@ -735,25 +756,21 @@
           "description": "Canonical values such as 'body', 'heading', and 'caption' are registered. Custom values matching this pattern MAY be used; consumers MUST ignore unrecognised types to preserve compatibility."
         },
         "fontFamily": {
-          "oneOf": [
-            { "type": "string" },
-            {
-              "type": "object",
-              "required": ["$ref"],
-              "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
-              "additionalProperties": false
-            }
-          ]
+          "oneOf": [{ "type": "string" }, { "$ref": "#/$defs/reference" }]
         },
-        "fontSize": { "$ref": "#/$defs/font-dimension" },
+        "fontSize": { "$ref": "#/$defs/fontDimensionReference" },
         "lineHeight": {
           "description": "Baseline-to-baseline distance as a ratio or font-dimension.",
           "oneOf": [
             { "$ref": "#/$defs/line-height" },
             {
               "allOf": [
-                { "$ref": "#/$defs/font-dimension" },
-                { "properties": { "value": { "minimum": 0 } } }
+                { "$ref": "#/$defs/fontDimensionReference" },
+                {
+                  "if": { "required": ["$ref"] },
+                  "then": {},
+                  "else": { "properties": { "value": { "minimum": 0 } } }
+                }
               ]
             }
           ]
@@ -761,7 +778,7 @@
         "letterSpacing": {
           "$comment": "MUST follow CSS letter-spacing grammar and reuse font-dimension unit conversions.",
           "oneOf": [
-            { "$ref": "#/$defs/font-dimension" },
+            { "$ref": "#/$defs/fontDimensionReference" },
             {
               "type": "string",
               "enum": ["normal"],
@@ -772,7 +789,7 @@
         "wordSpacing": {
           "$comment": "MUST conform to CSS word-spacing <length-percentage> grammar and platform unit semantics.",
           "oneOf": [
-            { "$ref": "#/$defs/font-dimension" },
+            { "$ref": "#/$defs/fontDimensionReference" },
             {
               "type": "string",
               "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 word-spacing grammar."
@@ -811,7 +828,7 @@
           "type": "string",
           "$comment": "MUST conform to the CSS text-transform list grammar and preserve locale-sensitive casing."
         },
-        "color": { "$ref": "#/$defs/color" },
+        "color": { "$ref": "#/$defs/colorReference" },
         "fontFeatures": {
           "type": "array",
           "$comment": "MUST contain OpenType feature tags per CSS font-feature-settings and the OpenType registry.",
@@ -821,17 +838,17 @@
             "$comment": "MUST be a four-character OpenType feature tag registered by CSS font-feature-settings or documented by the font."
           }
         },
-        "underlineThickness": { "$ref": "#/$defs/font-dimension" },
-        "underlineOffset": { "$ref": "#/$defs/font-dimension" },
-        "overlineThickness": { "$ref": "#/$defs/font-dimension" },
-        "overlineOffset": { "$ref": "#/$defs/font-dimension" }
+        "underlineThickness": { "$ref": "#/$defs/fontDimensionReference" },
+        "underlineOffset": { "$ref": "#/$defs/fontDimensionReference" },
+        "overlineThickness": { "$ref": "#/$defs/fontDimensionReference" },
+        "overlineOffset": { "$ref": "#/$defs/fontDimensionReference" }
       },
       "additionalProperties": true
     },
     "borderCornerRadius": {
       "anyOf": [
         {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/dimensionReference",
           "$comment": "Single value MUST follow the <length-percentage> grammar defined for CSS border-radius."
         },
         {
@@ -839,11 +856,11 @@
           "required": ["x"],
           "properties": {
             "x": {
-              "$ref": "#/$defs/dimension",
+              "$ref": "#/$defs/dimensionReference",
               "$comment": "Horizontal radius MUST conform to CSS <length-percentage> and native point/density semantics."
             },
             "y": {
-              "$ref": "#/$defs/dimension",
+              "$ref": "#/$defs/dimensionReference",
               "$comment": "Optional vertical radius MUST conform to CSS <length-percentage>; when omitted, consumers reuse the horizontal value."
             }
           },
@@ -863,7 +880,7 @@
         },
         "width": {
           "oneOf": [
-            { "$ref": "#/$defs/dimension" },
+            { "$ref": "#/$defs/dimensionReference" },
             {
               "type": "string",
               "enum": ["thin", "medium", "thick"]
@@ -877,25 +894,17 @@
           "$comment": "MUST match CSS <line-style> keywords; native implementations map them to dash patterns or fall back to solid."
         },
         "strokeStyle": {
-          "oneOf": [
-            { "$ref": "#/$defs/strokeStyle" },
-            {
-              "type": "object",
-              "required": ["$ref"],
-              "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
-              "additionalProperties": false
-            }
-          ],
+          "oneOf": [{ "$ref": "#/$defs/strokeStyle" }, { "$ref": "#/$defs/reference" }],
           "$comment": "Optional strokeStyle metadata MUST capture dash, cap, and join semantics compatible with CSS border-image, SVG stroke, CAShapeLayer.lineDashPattern, and Android Paint#setPathEffect."
         },
         "color": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colorReference",
           "$comment": "Border colour MUST conform to CSS <color> values and convert to CGColor or Android colour integers."
         },
         "radius": {
           "anyOf": [
             {
-              "$ref": "#/$defs/dimension",
+              "$ref": "#/$defs/dimensionReference",
               "$comment": "Uniform radius MUST follow the border-radius <length-percentage> grammar."
             },
             {
@@ -934,7 +943,7 @@
                 "$comment": "Numeric dash intervals MUST follow the <number> grammar used by SVG stroke-dasharray and CanvasRenderingContext2D.setLineDash."
               },
               {
-                "$ref": "#/$defs/length-dimension",
+                "$ref": "#/$defs/lengthDimensionReference",
                 "$comment": "Length dash intervals MUST conform to the <length> production accepted by SVG stroke-dasharray and CSS border-image repeat lengths."
               }
             ]
@@ -948,7 +957,7 @@
               "$comment": "Numeric offsets MUST follow the <number> grammar from SVG stroke-dashoffset representing multiples of the stroke width."
             },
             {
-              "$ref": "#/$defs/length-dimension",
+              "$ref": "#/$defs/lengthDimensionReference",
               "$comment": "Length offsets MUST conform to CSS <length> semantics for stroke-dashoffset and native stroke APIs."
             }
           ]
@@ -991,23 +1000,23 @@
           "$comment": "MUST identify the rendering context defined by CSS <shadow> grammars, UIKit CALayer/NSShadow APIs, or Android View/Paint shadow documentation (e.g. css.box-shadow, css.text-shadow, css.filter.drop-shadow, ios.layer, ios.text, android.view.elevation)."
         },
         "offsetX": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Horizontal offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
         },
         "offsetY": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Vertical offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
         },
         "blur": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
         },
         "spread": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Optional spread MUST follow the final <length> of CSS <shadow> and is realised via CALayer.shadowPath or Android outline inflation."
         },
         "color": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colorReference",
           "$comment": "Shadow colour MUST conform to CSS <color> values and map to CGColor / Android colour integers."
         }
       },
@@ -1059,7 +1068,7 @@
                   }
                 ]
               },
-              "color": { "$ref": "#/$defs/color" }
+              "color": { "$ref": "#/$defs/colorReference" }
             },
             "additionalProperties": false
           },
@@ -1425,11 +1434,11 @@
       ]
     },
     "motion-length": {
-      "oneOf": [{ "$ref": "#/$defs/length-dimension" }, { "$ref": "#/$defs/function" }],
+      "oneOf": [{ "$ref": "#/$defs/lengthDimensionReference" }, { "$ref": "#/$defs/function" }],
       "$comment": "MUST evaluate to a CSS <length-percentage> (css-values-4#typedef-length-percentage) or equivalent platform distance for translation and path coordinates."
     },
     "motion-angle": {
-      "oneOf": [{ "$ref": "#/$defs/angle-dimension" }, { "$ref": "#/$defs/function" }],
+      "oneOf": [{ "$ref": "#/$defs/angleDimensionReference" }, { "$ref": "#/$defs/function" }],
       "$comment": "MUST evaluate to a CSS <angle> (css-values-4#angles) compatible with Core Animation and Android rotation APIs."
     },
     "motion-translation": {
@@ -1543,15 +1552,15 @@
           "$comment": "MUST identify the rendering context defined by CSS <shadow> functions, UIKit CALayer/NSShadow properties, or Android elevation/shadow APIs (for example css.box-shadow.surface, ios.layer.surface, android.paint.shadow-layer.surface)."
         },
         "offset": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Vertical offset MUST conform to CSS <length> grammar and map to CALayer.shadowOffset.height, Paint#setShadowLayer dy, or View#setElevation displacement."
         },
         "blur": {
-          "$ref": "#/$defs/length-dimension",
+          "$ref": "#/$defs/lengthDimensionReference",
           "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
         },
         "color": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colorReference",
           "$comment": "Shadow colour MUST conform to CSS <color> values and map to CGColor / Android colour integers used for Paint#setShadowLayer or elevation overlays."
         }
       },
@@ -1592,12 +1601,7 @@
           "type": "array",
           "items": { "$ref": "#/$defs/function-parameter" }
         },
-        {
-          "type": "object",
-          "required": ["$ref"],
-          "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
-          "additionalProperties": false
-        },
+        { "$ref": "#/$defs/reference" },
         {
           "type": "object",
           "not": { "required": ["$ref"] },

@@ -1,62 +1,82 @@
 {
   "$version": "1.0.0",
+  "color": {
+    "shadow-ambient": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.0, 0.0, 0.2]
+      }
+    },
+    "shadow-key": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.0, 0.0, 0.3]
+      }
+    }
+  },
+  "dimension": {
+    "shadow-offset-large": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "shadow-offset-small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "shadow-blur-large": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "shadow-blur-small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "shadow-spread": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 0,
+        "unit": "px"
+      }
+    }
+  },
   "shadow": {
     "button-ambient": {
       "$type": "shadow",
       "$value": [
         {
           "shadowType": "css.box-shadow",
-          "offsetX": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "dimensionType": "length",
-            "value": 2,
-            "unit": "px"
-          },
-          "blur": {
-            "dimensionType": "length",
-            "value": 6,
-            "unit": "px"
-          },
-          "spread": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "color": {
-            "colorSpace": "srgb",
-            "components": [0.0, 0.0, 0.0, 0.2]
-          }
+          "offsetX": { "$ref": "#/dimension/shadow-spread" },
+          "offsetY": { "$ref": "#/dimension/shadow-offset-large" },
+          "blur": { "$ref": "#/dimension/shadow-blur-large" },
+          "spread": { "$ref": "#/dimension/shadow-spread" },
+          "color": { "$ref": "#/color/shadow-ambient" }
         },
         {
           "shadowType": "css.box-shadow",
-          "offsetX": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "dimensionType": "length",
-            "value": 1,
-            "unit": "px"
-          },
-          "blur": {
-            "dimensionType": "length",
-            "value": 3,
-            "unit": "px"
-          },
-          "spread": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "color": {
-            "colorSpace": "srgb",
-            "components": [0.0, 0.0, 0.0, 0.3]
-          }
+          "offsetX": { "$ref": "#/dimension/shadow-spread" },
+          "offsetY": { "$ref": "#/dimension/shadow-offset-small" },
+          "blur": { "$ref": "#/dimension/shadow-blur-small" },
+          "spread": { "$ref": "#/dimension/shadow-spread" },
+          "color": { "$ref": "#/color/shadow-key" }
         }
       ]
     }

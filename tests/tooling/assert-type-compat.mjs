@@ -303,6 +303,53 @@ export default function assertTypeCompat(doc) {
     }
   }
 
+  function validateTokenRefObject(refObj, options) {
+    if (!refObj || typeof refObj !== 'object' || Array.isArray(refObj)) {
+      return;
+    }
+    const pointer = refObj.$ref;
+    if (typeof pointer !== 'string' || !pointer.startsWith('#')) {
+      return;
+    }
+    const {
+      expectedType,
+      path,
+      code,
+      context = 'token $ref',
+      dimensionType,
+      dimensionMessage
+    } = options;
+    const { node: targetNode, type: refType } = getTokenTypeInfo(doc, pointer, new Set());
+    const errorBase = { code, path };
+    if (!refType) {
+      errors.push({
+        ...errorBase,
+        message: `${context} ${pointer} must resolve to a token that declares $type ${expectedType}`
+      });
+      return;
+    }
+    if (refType !== expectedType) {
+      errors.push({
+        ...errorBase,
+        message: `${context} ${pointer} has type ${refType}, expected ${expectedType}`
+      });
+      return;
+    }
+    if (dimensionType) {
+      const value = targetNode?.$value;
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const resolvedDimensionType = value.dimensionType;
+        if (typeof resolvedDimensionType === 'string' && resolvedDimensionType !== dimensionType) {
+          errors.push({
+            ...errorBase,
+            message:
+              dimensionMessage || `${context} ${pointer} dimensionType must be "${dimensionType}"`
+          });
+        }
+      }
+    }
+  }
+
   function validateDeprecated(node, path) {
     if (
       !node ||
@@ -447,6 +494,19 @@ export default function assertTypeCompat(doc) {
         }
       }
       if (node.$type === 'border' && node.$value && typeof node.$value === 'object') {
+        validateTokenRefObject(node.$value.color, {
+          expectedType: 'color',
+          path: `${path}/$value/color/$ref`,
+          code: 'E_BORDER_COLOR_TYPE',
+          context: 'border color $ref'
+        });
+        validateTokenRefObject(node.$value.width, {
+          expectedType: 'dimension',
+          path: `${path}/$value/width/$ref`,
+          code: 'E_BORDER_WIDTH_TYPE',
+          context: 'border width $ref',
+          dimensionType: 'length'
+        });
         const stroke = node.$value.strokeStyle;
         if (
           stroke &&
@@ -505,6 +565,14 @@ export default function assertTypeCompat(doc) {
         if (Array.isArray(stops)) {
           let prev = -Infinity;
           stops.forEach((stop, idx) => {
+            if (stop && typeof stop === 'object') {
+              validateTokenRefObject(stop.color, {
+                expectedType: 'color',
+                path: `${path}/$value/stops/${idx}/color/$ref`,
+                code: 'E_GRADIENT_COLOR_TYPE',
+                context: `gradient stop ${idx} color $ref`
+              });
+            }
             if (stop && typeof stop === 'object' && typeof stop.position === 'number') {
               if (stop.position < prev) {
                 errors.push({
@@ -617,6 +685,17 @@ export default function assertTypeCompat(doc) {
           if (!dimension || typeof dimension !== 'object' || Array.isArray(dimension)) {
             return;
           }
+          if (typeof dimension.$ref === 'string') {
+            validateTokenRefObject(dimension, {
+              expectedType: 'dimension',
+              path: `${path}/$value/${prop}/$ref`,
+              code: 'E_SHADOW_DIMENSION_TYPE',
+              context: `shadow ${prop} $ref`,
+              dimensionType: 'length',
+              dimensionMessage: `shadow ${prop} $ref ${dimension.$ref} dimensionType must be "length"`
+            });
+            return;
+          }
           if (dimension.dimensionType !== 'length') {
             errors.push({
               code: 'E_SHADOW_DIMENSION_TYPE',
@@ -629,6 +708,12 @@ export default function assertTypeCompat(doc) {
         checkShadowDimension(node.$value.offsetY, 'offsetY');
         checkShadowDimension(node.$value.blur, 'blur');
         checkShadowDimension(node.$value.spread, 'spread');
+        validateTokenRefObject(node.$value.color, {
+          expectedType: 'color',
+          path: `${path}/$value/color/$ref`,
+          code: 'E_SHADOW_COLOR_TYPE',
+          context: 'shadow color $ref'
+        });
       }
       if (node.$type === 'elevation' && node.$value && typeof node.$value === 'object') {
         const checkElevationDimension = (dimension, prop) => {
@@ -638,6 +723,17 @@ export default function assertTypeCompat(doc) {
               code: 'E_ELEVATION_DIMENSION_TYPE',
               path: basePath,
               message: `${prop} must be a length dimension object`
+            });
+            return;
+          }
+          if (typeof dimension.$ref === 'string') {
+            validateTokenRefObject(dimension, {
+              expectedType: 'dimension',
+              path: `${basePath}/$ref`,
+              code: 'E_ELEVATION_DIMENSION_TYPE',
+              context: `elevation ${prop} $ref`,
+              dimensionType: 'length',
+              dimensionMessage: `elevation ${prop} $ref ${dimension.$ref} dimensionType must be "length"`
             });
             return;
           }
@@ -651,6 +747,12 @@ export default function assertTypeCompat(doc) {
         };
         checkElevationDimension(node.$value.offset, 'offset');
         checkElevationDimension(node.$value.blur, 'blur');
+        validateTokenRefObject(node.$value.color, {
+          expectedType: 'color',
+          path: `${path}/$value/color/$ref`,
+          code: 'E_ELEVATION_COLOR_TYPE',
+          context: 'elevation color $ref'
+        });
       }
       if (node.$type === 'fontFace' && node.$value && typeof node.$value === 'object') {
         const fs = node.$value.fontStyle;
@@ -681,7 +783,16 @@ export default function assertTypeCompat(doc) {
       if (node.$type === 'typography' && node.$value && typeof node.$value === 'object') {
         const fontSize = node.$value.fontSize;
         if (fontSize && typeof fontSize === 'object' && !Array.isArray(fontSize)) {
-          if (fontSize.dimensionType !== 'length') {
+          if (typeof fontSize.$ref === 'string') {
+            validateTokenRefObject(fontSize, {
+              expectedType: 'dimension',
+              path: `${path}/$value/fontSize/$ref`,
+              code: 'E_FONT_SIZE_DIMENSION_TYPE',
+              context: 'typography fontSize $ref',
+              dimensionType: 'length',
+              dimensionMessage: `typography fontSize $ref ${fontSize.$ref} dimensionType must be "length"`
+            });
+          } else if (fontSize.dimensionType !== 'length') {
             errors.push({
               code: 'E_FONT_SIZE_DIMENSION_TYPE',
               path: `${path}/$value/fontSize/dimensionType`,
@@ -689,12 +800,32 @@ export default function assertTypeCompat(doc) {
             });
           }
         }
+        validateTokenRefObject(node.$value.color, {
+          expectedType: 'color',
+          path: `${path}/$value/color/$ref`,
+          code: 'E_TYPOGRAPHY_COLOR_TYPE',
+          context: 'typography color $ref'
+        });
         const ls = node.$value.letterSpacing;
         if (typeof ls === 'string' && ls !== 'normal') {
           errors.push({
             code: 'E_INVALID_KEYWORD',
             path: `${path}/$value/letterSpacing`,
             message: 'invalid keyword'
+          });
+        } else if (
+          ls &&
+          typeof ls === 'object' &&
+          !Array.isArray(ls) &&
+          typeof ls.$ref === 'string'
+        ) {
+          validateTokenRefObject(ls, {
+            expectedType: 'dimension',
+            path: `${path}/$value/letterSpacing/$ref`,
+            code: 'E_LETTER_SPACING_DIMENSION_TYPE',
+            context: 'letterSpacing $ref',
+            dimensionType: 'length',
+            dimensionMessage: `letterSpacing $ref ${ls.$ref} dimensionType must be "length"`
           });
         }
         const ws = node.$value.wordSpacing;
@@ -707,14 +838,41 @@ export default function assertTypeCompat(doc) {
             });
           }
         } else if (ws && typeof ws === 'object') {
-          const dimensionType = ws.dimensionType;
-          if (typeof dimensionType === 'string' && dimensionType !== 'length') {
-            errors.push({
+          if (typeof ws.$ref === 'string') {
+            validateTokenRefObject(ws, {
+              expectedType: 'dimension',
+              path: `${path}/$value/wordSpacing/$ref`,
               code: 'E_WORD_SPACING_DIMENSION_TYPE',
-              path: `${path}/$value/wordSpacing/dimensionType`,
-              message: 'wordSpacing dimensionType must be "length"'
+              context: 'wordSpacing $ref',
+              dimensionType: 'length',
+              dimensionMessage: `wordSpacing $ref ${ws.$ref} dimensionType must be "length"`
             });
+          } else {
+            const dimensionType = ws.dimensionType;
+            if (typeof dimensionType === 'string' && dimensionType !== 'length') {
+              errors.push({
+                code: 'E_WORD_SPACING_DIMENSION_TYPE',
+                path: `${path}/$value/wordSpacing/dimensionType`,
+                message: 'wordSpacing dimensionType must be "length"'
+              });
+            }
           }
+        }
+        const lineHeightValue = node.$value.lineHeight;
+        if (
+          lineHeightValue &&
+          typeof lineHeightValue === 'object' &&
+          !Array.isArray(lineHeightValue) &&
+          typeof lineHeightValue.$ref === 'string'
+        ) {
+          validateTokenRefObject(lineHeightValue, {
+            expectedType: 'dimension',
+            path: `${path}/$value/lineHeight/$ref`,
+            code: 'E_LINE_HEIGHT_DIMENSION_TYPE',
+            context: 'lineHeight $ref',
+            dimensionType: 'length',
+            dimensionMessage: `lineHeight $ref ${lineHeightValue.$ref} dimensionType must be "length"`
+          });
         }
         const fontVariant = node.$value.fontVariant;
         if (typeof fontVariant === 'string' && !isValidFontVariant(fontVariant)) {
