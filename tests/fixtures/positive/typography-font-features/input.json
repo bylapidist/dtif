@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "features": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontFeatures": ["cv01", "liga"],
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "typographyType": "body"
+      }
+    }
+  }
+}

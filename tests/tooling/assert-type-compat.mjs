@@ -69,6 +69,7 @@ const FONT_WEIGHT_RELATIVE_KEYWORDS = new Set(['bolder', 'lighter']);
 const FONT_WEIGHT_NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
 const FONT_STYLE_PATTERN =
   /^(?:normal|italic|oblique(?:\s+[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?(?:deg|grad|rad|turn))?)$/i;
+const FONT_FEATURE_TAG_PATTERN = /^[A-Za-z0-9]{4}$/;
 
 function parseFontWeightAbsoluteValue(token) {
   if (typeof token !== 'string') {
@@ -611,6 +612,18 @@ export default function assertTypeCompat(doc) {
             code: 'E_INVALID_KEYWORD',
             path: `${path}/$value/fontWeight`,
             message: 'invalid keyword'
+          });
+        }
+        const fontFeatures = node.$value.fontFeatures;
+        if (Array.isArray(fontFeatures)) {
+          fontFeatures.forEach((feature, idx) => {
+            if (typeof feature === 'string' && !FONT_FEATURE_TAG_PATTERN.test(feature)) {
+              errors.push({
+                code: 'E_INVALID_KEYWORD',
+                path: `${path}/$value/fontFeatures/${idx}`,
+                message: 'invalid keyword'
+              });
+            }
           });
         }
         const fs = node.$value.fontStyle;

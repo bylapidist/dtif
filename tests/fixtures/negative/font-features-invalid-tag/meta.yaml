@@ -1,0 +1,5 @@
+name: font-features-invalid-tag
+description: typography token fontFeatures entry with invalid OpenType tag
+assertions:
+  - type-compat
+tags: [typography]
