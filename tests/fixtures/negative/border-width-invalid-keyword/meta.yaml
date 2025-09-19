@@ -1,0 +1,5 @@
+name: border-width-invalid-keyword
+description: border width keywords must match CSS <line-width> options
+assertions:
+  - schema
+tags: [border]

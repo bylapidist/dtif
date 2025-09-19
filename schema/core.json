@@ -798,8 +798,14 @@
           "$comment": "MUST identify CSS border/outline contexts or native stroke APIs such as CALayer and GradientDrawable."
         },
         "width": {
-          "$ref": "#/$defs/dimension",
-          "$comment": "Width MUST follow the <line-width> grammar and respect point/density conversions for pt, dp, and sp units."
+          "oneOf": [
+            { "$ref": "#/$defs/dimension" },
+            {
+              "type": "string",
+              "enum": ["thin", "medium", "thick"]
+            }
+          ],
+          "$comment": "Width MUST follow the <line-width> grammar, accepting CSS keywords or dimension values that respect point/density conversions for pt, dp, and sp units."
         },
         "style": {
           "type": "string",

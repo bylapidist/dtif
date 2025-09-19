@@ -35,5 +35,17 @@
         "unit": "pt"
       }
     }
+  },
+  "keyword": {
+    "$type": "border",
+    "$value": {
+      "borderType": "css.border",
+      "color": {
+        "colorSpace": "srgb",
+        "components": [0.2, 0.2, 0.2, 1.0]
+      },
+      "style": "solid",
+      "width": "thin"
+    }
   }
 }
