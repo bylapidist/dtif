@@ -1,0 +1,8 @@
+name: font fallback stack
+description: validates ordered font fallback stacks using the first-class property
+assertions:
+  - schema
+  - roundtrip
+  - ordering
+tags:
+  - type:font

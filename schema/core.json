@@ -613,6 +613,12 @@
           "type": "string",
           "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
         },
+        "fallbacks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/trimmedString" },
+          "$comment": "Fallback stacks MUST preserve order and reuse CSS <family-name> grammar and generic family keywords (css-fonts-4) so they align with platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+        },
         "style": {
           "$ref": "#/$defs/font-style-string",
           "$comment": "MUST conform to CSS <font-style-absolute> grammar (css-fonts-4); angles MUST follow <angle> (css-values-4)."

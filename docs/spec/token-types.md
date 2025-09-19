@@ -263,6 +263,7 @@ the source of truth.
   "$value": {
     "fontType": "css.font-face",
     "family": "Brand Sans",
+    "fallbacks": ["Brand Sans Alt", "Arial", "sans-serif"],
     "style": "oblique 12deg",
     "weight": 600
   }
@@ -277,6 +278,14 @@ _MUST_ match the registered names exposed via
 Apple's font catalog APIs and
 Android font resources; tooling
 _MUST_ reject names that the platform cannot resolve.
+
+The optional `fallbacks` member _MUST_ be an array of one or more strings
+that conform to the `<family-name>` grammar or the generic family keywords
+defined by CSS Fonts Module Level 4. Entries _MUST_ be trimmed, non-empty
+identifiers that map to registered platform families or CSS generic
+fallbacks so that DTCG font-family stacks map directly to DTIF documents.
+Consumers _MUST_ preserve the order of these entries when exporting or
+resolving the stack.
 
 The optional `style` member _MUST_ conform to the
 `<font-style-absolute>`
@@ -319,12 +328,13 @@ The table below maps font-related members to their authoritative specifications.
 
 _Table: Normative references for font token members._
 
-| Property               | Normative references                                                                                        |
-| :--------------------- | :---------------------------------------------------------------------------------------------------------- |
-| `font.$value.fontType` | `@font-face src`, UIFont, CTFontManagerRegisterFontsForURL, Fonts in XML, Typeface                          |
-| `font.$value.family`   | `<family-name>`, Apple font catalog registration, Android font resources                                    |
-| `font.$value.style`    | `font-style`, UIFontDescriptor.SymbolicTraits, FontVariationAxis, Typeface.Builder#setFontVariationSettings |
-| `font.$value.weight`   | `font-weight`, UIFont.Weight, Typeface.Builder#setWeight                                                    |
+| Property                | Normative references                                                                                        |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------- |
+| `font.$value.fontType`  | `@font-face src`, UIFont, CTFontManagerRegisterFontsForURL, Fonts in XML, Typeface                          |
+| `font.$value.family`    | `<family-name>`, Apple font catalog registration, Android font resources                                    |
+| `font.$value.fallbacks` | `<family-name>`, CSS generic-family keywords, Apple font catalog registration, Android font resources       |
+| `font.$value.style`     | `font-style`, UIFontDescriptor.SymbolicTraits, FontVariationAxis, Typeface.Builder#setFontVariationSettings |
+| `font.$value.weight`    | `font-weight`, UIFont.Weight, Typeface.Builder#setWeight                                                    |
 
 > Example token documents demonstrating these patterns are available in
 > [font.tokens.json](https://github.com/bylapidist/dtif/blob/main/examples/font.tokens.json).

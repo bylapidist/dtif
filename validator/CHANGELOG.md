@@ -4,4 +4,4 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- No changes yet.
+- Bundled schema update adds `font` fallback stacks for improved DTCG interoperability.

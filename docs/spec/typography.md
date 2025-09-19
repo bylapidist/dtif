@@ -159,6 +159,23 @@ Producers adding experimental members _SHOULD_ follow the
 (reverse-DNS prefixes, registry reuse, and published documentation) to avoid collisions
 and clarify proprietary semantics.
 
+## Font fallbacks {#font-fallbacks}
+
+Font tokens record the canonical family in `family` and _MAY_ supply
+an ordered `fallbacks` array. The `fallbacks` member _MUST_ contain one or
+more trimmed strings that satisfy the `<family-name>` grammar or the
+generic-family keywords defined in CSS Fonts Module Level 4. Consumers
+_MUST_ preserve the supplied order when generating CSS `font-family`
+lists or native descriptors so the stack mirrors DTCG semantics.
+
+When migrating DTCG `fontFamily` arrays, producers _MUST_ assign the
+first entry to `family` and the remaining entries to `fallbacks`. Typography
+tokens that reference a `font` token—either by string name or `$ref`
+pointer—_MUST_ surface the same ordered stack when emitting CSS or
+native descriptors. Typography tokens serialised with only a string
+`fontFamily` carry no additional fallback data beyond the primary
+family name.
+
 ## Font dimensions {#font-dimensions}
 
 A `font-dimension` is a constrained dimension object. The

@@ -437,13 +437,9 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
       "$value": {
         "fontType": "css.font-face",
         "family": "Inter",
+        "fallbacks": ["Arial", "sans-serif"],
         "style": "normal",
         "weight": 400
-      },
-      "$extensions": {
-        "org.example.fonts": {
-          "fallbacks": ["Arial", "sans-serif"]
-        }
       }
     }
   },
@@ -470,8 +466,8 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
 }
 ```
 
-Consolidate font metadata into a reusable `font` token, keep fallback stacks in extensions,
-and replace `{token.reference}` strings with `$ref` pointers wherever DTIF expects nested
+Consolidate font metadata into a reusable `font` token, encode fallback stacks with the
+`fallbacks` property, and replace `{token.reference}` strings with `$ref` pointers wherever DTIF expects nested
 objects such as shared dimensions or colours.
 
 ## Convert composite tokens {#composite-tokens}

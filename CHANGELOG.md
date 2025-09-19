@@ -5,6 +5,7 @@ This changelog records high-level repository changes. Package-specific updates a
 
 ## Unreleased
 
+- Added first-class `fallbacks` stacks to `font` tokens for direct DTCG interoperability.
 - Set up npm workspaces to manage the schema (with bundled TypeScript declarations) and validator packages together.
 - Adopted Changesets for versioning with automated changelog generation and release PRs.
 - Added GitHub Actions workflows for continuous integration and automated releases.

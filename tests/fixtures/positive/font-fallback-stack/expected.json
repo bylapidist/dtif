@@ -1,0 +1,13 @@
+{
+  "font": {
+    "brand": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "Brand Sans",
+        "fallbacks": ["Brand Sans Alt", "Arial", "sans-serif"],
+        "weight": 400
+      }
+    }
+  }
+}
