@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_INVALID_KEYWORD",
+    "path": "/typography/bad/$value/wordSpacing",
+    "message": "invalid keyword"
+  }
+}

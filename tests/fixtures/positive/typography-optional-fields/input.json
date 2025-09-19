@@ -1,6 +1,19 @@
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "typography": {
+    "keywordNormal": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "wordSpacing": "normal"
+      }
+    },
     "optional": {
       "$type": "typography",
       "$value": {
