@@ -1,0 +1,6 @@
+name: type-identifier-invalid
+description: custom $type values must use reverse-DNS naming
+assertions:
+  - schema
+tags:
+  - type

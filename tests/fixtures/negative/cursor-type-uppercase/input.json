@@ -1,0 +1,10 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "cursor": {
+    "$type": "cursor",
+    "$value": {
+      "cursorType": "css.Cursor",
+      "value": "pointer"
+    }
+  }
+}

@@ -55,11 +55,11 @@ See [`complex.tokens.json`](https://github.com/bylapidist/dtif/blob/main/example
   },
   "themes": {
     "dark": {
-      "$type": "theme",
+      "$type": "com.example.tokens.theme",
       "$ref": "dark.tokens.json#"
     },
     "light": {
-      "$type": "theme",
+      "$type": "com.example.tokens.theme",
       "$ref": "light.tokens.json#"
     }
   }

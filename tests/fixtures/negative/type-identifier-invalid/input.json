@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "custom": {
+    "$type": "sizing",
+    "$value": {
+      "magnitude": 12
+    }
+  }
+}

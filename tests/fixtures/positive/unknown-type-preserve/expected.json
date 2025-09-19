@@ -1,7 +1,7 @@
 {
   "experimental": {
     "foo": {
-      "$type": "bogus",
+      "$type": "com.example.tokens.bogus",
       "$value": "bar"
     }
   }

@@ -1,0 +1,5 @@
+name: line-height-token-string
+description: line-height tokens must be ratios or font-dimensions
+assertions:
+  - schema
+tags: [line-height]

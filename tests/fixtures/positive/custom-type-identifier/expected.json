@@ -1,0 +1,9 @@
+{
+  "vendor": {
+    "$type": "com.example.tokens.surface",
+    "$value": {
+      "role": "card",
+      "elevation": "layer"
+    }
+  }
+}

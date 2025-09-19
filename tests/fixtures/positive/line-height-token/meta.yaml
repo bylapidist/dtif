@@ -1,0 +1,7 @@
+name: line-height-token
+description: standalone line-height tokens accept ratios, font-dimensions, and aliases
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [line-height]

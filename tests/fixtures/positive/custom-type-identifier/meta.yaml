@@ -1,0 +1,6 @@
+name: custom-type-identifier
+description: vendor-specific $type identifiers must use reverse-DNS form
+assertions:
+  - schema
+  - type-compat
+  - refs

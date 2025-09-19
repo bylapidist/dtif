@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "neutral": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.5, 0.5, 0.5, 1]
+      },
+      "$usageCount": 0,
+      "$description": "Unreferenced neutral tone"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+name: metadata-usage-count-zero
+description: usage metadata omits $lastUsed when $usageCount is zero
+assertions:
+  - schema
+  - roundtrip
+  - refs
+  - type-compat
+  - ordering
+tags:
+  - metadata

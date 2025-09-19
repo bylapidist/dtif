@@ -57,11 +57,11 @@ See [`complete.tokens.json`](https://github.com/bylapidist/dtif/blob/main/exampl
   "themes": {
     "$description": "External references",
     "dark": {
-      "$type": "theme",
+      "$type": "com.example.tokens.theme",
       "$ref": "dark.tokens.json#"
     },
     "light": {
-      "$type": "theme",
+      "$type": "com.example.tokens.theme",
       "$ref": "light.tokens.json#"
     }
   }

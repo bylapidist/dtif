@@ -1,0 +1,6 @@
+name: override-empty-when
+description: overrides require at least one $when condition
+assertions:
+  - schema
+tags:
+  - override
