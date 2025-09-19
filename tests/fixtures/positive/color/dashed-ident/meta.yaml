@@ -1,0 +1,11 @@
+name: color dashed ident
+description: accepts CSS dashed-ident names for color spaces
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:color
+  - color-space

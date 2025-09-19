@@ -1,0 +1,11 @@
+{
+  "color": {
+    "brand": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "--brand-primary",
+        "components": [0.12, 0.34, 0.56]
+      }
+    }
+  }
+}
