@@ -1,0 +1,36 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "brand": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.1, 0.2, 0.3, 1]
+      }
+    }
+  },
+  "dimension": {
+    "aliases": {
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/color/brand"
+      }
+    },
+    "typography": {
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/dimension/aliases/body-size"
+      }
+    }
+  },
+  "typography": {
+    "bad": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "$ref": "#/dimension/typography/body-size" },
+        "lineHeight": 1.5
+      }
+    }
+  }
+}

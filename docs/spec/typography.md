@@ -121,11 +121,51 @@ Common optional properties defer to platform specifications as follows:
 - `overlineOffset` - `font-dimension`.
 
 Typography values _MAY_ reuse shared tokens via alias objects whose only member is
-`$ref`. These aliases _MUST_ resolve to tokens declaring the expected `$type`: `fontSize`,
-`letterSpacing`, `wordSpacing`, and `lineHeight` references _MUST_ point to `dimension`
-tokens whose `$value.dimensionType` is `"length"`, while `color` references _MUST_ point to
+`$ref`. The pointer _MAY_ resolve through additional aliases before reaching the source
+measurement; consumers _MUST_ follow the chain until a concrete token is located.
+Each `$ref` _MUST_ ultimately resolve to a token declaring the expected `$type`: `fontSize`,
+`letterSpacing`, `wordSpacing`, and `lineHeight` references _MUST_ terminate at `dimension`
+tokens whose `$value.dimensionType` is `"length"`, while `color` references _MUST_ resolve to
 `color` tokens. Consumers _MUST_ reject `$ref` targets that do not meet these
 requirements so typography tokens remain well-typed composites.
+
+```json
+{
+  "$version": "1.0.0",
+  "dimension": {
+    "shared": {
+      "body-size": {
+        "$type": "dimension",
+        "$value": { "dimensionType": "length", "value": 16, "unit": "px" }
+      },
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$value": { "dimensionType": "length", "value": -0.5, "unit": "px" }
+      }
+    },
+    "typography": {
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/dimension/shared/body-size"
+      },
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$ref": "#/dimension/shared/body-letter-spacing"
+      }
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "$ref": "#/dimension/typography/body-size" },
+        "letterSpacing": { "$ref": "#/dimension/typography/body-letter-spacing" }
+      }
+    }
+  }
+}
+```
 
 The table below maps typography members to their authoritative references.
 
@@ -198,6 +238,12 @@ units per Android's pixel density guidance. Negative
 values remain valid so designers can intentionally tighten spacing. Producers
 _MAY_ include `fontScale` to indicate whether the value
 participates in user-controlled font scaling.
+
+A `font-dimension` _MAY_ also be expressed as an alias object whose only member is
+`$ref`. Such aliases _MUST_ resolve to tokens declaring `$type` `"dimension"` and a
+`$value.dimensionType` of `"length"`. Alias chains _MAY_ include additional
+`dimension` tokens that themselves forward to shared measurements; consumers _MUST_
+resolve the chain until a concrete measurement is found.
 
 Typography members such as `lineHeight`, `letterSpacing`, and
 underline metrics reuse `font-dimension` so that consumers can apply consistent

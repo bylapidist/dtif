@@ -1,0 +1,9 @@
+name: typography nested ref type mismatch
+description: typography fontSize resolves through aliases to a color token
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - typography
+  - refs

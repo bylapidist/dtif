@@ -1,0 +1,9 @@
+name: typography font-dimension refs
+description: typography tokens reuse shared dimension tokens via nested $ref aliases
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - typography
+  - refs

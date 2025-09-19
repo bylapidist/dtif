@@ -19,7 +19,24 @@ async function main() {
     bannerComment
   });
 
-  const output = `${types.trimEnd()}\n`;
+  const customTypes = `
+export type Reference = {
+  $ref: Pointer;
+  [k: string]: unknown;
+};
+
+export interface FontDimensionObject {
+  dimensionType: 'length';
+  value: number;
+  unit: string;
+  fontScale?: boolean;
+  [k: string]: unknown;
+}
+
+export type FontDimension = FontDimensionObject | Reference;
+`;
+
+  const output = `${types.trimEnd()}\n${customTypes.trim()}\n`;
   await fs.writeFile(schemaTypesPath, output);
 }
 
