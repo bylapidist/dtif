@@ -1,0 +1,6 @@
+name: font-invalid-style
+description: font tokens reject invalid font style keywords
+assertions:
+  - schema
+tags:
+  - type:font

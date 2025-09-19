@@ -562,8 +562,7 @@
           "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
         },
         "style": {
-          "type": "string",
-          "pattern": "^(?:[A-Za-z][A-Za-z0-9-]*)(?:\\s+-?(?:\\d+(?:\\.\\d+)?)(?:deg|grad|rad|turn)?)?$",
+          "$ref": "#/$defs/font-style-string",
           "$comment": "MUST conform to CSS <font-style-absolute> grammar (css-fonts-4); angles MUST follow <angle> (css-values-4)."
         },
         "weight": {
