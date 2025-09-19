@@ -11,6 +11,7 @@ import assertMetadata from './assert-metadata.mjs';
 import assertRegistry from './assert-registry.mjs';
 import assertRegistryContactHttpsRegression from './assert-registry-contact-https-regression.mjs';
 import assertRegistryHttpsRegression from './assert-registry-https-regression.mjs';
+import assertPackages from './assert-packages.mjs';
 import codegenCSS from './codegen-css.mjs';
 import codegenIOS from './codegen-ios.mjs';
 import diffSnapshots from './diff-snapshots.mjs';
@@ -53,6 +54,14 @@ if (!registryHttpsRes.valid) {
   failures += registryHttpsRes.errors.length || 1;
 } else {
   console.log('✔ registry spec requires https');
+}
+
+const packagesRes = await assertPackages();
+if (!packagesRes.valid) {
+  console.error('package validation errors:', packagesRes.errors);
+  failures += packagesRes.errors.length || 1;
+} else {
+  console.log('✔ schema and validator packages');
 }
 
 for (const dir of walk(fixturesRoot)) {

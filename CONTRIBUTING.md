@@ -76,6 +76,22 @@ Use the following loop while working on changes:
 
 5. **Commit with clear messages** and open a pull request once all checks pass.
 
+## Release process
+
+The repository is managed as an npm workspace. The schema package (which
+bundles TypeScript declarations) and the validator package share a version
+through [Changesets](https://github.com/changesets/changesets).
+
+1. Run `npm run changeset` to record every user-visible change. Choose the bump type requested by the CLI and describe the
+   change. This writes a markdown file under `.changeset/`.
+2. When preparing a release, run `npm run version-packages` locally to apply pending changesets. This updates package versions
+   and changelog entries in `schema/` and `validator/`.
+3. Merge the resulting pull request. The [`Release`](.github/workflows/release.yml) workflow promotes the changes by creating a
+   release PR or publishing to npm once `NPM_TOKEN` is configured.
+
+All packages must maintain `CHANGELOG.md` files. Tooling assertions fail if they are missing, ensuring every release documents
+the shipped changes.
+
 ## Style guidelines
 
 - Use Prettier for JSON and Markdown formatting.

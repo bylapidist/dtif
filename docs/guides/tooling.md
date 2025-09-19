@@ -23,7 +23,11 @@ and names. Token names _SHOULD_ use slash‑separated paths.
 Transformers _MAY_ map tokens to CSS variables, platform constants,
 or other configuration files. When converting units, tools
 _SHOULD_ honour platform conventions such as `px` to
-`dp` on Android and `pt` on iOS.
+`dp` on Android and `pt` on iOS. Install
+[`@lapidist/dtif-schema`](https://www.npmjs.com/package/@lapidist/dtif-schema)
+to validate inputs and consume the bundled TypeScript declarations, and use
+[`@lapidist/dtif-validator`](https://www.npmjs.com/package/@lapidist/dtif-validator)
+when you need a preconfigured Ajv instance inside CI or build steps.
 
 ## Linting {#linting}
 

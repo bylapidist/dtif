@@ -1,0 +1,38 @@
+{
+  "name": "@lapidist/dtif-validator",
+  "version": "1.0.0",
+  "description": "AJV helper utilities for validating DTIF documents against the official schema.",
+  "type": "module",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "design-tokens",
+    "dtif",
+    "json",
+    "schema",
+    "validation"
+  ],
+  "dependencies": {
+    "@lapidist/dtif-schema": "^1.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtif",
+    "directory": "validator"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

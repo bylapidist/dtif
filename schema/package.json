@@ -1,0 +1,38 @@
+{
+  "name": "@lapidist/dtif-schema",
+  "version": "1.0.0",
+  "description": "JSON Schema for the Design Token Interchange Format (DTIF).",
+  "type": "module",
+  "license": "MIT",
+  "main": "core.json",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./core.json"
+    },
+    "./core": "./core.json",
+    "./core.json": "./core.json",
+    "./index.d.ts": "./index.d.ts"
+  },
+  "files": [
+    "core.json",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "keywords": [
+    "design-tokens",
+    "dtif",
+    "json",
+    "schema"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bylapidist/dtif",
+    "directory": "schema"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
