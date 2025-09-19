@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" aria-labelledby="title desc" viewBox="0 0 1000 512">
+  <defs>
+    <linearGradient id="a" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+  </defs>
+  <g transform="matrix(.5 0 0 .5 -32 128)">
+    <path fill="url(#a)" d="m256 64 192 192-192 192L64 256z"/>
+    <path fill="#111827" d="m256 144 112 112-112 112-112-112z"/>
+    <rect width="60" height="60" x="226" y="226" fill="#F0F9FF" rx="6" transform="rotate(45 256 256)"/>
+  </g>
+  <text x="296" y="50%" fill="#111827" dominant-baseline="central" font-family="Inter, 'SF Pro Text', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif" font-size="256" font-weight="700" lengthAdjust="spacingAndGlyphs" letter-spacing=".02em" textLength="704">
+    DTIF
+  </text>
+</svg>

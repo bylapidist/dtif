@@ -1,12 +1,20 @@
+<!-- markdownlint-disable MD041 -->
+<p>
+  <a href="https://dtif.lapidist.net">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./docs/public/dtif-lockup-dark.svg">
+      <img src="./docs/public/dtif-lockup-light.svg" alt="DTIF Logo" width="200">
+    </picture>
+  </a>
+</p>
+
 # Design Token Interchange Format (DTIF)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/bylapidist/dtif/ci.yml?branch=main&label=CI)](https://github.com/bylapidist/dtif/actions/workflows/ci.yml)
 [![Schema Tests](https://img.shields.io/badge/schema%20tests-passing-brightgreen)](tests/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-> **Status:** Editor's Draft · [Read the documentation](https://dtif.lapidist.net)
-
-<img src="./docs/public/dtif-logo.svg" alt="DTIF logo" width="72" />
+> **Status:** Experimental Editor's Draft · [Read the documentation](https://dtif.lapidist.net)
 
 DTIF is a vendor-neutral JSON specification for exchanging design tokens—colour, typography, spacing, motion, and more—between design tools and codebases. It standardises how tokens are described and referenced without dictating how they are authored or consumed.
 
