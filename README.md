@@ -3,7 +3,7 @@
   <a href="https://dtif.lapidist.net">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./docs/public/dtif-lockup-dark.svg">
-      <img src="./docs/public/dtif-lockup-light.svg" alt="DTIF Logo" width="400">
+      <img src="./docs/public/dtif-lockup-light.svg" alt="DTIF Logo" width="200">
     </picture>
   </a>
 </p>
