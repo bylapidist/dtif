@@ -44,12 +44,16 @@ function getTokenTypeInfo(root, pointer, seen = new Set()) {
   if (!node || typeof node !== 'object') {
     return { node: null, type: undefined };
   }
-  if (typeof node.$type === 'string') {
-    return { node, type: node.$type };
-  }
   if (typeof node.$ref === 'string' && node.$ref.startsWith('#') && !seen.has(pointer)) {
     seen.add(pointer);
-    return getTokenTypeInfo(root, node.$ref, seen);
+    const resolved = getTokenTypeInfo(root, node.$ref, seen);
+    if (resolved.type) {
+      return resolved;
+    }
+    return { node, type: typeof node.$type === 'string' ? node.$type : undefined };
+  }
+  if (typeof node.$type === 'string') {
+    return { node, type: node.$type };
   }
   return { node, type: undefined };
 }

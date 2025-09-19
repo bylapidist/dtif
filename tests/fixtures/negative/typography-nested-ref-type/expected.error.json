@@ -1,0 +1,3 @@
+{
+  "message": "typography fontSize $ref #/dimension/typography/body-size has type color, expected dimension"
+}

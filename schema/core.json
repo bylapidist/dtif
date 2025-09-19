@@ -44,9 +44,7 @@
     "dimensionReference": {
       "oneOf": [{ "$ref": "#/$defs/dimension" }, { "$ref": "#/$defs/reference" }]
     },
-    "fontDimensionReference": {
-      "oneOf": [{ "$ref": "#/$defs/font-dimension" }, { "$ref": "#/$defs/reference" }]
-    },
+    "fontDimensionReference": { "$ref": "#/$defs/font-dimension" },
     "lengthDimensionReference": {
       "oneOf": [{ "$ref": "#/$defs/length-dimension" }, { "$ref": "#/$defs/reference" }]
     },
@@ -468,23 +466,28 @@
       ]
     },
     "font-dimension": {
-      "type": "object",
-      "required": ["dimensionType", "value", "unit"],
-      "properties": {
-        "dimensionType": { "const": "length" },
-        "value": { "type": "number" },
-        "unit": {
-          "type": "string",
-          "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
-          "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["dimensionType", "value", "unit"],
+          "properties": {
+            "dimensionType": { "const": "length" },
+            "value": { "type": "number" },
+            "unit": {
+              "type": "string",
+              "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+              "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
+            },
+            "fontScale": {
+              "type": "boolean",
+              "description": "Whether the value scales with the user's font settings.",
+              "$comment": "When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP)."
+            }
+          },
+          "additionalProperties": false
         },
-        "fontScale": {
-          "type": "boolean",
-          "description": "Whether the value scales with the user's font settings.",
-          "$comment": "When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP)."
-        }
-      },
-      "additionalProperties": false
+        { "$ref": "#/$defs/reference" }
+      ]
     },
     "length-dimension": {
       "type": "object",

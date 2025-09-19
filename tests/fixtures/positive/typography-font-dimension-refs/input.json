@@ -1,0 +1,83 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "dimension": {
+    "aliases": {
+      "body-line": {
+        "$type": "dimension",
+        "$ref": "#/dimension/scale/body-line-height"
+      },
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/dimension/scale/body-size"
+      },
+      "tight-letter-spacing": {
+        "$type": "dimension",
+        "$ref": "#/dimension/scale/tight-letter-spacing"
+      }
+    },
+    "scale": {
+      "body-line-height": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "body-size": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "body-word-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        }
+      },
+      "tight-letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": -0.5,
+          "unit": "px"
+        }
+      }
+    },
+    "typography": {
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$ref": "#/dimension/aliases/tight-letter-spacing"
+      },
+      "body-line-height": {
+        "$type": "dimension",
+        "$ref": "#/dimension/aliases/body-line"
+      },
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/dimension/aliases/body-size"
+      },
+      "body-word-spacing": {
+        "$type": "dimension",
+        "$ref": "#/dimension/scale/body-word-spacing"
+      }
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "$ref": "#/dimension/typography/body-size" },
+        "letterSpacing": { "$ref": "#/dimension/typography/body-letter-spacing" },
+        "lineHeight": { "$ref": "#/dimension/typography/body-line-height" },
+        "wordSpacing": { "$ref": "#/dimension/typography/body-word-spacing" }
+      }
+    }
+  }
+}

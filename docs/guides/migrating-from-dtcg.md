@@ -444,7 +444,7 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
     }
   },
   "dimension": {
-    "typography": {
+    "shared": {
       "body-size": {
         "$type": "dimension",
         "$value": {
@@ -469,6 +469,20 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
           "unit": "px"
         }
       }
+    },
+    "typography": {
+      "body-size": {
+        "$type": "dimension",
+        "$ref": "#/dimension/shared/body-size"
+      },
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$ref": "#/dimension/shared/body-letter-spacing"
+      },
+      "body-line-height": {
+        "$type": "dimension",
+        "$ref": "#/dimension/shared/body-line-height"
+      }
     }
   },
   "typography": {
@@ -488,8 +502,9 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
 
 Consolidate font metadata into a reusable `font` token, encode fallback stacks with the
 `fallbacks` property, and promote repeated measurements to standalone `dimension` tokens.
-Reference those measurements from `typography` tokens via `$ref` so existing aliases remain
-intact during the migration.
+Reference those measurements from `typography` tokens via `$ref`. Alias tokens can
+forward to other dimension tokens, so nested pointers keep shared measurements in one
+place while the typography composite stays well-typed.
 
 ## Convert composite tokens {#composite-tokens}
 
