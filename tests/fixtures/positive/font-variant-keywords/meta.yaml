@@ -1,0 +1,7 @@
+name: font-variant-keywords
+description: typography tokens with valid fontVariant sequences
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

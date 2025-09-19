@@ -88,6 +88,7 @@ const DURATION_UNIT_RULES = [
     units: new Set(['%'])
   }
 ];
+const FONT_VARIANT_PATTERN = new RegExp(schema.$defs['font-variant-string'].pattern, 'iu');
 
 function parseFontWeightAbsoluteValue(token) {
   if (typeof token !== 'string') {
@@ -153,6 +154,17 @@ function isValidFontStretch(value) {
     return false;
   }
   return FONT_STRETCH_PATTERN.test(normalized);
+}
+
+function isValidFontVariant(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  const normalized = value.trim();
+  if (!normalized) {
+    return false;
+  }
+  return FONT_VARIANT_PATTERN.test(normalized);
 }
 
 function getMotionCategory(motionType) {
@@ -677,6 +689,14 @@ export default function assertTypeCompat(doc) {
               message: 'wordSpacing dimensionType must be "length"'
             });
           }
+        }
+        const fontVariant = node.$value.fontVariant;
+        if (typeof fontVariant === 'string' && !isValidFontVariant(fontVariant)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontVariant`,
+            message: 'invalid keyword'
+          });
         }
         const fontStretch = node.$value.fontStretch;
         if (typeof fontStretch === 'string' && !isValidFontStretch(fontStretch)) {
