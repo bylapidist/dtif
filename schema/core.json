@@ -564,7 +564,7 @@
         "weight": {
           "oneOf": [
             {
-              "type": "integer",
+              "type": "number",
               "minimum": 1,
               "maximum": 1000,
               "$comment": "Numeric weights MUST follow the 1..1000 range defined by CSS Fonts (css-fonts-4)."
