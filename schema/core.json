@@ -657,6 +657,7 @@
         },
         "fontDisplay": {
           "type": "string",
+          "pattern": "^(?:[Aa][Uu][Tt][Oo]|[Bb][Ll][Oo][Cc][Kk]|[Ss][Ww][Aa][Pp]|[Ff][Aa][Ll][Ll][Bb][Aa][Cc][Kk]|[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll])$",
           "$comment": "Display strategy MUST use the css-fonts-4 font-display keywords; native runtimes map these hints to preload/async policies."
         }
       },
