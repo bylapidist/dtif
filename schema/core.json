@@ -931,8 +931,7 @@
                     "$comment": "Normalised hints map to native midpoint interpolation controls."
                   },
                   {
-                    "type": "string",
-                    "pattern": "\\S",
+                    "$ref": "#/$defs/color-stop-length-string",
                     "$comment": "MUST conform to the <color-hint> productions described in CSS Images Module Level 4."
                   }
                 ]
