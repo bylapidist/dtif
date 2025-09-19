@@ -1,0 +1,11 @@
+name: color-hex
+description: validates optional hex and alpha members on sRGB colours
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:color
+  - color-space

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "hexOnly": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 0.5, 0.25],
+        "hex": "#ff8040"
+      }
+    },
+    "packed": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.2, 0.6, 0.7, 0.9],
+        "hex": "#3399b3e6"
+      }
+    },
+    "short": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.2, 0.4, 0.6, 0.9],
+        "hex": "#369",
+        "alpha": 0.9
+      }
+    },
+    "withAlpha": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.1, 0.2, 0.3, 0.5],
+        "hex": "#19334c",
+        "alpha": 0.5
+      }
+    }
+  }
+}
