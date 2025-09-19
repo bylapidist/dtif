@@ -1,0 +1,9 @@
+name: font-face-oblique-style
+description: fontFace and typography tokens accept oblique fontStyle angles
+assertions:
+  - schema
+  - type-compat
+  - roundtrip
+tags:
+  - fontFace
+  - typography

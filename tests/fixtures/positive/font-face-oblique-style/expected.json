@@ -1,0 +1,26 @@
+{
+  "fontFace": {
+    "oblique": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Example Sans",
+        "src": [{ "local": "Example Sans" }],
+        "fontStyle": "oblique 14deg"
+      }
+    }
+  },
+  "typography": {
+    "slanted": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Example Sans",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 1.125,
+          "unit": "rem"
+        },
+        "fontStyle": "oblique -0.25turn"
+      }
+    }
+  }
+}

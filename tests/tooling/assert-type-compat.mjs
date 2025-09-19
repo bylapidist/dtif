@@ -67,6 +67,8 @@ const FONT_WEIGHT_ABSOLUTE_KEYWORDS = new Map([
 ]);
 const FONT_WEIGHT_RELATIVE_KEYWORDS = new Set(['bolder', 'lighter']);
 const FONT_WEIGHT_NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
+const FONT_STYLE_PATTERN =
+  /^(?:normal|italic|oblique(?:\s+[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?(?:deg|grad|rad|turn))?)$/i;
 
 function parseFontWeightAbsoluteValue(token) {
   if (typeof token !== 'string') {
@@ -110,6 +112,17 @@ function isValidFontWeightString(value) {
     }
   }
   return false;
+}
+
+function isValidFontStyle(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  const normalized = value.trim();
+  if (!normalized) {
+    return false;
+  }
+  return FONT_STYLE_PATTERN.test(normalized);
 }
 
 function getMotionCategory(motionType) {
@@ -537,6 +550,14 @@ export default function assertTypeCompat(doc) {
         checkShadowDimension(node.$value.spread, 'spread');
       }
       if (node.$type === 'fontFace' && node.$value && typeof node.$value === 'object') {
+        const fs = node.$value.fontStyle;
+        if (typeof fs === 'string' && !isValidFontStyle(fs)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontStyle`,
+            message: 'invalid keyword'
+          });
+        }
         const fw = node.$value.fontWeight;
         if (typeof fw === 'string' && !isValidFontWeightString(fw)) {
           errors.push({
@@ -589,6 +610,14 @@ export default function assertTypeCompat(doc) {
           errors.push({
             code: 'E_INVALID_KEYWORD',
             path: `${path}/$value/fontWeight`,
+            message: 'invalid keyword'
+          });
+        }
+        const fs = node.$value.fontStyle;
+        if (typeof fs === 'string' && !isValidFontStyle(fs)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontStyle`,
             message: 'invalid keyword'
           });
         }
