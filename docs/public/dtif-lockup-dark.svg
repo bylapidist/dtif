@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 512" role="img" aria-labelledby="title desc">
+  <title id="title">DTIF Logo Lockup – Dark</title>
+  <desc id="desc">Split diamond glyph with light wordmark for dark backgrounds.</desc>
+
+  <defs>
+    <linearGradient id="gradSolar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Brand Mark (identical to light mode) -->
+  <g transform="translate(0,128) scale(0.5)">
+    <polygon points="256,64 448,256 256,448 64,256" fill="url(#gradSolar)"/>
+    <polygon points="256,144 368,256 256,368 144,256" fill="#111827"/>
+    <rect x="226" y="226" width="60" height="60" rx="6" transform="rotate(45 256 256)" fill="#F0F9FF"/>
+  </g>
+
+  <!-- Wordmark (white for dark backgrounds) -->
+  <text
+    x="296"
+    y="50%"
+    dominant-baseline="central"
+    font-size="256"
+    font-weight="700"
+    letter-spacing="0.02em"
+    font-family="Inter, 'SF Pro Text', -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif"
+    fill="#F9FAFB">
+    DTIF
+  </text>
+</svg>
