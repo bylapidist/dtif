@@ -1,0 +1,5 @@
+name: word-spacing-invalid-dimension-type
+description: wordSpacing must use length dimensions
+assertions:
+  - type-compat
+tags: [typography]

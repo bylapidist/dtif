@@ -709,7 +709,7 @@
         "wordSpacing": {
           "$comment": "MUST conform to CSS word-spacing <length-percentage> grammar and platform unit semantics.",
           "oneOf": [
-            { "$ref": "#/$defs/dimension" },
+            { "$ref": "#/$defs/font-dimension" },
             {
               "type": "string",
               "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 word-spacing grammar."

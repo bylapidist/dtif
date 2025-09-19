@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_WORD_SPACING_DIMENSION_TYPE",
+    "path": "/typography/bad/$value/wordSpacing/dimensionType",
+    "message": "wordSpacing dimensionType must be \"length\""
+  }
+}
