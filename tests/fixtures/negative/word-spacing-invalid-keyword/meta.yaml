@@ -1,0 +1,5 @@
+name: word-spacing-invalid-keyword
+description: unrecognised wordSpacing keyword
+assertions:
+  - type-compat
+tags: [typography]

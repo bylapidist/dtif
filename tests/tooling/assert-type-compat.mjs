@@ -478,6 +478,14 @@ export default function assertTypeCompat(doc) {
             message: 'invalid keyword'
           });
         }
+        const ws = node.$value.wordSpacing;
+        if (typeof ws === 'string' && ws !== 'normal') {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/wordSpacing`,
+            message: 'invalid keyword'
+          });
+        }
         const fw = node.$value.fontWeight;
         if (typeof fw === 'string' && !CSS_FONT_WEIGHT_KEYWORDS.has(fw)) {
           errors.push({
