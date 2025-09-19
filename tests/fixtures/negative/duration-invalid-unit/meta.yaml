@@ -1,0 +1,3 @@
+name: duration-invalid-unit
+description: duration tokens reject unsupported unit keywords for their durationType
+tags: [duration]

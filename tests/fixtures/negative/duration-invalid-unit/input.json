@@ -1,0 +1,13 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "duration": {
+    "badUnit": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 200,
+        "unit": "banana"
+      }
+    }
+  }
+}
