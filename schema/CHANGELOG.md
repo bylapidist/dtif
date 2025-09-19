@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- initial release
+
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
