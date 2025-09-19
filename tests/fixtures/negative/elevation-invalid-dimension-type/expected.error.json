@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_ELEVATION_DIMENSION_TYPE",
+    "path": "/elevation/bad/$value/offset/dimensionType",
+    "message": "offset dimensionType must be \"length\""
+  }
+}

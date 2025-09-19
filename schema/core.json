@@ -1403,11 +1403,11 @@
           "$comment": "MUST identify the rendering context defined by CSS <shadow> functions, UIKit CALayer/NSShadow properties, or Android elevation/shadow APIs (for example css.box-shadow.surface, ios.layer.surface, android.paint.shadow-layer.surface)."
         },
         "offset": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Vertical offset MUST conform to CSS <length> grammar and map to CALayer.shadowOffset.height, Paint#setShadowLayer dy, or View#setElevation displacement."
         },
         "blur": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
         },
         "color": {
