@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_SHADOW_DIMENSION_TYPE",
+    "path": "/shadow/bad/$value/offsetX/dimensionType",
+    "message": "offsetX dimensionType must be \"length\""
+  }
+}

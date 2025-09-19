@@ -847,19 +847,19 @@
           "$comment": "MUST identify the rendering context defined by CSS <shadow> grammars, UIKit CALayer/NSShadow APIs, or Android View/Paint shadow documentation (e.g. css.box-shadow, css.text-shadow, css.filter.drop-shadow, ios.layer, ios.text, android.view.elevation)."
         },
         "offsetX": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Horizontal offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
         },
         "offsetY": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Vertical offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
         },
         "blur": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
         },
         "spread": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Optional spread MUST follow the final <length> of CSS <shadow> and is realised via CALayer.shadowPath or Android outline inflation."
         },
         "color": {

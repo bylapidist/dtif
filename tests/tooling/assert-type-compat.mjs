@@ -518,6 +518,24 @@ export default function assertTypeCompat(doc) {
           }
         }
       }
+      if (node.$type === 'shadow' && node.$value && typeof node.$value === 'object') {
+        const checkShadowDimension = (dimension, prop) => {
+          if (!dimension || typeof dimension !== 'object' || Array.isArray(dimension)) {
+            return;
+          }
+          if (dimension.dimensionType !== 'length') {
+            errors.push({
+              code: 'E_SHADOW_DIMENSION_TYPE',
+              path: `${path}/$value/${prop}/dimensionType`,
+              message: `${prop} dimensionType must be "length"`
+            });
+          }
+        };
+        checkShadowDimension(node.$value.offsetX, 'offsetX');
+        checkShadowDimension(node.$value.offsetY, 'offsetY');
+        checkShadowDimension(node.$value.blur, 'blur');
+        checkShadowDimension(node.$value.spread, 'spread');
+      }
       if (node.$type === 'fontFace' && node.$value && typeof node.$value === 'object') {
         const fw = node.$value.fontWeight;
         if (typeof fw === 'string' && !isValidFontWeightString(fw)) {

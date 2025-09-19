@@ -1,0 +1,6 @@
+name: shadow-invalid-dimension
+description: shadow dimensions must use length units
+assertions:
+  - schema
+  - type-compat
+tags: [shadow]
