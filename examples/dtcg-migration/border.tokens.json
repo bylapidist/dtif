@@ -35,7 +35,18 @@
     "focus": {
       "$type": "strokeStyle",
       "$value": {
-        "dashArray": [4, 2],
+        "dashArray": [
+          {
+            "dimensionType": "length",
+            "value": 4,
+            "unit": "px"
+          },
+          {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "px"
+          }
+        ],
         "lineCap": "round"
       }
     }
