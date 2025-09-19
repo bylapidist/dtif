@@ -1,0 +1,6 @@
+name: font-face-invalid-stretch
+description: fontFace tokens reject invalid fontStretch keywords
+assertions:
+  - type-compat
+tags:
+  - fontFace

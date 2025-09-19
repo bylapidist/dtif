@@ -1,0 +1,10 @@
+name: font-stretch-percentage
+description: fontStretch accepts percentage values in fontFace and typography tokens
+assertions:
+  - schema
+  - type-compat
+  - ordering
+  - roundtrip
+tags:
+  - fontFace
+  - typography

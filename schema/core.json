@@ -548,6 +548,11 @@
       "pattern": "^(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Ii][Tt][Aa][Ll][Ii][Cc]|[Oo][Bb][Ll][Ii][Qq][Uu][Ee](?:\\s+[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn]))?)$",
       "$comment": "Font style keywords MUST match CSS font-style grammar, optionally supplying an oblique angle (css-fonts-4, css-values-4)."
     },
+    "font-stretch-string": {
+      "type": "string",
+      "pattern": "^(?:[Nn][Oo][Rr][Mm][Aa][Ll]|(?:[Uu][Ll][Tt][Rr][Aa]|[Ee][Xx][Tt][Rr][Aa]|[Ss][Ee][Mm][Ii])-[Cc][Oo][Nn][Dd][Ee][Nn][Ss][Ee][Dd]|[Cc][Oo][Nn][Dd][Ee][Nn][Ss][Ee][Dd]|(?:[Ss][Ee][Mm][Ii]|[Ee][Xx][Tt][Rr][Aa]|[Uu][Ll][Tt][Rr][Aa])-[Ee][Xx][Pp][Aa][Nn][Dd][Ee][Dd]|[Ee][Xx][Pp][Aa][Nn][Dd][Ee][Dd]|\\+?(?:0*(?:[1-9]\\d{0,2})(?:\\.\\d+)?|0*1000(?:\\.0+)?)%)$",
+      "$comment": "Font stretch values MUST match CSS <font-stretch-absolute> grammar (css-fonts-4)."
+    },
     "font": {
       "type": "object",
       "required": ["fontType", "family"],
@@ -651,7 +656,7 @@
           "$comment": "MUST conform to CSS font-style descriptor grammar (css-fonts-4); oblique angles map to the slnt variation axis per UIFontDescriptor.AttributeName.variations and Typeface.Builder#setFontVariationSettings (IOS-FONT-VARIATIONS, ANDROID-FONT-VARIATION)."
         },
         "fontStretch": {
-          "type": "string",
+          "$ref": "#/$defs/font-stretch-string",
           "$comment": "Stretch keywords MUST follow CSS <font-stretch-absolute> grammar (css-fonts-4)."
         },
         "unicodeRange": {
@@ -741,7 +746,7 @@
           "$comment": "MUST match the CSS font-variant grammar when present."
         },
         "fontStretch": {
-          "type": "string",
+          "$ref": "#/$defs/font-stretch-string",
           "$comment": "MUST match the CSS font-stretch grammar when present."
         },
         "textDecoration": {

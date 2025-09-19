@@ -69,6 +69,8 @@ const FONT_WEIGHT_RELATIVE_KEYWORDS = new Set(['bolder', 'lighter']);
 const FONT_WEIGHT_NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
 const FONT_STYLE_PATTERN =
   /^(?:normal|italic|oblique(?:\s+[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?(?:deg|grad|rad|turn))?)$/i;
+const FONT_STRETCH_PATTERN =
+  /^(?:normal|ultra-condensed|extra-condensed|condensed|semi-condensed|semi-expanded|expanded|extra-expanded|ultra-expanded|\+?(?:0*(?:[1-9]\d{0,2})(?:\.\d+)?|0*1000(?:\.0+)?)%)$/i;
 const FONT_FEATURE_TAG_PATTERN = /^[A-Za-z0-9]{4}$/;
 
 function parseFontWeightAbsoluteValue(token) {
@@ -124,6 +126,17 @@ function isValidFontStyle(value) {
     return false;
   }
   return FONT_STYLE_PATTERN.test(normalized);
+}
+
+function isValidFontStretch(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  const normalized = value.trim();
+  if (!normalized) {
+    return false;
+  }
+  return FONT_STRETCH_PATTERN.test(normalized);
 }
 
 function getMotionCategory(motionType) {
@@ -567,6 +580,14 @@ export default function assertTypeCompat(doc) {
             message: 'invalid keyword'
           });
         }
+        const fst = node.$value.fontStretch;
+        if (typeof fst === 'string' && !isValidFontStretch(fst)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontStretch`,
+            message: 'invalid keyword'
+          });
+        }
       }
       if (node.$type === 'typography' && node.$value && typeof node.$value === 'object') {
         const fontSize = node.$value.fontSize;
@@ -605,6 +626,14 @@ export default function assertTypeCompat(doc) {
               message: 'wordSpacing dimensionType must be "length"'
             });
           }
+        }
+        const fontStretch = node.$value.fontStretch;
+        if (typeof fontStretch === 'string' && !isValidFontStretch(fontStretch)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontStretch`,
+            message: 'invalid keyword'
+          });
         }
         const fw = node.$value.fontWeight;
         if (typeof fw === 'string' && !isValidFontWeightString(fw)) {
