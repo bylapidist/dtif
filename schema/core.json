@@ -715,6 +715,7 @@
             { "$ref": "#/$defs/font-dimension" },
             {
               "type": "string",
+              "enum": ["normal"],
               "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 letter-spacing grammar."
             }
           ]

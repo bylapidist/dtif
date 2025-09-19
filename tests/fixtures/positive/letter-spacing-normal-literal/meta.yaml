@@ -1,0 +1,7 @@
+name: letter-spacing-normal-literal
+description: typography token with literal keyword letterSpacing
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

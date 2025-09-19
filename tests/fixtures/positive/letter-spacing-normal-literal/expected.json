@@ -1,0 +1,17 @@
+{
+  "typography": {
+    "normalLiteral": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": "normal"
+      }
+    }
+  }
+}
