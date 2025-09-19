@@ -543,6 +543,11 @@
       "pattern": "^(?:[Bb][Oo][Ll][Dd][Ee][Rr]|[Ll][Ii][Gg][Hh][Tt][Ee][Rr]|(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Bb][Oo][Ll][Dd]|\\+?(?:0*(?:[1-9]\\d{0,2})(?:\\.\\d+)?|0*1000(?:\\.0+)?))(?:\\s+(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Bb][Oo][Ll][Dd]|\\+?(?:0*(?:[1-9]\\d{0,2})(?:\\.\\d+)?|0*1000(?:\\.0+)?)))?)$",
       "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
     },
+    "font-style-string": {
+      "type": "string",
+      "pattern": "^(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Ii][Tt][Aa][Ll][Ii][Cc]|[Oo][Bb][Ll][Ii][Qq][Uu][Ee](?:\\s+[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn]))?)$",
+      "$comment": "Font style keywords MUST match CSS font-style grammar, optionally supplying an oblique angle (css-fonts-4, css-values-4)."
+    },
     "font": {
       "type": "object",
       "required": ["fontType", "family"],
@@ -643,7 +648,7 @@
           ]
         },
         "fontStyle": {
-          "type": "string",
+          "$ref": "#/$defs/font-style-string",
           "$comment": "MUST conform to CSS font-style descriptor grammar (css-fonts-4); oblique angles map to the slnt variation axis per UIFontDescriptor.AttributeName.variations and Typeface.Builder#setFontVariationSettings (IOS-FONT-VARIATIONS, ANDROID-FONT-VARIATION)."
         },
         "fontStretch": {
@@ -729,7 +734,7 @@
           ]
         },
         "fontStyle": {
-          "type": "string",
+          "$ref": "#/$defs/font-style-string",
           "$comment": "MUST conform to CSS font-style grammar and map to native italic traits or the slnt variation axis (css-fonts-4, IOS-FONT-TRAITS, IOS-FONT-VARIATIONS, ANDROID-FONT-SLANT, ANDROID-FONT-VARIATION)."
         },
         "fontVariant": {
