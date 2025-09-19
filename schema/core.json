@@ -99,39 +99,11 @@
     },
     "type-identifier": {
       "title": "Token type identifier",
-      "description": "Registered DTIF $type or vendor-specific reverse-DNS identifier per Format and serialisation §$type.",
-      "oneOf": [
-        {
-          "type": "string",
-          "enum": [
-            "border",
-            "color",
-            "component",
-            "cursor",
-            "dimension",
-            "duration",
-            "easing",
-            "elevation",
-            "filter",
-            "font",
-            "fontFace",
-            "gradient",
-            "line-height",
-            "motion",
-            "opacity",
-            "shadow",
-            "strokeStyle",
-            "typography",
-            "z-index"
-          ],
-          "$comment": "Registered primitives and composites defined by the DTIF registry (registry/types.json)."
-        },
-        {
-          "type": "string",
-          "pattern": "^[a-z0-9]+(?:\\.[a-z0-9-]+)+$",
-          "$comment": "Vendor-specific types MUST use lower-case reverse-DNS identifiers (Format and serialisation §$type, Extensibility §custom-types)."
-        }
-      ]
+      "description": "Registered DTIF $type or vendor-defined identifier per Format and serialisation §$type.",
+      "type": "string",
+      "pattern": "^(?:[A-Za-z][A-Za-z0-9_-]*)(?:\\.[A-Za-z0-9_-]+)*$",
+      "$comment": "Format and serialisation §$type: registry types include border, color, component, cursor, dimension, duration, easing, elevation, filter, font, fontFace, gradient, line-height, motion, opacity, shadow, strokeStyle, typography, and z-index. Vendors MAY mint additional identifiers and SHOULD namespace them (Extensibility §extensibility) but the schema accepts any dot-separated ASCII identifier without whitespace.",
+      "examples": ["color", "typography", "com.example.tokens.radius"]
     },
     "metadata-members": {
       "title": "Metadata members",

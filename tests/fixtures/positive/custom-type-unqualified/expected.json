@@ -1,0 +1,8 @@
+{
+  "experimental": {
+    "radius": {
+      "$type": "radius",
+      "$value": { "magnitude": 8, "unit": "px" }
+    }
+  }
+}

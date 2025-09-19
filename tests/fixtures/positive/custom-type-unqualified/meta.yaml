@@ -1,0 +1,6 @@
+name: custom-type-unqualified
+description: custom $type values without namespaces are accepted and preserved
+assertions:
+  - schema
+tags:
+  - type

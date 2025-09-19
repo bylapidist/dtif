@@ -152,31 +152,9 @@ export type TokenCore = {
   [k: string]: unknown;
 };
 /**
- * Registered DTIF $type or vendor-specific reverse-DNS identifier per Format and serialisation §$type.
+ * Registered DTIF $type or vendor-defined identifier per Format and serialisation §$type.
  */
-export type TokenTypeIdentifier =
-  | (
-      | "border"
-      | "color"
-      | "component"
-      | "cursor"
-      | "dimension"
-      | "duration"
-      | "easing"
-      | "elevation"
-      | "filter"
-      | "font"
-      | "fontFace"
-      | "gradient"
-      | "line-height"
-      | "motion"
-      | "opacity"
-      | "shadow"
-      | "strokeStyle"
-      | "typography"
-      | "z-index"
-    )
-  | string;
+export type TokenTypeIdentifier = string;
 /**
  * Ensures $lastUsed timestamps and $usageCount counters follow Metadata §table requirements.
  */

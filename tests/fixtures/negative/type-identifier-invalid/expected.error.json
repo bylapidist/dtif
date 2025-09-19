@@ -1,1 +1,1 @@
-{ "error": "Schema validation error: $type must be a registered identifier or reverse-DNS string" }
+{ "error": "Schema validation error: $type identifiers must not contain whitespace" }

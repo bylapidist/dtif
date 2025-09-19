@@ -1,5 +1,5 @@
 name: custom-type-identifier
-description: vendor-specific $type identifiers must use reverse-DNS form
+description: vendor-specific $type identifiers using reverse-DNS prefixes remain valid
 assertions:
   - schema
   - type-compat

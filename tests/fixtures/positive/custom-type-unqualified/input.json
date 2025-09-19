@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "experimental": {
+    "radius": {
+      "$type": "radius",
+      "$value": { "magnitude": 8, "unit": "px" }
+    }
+  }
+}
