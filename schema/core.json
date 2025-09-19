@@ -32,6 +32,11 @@
         }
       ]
     },
+    "css-ident": {
+      "type": "string",
+      "pattern": "^-{0,2}[A-Za-z_][A-Za-z0-9_-]*$",
+      "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions (css-values-4)."
+    },
     "override": {
       "type": "object",
       "properties": {
@@ -493,8 +498,7 @@
       "required": ["colorSpace", "components"],
       "properties": {
         "colorSpace": {
-          "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "$ref": "#/$defs/css-ident",
           "$comment": "MUST be a CSS <ident> naming a colour space defined by CSS Color 4 or registered via @color-profile (css-color-4)."
         },
         "components": {

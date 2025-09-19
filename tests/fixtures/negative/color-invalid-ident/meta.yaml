@@ -1,0 +1,4 @@
+name: color invalid ident
+description: rejects color spaces that are not CSS identifiers
+assertions:
+  - schema
