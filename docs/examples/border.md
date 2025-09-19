@@ -5,7 +5,7 @@ description: Cross-platform border strokes with per-corner radii and style metad
 
 # Border tokens {#border}
 
-This example maps card and focus borders onto CSS outlines, UIKit layers, and Android drawables. It demonstrates dotted, dashed, and solid styles while keeping per-corner radii aligned across platforms.
+This example maps card and focus borders onto CSS outlines, UIKit layers, and Android drawables. It demonstrates dotted, dashed, and solid styles while keeping per-corner radii aligned across platforms, and reuses `strokeStyle` tokens to share dash metadata between borders.
 
 See [`border.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples/border.tokens.json) for the complete document.
 
@@ -51,6 +51,51 @@ See [`border.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
         }
       }
     },
+    "cardOutlineIos": {
+      "$type": "border",
+      "$value": {
+        "borderType": "ios.layer",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.141, 0.286, 0.486, 1]
+        },
+        "radius": {
+          "bottomLeft": {
+            "x": {
+              "dimensionType": "length",
+              "value": 20,
+              "unit": "pt"
+            }
+          },
+          "topLeft": {
+            "x": {
+              "dimensionType": "length",
+              "value": 12,
+              "unit": "pt"
+            },
+            "y": {
+              "dimensionType": "length",
+              "value": 8,
+              "unit": "pt"
+            }
+          },
+          "topRight": {
+            "x": {
+              "dimensionType": "length",
+              "value": 20,
+              "unit": "pt"
+            }
+          }
+        },
+        "style": "dashed",
+        "strokeStyle": { "$ref": "#/strokeStyle/cardDashed" },
+        "width": {
+          "dimensionType": "length",
+          "value": 1.5,
+          "unit": "pt"
+        }
+      }
+    },
     "focusRing": {
       "$type": "border",
       "$value": {
@@ -65,11 +110,24 @@ See [`border.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
           "unit": "pt"
         },
         "style": "solid",
+        "strokeStyle": {
+          "lineCap": "round"
+        },
         "width": {
           "dimensionType": "length",
           "value": 2,
           "unit": "pt"
         }
+      }
+    }
+  },
+  "strokeStyle": {
+    "cardDashed": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [6, 3],
+        "lineCap": "round",
+        "lineJoin": "round"
       }
     }
   }

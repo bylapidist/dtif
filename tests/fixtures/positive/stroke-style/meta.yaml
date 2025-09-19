@@ -1,0 +1,7 @@
+name: stroke-style
+description: strokeStyle tokens and borders with structured dash metadata
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [border]

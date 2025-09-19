@@ -66,6 +66,7 @@
           "unit": "pt"
         },
         "style": "solid",
+        "strokeStyle": { "$ref": "#/strokeStyle/focusRing" },
         "width": {
           "dimensionType": "length",
           "value": 2,
@@ -122,6 +123,7 @@
           }
         },
         "style": "dashed",
+        "strokeStyle": { "$ref": "#/strokeStyle/iosCard" },
         "width": {
           "dimensionType": "length",
           "value": 1.5,
@@ -1258,6 +1260,22 @@
       "$author": "Designer",
       "$tags": ["shadow", "inner"],
       "$hash": "33aa04418deebfbd8e0574e638607ce63a4df8a3ea00bafbb4f9751b7c34d3f7"
+    }
+  },
+  "strokeStyle": {
+    "focusRing": {
+      "$type": "strokeStyle",
+      "$value": {
+        "lineCap": "round"
+      }
+    },
+    "iosCard": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [6, 3],
+        "lineCap": "round",
+        "lineJoin": "round"
+      }
     }
   },
   "themes": {

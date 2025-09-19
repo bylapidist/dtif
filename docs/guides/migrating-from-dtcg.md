@@ -512,6 +512,15 @@ richer schemas for these structures.
 ```json
 {
   "$version": "1.0.0",
+  "strokeStyle": {
+    "focus": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [4, 2],
+        "lineCap": "round"
+      }
+    }
+  },
   "border": {
     "focus-outline": {
       "$type": "border",
@@ -522,16 +531,11 @@ richer schemas for these structures.
           "components": [0.0, 0.435, 1.0, 1.0]
         },
         "style": "solid",
+        "strokeStyle": { "$ref": "#/strokeStyle/focus" },
         "width": {
           "dimensionType": "length",
           "value": 2,
           "unit": "px"
-        }
-      },
-      "$extensions": {
-        "org.example.stroke": {
-          "dashArray": [4, 2],
-          "lineCap": "round"
         }
       }
     }
@@ -539,8 +543,9 @@ richer schemas for these structures.
 }
 ```
 
-DTIF `border` tokens capture the rendering context through `borderType` and store
-platform-specific stroke details inside vendor extensions.
+DTIF `border` tokens capture the rendering context through `borderType`, reuse
+stroke metadata via a first-class `strokeStyle` token, and avoid vendor
+extensions for dash patterns.
 
 ### Shadows {#shadows}
 

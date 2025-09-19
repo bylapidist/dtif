@@ -446,6 +446,32 @@ export default function assertTypeCompat(doc) {
           }
         }
       }
+      if (node.$type === 'border' && node.$value && typeof node.$value === 'object') {
+        const stroke = node.$value.strokeStyle;
+        if (
+          stroke &&
+          typeof stroke === 'object' &&
+          Object.prototype.hasOwnProperty.call(stroke, '$ref') &&
+          typeof stroke.$ref === 'string'
+        ) {
+          const { type: strokeType } = getTokenTypeInfo(doc, stroke.$ref, new Set());
+          const errorBase = {
+            code: 'E_BORDER_STROKE_STYLE_TYPE',
+            path: `${path}/$value/strokeStyle/$ref`
+          };
+          if (!strokeType) {
+            errors.push({
+              ...errorBase,
+              message: `border strokeStyle $ref ${stroke.$ref} must resolve to a token that declares $type strokeStyle`
+            });
+          } else if (strokeType !== 'strokeStyle') {
+            errors.push({
+              ...errorBase,
+              message: `border strokeStyle $ref ${stroke.$ref} has type ${strokeType}, expected strokeStyle`
+            });
+          }
+        }
+      }
       if (node.$type === 'component' && node.$value && typeof node.$value === 'object') {
         const slots = node.$value.$slots;
         if (slots && typeof slots === 'object') {

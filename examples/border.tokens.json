@@ -75,6 +75,7 @@
           }
         },
         "style": "dashed",
+        "strokeStyle": { "$ref": "#/strokeStyle/cardDashed" },
         "width": {
           "dimensionType": "length",
           "value": 1.5,
@@ -96,11 +97,24 @@
           "unit": "pt"
         },
         "style": "solid",
+        "strokeStyle": {
+          "lineCap": "round"
+        },
         "width": {
           "dimensionType": "length",
           "value": 2,
           "unit": "pt"
         }
+      }
+    }
+  },
+  "strokeStyle": {
+    "cardDashed": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [6, 3],
+        "lineCap": "round",
+        "lineJoin": "round"
       }
     }
   }

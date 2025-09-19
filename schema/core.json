@@ -229,6 +229,16 @@
           }
         },
         {
+          "if": { "properties": { "$type": { "const": "strokeStyle" } }, "required": ["$type"] },
+          "then": {
+            "properties": {
+              "$value": {
+                "oneOf": [{ "$ref": "#/$defs/strokeStyle" }, { "$ref": "#/$defs/function" }]
+              }
+            }
+          }
+        },
+        {
           "if": { "properties": { "$type": { "const": "cursor" } }, "required": ["$type"] },
           "then": {
             "properties": {
@@ -860,6 +870,18 @@
           "pattern": "^[a-z-]+$",
           "$comment": "MUST match CSS <line-style> keywords; native implementations map them to dash patterns or fall back to solid."
         },
+        "strokeStyle": {
+          "oneOf": [
+            { "$ref": "#/$defs/strokeStyle" },
+            {
+              "type": "object",
+              "required": ["$ref"],
+              "properties": { "$ref": { "$ref": "#/$defs/pointer" } },
+              "additionalProperties": false
+            }
+          ],
+          "$comment": "Optional strokeStyle metadata MUST capture dash, cap, and join semantics compatible with CSS border-image, SVG stroke, CAShapeLayer.lineDashPattern, and Android Paint#setPathEffect."
+        },
         "color": {
           "$ref": "#/$defs/color",
           "$comment": "Border colour MUST conform to CSS <color> values and convert to CGColor or Android colour integers."
@@ -887,6 +909,58 @@
               "$comment": "Per-corner entries MUST follow border-radius semantics with names matching physical or logical corners."
             }
           ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "strokeStyle": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "dashArray": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "$comment": "Numeric dash intervals MUST follow the <number> grammar used by SVG stroke-dasharray and CanvasRenderingContext2D.setLineDash."
+              },
+              {
+                "$ref": "#/$defs/length-dimension",
+                "$comment": "Length dash intervals MUST conform to the <length> production accepted by SVG stroke-dasharray and CSS border-image repeat lengths."
+              }
+            ]
+          },
+          "$comment": "Sequence of dash and gap lengths MUST follow SVG stroke-dasharray semantics and map to CAShapeLayer.lineDashPattern and Android DashPathEffect intervals."
+        },
+        "dashOffset": {
+          "oneOf": [
+            {
+              "type": "number",
+              "$comment": "Numeric offsets MUST follow the <number> grammar from SVG stroke-dashoffset representing multiples of the stroke width."
+            },
+            {
+              "$ref": "#/$defs/length-dimension",
+              "$comment": "Length offsets MUST conform to CSS <length> semantics for stroke-dashoffset and native stroke APIs."
+            }
+          ]
+        },
+        "lineCap": {
+          "type": "string",
+          "enum": ["butt", "round", "square"],
+          "$comment": "Line caps MUST match the <stroke-linecap> keywords butt, round, or square defined by SVG and Canvas 2D."
+        },
+        "lineJoin": {
+          "type": "string",
+          "enum": ["miter", "round", "bevel"],
+          "$comment": "Line joins MUST match the <stroke-linejoin> keywords miter, round, or bevel defined by SVG and Canvas 2D."
+        },
+        "miterLimit": {
+          "type": "number",
+          "minimum": 1,
+          "$comment": "Miter limits MUST be >= 1 following SVG stroke-miterlimit and CanvasRenderingContext2D.miterLimit semantics."
         }
       },
       "additionalProperties": false

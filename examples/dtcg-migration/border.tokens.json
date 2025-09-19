@@ -10,17 +10,21 @@
           "components": [0.0, 0.435, 1.0, 1.0]
         },
         "style": "solid",
+        "strokeStyle": { "$ref": "#/strokeStyle/focus" },
         "width": {
           "dimensionType": "length",
           "value": 2,
           "unit": "px"
         }
-      },
-      "$extensions": {
-        "org.example.stroke": {
-          "dashArray": [4, 2],
-          "lineCap": "round"
-        }
+      }
+    }
+  },
+  "strokeStyle": {
+    "focus": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [4, 2],
+        "lineCap": "round"
       }
     }
   }

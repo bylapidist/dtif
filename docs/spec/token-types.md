@@ -492,7 +492,9 @@ members
 `border` tokens describe stroke and outline attributes. Their
 `$value` object _MUST_ include a string
 `borderType`, a `width` dimension, a `style` string,
-and a `color`. Producers _MAY_ include an optional
+and a `color`. Producers _MAY_ attach a
+`strokeStyle` object that captures dash patterns,
+line caps, and joins, and _MAY_ include an optional
 `radius` member whose shape follows the
 `border-radius`
 grammar.
@@ -511,13 +513,14 @@ CSS Basic User Interface, the
 CALayer border APIs, and Android
 GradientDrawable#setStroke.
 
-| Member       | CSS grammar                                                | iOS mapping                                                                    | Android mapping                                                                               |
-| ------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `borderType` | `border-*` shorthands and longhands, `outline`.            | CALayer border configuration (`borderWidth`, `borderColor`).                   | GradientDrawable#setStroke and related shape drawables.                                       |
-| `width`      | `<line-width>` grammar.                                    | CALayer.borderWidth expressed in points.                                       | Width parameter of GradientDrawable#setStroke in pixels or density-independent units.         |
-| `style`      | `<line-style>` keywords.                                   | Stroke styling via CAShapeLayer.lineDashPattern and `lineCap`/`lineJoin`.      | Dash patterns created with DashPathEffect and applied to GradientDrawable or `Paint` strokes. |
-| `color`      | `border-color` using `<color>` values.                     | CALayer.borderColor (`CGColor`).                                               | Colour argument of GradientDrawable#setStroke.                                                |
-| `radius`     | `border-radius` shorthand and `border-*-radius` longhands. | CALayer.cornerRadius and UIBezierPath rounded-rect paths for per-corner radii. | GradientDrawable#setCornerRadius and `setCornerRadii` arrays.                                 |
+| Member        | CSS grammar                                                                                       | iOS mapping                                                                    | Android mapping                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `borderType`  | `border-*` shorthands and longhands, `outline`.                                                   | CALayer border configuration (`borderWidth`, `borderColor`).                   | GradientDrawable#setStroke and related shape drawables.                                       |
+| `width`       | `<line-width>` grammar.                                                                           | CALayer.borderWidth expressed in points.                                       | Width parameter of GradientDrawable#setStroke in pixels or density-independent units.         |
+| `style`       | `<line-style>` keywords.                                                                          | Stroke styling via CAShapeLayer.lineDashPattern and `lineCap`/`lineJoin`.      | Dash patterns created with DashPathEffect and applied to GradientDrawable or `Paint` strokes. |
+| `strokeStyle` | `stroke-dasharray`, `stroke-dashoffset`, `stroke-linecap`, and `stroke-linejoin` from SVG/Canvas. | CAShapeLayer.lineDashPattern, lineDashPhase, lineCap, lineJoin, miterLimit.    | DashPathEffect intervals, Paint#setStrokeCap, Paint#setStrokeJoin, Paint#setStrokeMiter.      |
+| `color`       | `border-color` using `<color>` values.                                                            | CALayer.borderColor (`CGColor`).                                               | Colour argument of GradientDrawable#setStroke.                                                |
+| `radius`      | `border-radius` shorthand and `border-*-radius` longhands.                                        | CALayer.cornerRadius and UIBezierPath rounded-rect paths for per-corner radii. | GradientDrawable#setCornerRadius and `setCornerRadii` arrays.                                 |
 
 The `width` member _MUST_ use values that conform to
 the
@@ -536,6 +539,23 @@ configuring CAShapeLayer dash patterns or
 DashPathEffect. When a style cannot be
 realised exactly, implementations _MUST_ fall back to
 `solid` and _SHOULD_ surface a diagnostic.
+
+When provided, `strokeStyle`
+_MUST_ follow the
+`stroke-dasharray`,
+`stroke-dashoffset`,
+`stroke-linecap`, and
+`stroke-linejoin` semantics defined by SVG Strokes and the Canvas 2D API. Dash
+intervals _MUST_ be non-negative numbers or `<length>` values interpreted in the
+current border context. Numeric offsets represent multiples of the stroke
+width; `<length>` offsets map directly to native dash phase units.
+`lineCap` _MUST_ be one of `butt`, `round`, or `square`. `lineJoin`
+_MUST_ be `miter`, `round`, or `bevel`. When `lineJoin` is `miter`,
+`miterLimit` _MUST_ be at least `1` to align with SVG
+`stroke-miterlimit` and CanvasRenderingContext2D semantics. Consumers _MUST_
+translate these fields onto CAShapeLayer `lineDashPattern`/`lineDashPhase`, Core
+Graphics `CGLineCap`/`CGLineJoin`, and Android `DashPathEffect`/
+`Paint#setStroke*` methods.
 
 The `color` member _MUST_ be a DTIF
 `color`
@@ -562,6 +582,34 @@ horizontal value.
 
 > Example token documents demonstrating these mappings are available in
 > [border.tokens.json](https://github.com/bylapidist/dtif/blob/main/examples/border.tokens.json).
+
+### `strokeStyle` tokens {#stroke-style-tokens}
+
+`strokeStyle` tokens package dash patterns and join metadata for reuse across
+multiple borders. The `$value` object _MUST_ contain at least one of the
+following members:
+
+- `dashArray`: An array of non-negative numbers or `<length>` dimensions that
+  follow the SVG `stroke-dasharray` grammar. Numbers represent multiples of the
+  current stroke width.
+- `dashOffset`: Either a number (multiples of the stroke width) or a
+  `<length>` dimension describing the dash phase, following SVG
+  `stroke-dashoffset` and Canvas 2D semantics.
+- `lineCap`: One of `butt`, `round`, or `square`, matching SVG
+  `stroke-linecap`, CanvasRenderingContext2D.lineCap, CAShapeLayer.lineCap, and
+  Android `Paint#setStrokeCap` keywords.
+- `lineJoin`: One of `miter`, `round`, or `bevel`, matching SVG
+  `stroke-linejoin`, CanvasRenderingContext2D.lineJoin, CAShapeLayer.lineJoin,
+  and Android `Paint#setStrokeJoin` keywords.
+- `miterLimit`: A number greater than or equal to `1`, mirroring SVG
+  `stroke-miterlimit`, CanvasRenderingContext2D.miterLimit, and Android
+  `Paint#setStrokeMiter` behaviour.
+
+Producers _MAY_ reference a shared `strokeStyle` token from multiple borders or
+inline the same structure directly under `border.$value.strokeStyle`. Consumers
+_MUST_ project dash intervals and offsets onto CAShapeLayer.lineDashPattern and
+lineDashPhase, Core Graphics line cap/join enums, and Android
+`DashPathEffect`/`Paint` APIs before rendering.
 
 ### `shadow` tokens {#shadow-tokens}
 

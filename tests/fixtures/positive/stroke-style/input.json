@@ -1,0 +1,49 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "border": {
+    "focus-outline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.435, 1.0, 1.0]
+        },
+        "style": "solid",
+        "strokeStyle": { "$ref": "#/strokeStyle/focus" },
+        "width": { "dimensionType": "length", "value": 2, "unit": "px" }
+      }
+    },
+    "inline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "ios.layer",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.1, 0.2, 0.3, 1.0]
+        },
+        "style": "dashed",
+        "strokeStyle": {
+          "dashArray": [2, 1.5],
+          "dashOffset": 0.5,
+          "lineCap": "square",
+          "lineJoin": "miter",
+          "miterLimit": 4
+        },
+        "width": { "dimensionType": "length", "value": 1, "unit": "pt" }
+      }
+    }
+  },
+  "strokeStyle": {
+    "focus": {
+      "$type": "strokeStyle",
+      "$value": {
+        "dashArray": [4, { "dimensionType": "length", "value": 3, "unit": "px" }],
+        "dashOffset": { "dimensionType": "length", "value": 1, "unit": "pt" },
+        "lineCap": "round",
+        "lineJoin": "bevel",
+        "miterLimit": 2
+      }
+    }
+  }
+}
