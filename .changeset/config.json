@@ -7,7 +7,7 @@
     }
   ],
   "commit": false,
-  "fixed": [["@lapidist/dtif-schema", "@lapidist/dtif-types", "@lapidist/dtif-validator"]],
+  "fixed": [["@lapidist/dtif-schema", "@lapidist/dtif-validator"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
