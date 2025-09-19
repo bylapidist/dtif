@@ -563,6 +563,28 @@ export default function assertTypeCompat(doc) {
         checkShadowDimension(node.$value.blur, 'blur');
         checkShadowDimension(node.$value.spread, 'spread');
       }
+      if (node.$type === 'elevation' && node.$value && typeof node.$value === 'object') {
+        const checkElevationDimension = (dimension, prop) => {
+          const basePath = `${path}/$value/${prop}`;
+          if (!dimension || typeof dimension !== 'object' || Array.isArray(dimension)) {
+            errors.push({
+              code: 'E_ELEVATION_DIMENSION_TYPE',
+              path: basePath,
+              message: `${prop} must be a length dimension object`
+            });
+            return;
+          }
+          if (dimension.dimensionType !== 'length') {
+            errors.push({
+              code: 'E_ELEVATION_DIMENSION_TYPE',
+              path: `${basePath}/dimensionType`,
+              message: `${prop} dimensionType must be "length"`
+            });
+          }
+        };
+        checkElevationDimension(node.$value.offset, 'offset');
+        checkElevationDimension(node.$value.blur, 'blur');
+      }
       if (node.$type === 'fontFace' && node.$value && typeof node.$value === 'object') {
         const fs = node.$value.fontStyle;
         if (typeof fs === 'string' && !isValidFontStyle(fs)) {
