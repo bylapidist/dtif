@@ -22,10 +22,11 @@
 | Font face tokens | `positive/font-face` | `negative/font-face-missing-src` |
 | Motion tokens | `positive/motion` | `negative/motion-path-order`, `negative/motion-path-start-time`, `negative/motion-path-end-time`, `negative/motion-path-time-range`, `negative/motion-path-easing-type`, `negative/motion-rotation-origin-range` |
 | Elevation tokens | `positive/elevation` | - |
-| Shadow tokens | `positive/shadow` | - |
+| Shadow tokens | `positive/shadow`, `positive/shadow-fallback` | `negative/shadow-invalid-dimension`, `negative/shadow-layer-empty`, `negative/shadow-layer-missing-type` |
 | Deprecation replacement metadata | `positive/deprecated-replacement` | `negative/deprecated-missing-replacement`, `negative/deprecated-invalid-replacement`, `negative/deprecated-replacement-target-missing` |
 | Metadata hygiene & telemetry | `positive/metadata-complete` | `negative/author-leading-space`, `negative/tags-leading-space`, `negative/tags-duplicate`, `negative/hash-whitespace`, `negative/metadata-last-used-before-modified`, `negative/metadata-last-used-requires-usage-count`, `negative/metadata-usage-count-requires-last-used` |
 | Change management: collection ordering | `positive/primitives` | `negative/collection-order` |
+| Collections: metadata-only nodes | `positive/collection-metadata-only` | `negative/collection-type`, `negative/collection-ref` |
 | Extensions: preserve unknown keys | `positive/extensions-preserve` | `negative/extensions-invalid-namespace`, `negative/extensions-missing-dot` |
 | Unknown `$type` preservation | `positive/unknown-type-preserve` | - |
 | Numeric precision | - | `negative/overflow-precision` |

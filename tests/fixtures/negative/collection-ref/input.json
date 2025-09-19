@@ -1,0 +1,24 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "palettes": {
+    "$ref": "#/color/brand/base",
+    "accent": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.6, 0.2, 0.1, 1]
+      }
+    }
+  },
+  "color": {
+    "brand": {
+      "base": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.1, 0.2, 0.3, 1]
+        }
+      }
+    }
+  }
+}

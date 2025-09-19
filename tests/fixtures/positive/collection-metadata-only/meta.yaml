@@ -1,0 +1,2 @@
+name: collection-metadata-only
+description: Collections with only metadata members validate as collections when $value is absent

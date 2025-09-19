@@ -1,0 +1,2 @@
+name: value-fallbacks
+description: token $value entries mixing aliases, inline literals, and fallback arrays

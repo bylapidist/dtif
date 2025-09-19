@@ -1,0 +1,2 @@
+name: value-fallback-empty
+description: $value arrays must provide at least one fallback candidate

@@ -18,7 +18,7 @@ files under `examples/dtcg-migration/`).
 DTCG and DTIF agree on storing tokens inside JSON documents but they diverge on several
 core behaviours:
 
-- **Collections instead of groups.** DTIF treats any object without a `$value` as a [collection](../spec/architecture-model.md#tokens-and-collections). DTCG groups may [declare a `$type` that applies to every nested token](https://www.designtokens.org/tr/drafts/format/#type-1), so copy inherited types onto each DTIF token because collections do not provide default typing.
+- **Collections instead of groups.** DTIF treats any object without a `$value` as a [collection](../spec/architecture-model.md#tokens-and-collections). DTCG groups may [declare a `$type` that applies to every nested token](https://www.designtokens.org/tr/drafts/format/#type-1), so copy inherited types onto each DTIF token because collections do not provide default typing. Collections may consist solely of metadata, so you can migrate group descriptions or governance fields without creating placeholder tokens. DTIF collections must omit `$type`, `$ref`, and `$value` entirely—those members belong to tokens—so strip inherited types or aliases from the container before validating.
 - **Reserved member prefixes.** Both formats reserve `$`-prefixed keys. DTCG documents, groups, and tokens use `$description`, `$type`, and `$extensions` members and [forbid `{`, `}`, and `.` in names](https://www.designtokens.org/tr/drafts/format/#character-restrictions). DTIF keeps the prefix rules and adds document-level members such as [`$version`](../spec/architecture-model.md#versioning) and [`$overrides`](../spec/theming-overrides.md#theming-and-overrides), so migrate any group metadata into the corresponding collections and resolve naming conflicts before publishing.
 - **Alias mechanics.** DTCG aliases rely on brace-delimited strings such as `"{button.background}"` described in the [alias section](https://www.designtokens.org/tr/drafts/format/#aliases-references). DTIF aliases use [`$ref` JSON Pointers](../spec/format-serialisation.md#ref) that start with `#` for local targets or include a URI fragment for external references. Convert each DTCG alias into a `$ref` and escape `/` or `~` characters as `~1` or `~0` per the pointer rules. DTIF additionally rejects directory traversal segments such as `../` or their percent-encoded form `%2E%2E`, so rewrite any exported DTCG file paths that rely on upward navigation before publishing.
 - **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set.
@@ -77,6 +77,44 @@ core behaviours:
 
 Copy the inherited `$type` onto every DTIF token, convert string aliases into `$ref`
 pointers, and migrate any vendor extensions while keeping their reverse-DNS names.
+
+### Model fallback chains {#value-fallbacks}
+
+DTIF tokens may provide multiple candidates for a single design decision by
+placing an array in `$value`. Each entry in the array must be either an inline
+literal, a `$ref` alias object, or a function expression. Consumers evaluate the
+entries in order and stop when a candidate resolves, so you can mix references
+to other tokens with serialised fallbacks. Arrays must contain at least one
+item.
+
+```json
+{
+  "color": {
+    "surface": {
+      "$type": "color",
+      "$value": [
+        { "$ref": "#/color/brand" },
+        {
+          "colorSpace": "srgb",
+          "components": [1, 1, 1, 1]
+        }
+      ]
+    }
+  }
+}
+```
+
+This pattern keeps legacy fallbacks close to their primary token while letting
+platform-specific implementations pick the first compatible entry. When you
+need a simple alias that still participates in fallback evaluation, assign a
+`$ref` object directly to `$value` instead of declaring a separate `$ref`
+member.
+
+Multi-layer tokens such as [`shadow`](../spec/token-types.md#shadow-tokens)
+interpret arrays without `$ref` or `fn` entries as literal layer stacks. If you
+intend to supply fallbacks for those tokens, include at least one alias or
+function entry so the schema treats the array as an ordered fallback chain
+rather than a single composite value.
 
 ### Normalise platform identifiers {#normalise-platform-identifiers}
 

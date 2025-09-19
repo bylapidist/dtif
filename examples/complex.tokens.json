@@ -6,7 +6,6 @@
     }
   },
   "button": {
-    "$type": "color",
     "$extensions": {
       "com.example": {
         "platform": "ios"
@@ -26,7 +25,6 @@
     }
   },
   "color": {
-    "$type": "color",
     "brand": {
       "$type": "color",
       "$value": {

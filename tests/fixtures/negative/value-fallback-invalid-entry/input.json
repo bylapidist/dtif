@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "dimension": {
+    "broken": {
+      "$type": "dimension",
+      "$value": ["px"]
+    }
+  }
+}
