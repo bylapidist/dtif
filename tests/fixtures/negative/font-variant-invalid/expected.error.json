@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_INVALID_KEYWORD",
+    "path": "/typography/badKeyword/$value/fontVariant",
+    "message": "invalid keyword"
+  }
+}

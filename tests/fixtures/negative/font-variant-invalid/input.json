@@ -1,0 +1,23 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "typography": {
+    "badKeyword": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "funky-caps",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" }
+      }
+    },
+    "badCombo": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "normal small-caps",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" }
+      }
+    }
+  }
+}

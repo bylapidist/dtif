@@ -1,0 +1,56 @@
+{
+  "typography": {
+    "combo": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "small-caps lining-nums proportional-width ruby sub",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 18,
+          "unit": "px"
+        }
+      }
+    },
+    "functional": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "stylistic(alt1) styleset(foo, bar) character-variant(cv01, cv02) swash(deco) ornaments(flow) annotation(circle, underline)",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
+    "none": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "none",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    },
+    "normal": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontVariant": "normal",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

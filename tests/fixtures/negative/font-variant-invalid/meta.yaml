@@ -1,0 +1,5 @@
+name: font-variant-invalid
+description: typography tokens with invalid fontVariant strings
+assertions:
+  - type-compat
+tags: [typography]
