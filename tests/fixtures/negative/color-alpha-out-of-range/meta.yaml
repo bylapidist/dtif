@@ -1,0 +1,4 @@
+name: color alpha out of range
+description: rejects alpha values outside the CSS range when paired with hex
+assertions:
+  - schema

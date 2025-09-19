@@ -179,6 +179,20 @@ gamut of a target platform _SHOULD_ trigger warnings and
 _MAY_ be clamped per platform behaviour rather than rejected
 outright.
 
+Producers _MAY_ include a `hex` string to preserve a
+CSS hexadecimal serialisation of an sRGB colour. The value
+_MUST_ conform to the CSS
+`#rgb`, `#rgba`, `#rrggbb`, or `#rrggbbaa`
+forms defined by
+CSS Color Module Level 4, and the
+declared `colorSpace` _MUST_ be `srgb`. When a
+serialisation omits an embedded alpha channel, producers
+_MAY_ include an `alpha` number between `0` and `1` to mirror
+the CSS `<alpha-value>` grammar. The `alpha`
+member _MUST NOT_ appear without `hex`, and consumers
+_SHOULD_ continue to derive rendering values from the
+canonical `components` array.
+
 Consumers _MUST_ convert the declared colour space using
 CGColorSpace on iOS and
 android.graphics.ColorSpace on Android before
@@ -193,8 +207,9 @@ well-defined default such as sRGB.
 {
   "$type": "color",
   "$value": {
-    "colorSpace": "display-p3",
-    "components": [0.2, 0.45, 0.7, 0.9]
+    "colorSpace": "srgb",
+    "components": [0.2, 0.6, 0.7, 0.9],
+    "hex": "#3399b3e6"
   }
 }
 ```

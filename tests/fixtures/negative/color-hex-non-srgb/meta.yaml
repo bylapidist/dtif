@@ -1,0 +1,4 @@
+name: color hex non srgb
+description: rejects hex serialisations for non sRGB colour spaces
+assertions:
+  - schema

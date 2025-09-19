@@ -506,9 +506,37 @@
           "minItems": 1,
           "items": { "type": "number" },
           "$comment": "Channel order, ranges, and optional alpha MUST follow CSS Color 4 for the referenced colour space (css-color-4)."
+        },
+        "hex": {
+          "type": "string",
+          "pattern": "^#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$",
+          "$comment": "Optional CSS hexadecimal colour serialization (css-color-4)."
+        },
+        "alpha": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "$comment": "Optional fallback alpha matching CSS <alpha-value> semantics (css-color-4)."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "required": ["alpha"] },
+          "then": { "required": ["hex"] }
+        },
+        {
+          "if": { "required": ["hex"] },
+          "then": {
+            "properties": {
+              "colorSpace": {
+                "const": "srgb",
+                "$comment": "Hexadecimal strings serialize sRGB colours (css-color-4)."
+              }
+            }
+          }
+        }
+      ]
     },
     "cursor": {
       "type": "object",

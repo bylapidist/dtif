@@ -242,7 +242,7 @@ The table below summarises how the DTCG primitive types map to DTIF.
 
 | DTCG type(s)               | DTIF target                                     | Migration notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | :------------------------- | :---------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `color`                    | `color`                                         | Move the optional DTCG `alpha` channel into the `components` array (as the fourth entry) and serialise any `hex` fallback inside `$extensions`. DTIF colour spaces follow CSS Color Module Level 4 and expect channel counts that match the declared space. See the [DTCG color type](https://www.designtokens.org/tr/drafts/format/#color) and the [DTIF colour guidance](../spec/token-types.md#color).                                                                                                                           |
+| `color`                    | `color`                                         | Move the optional DTCG `alpha` channel into the `components` array (as the fourth entry). DTIF accepts optional `hex` (and matching `alpha`) members for sRGB colours when you need to preserve CSS serialisations. DTIF colour spaces follow CSS Color Module Level 4 and expect channel counts that match the declared space. See the [DTCG color type](https://www.designtokens.org/tr/drafts/format/#color) and the [DTIF colour guidance](../spec/token-types.md#color).                                                       |
 | `dimension`                | `dimension`                                     | Supply a `dimensionType` (for example `length`) and reuse the existing `value` and `unit`. DTCG only allows `px` or `rem`, whereas DTIF covers the CSS Values and Units grammar plus platform-specific units. Reference the [DTCG dimension type](https://www.designtokens.org/tr/drafts/format/#dimension) and the [DTIF dimension rules](../spec/token-types.md#dimension).                                                                                                                                                       |
 | `duration`                 | `duration`                                      | Wrap the numeric payload with `durationType` (such as `css.transition-duration`) and keep `value`/`unit`. DTCG units are `ms` or `s`; DTIF adds CSS `<time>` keywords and platform identifiers like frame counts. See [DTCG duration](https://www.designtokens.org/tr/drafts/format/#duration) and [DTIF duration tokens](../spec/token-types.md#duration).                                                                                                                                                                         |
 | `cubicBezier`              | `easing`                                        | Replace the bare four-number array with `{ "easingFunction": "cubic-bezier", "parameters": [...] }`. DTIF also supports `steps()` and native spring identifiers when migrating bespoke timing curves. Compare [DTCG cubic Bézier](https://www.designtokens.org/tr/drafts/format/#cubic-bezier) with [DTIF easing tokens](../spec/token-types.md#easing).                                                                                                                                                                            |
@@ -278,18 +278,17 @@ The table below summarises how the DTCG primitive types map to DTIF.
       "$description": "Translucent overlay with legacy hex fallback",
       "$value": {
         "colorSpace": "srgb",
-        "components": [0.0, 0.0, 0.0, 0.5]
-      },
-      "$extensions": {
-        "org.example.export": { "legacyHex": "#00000080" }
+        "components": [0.0, 0.0, 0.0, 0.5],
+        "hex": "#00000080"
       }
     }
   }
 }
 ```
 
-Move the `alpha` channel into the DTIF `components` array and store legacy serialisations
-inside a namespaced extension.
+Move the `alpha` channel into the DTIF `components` array and reuse the native `hex`
+field—plus the optional `alpha` number when the fallback omits embedded transparency—
+to preserve CSS-oriented serialisations without `$extensions`.
 
 ### Dimension tokens {#dimension}
 

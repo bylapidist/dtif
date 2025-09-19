@@ -1,0 +1,4 @@
+name: color hex invalid format
+description: rejects hex strings that are not valid CSS serialisations
+assertions:
+  - schema

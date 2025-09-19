@@ -1,0 +1,13 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "invalid": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "hex": "#gggggg"
+      }
+    }
+  }
+}

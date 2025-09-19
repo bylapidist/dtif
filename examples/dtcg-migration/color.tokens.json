@@ -6,10 +6,8 @@
       "$description": "Translucent overlay with legacy hex fallback",
       "$value": {
         "colorSpace": "srgb",
-        "components": [0.0, 0.0, 0.0, 0.5]
-      },
-      "$extensions": {
-        "org.example.export": { "legacyHex": "#00000080" }
+        "components": [0.0, 0.0, 0.0, 0.5],
+        "hex": "#00000080"
       }
     }
   }
