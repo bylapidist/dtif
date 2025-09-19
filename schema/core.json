@@ -682,7 +682,7 @@
             }
           ]
         },
-        "fontSize": { "$ref": "#/$defs/dimension" },
+        "fontSize": { "$ref": "#/$defs/font-dimension" },
         "lineHeight": {
           "description": "Baseline-to-baseline distance as a ratio or font-dimension.",
           "oneOf": [
