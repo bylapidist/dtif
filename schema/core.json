@@ -759,7 +759,8 @@
           "$comment": "MUST contain OpenType feature tags per CSS font-feature-settings and the OpenType registry.",
           "items": {
             "type": "string",
-            "$comment": "MUST be a registered OpenType feature tag or a documented font-specific tag."
+            "pattern": "^[A-Za-z0-9]{4}$",
+            "$comment": "MUST be a four-character OpenType feature tag registered by CSS font-feature-settings or documented by the font."
           }
         },
         "underlineThickness": { "$ref": "#/$defs/font-dimension" },

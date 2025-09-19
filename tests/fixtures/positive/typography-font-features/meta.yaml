@@ -1,0 +1,7 @@
+name: typography-font-features
+description: typography token with valid OpenType feature tags
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]
