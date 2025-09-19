@@ -1,0 +1,7 @@
+name: shadow-fallback
+description: shadow token using fallback array that mixes aliases with literal layer stacks
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [shadow]

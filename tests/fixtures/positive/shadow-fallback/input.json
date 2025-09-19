@@ -1,0 +1,47 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "shadow": {
+    "base": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow",
+        "blur": { "dimensionType": "length", "value": 3, "unit": "px" },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.25]
+        },
+        "offsetX": { "dimensionType": "length", "value": 0, "unit": "px" },
+        "offsetY": { "dimensionType": "length", "value": 1, "unit": "px" }
+      }
+    },
+    "card": {
+      "$type": "shadow",
+      "$value": [
+        { "$ref": "#/shadow/base" },
+        [
+          {
+            "shadowType": "css.box-shadow",
+            "blur": { "dimensionType": "length", "value": 6, "unit": "px" },
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 0, 0, 0.18]
+            },
+            "offsetX": { "dimensionType": "length", "value": 0, "unit": "px" },
+            "offsetY": { "dimensionType": "length", "value": 2, "unit": "px" },
+            "spread": { "dimensionType": "length", "value": 0, "unit": "px" }
+          },
+          {
+            "shadowType": "css.box-shadow",
+            "blur": { "dimensionType": "length", "value": 18, "unit": "px" },
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0, 0, 0, 0.12]
+            },
+            "offsetX": { "dimensionType": "length", "value": 0, "unit": "px" },
+            "offsetY": { "dimensionType": "length", "value": 8, "unit": "px" }
+          }
+        ]
+      ]
+    }
+  }
+}

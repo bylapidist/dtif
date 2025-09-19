@@ -1,0 +1,5 @@
+name: collection-type
+description: collections must not declare $type
+assertions:
+  - schema
+  - refs

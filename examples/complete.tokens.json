@@ -140,7 +140,6 @@
     }
   },
   "color": {
-    "$type": "color",
     "$description": "Color tokens",
     "$extensions": {
       "com.example": {
@@ -429,7 +428,6 @@
       "$hash": "67d3f9a4cc542c6522a1584bd76e45ef09d506b429ec3251b89c213bbadafba0"
     },
     "spacing": {
-      "$type": "dimension",
       "$description": "Spacing scale",
       "$author": "Designer",
       "$tags": ["spacing"],

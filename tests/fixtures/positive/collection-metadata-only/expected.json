@@ -1,0 +1,11 @@
+{
+  "color": {
+    "$description": "Placeholder collection retaining governance metadata",
+    "$extensions": {
+      "org.example.meta": {
+        "owner": "Design Systems"
+      }
+    },
+    "$deprecated": false
+  }
+}

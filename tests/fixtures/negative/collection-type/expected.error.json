@@ -1,0 +1,8 @@
+{
+  "error": {
+    "instancePath": "/palette",
+    "schemaPath": "#/allOf/1/allOf/1/not",
+    "keyword": "not",
+    "message": "must NOT be valid"
+  }
+}

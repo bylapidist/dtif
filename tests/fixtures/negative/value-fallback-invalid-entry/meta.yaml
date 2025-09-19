@@ -1,0 +1,2 @@
+name: value-fallback-invalid-entry
+description: fallback arrays must contain literal values, references, or functions

@@ -1,0 +1,5 @@
+name: collection-ref
+description: collections must not expose $ref aliases
+assertions:
+  - schema
+  - refs
