@@ -1,6 +1,6 @@
-# Design Token Interchange Format (DTIF)
-
 <img src="./docs/public/dtif-logo.svg" alt="DTIF logo" width="72" />
+
+# Design Token Interchange Format (DTIF)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/bylapidist/dtif/ci.yml?branch=main&label=CI)](https://github.com/bylapidist/dtif/actions/workflows/ci.yml)
 [![Schema Tests](https://img.shields.io/badge/schema%20tests-passing-brightgreen)](tests/)
