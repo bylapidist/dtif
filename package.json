@@ -2,24 +2,34 @@
   "name": "@lapidist/dtif",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "schema",
+    "validator"
+  ],
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
     "lint": "markdownlint \"**/*.md\" --ignore \"**/node_modules/**\"",
     "lint:fix": "markdownlint --fix \"**/*.md\" --ignore \"**/node_modules/**\"",
+    "build:packages": "node scripts/build-packages.mjs",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "lint:docs": "markdownlint \"docs/**/*.md\""
+    "lint:docs": "markdownlint \"docs/**/*.md\"",
+    "changeset": "changeset",
+    "release": "changeset publish",
+    "version-packages": "changeset version"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.10",
     "ajv-cli": "^5.0.0",
     "ajv-formats": "^3.0.1",
+    "json-schema-to-typescript": "^15.0.4",
     "markdownlint-cli": "^0.45.0",
     "prettier": "^3.6.2",
     "vitepress": "^1.6.4"

@@ -81,6 +81,29 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 
    Load `schema/core.json` with [Ajv](https://ajv.js.org/) or another JSON Schema validator if you want to integrate validation into your build pipeline.
 
+   Prefer installing the published schema when you do not need the full repository:
+
+   ```bash
+   npm install --save-dev @lapidist/dtif-schema
+   npx ajv validate --spec=draft2020 --strict=false -c ajv-formats \
+     -s node_modules/@lapidist/dtif-schema/core.json -d path/to/tokens.json
+   ```
+
+   For programmatic validation, install [`@lapidist/dtif-validator`](https://www.npmjs.com/package/@lapidist/dtif-validator) to wrap Ajv with the published schema and sensible defaults:
+
+   ```bash
+   npm install --save-dev @lapidist/dtif-validator
+   ```
+
+   ```js
+   import { validateDtif } from '@lapidist/dtif-validator';
+
+   const { valid, errors } = validateDtif(tokens);
+   if (!valid) {
+     console.error(errors);
+   }
+   ```
+
 3. **Exercise the project checks**
 
    ```bash
@@ -89,6 +112,17 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
    npm run docs:dev   # optional: preview the docs locally
    ```
 
+## TypeScript support
+
+`@lapidist/dtif-schema` bundles TypeScript declarations so editors and
+build tooling can understand DTIF documents:
+
+```ts
+import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
+
+declare const tokens: DesignTokenInterchangeFormat;
+```
+
 ## Repository reference
 
 - [`schema/`](schema/) – JSON Schema definitions used by validators.
@@ -96,6 +130,25 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 - [`registry/`](registry/) – the canonical list of `$type` identifiers and extension namespaces.
 - [`tests/`](tests/) – conformance fixtures and the test harness invoked by CI.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) – contribution workflow, coding standards, and release process expectations.
+- [`.changeset/`](.changeset/) – Changesets configuration for tracking package releases.
+
+## Release & versioning
+
+DTIF is published as an npm workspace that groups the schema (with bundled TypeScript declarations) and validator packages under a shared version. The
+[Changesets](https://github.com/changesets/changesets) workflow powers automated changelog generation and release pull
+requests:
+
+- Run `npm run changeset` to document changes. The command prompts for the release type and writes a markdown entry under
+  `.changeset/`.
+- Run `npm run version-packages` locally to update package versions and regenerate changelog entries before publishing.
+- CI uses [`changesets/action`](https://github.com/changesets/action) to open release pull requests and run `npm run release`
+  once they land on `main`.
+
+Repository-wide changes are documented in [`CHANGELOG.md`](CHANGELOG.md). Package-specific history lives alongside each
+workspace:
+
+- [`schema/CHANGELOG.md`](schema/CHANGELOG.md)
+- [`validator/CHANGELOG.md`](validator/CHANGELOG.md)
 
 ## Contributing & community
 
