@@ -6,13 +6,9 @@
       "$value": {
         "fontType": "css.font-face",
         "family": "Inter",
+        "fallbacks": ["Arial", "sans-serif"],
         "style": "normal",
         "weight": 400
-      },
-      "$extensions": {
-        "org.example.fonts": {
-          "fallbacks": ["Arial", "sans-serif"]
-        }
       }
     }
   },

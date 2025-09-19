@@ -1,0 +1,6 @@
+name: font fallback rejects empty values
+description: font fallback stacks must exclude empty family names
+assertions:
+  - schema
+tags:
+  - type:font
