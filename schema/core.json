@@ -538,6 +538,11 @@
       },
       "additionalProperties": false
     },
+    "font-weight-string": {
+      "type": "string",
+      "pattern": "^(?:[Bb][Oo][Ll][Dd][Ee][Rr]|[Ll][Ii][Gg][Hh][Tt][Ee][Rr]|(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Bb][Oo][Ll][Dd]|\\+?(?:0*(?:[1-9]\\d{0,2})(?:\\.\\d+)?|0*1000(?:\\.0+)?))(?:\\s+(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Bb][Oo][Ll][Dd]|\\+?(?:0*(?:[1-9]\\d{0,2})(?:\\.\\d+)?|0*1000(?:\\.0+)?)))?)$",
+      "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
+    },
     "font": {
       "type": "object",
       "required": ["fontType", "family"],
@@ -564,10 +569,7 @@
               "maximum": 1000,
               "$comment": "Numeric weights MUST follow the 1..1000 range defined by CSS Fonts (css-fonts-4)."
             },
-            {
-              "type": "string",
-              "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
-            }
+            { "$ref": "#/$defs/font-weight-string" }
           ]
         }
       },
@@ -637,10 +639,7 @@
               "maximum": 1000,
               "$comment": "Numeric weights MUST follow the 1..1000 range defined by CSS Fonts (css-fonts-4)."
             },
-            {
-              "type": "string",
-              "$comment": "String weights MUST conform to CSS <font-weight-absolute>, <font-weight-relative>, or <font-weight-range> productions (css-fonts-4)."
-            }
+            { "$ref": "#/$defs/font-weight-string" }
           ]
         },
         "fontStyle": {
@@ -725,10 +724,7 @@
               "maximum": 1000,
               "$comment": "MUST be within the CSS absolute weight range of 1-1000 and MAY include fractional values for variable fonts."
             },
-            {
-              "type": "string",
-              "$comment": "MUST conform to CSS font-weight keyword grammar including relative weights."
-            }
+            { "$ref": "#/$defs/font-weight-string" }
           ]
         },
         "fontStyle": {
