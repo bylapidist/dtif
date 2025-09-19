@@ -1,0 +1,4 @@
+name: gradient stop invalid identifier
+description: gradient stop strings must be CSS length-percentage tokens or calc expressions
+assertions:
+  - schema

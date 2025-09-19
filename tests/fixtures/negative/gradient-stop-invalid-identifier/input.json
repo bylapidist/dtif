@@ -1,0 +1,25 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "badStop": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "stops": [
+        {
+          "position": 0,
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1, 1]
+          }
+        },
+        {
+          "position": "token",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0, 1]
+          }
+        }
+      ]
+    }
+  }
+}
