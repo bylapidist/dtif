@@ -1,0 +1,5 @@
+name: shadow-layer-empty
+description: shadow arrays must include at least one layer
+assertions:
+  - schema
+tags: [shadow]

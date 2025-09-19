@@ -972,6 +972,16 @@
       "additionalProperties": false
     },
     "shadow": {
+      "oneOf": [
+        { "$ref": "#/$defs/shadow-layer" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/shadow-layer" }
+        }
+      ]
+    },
+    "shadow-layer": {
       "type": "object",
       "required": ["shadowType", "offsetX", "offsetY", "blur", "color"],
       "properties": {
