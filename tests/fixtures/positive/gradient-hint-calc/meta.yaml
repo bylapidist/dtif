@@ -1,0 +1,12 @@
+name: gradient hint calc
+description: gradient color hints accept calc length-percentage expressions
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:gradient
+  - gradient:linear
+  - function:calc

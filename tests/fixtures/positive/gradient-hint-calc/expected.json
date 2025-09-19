@@ -1,0 +1,32 @@
+{
+  "hintCalc": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "stops": [
+        {
+          "position": "0%",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 0, 0, 1]
+          }
+        },
+        {
+          "position": "70%",
+          "hint": "calc(50% - 10px)",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 1, 0, 1]
+          }
+        },
+        {
+          "position": "100%",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 1, 1]
+          }
+        }
+      ]
+    }
+  }
+}
