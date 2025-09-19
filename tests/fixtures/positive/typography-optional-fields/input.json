@@ -54,8 +54,8 @@
         },
         "wordSpacing": {
           "dimensionType": "length",
-          "value": 2,
-          "unit": "px"
+          "value": 5,
+          "unit": "%"
         }
       }
     }

@@ -528,12 +528,23 @@ export default function assertTypeCompat(doc) {
           });
         }
         const ws = node.$value.wordSpacing;
-        if (typeof ws === 'string' && ws !== 'normal') {
-          errors.push({
-            code: 'E_INVALID_KEYWORD',
-            path: `${path}/$value/wordSpacing`,
-            message: 'invalid keyword'
-          });
+        if (typeof ws === 'string') {
+          if (ws !== 'normal') {
+            errors.push({
+              code: 'E_INVALID_KEYWORD',
+              path: `${path}/$value/wordSpacing`,
+              message: 'invalid keyword'
+            });
+          }
+        } else if (ws && typeof ws === 'object') {
+          const dimensionType = ws.dimensionType;
+          if (typeof dimensionType === 'string' && dimensionType !== 'length') {
+            errors.push({
+              code: 'E_WORD_SPACING_DIMENSION_TYPE',
+              path: `${path}/$value/wordSpacing/dimensionType`,
+              message: 'wordSpacing dimensionType must be "length"'
+            });
+          }
         }
         const fw = node.$value.fontWeight;
         if (typeof fw === 'string' && !isValidFontWeightString(fw)) {
