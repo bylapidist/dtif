@@ -1,0 +1,7 @@
+name: font-weight-string
+description: typography tokens with string fontWeight values
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

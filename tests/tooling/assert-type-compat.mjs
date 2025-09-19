@@ -61,7 +61,56 @@ const MOTION_CATEGORY_PATTERNS = [
   { type: 'path', regex: /\.(?:path|offset-path|motion-path)$/ }
 ];
 
-const CSS_FONT_WEIGHT_KEYWORDS = new Set(['normal', 'bold', 'bolder', 'lighter']);
+const FONT_WEIGHT_ABSOLUTE_KEYWORDS = new Map([
+  ['normal', 400],
+  ['bold', 700]
+]);
+const FONT_WEIGHT_RELATIVE_KEYWORDS = new Set(['bolder', 'lighter']);
+const FONT_WEIGHT_NUMBER_PATTERN = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
+
+function parseFontWeightAbsoluteValue(token) {
+  if (typeof token !== 'string') {
+    return { valid: false, value: NaN };
+  }
+  const keywordValue = FONT_WEIGHT_ABSOLUTE_KEYWORDS.get(token);
+  if (typeof keywordValue === 'number') {
+    return { valid: true, value: keywordValue };
+  }
+  if (!FONT_WEIGHT_NUMBER_PATTERN.test(token)) {
+    return { valid: false, value: NaN };
+  }
+  const numericValue = Number(token);
+  if (!Number.isFinite(numericValue) || numericValue < 1 || numericValue > 1000) {
+    return { valid: false, value: NaN };
+  }
+  return { valid: true, value: numericValue };
+}
+
+function isValidFontWeightString(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return false;
+  }
+  if (FONT_WEIGHT_RELATIVE_KEYWORDS.has(normalized)) {
+    return true;
+  }
+  const absolute = parseFontWeightAbsoluteValue(normalized);
+  if (absolute.valid) {
+    return true;
+  }
+  const parts = normalized.split(/\s+/);
+  if (parts.length === 2) {
+    const first = parseFontWeightAbsoluteValue(parts[0]);
+    const second = parseFontWeightAbsoluteValue(parts[1]);
+    if (first.valid && second.valid && first.value <= second.value) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function getMotionCategory(motionType) {
   if (typeof motionType !== 'string') {
@@ -479,7 +528,7 @@ export default function assertTypeCompat(doc) {
           });
         }
         const fw = node.$value.fontWeight;
-        if (typeof fw === 'string' && !CSS_FONT_WEIGHT_KEYWORDS.has(fw)) {
+        if (typeof fw === 'string' && !isValidFontWeightString(fw)) {
           errors.push({
             code: 'E_INVALID_KEYWORD',
             path: `${path}/$value/fontWeight`,

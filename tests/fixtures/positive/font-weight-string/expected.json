@@ -1,0 +1,56 @@
+{
+  "typography": {
+    "stringNumeric": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontWeight": "600",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    },
+    "stringRange": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontWeight": "400 700",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 18,
+          "unit": "px"
+        }
+      }
+    },
+    "stringSignedNumeric": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontWeight": "+500",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
+    "stringSignedRange": {
+      "$type": "typography",
+      "$value": {
+        "typographyType": "body",
+        "fontFamily": "Inter",
+        "fontWeight": "+300 700",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 22,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
