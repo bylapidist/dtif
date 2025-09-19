@@ -1,0 +1,3 @@
+name: stroke-style-ref-type
+description: strokeStyle references must target strokeStyle tokens
+tags: [border]

@@ -95,6 +95,12 @@
     "contact": "https://github.com/bylapidist/dtif",
     "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#shadow-tokens"
   },
+  "strokeStyle": {
+    "vendor": "net.lapidist.dtif",
+    "owner": "Lapidist",
+    "contact": "https://github.com/bylapidist/dtif",
+    "spec": "https://github.com/bylapidist/dtif/blob/main/docs/spec/token-types.md#stroke-style-tokens"
+  },
   "typography": {
     "vendor": "net.lapidist.dtif",
     "owner": "Lapidist",

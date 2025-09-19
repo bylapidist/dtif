@@ -1,0 +1,5 @@
+name: stroke-style-invalid
+description: strokeStyle must use non-negative dash arrays and known cap keywords
+assertions:
+  - schema
+tags: [border]

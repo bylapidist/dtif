@@ -1,0 +1,3 @@
+{
+  "message": "border strokeStyle $ref #/color/accent has type color, expected strokeStyle"
+}

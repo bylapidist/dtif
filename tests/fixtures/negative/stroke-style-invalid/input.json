@@ -1,0 +1,21 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "border": {
+    "invalid": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.2, 0.2, 0.2, 1.0]
+        },
+        "style": "solid",
+        "strokeStyle": {
+          "dashArray": [2, -1],
+          "lineCap": "triangle"
+        },
+        "width": { "dimensionType": "length", "value": 1, "unit": "px" }
+      }
+    }
+  }
+}

@@ -33,9 +33,10 @@ metrics while exercising optional spread radii implemented via `shadowPath` and
 `border.tokens.json` demonstrates CSS `border` and `outline` shorthands alongside
 UIKit `CALayer` borders and Android `GradientDrawable#setStroke`. The fixture
 mixes `px`, `pt`, and `dp` widths, exercises `solid`, `dashed`, and `dotted`
-styles, and encodes per-corner radii using the `border-radius` grammar so teams
-can verify conversions to `CAShapeLayer.lineDashPattern` and
-`GradientDrawable#setCornerRadii` without copying keyword lists.
+styles, reuses dedicated `strokeStyle` tokens for dash patterns, and encodes
+per-corner radii using the `border-radius` grammar so teams can verify
+conversions to `CAShapeLayer.lineDashPattern` and `GradientDrawable#setCornerRadii`
+without copying keyword lists.
 
 ## Elevation layers
 
