@@ -1,0 +1,7 @@
+name: duration-unit-categories
+description: duration tokens accept canonical units for every platform duration family
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [duration]

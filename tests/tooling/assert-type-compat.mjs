@@ -72,6 +72,22 @@ const FONT_STYLE_PATTERN =
 const FONT_STRETCH_PATTERN =
   /^(?:normal|ultra-condensed|extra-condensed|condensed|semi-condensed|semi-expanded|expanded|extra-expanded|ultra-expanded|\+?(?:0*(?:[1-9]\d{0,2})(?:\.\d+)?|0*1000(?:\.0+)?)%)$/i;
 const FONT_FEATURE_TAG_PATTERN = /^[A-Za-z0-9]{4}$/;
+const DURATION_UNIT_RULES = [
+  {
+    pattern:
+      /^(?:css\.(?:transition|animation)-duration|ios\.caanimation\.duration|android\.value-animator\.duration)$/,
+    units: new Set(['s', 'ms'])
+  },
+  {
+    pattern: /^(?:ios\.cadisplaylink\.frame-count|android\.choreographer\.frame-count)$/,
+    units: new Set(['frames'])
+  },
+  {
+    pattern:
+      /^(?:css\.timeline\.progress|ios\.uianimation\.fraction|android\.animator-set\.fraction)$/,
+    units: new Set(['%'])
+  }
+];
 
 function parseFontWeightAbsoluteValue(token) {
   if (typeof token !== 'string') {
@@ -402,6 +418,19 @@ export default function assertTypeCompat(doc) {
                 message: 'clamp min greater than max'
               });
             }
+          }
+        }
+      }
+      if (node.$type === 'duration' && node.$value && typeof node.$value === 'object') {
+        const { durationType, unit } = node.$value;
+        if (typeof durationType === 'string' && typeof unit === 'string') {
+          const rule = DURATION_UNIT_RULES.find((entry) => entry.pattern.test(durationType));
+          if (rule && !rule.units.has(unit)) {
+            errors.push({
+              code: 'E_DURATION_UNIT_MISMATCH',
+              path: `${path}/$value/unit`,
+              message: `duration unit ${unit} is invalid for durationType ${durationType}`
+            });
           }
         }
       }

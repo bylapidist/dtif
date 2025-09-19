@@ -1079,6 +1079,21 @@
       },
       "additionalProperties": false
     },
+    "durationTimeUnit": {
+      "type": "string",
+      "enum": ["s", "ms"],
+      "$comment": "MUST use CSS <time> units serialised as s or ms for transition and animation timing APIs (css-values-4#time-value, css-transitions-2, css-animations-2, IOS-CAANIMATION, ANDROID-VALUE-ANIMATOR)."
+    },
+    "durationFrameCountUnit": {
+      "type": "string",
+      "enum": ["frames"],
+      "$comment": "MUST use the frame count keyword defined by CADisplayLink and Choreographer timing APIs (IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER)."
+    },
+    "durationFractionUnit": {
+      "type": "string",
+      "enum": ["%"],
+      "$comment": "MUST use CSS <percentage> serialisation for fraction/progress timelines (css-values-4#percentages, IOS-UIVIEWPROPERTYANIMATOR, ANDROID-OBJECTANIMATOR)."
+    },
     "duration": {
       "type": "object",
       "required": ["durationType", "value", "unit"],
@@ -1091,7 +1106,6 @@
         "value": { "type": "number" },
         "unit": {
           "type": "string",
-          "pattern": "^\\S+$",
           "$comment": "MUST serialise the unit token defined by the referenced duration grammar (css-values-4#time-value, css-values-4#percentages, IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER)."
         }
       },
@@ -1113,7 +1127,8 @@
                 "type": "number",
                 "minimum": 0,
                 "$comment": "Non-negative durations matching the CSS <time> production."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationTimeUnit" }
             }
           }
         },
@@ -1133,7 +1148,8 @@
                 "type": "integer",
                 "minimum": 0,
                 "$comment": "Non-negative integer frame counts from the referenced timing API."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationFrameCountUnit" }
             }
           }
         },
@@ -1152,7 +1168,8 @@
               "value": {
                 "type": "number",
                 "$comment": "Numeric percentage matching the CSS <percentage> grammar."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationFractionUnit" }
             }
           }
         }
