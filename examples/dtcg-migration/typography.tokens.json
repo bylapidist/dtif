@@ -1,0 +1,39 @@
+{
+  "$version": "1.0.0",
+  "font": {
+    "inter-regular": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "Inter",
+        "style": "normal",
+        "weight": 400
+      },
+      "$extensions": {
+        "org.example.fonts": {
+          "fallbacks": ["Arial", "sans-serif"]
+        }
+      }
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "letterSpacing": {
+          "dimensionType": "length",
+          "value": 0.5,
+          "unit": "px"
+        },
+        "lineHeight": 1.5
+      }
+    }
+  }
+}

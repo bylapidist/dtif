@@ -1,0 +1,39 @@
+{
+  "$version": "1.0.0",
+  "$description": "Marketing theme converted from split DTCG files.",
+  "$extensions": {
+    "org.example.workflow": { "owner": "Design Systems" }
+  },
+  "$overrides": [
+    {
+      "$token": "#/button/background",
+      "$when": { "prefers-color-scheme": "dark" },
+      "$ref": "#/color/brand/dark"
+    }
+  ],
+  "color": {
+    "brand": {
+      "light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.435, 1.0, 1.0]
+        }
+      },
+      "dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.133, 0.333, 1.0]
+        }
+      }
+    }
+  },
+  "button": {
+    "background": {
+      "$type": "color",
+      "$description": "Defaults to the light brand color",
+      "$ref": "#/color/brand/light"
+    }
+  }
+}

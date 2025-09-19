@@ -1,0 +1,26 @@
+{
+  "$version": "1.0.0",
+  "status": {
+    "$description": "Status indicator colors",
+    "$extensions": {
+      "org.example.workflow": { "owner": "Design Systems" }
+    },
+    "warning": {
+      "$type": "color",
+      "$description": "Legacy warning alias",
+      "$deprecated": { "$replacement": "#/status/caution" },
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.839, 0.0]
+      }
+    },
+    "caution": {
+      "$type": "color",
+      "$description": "Preferred caution token",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.733, 0.0]
+      }
+    }
+  }
+}
