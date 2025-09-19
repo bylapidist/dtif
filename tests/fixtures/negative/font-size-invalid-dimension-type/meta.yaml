@@ -1,0 +1,5 @@
+name: font-size-invalid-dimension-type
+description: fontSize must use length dimensions
+assertions:
+  - type-compat
+tags: [typography]

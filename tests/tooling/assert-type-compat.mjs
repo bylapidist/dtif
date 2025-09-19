@@ -529,6 +529,16 @@ export default function assertTypeCompat(doc) {
         }
       }
       if (node.$type === 'typography' && node.$value && typeof node.$value === 'object') {
+        const fontSize = node.$value.fontSize;
+        if (fontSize && typeof fontSize === 'object' && !Array.isArray(fontSize)) {
+          if (fontSize.dimensionType !== 'length') {
+            errors.push({
+              code: 'E_FONT_SIZE_DIMENSION_TYPE',
+              path: `${path}/$value/fontSize/dimensionType`,
+              message: 'fontSize dimensionType must be "length"'
+            });
+          }
+        }
         const ls = node.$value.letterSpacing;
         if (typeof ls === 'string' && ls !== 'normal') {
           errors.push({

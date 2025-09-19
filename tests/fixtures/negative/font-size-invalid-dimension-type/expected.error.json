@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_FONT_SIZE_DIMENSION_TYPE",
+    "path": "/typography/bad/$value/fontSize/dimensionType",
+    "message": "fontSize dimensionType must be \"length\""
+  }
+}
