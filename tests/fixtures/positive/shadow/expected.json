@@ -23,5 +23,59 @@
         "unit": "px"
       }
     }
+  },
+  "cardRaised": {
+    "$type": "shadow",
+    "$value": [
+      {
+        "shadowType": "css.box-shadow",
+        "blur": {
+          "dimensionType": "length",
+          "value": 6,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.18]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        },
+        "spread": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      {
+        "shadowType": "css.box-shadow",
+        "blur": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.22]
+        },
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "px"
+        }
+      }
+    ]
   }
 }

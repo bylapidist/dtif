@@ -3,33 +3,62 @@
   "shadow": {
     "button-ambient": {
       "$type": "shadow",
-      "$value": {
-        "shadowType": "css.box-shadow",
-        "offsetX": {
-          "dimensionType": "length",
-          "value": 0,
-          "unit": "px"
+      "$value": [
+        {
+          "shadowType": "css.box-shadow",
+          "offsetX": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "px"
+          },
+          "blur": {
+            "dimensionType": "length",
+            "value": 6,
+            "unit": "px"
+          },
+          "spread": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.0, 0.0, 0.0, 0.2]
+          }
         },
-        "offsetY": {
-          "dimensionType": "length",
-          "value": 2,
-          "unit": "px"
-        },
-        "blur": {
-          "dimensionType": "length",
-          "value": 6,
-          "unit": "px"
-        },
-        "spread": {
-          "dimensionType": "length",
-          "value": 0,
-          "unit": "px"
-        },
-        "color": {
-          "colorSpace": "srgb",
-          "components": [0.0, 0.0, 0.0, 0.2]
+        {
+          "shadowType": "css.box-shadow",
+          "offsetX": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "dimensionType": "length",
+            "value": 1,
+            "unit": "px"
+          },
+          "blur": {
+            "dimensionType": "length",
+            "value": 3,
+            "unit": "px"
+          },
+          "spread": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.0, 0.0, 0.0, 0.3]
+          }
         }
-      }
+      ]
     }
   }
 }

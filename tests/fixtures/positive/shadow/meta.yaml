@@ -1,5 +1,5 @@
 name: shadow
-description: valid shadow tokens
+description: valid shadow tokens, including layered arrays
 assertions:
   - schema
   - type-compat

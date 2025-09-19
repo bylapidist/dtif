@@ -624,12 +624,15 @@ lineDashPhase, Core Graphics line cap/join enums, and Android
 ### `shadow` tokens {#shadow-tokens}
 
 `shadow` tokens describe blurred occlusion or glow effects. Their
-`$value` object _MUST_ include a string
+`$value` _MAY_ be either a single shadow-layer object or an array of
+layer objects following the ordering rules of the CSS
+`<shadow>` grammar. Each layer _MUST_ include a string
 `shadowType`, length-valued `offsetX`, `offsetY`, and
 `blur` members, and a `color`. Producers
-_MAY_ include an optional `spread` length matching
+_MAY_ include an optional `spread` length on each layer matching
 the final argument of the
-`<shadow>` grammar.
+`<shadow>` grammar. Layer arrays _MUST_ contain at
+least one entry.
 
 The `shadowType` string identifies the rendering context and
 _MUST_ match the terminology defined by the relevant platform
@@ -646,7 +649,7 @@ NSShadow APIs, and Android
 View#setElevation or
 Paint#setShadowLayer.
 
-| Member               | CSS grammar                                                                                                              | iOS mapping                                                                                | Android mapping                                                                                                              |
+| Layer member         | CSS grammar                                                                                                              | iOS mapping                                                                                | Android mapping                                                                                                              |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | `shadowType`         | Context keywords from the `<shadow>` grammar, including the optional `inset` modifier and `drop-shadow()` function name. | Chooses between outer shadows provided by CALayer and text shadows provided by NSShadow.   | Selects View#setElevation based outlines or Paint#setShadowLayer for text and vector content.                                |
 | `offsetX`, `offsetY` | The first two `<length>` components of a `<shadow>`.                                                                     | Map to the horizontal and vertical components of CALayer.shadowOffset expressed in points. | Supply the `dx` and `dy` parameters for Paint#setShadowLayer or inform the outline offset for View elevations.               |

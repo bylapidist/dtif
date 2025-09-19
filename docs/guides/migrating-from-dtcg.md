@@ -559,6 +559,13 @@ extensions for dash patterns.
           "offsetY": { "value": 2, "unit": "px" },
           "blur": { "value": 6, "unit": "px" },
           "spread": { "value": 0, "unit": "px" }
+        },
+        {
+          "color": "#0000004d",
+          "offsetX": { "value": 0, "unit": "px" },
+          "offsetY": { "value": 1, "unit": "px" },
+          "blur": { "value": 3, "unit": "px" },
+          "spread": { "value": 0, "unit": "px" }
         }
       ]
     }
@@ -574,40 +581,70 @@ extensions for dash patterns.
   "shadow": {
     "button-ambient": {
       "$type": "shadow",
-      "$value": {
-        "shadowType": "css.box-shadow",
-        "offsetX": {
-          "dimensionType": "length",
-          "value": 0,
-          "unit": "px"
+      "$value": [
+        {
+          "shadowType": "css.box-shadow",
+          "offsetX": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "px"
+          },
+          "blur": {
+            "dimensionType": "length",
+            "value": 6,
+            "unit": "px"
+          },
+          "spread": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.0, 0.0, 0.0, 0.2]
+          }
         },
-        "offsetY": {
-          "dimensionType": "length",
-          "value": 2,
-          "unit": "px"
-        },
-        "blur": {
-          "dimensionType": "length",
-          "value": 6,
-          "unit": "px"
-        },
-        "spread": {
-          "dimensionType": "length",
-          "value": 0,
-          "unit": "px"
-        },
-        "color": {
-          "colorSpace": "srgb",
-          "components": [0.0, 0.0, 0.0, 0.2]
+        {
+          "shadowType": "css.box-shadow",
+          "offsetX": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "dimensionType": "length",
+            "value": 1,
+            "unit": "px"
+          },
+          "blur": {
+            "dimensionType": "length",
+            "value": 3,
+            "unit": "px"
+          },
+          "spread": {
+            "dimensionType": "length",
+            "value": 0,
+            "unit": "px"
+          },
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0.0, 0.0, 0.0, 0.3]
+          }
         }
-      }
+      ]
     }
   }
 }
 ```
 
-Convert shadow arrays into DTIF objects with explicit `shadowType` strings and dimension
-wrappers for each offset.
+Convert each DTCG layer into a DTIF shadow object with an explicit `shadowType` and
+dimension wrappers. Tokens with multiple layers continue to use arrays whose ordering
+matches the original DTCG payload.
 
 ### Gradients {#gradients}
 

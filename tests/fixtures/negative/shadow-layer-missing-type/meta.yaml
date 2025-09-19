@@ -1,0 +1,5 @@
+name: shadow-layer-missing-type
+description: each shadow layer requires a shadowType
+assertions:
+  - schema
+tags: [shadow]
