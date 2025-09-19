@@ -1,0 +1,6 @@
+name: font-face-invalid-display
+description: fontFace tokens reject unsupported fontDisplay keywords
+assertions:
+  - schema
+tags:
+  - fontFace

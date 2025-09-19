@@ -1,0 +1,13 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "fontFace": {
+    "bad": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Example Sans",
+        "src": [{ "local": "Example Sans" }],
+        "fontDisplay": "instant"
+      }
+    }
+  }
+}
