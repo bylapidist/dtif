@@ -1,0 +1,6 @@
+name: elevation-invalid-dimension-type
+description: elevation offset and blur must use length dimensions
+assertions:
+  - schema
+  - type-compat
+tags: [elevation]

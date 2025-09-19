@@ -1,0 +1,4 @@
+name: gradient hint invalid
+description: gradient color hints must be valid length-percentage tokens or calc expressions
+assertions:
+  - schema

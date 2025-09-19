@@ -32,6 +32,11 @@
         }
       ]
     },
+    "css-ident": {
+      "type": "string",
+      "pattern": "^-{0,2}[A-Za-z_][A-Za-z0-9_-]*$",
+      "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions (css-values-4)."
+    },
     "override": {
       "type": "object",
       "properties": {
@@ -493,8 +498,7 @@
       "required": ["colorSpace", "components"],
       "properties": {
         "colorSpace": {
-          "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "$ref": "#/$defs/css-ident",
           "$comment": "MUST be a CSS <ident> naming a colour space defined by CSS Color 4 or registered via @color-profile (css-color-4)."
         },
         "components": {
@@ -547,6 +551,11 @@
       "type": "string",
       "pattern": "^(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Ii][Tt][Aa][Ll][Ii][Cc]|[Oo][Bb][Ll][Ii][Qq][Uu][Ee](?:\\s+[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn]))?)$",
       "$comment": "Font style keywords MUST match CSS font-style grammar, optionally supplying an oblique angle (css-fonts-4, css-values-4)."
+    },
+    "font-variant-string": {
+      "type": "string",
+      "pattern": "^(?:[Nn][Oo][Rr][Mm][Aa][Ll]|[Nn][Oo][Nn][Ee]|(?:(?:[Cc][Oo][Mm][Mm][Oo][Nn]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Cc][Oo][Mm][Mm][Oo][Nn]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Dd][Ii][Ss][Cc][Rr][Ee][Tt][Ii][Oo][Nn][Aa][Rr][Yy]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Dd][Ii][Ss][Cc][Rr][Ee][Tt][Ii][Oo][Nn][Aa][Rr][Yy]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Cc][Oo][Nn][Tt][Ee][Xx][Tt][Uu][Aa][Ll]|[Nn][Oo]-[Cc][Oo][Nn][Tt][Ee][Xx][Tt][Uu][Aa][Ll]|[Ss][Mm][Aa][Ll][Ll]-[Cc][Aa][Pp][Ss]|[Aa][Ll][Ll]-[Ss][Mm][Aa][Ll][Ll]-[Cc][Aa][Pp][Ss]|[Pp][Ee][Tt][Ii][Tt][Ee]-[Cc][Aa][Pp][Ss]|[Aa][Ll][Ll]-[Pp][Ee][Tt][Ii][Tt][Ee]-[Cc][Aa][Pp][Ss]|[Uu][Nn][Ii][Cc][Aa][Ss][Ee]|[Tt][Ii][Tt][Ll][Ii][Nn][Gg]-[Cc][Aa][Pp][Ss]|[Ll][Ii][Nn][Ii][Nn][Gg]-[Nn][Uu][Mm][Ss]|[Oo][Ll][Dd][Ss][Tt][Yy][Ll][Ee]-[Nn][Uu][Mm][Ss]|[Pp][Rr][Oo][Pp][Oo][Rr][Tt][Ii][Oo][Nn][Aa][Ll]-[Nn][Uu][Mm][Ss]|[Tt][Aa][Bb][Uu][Ll][Aa][Rr]-[Nn][Uu][Mm][Ss]|[Dd][Ii][Aa][Gg][Oo][Nn][Aa][Ll]-[Ff][Rr][Aa][Cc][Tt][Ii][Oo][Nn][Ss]|[Ss][Tt][Aa][Cc][Kk][Ee][Dd]-[Ff][Rr][Aa][Cc][Tt][Ii][Oo][Nn][Ss]|[Oo][Rr][Dd][Ii][Nn][Aa][Ll]|[Ss][Ll][Aa][Ss][Hh][Ee][Dd]-[Zz][Ee][Rr][Oo]|[Jj][Ii][Ss]78|[Jj][Ii][Ss]83|[Jj][Ii][Ss]90|[Jj][Ii][Ss]04|[Ss][Ii][Mm][Pp][Ll][Ii][Ff][Ii][Ee][Dd]|[Tt][Rr][Aa][Dd][Ii][Tt][Ii][Oo][Nn][Aa][Ll]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Pp][Rr][Oo][Pp][Oo][Rr][Tt][Ii][Oo][Nn][Aa][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Rr][Uu][Bb][Yy]|[Ss][Uu][Bb]|[Ss][Uu][Pp][Ee][Rr]|[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ff][Oo][Rr][Mm][Ss]|[Ss][Tt][Yy][Ll][Ii][Ss][Tt][Ii][Cc]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Ss][Tt][Yy][Ll][Ee][Ss][Ee][Tt]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\)|[Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]-[Vv][Aa][Rr][Ii][Aa][Nn][Tt]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\)|[Ss][Ww][Aa][Ss][Hh]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Oo][Rr][Nn][Aa][Mm][Ee][Nn][Tt][Ss]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\))(?:\\s+(?:[Cc][Oo][Mm][Mm][Oo][Nn]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Cc][Oo][Mm][Mm][Oo][Nn]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Dd][Ii][Ss][Cc][Rr][Ee][Tt][Ii][Oo][Nn][Aa][Rr][Yy]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Dd][Ii][Ss][Cc][Rr][Ee][Tt][Ii][Oo][Nn][Aa][Rr][Yy]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Nn][Oo]-[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ll][Ii][Gg][Aa][Tt][Uu][Rr][Ee][Ss]|[Cc][Oo][Nn][Tt][Ee][Xx][Tt][Uu][Aa][Ll]|[Nn][Oo]-[Cc][Oo][Nn][Tt][Ee][Xx][Tt][Uu][Aa][Ll]|[Ss][Mm][Aa][Ll][Ll]-[Cc][Aa][Pp][Ss]|[Aa][Ll][Ll]-[Ss][Mm][Aa][Ll][Ll]-[Cc][Aa][Pp][Ss]|[Pp][Ee][Tt][Ii][Tt][Ee]-[Cc][Aa][Pp][Ss]|[Aa][Ll][Ll]-[Pp][Ee][Tt][Ii][Tt][Ee]-[Cc][Aa][Pp][Ss]|[Uu][Nn][Ii][Cc][Aa][Ss][Ee]|[Tt][Ii][Tt][Ll][Ii][Nn][Gg]-[Cc][Aa][Pp][Ss]|[Ll][Ii][Nn][Ii][Nn][Gg]-[Nn][Uu][Mm][Ss]|[Oo][Ll][Dd][Ss][Tt][Yy][Ll][Ee]-[Nn][Uu][Mm][Ss]|[Pp][Rr][Oo][Pp][Oo][Rr][Tt][Ii][Oo][Nn][Aa][Ll]-[Nn][Uu][Mm][Ss]|[Tt][Aa][Bb][Uu][Ll][Aa][Rr]-[Nn][Uu][Mm][Ss]|[Dd][Ii][Aa][Gg][Oo][Nn][Aa][Ll]-[Ff][Rr][Aa][Cc][Tt][Ii][Oo][Nn][Ss]|[Ss][Tt][Aa][Cc][Kk][Ee][Dd]-[Ff][Rr][Aa][Cc][Tt][Ii][Oo][Nn][Ss]|[Oo][Rr][Dd][Ii][Nn][Aa][Ll]|[Ss][Ll][Aa][Ss][Hh][Ee][Dd]-[Zz][Ee][Rr][Oo]|[Jj][Ii][Ss]78|[Jj][Ii][Ss]83|[Jj][Ii][Ss]90|[Jj][Ii][Ss]04|[Ss][Ii][Mm][Pp][Ll][Ii][Ff][Ii][Ee][Dd]|[Tt][Rr][Aa][Dd][Ii][Tt][Ii][Oo][Nn][Aa][Ll]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Pp][Rr][Oo][Pp][Oo][Rr][Tt][Ii][Oo][Nn][Aa][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Rr][Uu][Bb][Yy]|[Ss][Uu][Bb]|[Ss][Uu][Pp][Ee][Rr]|[Hh][Ii][Ss][Tt][Oo][Rr][Ii][Cc][Aa][Ll]-[Ff][Oo][Rr][Mm][Ss]|[Ss][Tt][Yy][Ll][Ii][Ss][Tt][Ii][Cc]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Ss][Tt][Yy][Ll][Ee][Ss][Ee][Tt]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\)|[Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]-[Vv][Aa][Rr][Ii][Aa][Nn][Tt]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\)|[Ss][Ww][Aa][Ss][Hh]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Oo][Rr][Nn][Aa][Mm][Ee][Nn][Tt][Ss]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*\\s*\\)|[Aa][Nn][Nn][Oo][Tt][Aa][Tt][Ii][Oo][Nn]\\(\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*(?:\\s*,\\s*-{0,2}[A-Za-z_][A-Za-z0-9_-]*)*\\s*\\)))*))$",
+      "$comment": "Font variant sequences MUST match CSS font-variant grammar (css-fonts-4)."
     },
     "font-stretch-string": {
       "type": "string",
@@ -711,6 +720,7 @@
             { "$ref": "#/$defs/font-dimension" },
             {
               "type": "string",
+              "enum": ["normal"],
               "$comment": "MUST be the keyword 'normal' per CSS Text Module Level 3 letter-spacing grammar."
             }
           ]
@@ -742,7 +752,7 @@
           "$comment": "MUST conform to CSS font-style grammar and map to native italic traits or the slnt variation axis (css-fonts-4, IOS-FONT-TRAITS, IOS-FONT-VARIATIONS, ANDROID-FONT-SLANT, ANDROID-FONT-VARIATION)."
         },
         "fontVariant": {
-          "type": "string",
+          "$ref": "#/$defs/font-variant-string",
           "$comment": "MUST match the CSS font-variant grammar when present."
         },
         "fontStretch": {
@@ -885,6 +895,11 @@
       },
       "additionalProperties": false
     },
+    "color-stop-length-string": {
+      "type": "string",
+      "pattern": "^(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+))(?:\\s+(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+)))?$",
+      "$comment": "Each token MUST be a CSS <length-percentage> or calc-style expression resolving to <length-percentage> (css-values-4, css-images-4)."
+    },
     "gradient": {
       "type": "object",
       "required": ["gradientType", "stops"],
@@ -909,11 +924,7 @@
                     "maximum": 1,
                     "$comment": "Normalised offsets align with CAGradientLayer.locations and Android shader stop arrays."
                   },
-                  {
-                    "type": "string",
-                    "pattern": "\\S",
-                    "$comment": "MUST conform to the <color-stop-length> production defined in CSS Images Module Level 4."
-                  }
+                  { "$ref": "#/$defs/color-stop-length-string" }
                 ]
               },
               "hint": {
@@ -925,8 +936,7 @@
                     "$comment": "Normalised hints map to native midpoint interpolation controls."
                   },
                   {
-                    "type": "string",
-                    "pattern": "\\S",
+                    "$ref": "#/$defs/color-stop-length-string",
                     "$comment": "MUST conform to the <color-hint> productions described in CSS Images Module Level 4."
                   }
                 ]
@@ -1074,6 +1084,21 @@
       },
       "additionalProperties": false
     },
+    "durationTimeUnit": {
+      "type": "string",
+      "enum": ["s", "ms"],
+      "$comment": "MUST use CSS <time> units serialised as s or ms for transition and animation timing APIs (css-values-4#time-value, css-transitions-2, css-animations-2, IOS-CAANIMATION, ANDROID-VALUE-ANIMATOR)."
+    },
+    "durationFrameCountUnit": {
+      "type": "string",
+      "enum": ["frames"],
+      "$comment": "MUST use the frame count keyword defined by CADisplayLink and Choreographer timing APIs (IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER)."
+    },
+    "durationFractionUnit": {
+      "type": "string",
+      "enum": ["%"],
+      "$comment": "MUST use CSS <percentage> serialisation for fraction/progress timelines (css-values-4#percentages, IOS-UIVIEWPROPERTYANIMATOR, ANDROID-OBJECTANIMATOR)."
+    },
     "duration": {
       "type": "object",
       "required": ["durationType", "value", "unit"],
@@ -1086,7 +1111,6 @@
         "value": { "type": "number" },
         "unit": {
           "type": "string",
-          "pattern": "^\\S+$",
           "$comment": "MUST serialise the unit token defined by the referenced duration grammar (css-values-4#time-value, css-values-4#percentages, IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER)."
         }
       },
@@ -1108,7 +1132,8 @@
                 "type": "number",
                 "minimum": 0,
                 "$comment": "Non-negative durations matching the CSS <time> production."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationTimeUnit" }
             }
           }
         },
@@ -1128,7 +1153,8 @@
                 "type": "integer",
                 "minimum": 0,
                 "$comment": "Non-negative integer frame counts from the referenced timing API."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationFrameCountUnit" }
             }
           }
         },
@@ -1147,7 +1173,8 @@
               "value": {
                 "type": "number",
                 "$comment": "Numeric percentage matching the CSS <percentage> grammar."
-              }
+              },
+              "unit": { "$ref": "#/$defs/durationFractionUnit" }
             }
           }
         }
@@ -1398,11 +1425,11 @@
           "$comment": "MUST identify the rendering context defined by CSS <shadow> functions, UIKit CALayer/NSShadow properties, or Android elevation/shadow APIs (for example css.box-shadow.surface, ios.layer.surface, android.paint.shadow-layer.surface)."
         },
         "offset": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Vertical offset MUST conform to CSS <length> grammar and map to CALayer.shadowOffset.height, Paint#setShadowLayer dy, or View#setElevation displacement."
         },
         "blur": {
-          "$ref": "#/$defs/dimension",
+          "$ref": "#/$defs/length-dimension",
           "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
         },
         "color": {

@@ -1,0 +1,5 @@
+{
+  "code": "E_DURATION_UNIT_MISMATCH",
+  "path": "/duration/badUnit/$value/unit",
+  "message": "duration unit banana is invalid for durationType css.transition-duration"
+}

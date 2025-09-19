@@ -1,0 +1,69 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "duration": {
+    "androidAnimation": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.value-animator.duration",
+        "value": 350,
+        "unit": "ms"
+      }
+    },
+    "androidFraction": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.animator-set.fraction",
+        "value": 75,
+        "unit": "%"
+      }
+    },
+    "androidFrames": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "android.choreographer.frame-count",
+        "value": 3,
+        "unit": "frames"
+      }
+    },
+    "cssTimeline": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.timeline.progress",
+        "value": 25,
+        "unit": "%"
+      }
+    },
+    "cssTransition": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 150,
+        "unit": "ms"
+      }
+    },
+    "iosAnimation": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.caanimation.duration",
+        "value": 0.2,
+        "unit": "s"
+      }
+    },
+    "iosFraction": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.uianimation.fraction",
+        "value": 60,
+        "unit": "%"
+      }
+    },
+    "iosFrames": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "ios.cadisplaylink.frame-count",
+        "value": 2,
+        "unit": "frames"
+      }
+    }
+  }
+}

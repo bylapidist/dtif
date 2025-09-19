@@ -1,0 +1,17 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "elevation": {
+    "bad": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "css.box-shadow.surface",
+        "offset": { "dimensionType": "angle", "value": 8, "unit": "deg" },
+        "blur": { "dimensionType": "length", "value": 24, "unit": "px" },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.059, 0.09, 0.165, 0.18]
+        }
+      }
+    }
+  }
+}
