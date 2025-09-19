@@ -885,6 +885,11 @@
       },
       "additionalProperties": false
     },
+    "color-stop-length-string": {
+      "type": "string",
+      "pattern": "^(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+))(?:\\s+(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+)))?$",
+      "$comment": "Each token MUST be a CSS <length-percentage> or calc-style expression resolving to <length-percentage> (css-values-4, css-images-4)."
+    },
     "gradient": {
       "type": "object",
       "required": ["gradientType", "stops"],
@@ -909,11 +914,7 @@
                     "maximum": 1,
                     "$comment": "Normalised offsets align with CAGradientLayer.locations and Android shader stop arrays."
                   },
-                  {
-                    "type": "string",
-                    "pattern": "\\S",
-                    "$comment": "MUST conform to the <color-stop-length> production defined in CSS Images Module Level 4."
-                  }
+                  { "$ref": "#/$defs/color-stop-length-string" }
                 ]
               },
               "hint": {

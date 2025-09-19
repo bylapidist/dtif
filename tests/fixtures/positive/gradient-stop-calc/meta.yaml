@@ -1,0 +1,12 @@
+name: gradient calc stop
+description: gradient stop string accepts calc expressions
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:gradient
+  - gradient:linear
+  - function:calc
