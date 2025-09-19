@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_INVALID_KEYWORD",
+    "path": "/fontFace/bad/$value/fontStretch",
+    "message": "invalid keyword"
+  }
+}

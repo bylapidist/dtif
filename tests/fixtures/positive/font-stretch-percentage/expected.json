@@ -1,0 +1,22 @@
+{
+  "fontFace": {
+    "wide": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Wide Sans",
+        "fontStretch": "112.5%",
+        "src": [{ "local": "Wide Sans" }]
+      }
+    }
+  },
+  "typography": {
+    "display": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Wide Sans",
+        "fontSize": { "dimensionType": "length", "value": 48, "unit": "px" },
+        "fontStretch": "112.5%"
+      }
+    }
+  }
+}
