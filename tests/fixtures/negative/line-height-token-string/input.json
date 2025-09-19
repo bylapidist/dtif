@@ -1,0 +1,7 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "bad": {
+    "$type": "line-height",
+    "$value": "120%"
+  }
+}

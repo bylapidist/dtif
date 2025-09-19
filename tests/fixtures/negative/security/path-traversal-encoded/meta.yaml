@@ -1,0 +1,7 @@
+name: encoded path traversal
+description: block percent-encoded directory traversal in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security

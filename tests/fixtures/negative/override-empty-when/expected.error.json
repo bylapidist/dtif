@@ -1,0 +1,1 @@
+{ "error": "Schema validation error: override $when must declare at least one condition" }

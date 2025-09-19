@@ -1,0 +1,6 @@
+name: type-identifier-invalid
+description: custom $type values must avoid whitespace and other invalid characters
+assertions:
+  - schema
+tags:
+  - type

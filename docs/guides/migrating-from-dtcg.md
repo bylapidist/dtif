@@ -20,7 +20,8 @@ core behaviours:
 
 - **Collections instead of groups.** DTIF treats any object without a `$value` as a [collection](../spec/architecture-model.md#tokens-and-collections). DTCG groups may [declare a `$type` that applies to every nested token](https://www.designtokens.org/tr/drafts/format/#type-1), so copy inherited types onto each DTIF token because collections do not provide default typing.
 - **Reserved member prefixes.** Both formats reserve `$`-prefixed keys. DTCG documents, groups, and tokens use `$description`, `$type`, and `$extensions` members and [forbid `{`, `}`, and `.` in names](https://www.designtokens.org/tr/drafts/format/#character-restrictions). DTIF keeps the prefix rules and adds document-level members such as [`$version`](../spec/architecture-model.md#versioning) and [`$overrides`](../spec/theming-overrides.md#theming-and-overrides), so migrate any group metadata into the corresponding collections and resolve naming conflicts before publishing.
-- **Alias mechanics.** DTCG aliases rely on brace-delimited strings such as `"{button.background}"` described in the [alias section](https://www.designtokens.org/tr/drafts/format/#aliases-references). DTIF aliases use [`$ref` JSON Pointers](../spec/format-serialisation.md#ref) that start with `#` for local targets or include a URI fragment for external references. Convert each DTCG alias into a `$ref` and escape `/` or `~` characters as `~1` or `~0` per the pointer rules.
+- **Alias mechanics.** DTCG aliases rely on brace-delimited strings such as `"{button.background}"` described in the [alias section](https://www.designtokens.org/tr/drafts/format/#aliases-references). DTIF aliases use [`$ref` JSON Pointers](../spec/format-serialisation.md#ref) that start with `#` for local targets or include a URI fragment for external references. Convert each DTCG alias into a `$ref` and escape `/` or `~` characters as `~1` or `~0` per the pointer rules. DTIF additionally rejects directory traversal segments such as `../` or their percent-encoded form `%2E%2E`, so rewrite any exported DTCG file paths that rely on upward navigation before publishing.
+- **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set.
 
 ### Example: groups, tokens, and aliases {#example-data-model}
 
@@ -77,11 +78,46 @@ core behaviours:
 Copy the inherited `$type` onto every DTIF token, convert string aliases into `$ref`
 pointers, and migrate any vendor extensions while keeping their reverse-DNS names.
 
+### Normalise platform identifiers {#normalise-platform-identifiers}
+
+Some DTCG exporters capitalise platform prefixes or reuse camel-cased API names when
+serialising platform-specific identifiers. DTIF requires lower-case dot-separated
+segments for these members so that [`cursorType`](../spec/token-types.md#cursor),
+[`borderType`](../spec/token-types.md#border-tokens),
+[`font.$value.fontType`](../spec/typography.md#font-face),
+[`filterType`](../spec/token-types.md#filter-tokens),
+[`opacityType`](../spec/token-types.md#opacity),
+[`durationType`](../spec/token-types.md#duration),
+[`zIndexType`](../spec/token-types.md#z-index),
+[`motionType`](../spec/token-types.md#motion-tokens), and
+[`easingFunction`](../spec/token-types.md#easing) map cleanly back to the CSS, UIKit,
+and Android specifications. Normalise each segment to lower-case ASCII, replace camel
+case with hyphenated words where needed, and join the segments with dots so validation
+passes and downstream tooling can infer the platform context.
+
+```json
+// DTCG export
+{
+  "cursor": {
+    "$type": "cursor",
+    "$value": { "cursorType": "css.Cursor", "value": "pointer" }
+  }
+}
+
+// DTIF conversion
+{
+  "cursor": {
+    "$type": "cursor",
+    "$value": { "cursorType": "css.cursor", "value": "pointer" }
+  }
+}
+```
+
 ## Prepare the document shell {#document-shell}
 
 1. **Declare a version.** DTCG files do not mandate document versioning. DTIF documents [SHOULD include a `$version`](../spec/architecture-model.md#versioning) that follows Semantic Versioning so consumers can evaluate compatibility.
 2. **Copy document metadata.** DTCG groups may expose [`$description`](https://www.designtokens.org/tr/drafts/format/#description-0), [`$extensions`](https://www.designtokens.org/tr/drafts/format/#extensions-0), and `$deprecated`. Mirror those members on the new collections, carrying group-level `$deprecated` flags across as collection metadata and migrating any string explanations into `$description` or vendor extensions. When you need file-level governance details, place them inside the document's top-level `$extensions`; lifecycle fields such as `$lastModified` and `$author` remain token-scoped in DTIF.
-3. **Decide on layering.** If the DTCG workflow produced separate files per theme or mode, DTIF lets you combine them by layering documents or by defining a [`$overrides` array](../spec/theming-overrides.md#theming-and-overrides) with explicit conditionals.
+3. **Decide on layering.** If the DTCG workflow produced separate files per theme or mode, DTIF lets you combine them by layering documents or by defining a [`$overrides` array](../spec/theming-overrides.md#theming-and-overrides) with explicit conditionals. Each override entry must supply at least one `$when` key; migrate any empty condition objects into concrete predicates so the schema can evaluate the override.
 4. **Normalise names.** DTCG [forbids `{`, `}`, and `.` in token or group names](https://www.designtokens.org/tr/drafts/format/#character-restrictions) because of its alias syntax. DTIF references do not impose those limits, but JSON Pointer segments treat `/` and `~` as structural characters, so escape them as `~1` and `~0` when building `$ref` strings.
 
 ### Example: merging themed documents {#example-document-shell}
@@ -175,7 +211,7 @@ DTIF reuses familiar fields and introduces additional lifecycle tracking:
 - **`$description`** remains a plain-text explanation that consumers _MAY_ display ([Format and serialisation](../spec/format-serialisation.md#description)).
 - **`$extensions`** still hosts vendor data but DTIF requires reverse-DNS prefixes and preservation of unknown entries ([Format and serialisation](../spec/format-serialisation.md#extensions)).
 - **`$deprecated`** accepts either a boolean or an object with a `$replacement` pointer to another token of the same `$type`. Convert DTCG boolean or string deprecation flags on tokens and groups into boolean metadata, move freeform explanations into `$description` or vendor namespaces, and add `$replacement` pointers for canonical successors. Collections _MAY_ carry the same metadata so inherited group defaults survive the migration ([Metadata](../spec/metadata.md#metadata)).
-- **Lifecycle fields.** DTIF optionally records `$lastModified`, `$lastUsed`, `$usageCount`, `$author`, `$tags`, and `$hash`. Populate these from any analytics captured alongside the source tokens ([Metadata](../spec/metadata.md#metadata)).
+- **Lifecycle fields.** DTIF optionally records `$lastModified`, `$lastUsed`, `$usageCount`, `$author`, `$tags`, and `$hash`. Populate these from any analytics captured alongside the source tokens, keep `$lastUsed` paired with a positive `$usageCount`, and ensure `$lastUsed` is on or after `$lastModified`. When `$usageCount` is `0`, omit `$lastUsed`; the schema enforces these combinations and temporal ordering so telemetry imported from DTCG stays consistent ([Metadata](../spec/metadata.md#metadata)).
 
 ### Example: migrating status metadata {#example-metadata}
 
@@ -505,6 +541,21 @@ Consolidate font metadata into a reusable `font` token, encode fallback stacks w
 Reference those measurements from `typography` tokens via `$ref`. Alias tokens can
 forward to other dimension tokens, so nested pointers keep shared measurements in one
 place while the typography composite stays well-typed.
+
+DTIF also registers standalone `line-height` tokens for reusing baseline spacing
+outside composite typography. DTCG exports that serialise line heights as strings such
+as `"120%"` must be normalised into a unitless ratio (for example `1.2`) or a
+`font-dimension` object during migration. The schema rejects other value types so that
+line-height tokens resolve predictably on every platform and alias tokens continue to
+declare matching `$type` metadata.
+
+DTIF likewise narrows the accepted keywords for `wordSpacing`.
+CSS allows values such as `normal`, `wide`, and `narrow`, and some DTCG pipelines
+emit those strings directly. DTIF keeps only the `normal` keyword; all other spacing
+adjustments must be converted into explicit `font-dimension` measurements or
+references to `dimension` tokens whose `dimensionType` is `"length"`. This ensures
+word spacing imports express concrete distances instead of relying on loosely defined
+user-agent heuristics.
 
 ## Convert composite tokens {#composite-tokens}
 

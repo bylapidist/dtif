@@ -1,0 +1,19 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "absolute": {
+    "$type": "line-height",
+    "$value": {
+      "dimensionType": "length",
+      "value": 24,
+      "unit": "px"
+    }
+  },
+  "alias": {
+    "$type": "line-height",
+    "$ref": "#/absolute"
+  },
+  "ratio": {
+    "$type": "line-height",
+    "$value": 1.5
+  }
+}

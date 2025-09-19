@@ -1,0 +1,6 @@
+name: cursor-type-uppercase
+description: cursorType segments must be lower-case per platform naming guidance
+assertions:
+  - schema
+tags:
+  - cursor

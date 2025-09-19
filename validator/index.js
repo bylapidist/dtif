@@ -5,7 +5,8 @@ import schema from '@lapidist/dtif-schema/core.json' assert { type: 'json' };
 const DEFAULT_OPTIONS = {
   allErrors: true,
   allowUnionTypes: true,
-  strict: false
+  strict: false,
+  $data: true
 };
 
 const DEFAULT_SCHEMA_ID = schema.$id ?? 'https://dtif.lapidist.net/schema/core.json';

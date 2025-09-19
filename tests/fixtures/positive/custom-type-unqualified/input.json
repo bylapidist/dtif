@@ -1,9 +1,9 @@
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "experimental": {
-    "foo": {
-      "$type": "com.example.tokens.bogus",
-      "$value": "bar"
+    "radius": {
+      "$type": "radius",
+      "$value": { "magnitude": 8, "unit": "px" }
     }
   }
 }

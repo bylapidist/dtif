@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "custom": {
+    "$type": "acme tokens.radius",
+    "$value": {
+      "magnitude": 12
+    }
+  }
+}

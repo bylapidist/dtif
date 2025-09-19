@@ -1,0 +1,22 @@
+{
+  "absolute": {
+    "$type": "line-height",
+    "$value": {
+      "dimensionType": "length",
+      "value": 24,
+      "unit": "px"
+    }
+  },
+  "alias": {
+    "$type": "line-height",
+    "$value": {
+      "dimensionType": "length",
+      "value": 24,
+      "unit": "px"
+    }
+  },
+  "ratio": {
+    "$type": "line-height",
+    "$value": 1.5
+  }
+}
