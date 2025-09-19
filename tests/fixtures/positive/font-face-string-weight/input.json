@@ -1,0 +1,26 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "fontFace": {
+    "keyword": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Example Sans",
+        "src": [{ "local": "Example Sans" }],
+        "fontWeight": "bold"
+      }
+    },
+    "range": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Example Sans Variable",
+        "src": [
+          {
+            "url": "https://cdn.example.com/fonts/ExampleSansVariable.woff2",
+            "format": "woff2"
+          }
+        ],
+        "fontWeight": "400 700"
+      }
+    }
+  }
+}

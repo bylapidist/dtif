@@ -1,0 +1,9 @@
+name: font-face-string-weight
+description: fontFace tokens accept CSS font-weight keywords and ranges
+assertions:
+  - schema
+  - type-compat
+  - refs
+  - roundtrip
+tags:
+  - fontFace

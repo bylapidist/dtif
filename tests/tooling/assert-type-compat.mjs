@@ -518,6 +518,16 @@ export default function assertTypeCompat(doc) {
           }
         }
       }
+      if (node.$type === 'fontFace' && node.$value && typeof node.$value === 'object') {
+        const fw = node.$value.fontWeight;
+        if (typeof fw === 'string' && !isValidFontWeightString(fw)) {
+          errors.push({
+            code: 'E_INVALID_KEYWORD',
+            path: `${path}/$value/fontWeight`,
+            message: 'invalid keyword'
+          });
+        }
+      }
       if (node.$type === 'typography' && node.$value && typeof node.$value === 'object') {
         const ls = node.$value.letterSpacing;
         if (typeof ls === 'string' && ls !== 'normal') {
