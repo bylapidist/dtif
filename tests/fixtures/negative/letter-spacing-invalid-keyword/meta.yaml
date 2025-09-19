@@ -1,0 +1,5 @@
+name: letter-spacing-invalid-keyword
+description: letterSpacing keyword must be the literal normal value
+assertions:
+  - schema
+tags: [typography]
