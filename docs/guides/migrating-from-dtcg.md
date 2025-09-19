@@ -35,7 +35,11 @@ core behaviours:
     "$description": "Primary button colors",
     "background": {
       "$description": "Solid brand fill",
-      "$value": "#006FFF",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0],
+        "hex": "#006FFF"
+      },
       "$extensions": {
         "com.example.export": { "legacyHex": "#006FFF" }
       }
@@ -118,9 +122,10 @@ rather than a single composite value.
 
 ### Normalise platform identifiers {#normalise-platform-identifiers}
 
-Some DTCG exporters capitalise platform prefixes or reuse camel-cased API names when
-serialising platform-specific identifiers. DTIF requires lower-case dot-separated
-segments for these members so that [`cursorType`](../spec/token-types.md#cursor),
+Some DTCG workflows annotate platform targets inside `$extensions` metadata or rely on
+implicit naming conventions for `number` tokens. DTIF requires lower-case dot-separated
+segments for the dedicated identifier members—such as
+[`cursorType`](../spec/token-types.md#cursor),
 [`borderType`](../spec/token-types.md#border-tokens),
 [`font.$value.fontType`](../spec/typography.md#font-face),
 [`filterType`](../spec/token-types.md#filter-tokens),
@@ -128,25 +133,28 @@ segments for these members so that [`cursorType`](../spec/token-types.md#cursor)
 [`durationType`](../spec/token-types.md#duration),
 [`zIndexType`](../spec/token-types.md#z-index),
 [`motionType`](../spec/token-types.md#motion-tokens), and
-[`easingFunction`](../spec/token-types.md#easing) map cleanly back to the CSS, UIKit,
-and Android specifications. Normalise each segment to lower-case ASCII, replace camel
-case with hyphenated words where needed, and join the segments with dots so validation
-passes and downstream tooling can infer the platform context.
+[`easingFunction`](../spec/token-types.md#easing)—so downstream tooling can infer the
+target platform. Normalise each segment to lower-case ASCII, replace camel case with
+hyphenated words where needed, and join the segments with dots when you move these
+annotations into DTIF fields.
 
 ```json
 // DTCG export
 {
-  "cursor": {
-    "$type": "cursor",
-    "$value": { "cursorType": "css.Cursor", "value": "pointer" }
+  "opacity": {
+    "$type": "number",
+    "$extensions": {
+      "com.example.export": { "platform": "CSS.Opacity" }
+    },
+    "$value": 0.4
   }
 }
 
 // DTIF conversion
 {
-  "cursor": {
-    "$type": "cursor",
-    "$value": { "cursorType": "css.cursor", "value": "pointer" }
+  "opacity": {
+    "$type": "opacity",
+    "$value": { "opacityType": "css.opacity", "value": 0.4 }
   }
 }
 ```
@@ -170,7 +178,14 @@ passes and downstream tooling can infer the platform context.
   },
   "color": {
     "brand": {
-      "background": { "$type": "color", "$value": "#006FFF" }
+      "background": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.435, 1.0],
+          "hex": "#006FFF"
+        }
+      }
     }
   },
   "button": {
@@ -185,7 +200,14 @@ passes and downstream tooling can infer the platform context.
   "$description": "marketing.dark",
   "color": {
     "brand": {
-      "background": { "$type": "color", "$value": "#002255" }
+      "background": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.133, 0.333],
+          "hex": "#002255"
+        }
+      }
     }
   },
   "button": {
@@ -266,11 +288,19 @@ DTIF reuses familiar fields and introduces additional lifecycle tracking:
     "warning": {
       "$description": "Legacy warning alias",
       "$deprecated": "Use caution instead",
-      "$value": "#FFD600"
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.839, 0.0],
+        "hex": "#FFD600"
+      }
     },
     "caution": {
       "$description": "Preferred caution token",
-      "$value": "#FFBB00"
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.733, 0.0],
+        "hex": "#FFBB00"
+      }
     }
   }
 }
@@ -607,7 +637,14 @@ richer schemas for these structures.
 ```json
 {
   "color": {
-    "focus": { "$type": "color", "$value": "#006FFF" }
+    "focus": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0],
+        "hex": "#006FFF"
+      }
+    }
   },
   "dimension": {
     "focus-outline-width": {
@@ -619,7 +656,10 @@ richer schemas for these structures.
     "focus": {
       "$type": "strokeStyle",
       "$value": {
-        "dashArray": [4, 2],
+        "dashArray": [
+          { "value": 4, "unit": "px" },
+          { "value": 2, "unit": "px" }
+        ],
         "lineCap": "round"
       }
     }
@@ -665,7 +705,18 @@ richer schemas for these structures.
     "focus": {
       "$type": "strokeStyle",
       "$value": {
-        "dashArray": [4, 2],
+        "dashArray": [
+          {
+            "dimensionType": "length",
+            "value": 4,
+            "unit": "px"
+          },
+          {
+            "dimensionType": "length",
+            "value": 2,
+            "unit": "px"
+          }
+        ],
         "lineCap": "round"
       }
     }
@@ -701,8 +752,24 @@ extensions for dash patterns.
 {
   "color": {
     "shadow": {
-      "ambient": { "$type": "color", "$value": "#00000033" },
-      "key": { "$type": "color", "$value": "#0000004d" }
+      "ambient": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.0, 0.0],
+          "alpha": 0.2,
+          "hex": "#00000033"
+        }
+      },
+      "key": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.0, 0.0],
+          "alpha": 0.302,
+          "hex": "#0000004d"
+        }
+      }
     }
   },
   "dimension": {
@@ -856,17 +923,33 @@ matches the original DTCG payload.
 
 ```json
 {
+  "color": {
+    "hero": {
+      "start": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1.0, 0.541, 0.0],
+          "hex": "#FF8A00"
+        }
+      },
+      "end": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.929, 0.098, 0.792],
+          "hex": "#ED19CA"
+        }
+      }
+    }
+  },
   "gradient": {
     "hero-background": {
       "$type": "gradient",
-      "$value": {
-        "type": "linear",
-        "angle": 45,
-        "colorStops": [
-          { "color": "#FF8A00", "position": 0 },
-          { "color": "#ED19CA", "position": 1 }
-        ]
-      }
+      "$value": [
+        { "color": "{color.hero.start}", "position": 0 },
+        { "color": "{color.hero.end}", "position": 1 }
+      ]
     }
   }
 }
@@ -909,9 +992,10 @@ matches the original DTCG payload.
 }
 ```
 
-Normalise stop positions to percentages, map angles to CSS syntax, and mint shared
-`color` tokens that gradient stops reference through `$ref` so palette aliases survive the
-migration.
+Convert fractional stop positions to percentage strings, add an explicit `gradientType`
+and CSS-formatted `angle` to describe the orientation, and keep the palette tokens as
+dedicated `color` entries that gradient stops reference through `$ref` so palette aliases
+survive the migration.
 
 ### Transitions and motion {#transitions}
 
@@ -1007,8 +1091,20 @@ Migrating is an opportunity to adopt DTIF-only capabilities:
 {
   "button": {
     "$type": "color",
-    "background": { "$value": "#006FFF" },
-    "text": { "$value": "#FFFFFF" }
+    "background": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0],
+        "hex": "#006FFF"
+      }
+    },
+    "text": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 1.0, 1.0],
+        "hex": "#FFFFFF"
+      }
+    }
   },
   "spacing": {
     "$type": "dimension",
