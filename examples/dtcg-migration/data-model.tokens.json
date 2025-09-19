@@ -1,0 +1,22 @@
+{
+  "$version": "1.0.0",
+  "button": {
+    "$description": "Primary button colors",
+    "background": {
+      "$type": "color",
+      "$description": "Solid brand fill",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0]
+      },
+      "$extensions": {
+        "org.example.export": { "legacyHex": "#006FFF" }
+      }
+    },
+    "text": {
+      "$type": "color",
+      "$description": "Alias to the background color",
+      "$ref": "#/button/background"
+    }
+  }
+}

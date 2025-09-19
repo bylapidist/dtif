@@ -1,0 +1,27 @@
+{
+  "$version": "1.0.0",
+  "border": {
+    "focus-outline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.435, 1.0, 1.0]
+        },
+        "style": "solid",
+        "width": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        }
+      },
+      "$extensions": {
+        "org.example.stroke": {
+          "dashArray": [4, 2],
+          "lineCap": "round"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$version": "1.0.0",
+  "gradient": {
+    "hero-background": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "angle": "to top right",
+        "stops": [
+          {
+            "position": "0%",
+            "color": {
+              "colorSpace": "srgb",
+              "components": [1.0, 0.541, 0.0, 1.0]
+            }
+          },
+          {
+            "position": "100%",
+            "color": {
+              "colorSpace": "srgb",
+              "components": [0.929, 0.098, 0.792, 1.0]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

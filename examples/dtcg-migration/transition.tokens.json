@@ -1,0 +1,44 @@
+{
+  "$version": "1.0.0",
+  "duration": {
+    "button-press": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 120,
+        "unit": "ms"
+      }
+    },
+    "button-delay": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-delay",
+        "value": 40,
+        "unit": "ms"
+      }
+    }
+  },
+  "easing": {
+    "standard": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "cubic-bezier",
+        "parameters": [0.4, 0.0, 0.2, 1.0]
+      }
+    }
+  },
+  "motion": {
+    "button-transition": {
+      "$type": "motion",
+      "$value": {
+        "motionType": "css.transition",
+        "parameters": {
+          "property": "transform",
+          "duration": { "$ref": "#/duration/button-press" },
+          "delay": { "$ref": "#/duration/button-delay" },
+          "easing": { "$ref": "#/easing/standard" }
+        }
+      }
+    }
+  }
+}

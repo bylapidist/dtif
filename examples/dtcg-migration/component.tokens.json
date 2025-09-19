@@ -1,0 +1,69 @@
+{
+  "$version": "1.0.0",
+  "color": {
+    "button-background": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0]
+      }
+    },
+    "button-text": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 1.0, 1.0, 1.0]
+      }
+    }
+  },
+  "dimension": {
+    "padding-min": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "padding-max": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 16,
+        "unit": "px"
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "background": {
+            "$type": "color",
+            "$ref": "#/color/button-background"
+          },
+          "text": {
+            "$type": "color",
+            "$ref": "#/color/button-text"
+          },
+          "padding": {
+            "$type": "dimension",
+            "$value": {
+              "fn": "clamp",
+              "parameters": [
+                { "$ref": "#/dimension/padding-min" },
+                {
+                  "dimensionType": "length",
+                  "value": 2,
+                  "unit": "vw"
+                },
+                { "$ref": "#/dimension/padding-max" }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$version": "1.0.0",
+  "shadow": {
+    "button-ambient": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow",
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        },
+        "blur": {
+          "dimensionType": "length",
+          "value": 6,
+          "unit": "px"
+        },
+        "spread": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.0, 0.0, 0.2]
+        }
+      }
+    }
+  }
+}
