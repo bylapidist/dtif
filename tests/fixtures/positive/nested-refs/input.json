@@ -1,0 +1,153 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "border": {
+    "focus": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": { "$ref": "#/color/brand/highlight" },
+        "style": "solid",
+        "width": { "$ref": "#/dimension/border/medium" }
+      }
+    }
+  },
+  "color": {
+    "brand": {
+      "base": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.36, 0.72, 1.0]
+        }
+      },
+      "highlight": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1.0, 0.55, 0.0, 1.0]
+        }
+      }
+    },
+    "surface": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.0, 0.0, 0.2]
+      }
+    }
+  },
+  "dimension": {
+    "border": {
+      "medium": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        }
+      }
+    },
+    "shadow": {
+      "blur": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "offset": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "spread": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 0,
+          "unit": "px"
+        }
+      }
+    },
+    "typography": {
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 0.5,
+          "unit": "px"
+        }
+      },
+      "body-line-height": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "body-size": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "elevation": {
+    "raised": {
+      "$type": "elevation",
+      "$value": {
+        "blur": { "$ref": "#/dimension/shadow/blur" },
+        "color": { "$ref": "#/color/surface" },
+        "elevationType": "css.box-shadow.surface",
+        "offset": { "$ref": "#/dimension/shadow/offset" }
+      }
+    }
+  },
+  "gradient": {
+    "hero": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "stops": [
+          { "color": { "$ref": "#/color/brand/base" }, "position": 0 },
+          { "color": { "$ref": "#/color/brand/highlight" }, "position": 1 }
+        ]
+      }
+    }
+  },
+  "shadow": {
+    "card": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "blur": { "$ref": "#/dimension/shadow/blur" },
+          "color": { "$ref": "#/color/surface" },
+          "offsetX": { "$ref": "#/dimension/shadow/offset" },
+          "offsetY": { "$ref": "#/dimension/shadow/offset" },
+          "shadowType": "css.box-shadow",
+          "spread": { "$ref": "#/dimension/shadow/spread" }
+        }
+      ]
+    }
+  },
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "color": { "$ref": "#/color/brand/base" },
+        "fontFamily": "Inter",
+        "fontSize": { "$ref": "#/dimension/typography/body-size" },
+        "letterSpacing": { "$ref": "#/dimension/typography/body-letter-spacing" },
+        "lineHeight": { "$ref": "#/dimension/typography/body-line-height" }
+      }
+    }
+  }
+}

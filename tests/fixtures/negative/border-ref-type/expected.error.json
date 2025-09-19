@@ -1,0 +1,3 @@
+{
+  "message": "border color $ref #/dimension/spacing has type dimension, expected color"
+}

@@ -443,23 +443,43 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
       }
     }
   },
+  "dimension": {
+    "typography": {
+      "body-size": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "body-letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 0.5,
+          "unit": "px"
+        }
+      },
+      "body-line-height": {
+        "$type": "dimension",
+        "$value": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    }
+  },
   "typography": {
     "body": {
       "$type": "typography",
       "$value": {
         "fontFamily": "Inter",
         "fontWeight": 400,
-        "fontSize": {
-          "dimensionType": "length",
-          "value": 16,
-          "unit": "px"
-        },
-        "letterSpacing": {
-          "dimensionType": "length",
-          "value": 0.5,
-          "unit": "px"
-        },
-        "lineHeight": 1.5
+        "fontSize": { "$ref": "#/dimension/typography/body-size" },
+        "letterSpacing": { "$ref": "#/dimension/typography/body-letter-spacing" },
+        "lineHeight": { "$ref": "#/dimension/typography/body-line-height" }
       }
     }
   }
@@ -467,8 +487,9 @@ Wrap each duration with a `durationType` identifier and promote Bézier arrays t
 ```
 
 Consolidate font metadata into a reusable `font` token, encode fallback stacks with the
-`fallbacks` property, and replace `{token.reference}` strings with `$ref` pointers wherever DTIF expects nested
-objects such as shared dimensions or colours.
+`fallbacks` property, and promote repeated measurements to standalone `dimension` tokens.
+Reference those measurements from `typography` tokens via `$ref` so existing aliases remain
+intact during the migration.
 
 ## Convert composite tokens {#composite-tokens}
 
@@ -481,6 +502,15 @@ richer schemas for these structures.
 
 ```json
 {
+  "color": {
+    "focus": { "$type": "color", "$value": "#006FFF" }
+  },
+  "dimension": {
+    "focus-outline-width": {
+      "$type": "dimension",
+      "$value": { "value": 2, "unit": "px" }
+    }
+  },
   "strokeStyle": {
     "focus": {
       "$type": "strokeStyle",
@@ -494,9 +524,9 @@ richer schemas for these structures.
     "focus-outline": {
       "$type": "border",
       "$value": {
-        "color": "#006FFF",
+        "color": "{color.focus}",
         "style": "solid",
-        "width": { "value": 2, "unit": "px" }
+        "width": "{dimension.focus-outline-width}"
       }
     }
   }
@@ -508,6 +538,25 @@ richer schemas for these structures.
 ```json
 {
   "$version": "1.0.0",
+  "color": {
+    "focus-outline": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.435, 1.0, 1.0]
+      }
+    }
+  },
+  "dimension": {
+    "focus-outline-width": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    }
+  },
   "strokeStyle": {
     "focus": {
       "$type": "strokeStyle",
@@ -522,22 +571,19 @@ richer schemas for these structures.
       "$type": "border",
       "$value": {
         "borderType": "css.border",
-        "color": {
-          "colorSpace": "srgb",
-          "components": [0.0, 0.435, 1.0, 1.0]
-        },
+        "color": { "$ref": "#/color/focus-outline" },
         "style": "solid",
         "strokeStyle": { "$ref": "#/strokeStyle/focus" },
-        "width": {
-          "dimensionType": "length",
-          "value": 2,
-          "unit": "px"
-        }
+        "width": { "$ref": "#/dimension/focus-outline-width" }
       }
     }
   }
 }
 ```
+
+The shared `color` and `dimension` entries become standalone DTIF tokens that
+the border references through `$ref` pointers, preserving the original DTCG
+aliases while exposing richer metadata.
 
 DTIF `border` tokens capture the rendering context through `borderType`, reuse
 stroke metadata via a first-class `strokeStyle` token, and avoid vendor
@@ -549,23 +595,53 @@ extensions for dash patterns.
 
 ```json
 {
+  "color": {
+    "shadow": {
+      "ambient": { "$type": "color", "$value": "#00000033" },
+      "key": { "$type": "color", "$value": "#0000004d" }
+    }
+  },
+  "dimension": {
+    "shadow": {
+      "offset-large": {
+        "$type": "dimension",
+        "$value": { "value": 2, "unit": "px" }
+      },
+      "offset-small": {
+        "$type": "dimension",
+        "$value": { "value": 1, "unit": "px" }
+      },
+      "blur-large": {
+        "$type": "dimension",
+        "$value": { "value": 6, "unit": "px" }
+      },
+      "blur-small": {
+        "$type": "dimension",
+        "$value": { "value": 3, "unit": "px" }
+      },
+      "spread": {
+        "$type": "dimension",
+        "$value": { "value": 0, "unit": "px" }
+      }
+    }
+  },
   "shadow": {
     "button-ambient": {
       "$type": "shadow",
       "$value": [
         {
-          "color": "#00000080",
-          "offsetX": { "value": 0, "unit": "px" },
-          "offsetY": { "value": 2, "unit": "px" },
-          "blur": { "value": 6, "unit": "px" },
-          "spread": { "value": 0, "unit": "px" }
+          "color": "{color.shadow.ambient}",
+          "offsetX": "{dimension.shadow.spread}",
+          "offsetY": "{dimension.shadow.offset-large}",
+          "blur": "{dimension.shadow.blur-large}",
+          "spread": "{dimension.shadow.spread}"
         },
         {
-          "color": "#0000004d",
-          "offsetX": { "value": 0, "unit": "px" },
-          "offsetY": { "value": 1, "unit": "px" },
-          "blur": { "value": 3, "unit": "px" },
-          "spread": { "value": 0, "unit": "px" }
+          "color": "{color.shadow.key}",
+          "offsetX": "{dimension.shadow.spread}",
+          "offsetY": "{dimension.shadow.offset-small}",
+          "blur": "{dimension.shadow.blur-small}",
+          "spread": "{dimension.shadow.spread}"
         }
       ]
     }
@@ -578,69 +654,93 @@ extensions for dash patterns.
 ```json
 {
   "$version": "1.0.0",
+  "color": {
+    "shadow-ambient": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.0, 0.0, 0.2]
+      }
+    },
+    "shadow-key": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.0, 0.0, 0.0, 0.3]
+      }
+    }
+  },
+  "dimension": {
+    "shadow-offset-large": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "shadow-offset-small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "shadow-blur-large": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "shadow-blur-small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "shadow-spread": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 0,
+        "unit": "px"
+      }
+    }
+  },
   "shadow": {
     "button-ambient": {
       "$type": "shadow",
       "$value": [
         {
           "shadowType": "css.box-shadow",
-          "offsetX": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "dimensionType": "length",
-            "value": 2,
-            "unit": "px"
-          },
-          "blur": {
-            "dimensionType": "length",
-            "value": 6,
-            "unit": "px"
-          },
-          "spread": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "color": {
-            "colorSpace": "srgb",
-            "components": [0.0, 0.0, 0.0, 0.2]
-          }
+          "offsetX": { "$ref": "#/dimension/shadow-spread" },
+          "offsetY": { "$ref": "#/dimension/shadow-offset-large" },
+          "blur": { "$ref": "#/dimension/shadow-blur-large" },
+          "spread": { "$ref": "#/dimension/shadow-spread" },
+          "color": { "$ref": "#/color/shadow-ambient" }
         },
         {
           "shadowType": "css.box-shadow",
-          "offsetX": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "offsetY": {
-            "dimensionType": "length",
-            "value": 1,
-            "unit": "px"
-          },
-          "blur": {
-            "dimensionType": "length",
-            "value": 3,
-            "unit": "px"
-          },
-          "spread": {
-            "dimensionType": "length",
-            "value": 0,
-            "unit": "px"
-          },
-          "color": {
-            "colorSpace": "srgb",
-            "components": [0.0, 0.0, 0.0, 0.3]
-          }
+          "offsetX": { "$ref": "#/dimension/shadow-spread" },
+          "offsetY": { "$ref": "#/dimension/shadow-offset-small" },
+          "blur": { "$ref": "#/dimension/shadow-blur-small" },
+          "spread": { "$ref": "#/dimension/shadow-spread" },
+          "color": { "$ref": "#/color/shadow-key" }
         }
       ]
     }
   }
 }
 ```
+
+Shared colour and dimension primitives become first-class DTIF tokens that
+each shadow layer references via `$ref`, preserving the alias relationships
+used in the source DTCG document.
 
 Convert each DTCG layer into a DTIF shadow object with an explicit `shadowType` and
 dimension wrappers. Tokens with multiple layers continue to use arrays whose ordering
@@ -673,6 +773,22 @@ matches the original DTCG payload.
 ```json
 {
   "$version": "1.0.0",
+  "color": {
+    "hero-start": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1.0, 0.541, 0.0, 1.0]
+      }
+    },
+    "hero-end": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.929, 0.098, 0.792, 1.0]
+      }
+    }
+  },
   "gradient": {
     "hero-background": {
       "$type": "gradient",
@@ -680,20 +796,8 @@ matches the original DTCG payload.
         "gradientType": "linear",
         "angle": "to top right",
         "stops": [
-          {
-            "position": "0%",
-            "color": {
-              "colorSpace": "srgb",
-              "components": [1.0, 0.541, 0.0, 1.0]
-            }
-          },
-          {
-            "position": "100%",
-            "color": {
-              "colorSpace": "srgb",
-              "components": [0.929, 0.098, 0.792, 1.0]
-            }
-          }
+          { "position": "0%", "color": { "$ref": "#/color/hero-start" } },
+          { "position": "100%", "color": { "$ref": "#/color/hero-end" } }
         ]
       }
     }
@@ -701,8 +805,9 @@ matches the original DTCG payload.
 }
 ```
 
-Normalise stop positions to percentages, map angles to CSS syntax, and encode each colour
-using DTIF's colour structure.
+Normalise stop positions to percentages, map angles to CSS syntax, and mint shared
+`color` tokens that gradient stops reference through `$ref` so palette aliases survive the
+migration.
 
 ### Transitions and motion {#transitions}
 

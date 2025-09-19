@@ -120,6 +120,13 @@ Common optional properties defer to platform specifications as follows:
 - `overlineThickness` - `font-dimension`.
 - `overlineOffset` - `font-dimension`.
 
+Typography values _MAY_ reuse shared tokens via alias objects whose only member is
+`$ref`. These aliases _MUST_ resolve to tokens declaring the expected `$type`: `fontSize`,
+`letterSpacing`, `wordSpacing`, and `lineHeight` references _MUST_ point to `dimension`
+tokens whose `$value.dimensionType` is `"length"`, while `color` references _MUST_ point to
+`color` tokens. Consumers _MUST_ reject `$ref` targets that do not meet these
+requirements so typography tokens remain well-typed composites.
+
 The table below maps typography members to their authoritative references.
 
 _Table: Normative references for typography members._
