@@ -63,6 +63,7 @@ export default defineConfig({
   cleanUrls: true,
   sitemap: { hostname: 'https://dtif.lapidist.net' },
   themeConfig: {
+    logo: '/dtif-logo.svg',
     nav: [
       { text: 'Specification', link: '/spec/' },
       { text: 'Guides', link: '/guides/' },

@@ -6,6 +6,8 @@
 
 > **Status:** Editor's Draft · [Read the documentation](https://dtif.lapidist.net)
 
+<img src="./docs/public/dtif-logo.svg" alt="DTIF logo" width="72" />
+
 DTIF is a vendor-neutral JSON specification for exchanging design tokens—colour, typography, spacing, motion, and more—between design tools and codebases. It standardises how tokens are described and referenced without dictating how they are authored or consumed.
 
 Use DTIF when you need:
