@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.5
+
+### Patch Changes
+
+- [#45](https://github.com/bylapidist/dtif/pull/45) [`8f94a29`](https://github.com/bylapidist/dtif/commit/8f94a2968d90941b2f7f8c2f881273c7799730e0) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Tighten font family validation to require CSS `<family-name>` strings across `font`, `fontFace`, and `typography` tokens while enforcing URI-safe `fontFace` source URLs.
+
 ## 0.1.4
 
 ### Patch Changes
