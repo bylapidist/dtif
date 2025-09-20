@@ -1,0 +1,2 @@
+description: radial gradient shape must be circle or ellipse
+error: must match pattern "^(?:[Cc][Ii][Rr][Cc][Ll][Ee]|[Ee][Ll][Ll][Ii][Pp][Ss][Ee])$"

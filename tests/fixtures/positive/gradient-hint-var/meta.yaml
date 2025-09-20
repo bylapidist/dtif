@@ -1,0 +1,12 @@
+name: gradient hint var
+description: gradient stop positions and hints accept top-level var() functions
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:gradient
+  - gradient:linear
+  - function:var

@@ -1163,6 +1163,57 @@ and keep the palette tokens as
 dedicated `color` entries that gradient stops reference through `$ref` so palette aliases
 survive the migration.
 
+- **Angles must include CSS units or keywords.** DTCG exports frequently write bare
+  numbers such as `45` or `180` for gradient orientations. DTIF rejects those values;
+  convert them to valid [CSS `<angle>`](../spec/token-types.md#gradient-tokens)
+  strings such as `45deg`, `0.5turn`, or use the `to top right` keyword syntax.
+- **Centre strings follow CSS `<position>`.** When DTCG serialises centre points as
+  fractional pairs like `0.5 0.25`, translate them into CSS `<length-percentage>`
+  values (`50% 25%`) or wrap calculations in `calc(...)` so that DTIF accepts the
+  string. Identifiers such as `middle` are not part of the grammar and will fail
+  validation.
+- **Hints stay single `<length-percentage>` tokens.** DTCG gradients sometimes
+  embed hint offsets as two-element arrays or space-separated pairs. DTIF follows
+  the CSS `<color-hint>` production, so flatten those values into a single token
+  (for example `"var(--midpoint)"` or `"calc(25% + 2px)"`). Supplying two
+  tokens in the same string now fails validation because it implies a second stop
+  rather than a midpoint.
+- **Radial shapes only accept `circle` or `ellipse`.** Rename vendor-specific shape
+  labels to the standard `<rg-ending-shape>` keywords defined by CSS Images Module
+  Level 3 before validating with the DTIF schema.
+
+```json
+// DTCG angle and centre tokens
+"gradient": {
+  "hero-background": {
+    "$type": "gradient",
+    "$value": {
+      "angle": 45,
+      "stops": [
+        { "color": "{color.hero.start}", "position": 0 },
+        { "color": "{color.hero.end}", "position": 1 }
+      ]
+    }
+  }
+}
+
+// DTIF conversion with CSS-compliant strings
+"gradient": {
+  "hero-background": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "angle": "45deg",
+      "center": "50% 25%",
+      "stops": [
+        { "position": "0%", "color": { "$ref": "#/color/hero-start" } },
+        { "position": "100%", "color": { "$ref": "#/color/hero-end" } }
+      ]
+    }
+  }
+}
+```
+
 ### Transitions and motion {#transitions}
 
 #### DTCG transition
