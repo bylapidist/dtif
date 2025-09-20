@@ -27,6 +27,18 @@ core behaviours:
 ```json
 // DTCG export with vendor metadata in $extensions
 {
+  "palette": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.0, 0.435, 1.0],
+          "hex": "#006FFF"
+        }
+      }
+    }
+  },
   "button": {
     "$type": "color",
     "$value": "{palette.brand.primary}",
@@ -158,24 +170,26 @@ rather than a single composite value.
 
 ### Translate computed values {#computed-values}
 
-DTCG exports express calculated measurements through function objects that
-supply a `function` identifier and an `arguments` array. Migration scripts can
-carry the `function` string into DTIF's `fn` member and copy the ordered
-`arguments` into the `parameters` array. DTIF encodes the same logic using
-function objects with `fn` and optional `parameters` members as defined in
+The DTCG Format Module only serialises literal measurements for primitives such
+as `dimension`. When workflows need to preserve the formula behind a computed
+value, they often store the original expression inside vendor `$extensions`
+metadata. Migration scripts can promote those strings into DTIF function objects
+that declare an `fn` keyword and optional `parameters` array as defined in
 [Token types](../spec/token-types.md#value). Each argument or parameter may be a
 literal, another function object, or a `$ref` alias that resolves to a token
 declaring the same `$type`.
 
 ```json
-// DTCG export using a calc function object
+// DTCG export recording a calc expression inside vendor metadata
 {
   "spacing": {
     "side": {
       "$type": "dimension",
-      "$value": {
-        "function": "calc",
-        "arguments": ["100%", "-", "1rem"]
+      "$value": { "value": 16, "unit": "px" },
+      "$extensions": {
+        "com.example.export": {
+          "sourceExpression": "calc(100% - 1rem)"
+        }
       }
     }
   }
@@ -442,7 +456,7 @@ The table below summarises how the DTCG primitive types map to DTIF.
       "colorSpace": "srgb",
       "components": [0, 0, 0],
       "alpha": 0.5,
-      "hex": "#00000080"
+      "hex": "#000000"
     }
   }
 }
@@ -745,13 +759,13 @@ whitespace, quote identifiers that start with digits, and clean any DTCG
 
 #### Text decoration and transform strings {#text-decoration-transform}
 
-The schema now validates the `textDecoration` and `textTransform` strings embedded in
-`typography` tokens against the CSS grammar. DTCG exports often serialise these
-members as free-form descriptions such as `"underline dashed red"` or
-`"capitalize smallcaps"`. DTIF requires the strings to follow the
-`<text-decoration>` shorthand and `<text-transform-list>` productions so that
-tooling can translate them directly into CSS, UIKit, and Android APIs without
-guessing the author’s intent.
+The schema now validates the `textDecoration` and `textTransform` strings that
+DTIF stores on `typography` values against the CSS grammar. DTCG tokens do not
+define those members, so many pipelines stash decoration metadata in vendor
+`$extensions` as free-form descriptions such as `"underline dashed red"` or
+`"capitalize smallcaps"`. Normalise that metadata before copying it into DTIF so
+tooling can translate the results directly into CSS, UIKit, and Android APIs
+without guessing the author’s intent.
 
 - **Decoration components.** Supply recognised line keywords (`none`,
   `underline`, `overline`, `line-through`, `spelling-error`, `grammar-error`),
@@ -766,16 +780,29 @@ guessing the author’s intent.
   (`"var(--brand-transform)"`) instead of serialising plain text.
 
 ```json
-// DTCG export with loosely defined decoration and transform strings
+// DTCG export with loose decoration metadata stored in $extensions
 {
+  "fontFamily": {
+    "accent": {
+      "$type": "fontFamily",
+      "$value": ["Inter", "Arial", "sans-serif"]
+    }
+  },
   "typography": {
     "cta": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{fontFamily.accent}",
+        "fontWeight": 600,
         "fontSize": { "value": 16, "unit": "px" },
-        "textDecoration": "underline bevelled 2",
-        "textTransform": "capitalize smallcaps"
+        "letterSpacing": { "value": 0, "unit": "px" },
+        "lineHeight": 1.2
+      },
+      "$extensions": {
+        "com.example.export": {
+          "textDecoration": "underline bevelled 2",
+          "textTransform": "capitalize smallcaps"
+        }
       }
     }
   }
@@ -788,7 +815,10 @@ guessing the author’s intent.
       "$type": "typography",
       "$value": {
         "fontFamily": "Inter",
+        "fontWeight": 600,
         "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "letterSpacing": { "dimensionType": "length", "value": 0, "unit": "px" },
+        "lineHeight": 1.2,
         "textDecoration": "underline color-mix(in srgb, #ff6600 40%, white) from-font",
         "textTransform": "capitalize full-size-kana"
       }
@@ -997,7 +1027,7 @@ validation noise-free.
           "colorSpace": "srgb",
           "components": [0.0, 0.0, 0.0],
           "alpha": 0.2,
-          "hex": "#00000033"
+          "hex": "#000000"
         }
       },
       "key": {
@@ -1006,7 +1036,7 @@ validation noise-free.
           "colorSpace": "srgb",
           "components": [0.0, 0.0, 0.0],
           "alpha": 0.302,
-          "hex": "#0000004d"
+          "hex": "#000000"
         }
       }
     }
@@ -1263,6 +1293,26 @@ survive the migration.
 ```json
 // DTCG gradient metadata stored in $extensions
 {
+  "color": {
+    "hero": {
+      "start": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1.0, 0.541, 0.0],
+          "hex": "#FF8A00"
+        }
+      },
+      "end": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.929, 0.098, 0.792],
+          "hex": "#ED19CA"
+        }
+      }
+    }
+  },
   "gradient": {
     "hero-background": {
       "$type": "gradient",
@@ -1311,10 +1361,12 @@ survive the migration.
     "button": {
       "$type": "transition",
       "$value": {
-        "property": "transform",
         "duration": { "value": 120, "unit": "ms" },
         "delay": { "value": 40, "unit": "ms" },
         "timingFunction": "{easing.standard}"
+      },
+      "$extensions": {
+        "com.example.export": { "property": "transform" }
       }
     }
   },
@@ -1377,7 +1429,9 @@ survive the migration.
 ```
 
 Break transition composites into reusable `duration` and `easing` tokens, then reference
-those tokens from a `motion` descriptor that names the target property.
+those tokens from a `motion` descriptor that names the target property. Copy any property
+hints stored under DTCG `$extensions` into the motion parameters so the animation applies
+to the intended CSS attribute.
 
 ## Embrace DTIF features {#dtif-features}
 
