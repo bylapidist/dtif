@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.6
+
+### Patch Changes
+
+- [#47](https://github.com/bylapidist/dtif/pull/47) [`e254786`](https://github.com/bylapidist/dtif/commit/e254786ab4998dbc7c3d07edac3f152fa0fe2bbe) Thanks [@brettdorrans](https://github.com/brettdorrans)! - - tighten gradient hint validation to require a single `<length-percentage>` token while allowing top-level `var()`/`env()` functions and document the migration path for DTCG exports with paired hints
+
 ## 0.1.5
 
 ### Patch Changes
