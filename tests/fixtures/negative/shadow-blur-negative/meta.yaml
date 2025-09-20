@@ -1,0 +1,5 @@
+name: shadow-blur-negative
+description: shadow blur radius must not be negative
+assertions:
+  - schema
+tags: [shadow]

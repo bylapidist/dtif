@@ -1,0 +1,5 @@
+name: typography-text-transform-invalid
+description: textTransform must use recognised CSS keywords or var()
+assertions:
+  - schema
+tags: [typography]

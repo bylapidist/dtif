@@ -1,0 +1,25 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "elevation": {
+    "invalidBlur": {
+      "$type": "elevation",
+      "$value": {
+        "elevationType": "android.view.elevation",
+        "offset": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "dp"
+        },
+        "blur": {
+          "dimensionType": "length",
+          "value": -2,
+          "unit": "dp"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.4]
+        }
+      }
+    }
+  }
+}

@@ -204,6 +204,20 @@
         }
       ]
     },
+    "text-decoration-shorthand": {
+      "title": "Text decoration shorthand",
+      "description": "CSS text-decoration shorthand accepting line, style, colour, and thickness components per Typography \u00a7text-decoration and CSS Text Decoration Module Level 4.",
+      "$comment": "Typography \u00a7text-decoration: serialised strings MUST follow the CSS text-decoration grammar, including named colours, system colours, calc()/var() functions, and <length-percentage> thickness values.",
+      "type": "string",
+      "pattern": "^(?:(?:[Ii][Nn][Hh][Ee][Rr][Ii][Tt]|[Ii][Nn][Ii][Tt][Ii][Aa][Ll]|[Uu][Nn][Ss][Ee][Tt]|[Rr][Ee][Vv][Ee][Rr][Tt](?:-[Ll][Aa][Yy][Ee][Rr])?)|(?:(?:(?:[Nn][Oo][Nn][Ee]|[Uu][Nn][Dd][Ee][Rr][Ll][Ii][Nn][Ee]|[Oo][Vv][Ee][Rr][Ll][Ii][Nn][Ee]|[Ll][Ii][Nn][Ee]-[Tt][Hh][Rr][Oo][Uu][Gg][Hh]|[Bb][Ll][Ii][Nn][Kk]|[Ss][Pp][Ee][Ll][Ll][Ii][Nn][Gg]-[Ee][Rr][Rr][Oo][Rr]|[Gg][Rr][Aa][Mm][Mm][Aa][Rr]-[Ee][Rr][Rr][Oo][Rr])|(?:[Ss][Oo][Ll][Ii][Dd]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Dd][Oo][Tt][Tt][Ee][Dd]|[Dd][Aa][Ss][Hh][Ee][Dd]|[Ww][Aa][Vv][Yy])|(?:[Tt][Hh][Ii][Nn]|[Mm][Ee][Dd][Ii][Uu][Mm]|[Tt][Hh][Ii][Cc][Kk]|[Aa][Uu][Tt][Oo]|[Ff][Rr][Oo][Mm]-[Ff][Oo][Nn][Tt])|(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*))|(?:[-+]?0+(?:\\.0+)?)|(?:#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}))|(?:[A-Za-z][A-Za-z0-9-]*\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))|(?:[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR]|[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR][tT][eE][xX][tT]|[aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[aA][cC][tT][iI][vV][eE][tT][eE][xX][tT]|[aA][lL][iI][cC][eE][bB][lL][uU][eE]|[aA][nN][tT][iI][qQ][uU][eE][wW][hH][iI][tT][eE]|[aA][pP][pP][wW][oO][rR][kK][sS][pP][aA][cC][eE]|[aA][qQ][uU][aA]|[aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[aA][zZ][uU][rR][eE]|[bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[bB][eE][iI][gG][eE]|[bB][iI][sS][qQ][uU][eE]|[bB][lL][aA][cC][kK]|[bB][lL][aA][nN][cC][hH][eE][dD][aA][lL][mM][oO][nN][dD]|[bB][lL][uU][eE]|[bB][lL][uU][eE][vV][iI][oO][lL][eE][tT]|[bB][rR][oO][wW][nN]|[bB][uU][rR][lL][yY][wW][oO][oO][dD]|[bB][uU][tT][tT][oO][nN][bB][oO][rR][dD][eE][rR]|[bB][uU][tT][tT][oO][nN][fF][aA][cC][eE]|[bB][uU][tT][tT][oO][nN][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[bB][uU][tT][tT][oO][nN][sS][hH][aA][dD][oO][wW]|[bB][uU][tT][tT][oO][nN][tT][eE][xX][tT]|[cC][aA][dD][eE][tT][bB][lL][uU][eE]|[cC][aA][nN][vV][aA][sS]|[cC][aA][nN][vV][aA][sS][tT][eE][xX][tT]|[cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[cC][hH][aA][rR][tT][rR][eE][uU][sS][eE]|[cC][hH][oO][cC][oO][lL][aA][tT][eE]|[cC][oO][rR][aA][lL]|[cC][oO][rR][nN][fF][lL][oO][wW][eE][rR][bB][lL][uU][eE]|[cC][oO][rR][nN][sS][iI][lL][kK]|[cC][rR][iI][mM][sS][oO][nN]|[cC][uU][rR][rR][eE][nN][tT][cC][oO][lL][oO][rR]|[cC][yY][aA][nN]|[dD][aA][rR][kK][bB][lL][uU][eE]|[dD][aA][rR][kK][cC][yY][aA][nN]|[dD][aA][rR][kK][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[dD][aA][rR][kK][gG][rR][aA][yY]|[dD][aA][rR][kK][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][gG][rR][eE][yY]|[dD][aA][rR][kK][kK][hH][aA][kK][iI]|[dD][aA][rR][kK][mM][aA][gG][eE][nN][tT][aA]|[dD][aA][rR][kK][oO][lL][iI][vV][eE][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][oO][rR][aA][nN][gG][eE]|[dD][aA][rR][kK][oO][rR][cC][hH][iI][dD]|[dD][aA][rR][kK][rR][eE][dD]|[dD][aA][rR][kK][sS][aA][lL][mM][oO][nN]|[dD][aA][rR][kK][sS][eE][aA][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[dD][aA][rR][kK][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[dD][aA][rR][kK][vV][iI][oO][lL][eE][tT]|[dD][eE][eE][pP][pP][iI][nN][kK]|[dD][eE][eE][pP][sS][kK][yY][bB][lL][uU][eE]|[dD][iI][mM][gG][rR][aA][yY]|[dD][iI][mM][gG][rR][eE][yY]|[dD][oO][dD][gG][eE][rR][bB][lL][uU][eE]|[fF][iI][eE][lL][dD]|[fF][iI][eE][lL][dD][tT][eE][xX][tT]|[fF][iI][rR][eE][bB][rR][iI][cC][kK]|[fF][lL][oO][rR][aA][lL][wW][hH][iI][tT][eE]|[fF][oO][rR][eE][sS][tT][gG][rR][eE][eE][nN]|[fF][uU][cC][hH][sS][iI][aA]|[gG][aA][iI][nN][sS][bB][oO][rR][oO]|[gG][hH][oO][sS][tT][wW][hH][iI][tT][eE]|[gG][oO][lL][dD]|[gG][oO][lL][dD][eE][nN][rR][oO][dD]|[gG][rR][aA][yY]|[gG][rR][aA][yY][tT][eE][xX][tT]|[gG][rR][eE][eE][nN]|[gG][rR][eE][eE][nN][yY][eE][lL][lL][oO][wW]|[gG][rR][eE][yY]|[hH][iI][gG][hH][lL][iI][gG][hH][tT]|[hH][iI][gG][hH][lL][iI][gG][hH][tT][tT][eE][xX][tT]|[hH][oO][nN][eE][yY][dD][eE][wW]|[hH][oO][tT][pP][iI][nN][kK]|[iI][nN][aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[iI][nN][dD][iI][aA][nN][rR][eE][dD]|[iI][nN][dD][iI][gG][oO]|[iI][nN][fF][oO][bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[iI][nN][fF][oO][tT][eE][xX][tT]|[iI][vV][oO][rR][yY]|[kK][hH][aA][kK][iI]|[lL][aA][vV][eE][nN][dD][eE][rR]|[lL][aA][vV][eE][nN][dD][eE][rR][bB][lL][uU][sS][hH]|[lL][aA][wW][nN][gG][rR][eE][eE][nN]|[lL][eE][mM][oO][nN][cC][hH][iI][fF][fF][oO][nN]|[lL][iI][gG][hH][tT][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][cC][oO][rR][aA][lL]|[lL][iI][gG][hH][tT][cC][yY][aA][nN]|[lL][iI][gG][hH][tT][gG][oO][lL][dD][eE][nN][rR][oO][dD][yY][eE][lL][lL][oO][wW]|[lL][iI][gG][hH][tT][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][pP][iI][nN][kK]|[lL][iI][gG][hH][tT][sS][aA][lL][mM][oO][nN]|[lL][iI][gG][hH][tT][sS][eE][aA][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][sS][kK][yY][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][sS][tT][eE][eE][lL][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][yY][eE][lL][lL][oO][wW]|[lL][iI][mM][eE]|[lL][iI][mM][eE][gG][rR][eE][eE][nN]|[lL][iI][nN][eE][nN]|[lL][iI][nN][kK][tT][eE][xX][tT]|[mM][aA][gG][eE][nN][tT][aA]|[mM][aA][rR][kK]|[mM][aA][rR][kK][tT][eE][xX][tT]|[mM][aA][rR][oO][oO][nN]|[mM][eE][dD][iI][uU][mM][aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[mM][eE][dD][iI][uU][mM][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][oO][rR][cC][hH][iI][dD]|[mM][eE][dD][iI][uU][mM][pP][uU][rR][pP][lL][eE]|[mM][eE][dD][iI][uU][mM][sS][eE][aA][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[mM][eE][dD][iI][uU][mM][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[mM][eE][nN][uU]|[mM][eE][nN][uU][tT][eE][xX][tT]|[mM][iI][dD][nN][iI][gG][hH][tT][bB][lL][uU][eE]|[mM][iI][nN][tT][cC][rR][eE][aA][mM]|[mM][iI][sS][tT][yY][rR][oO][sS][eE]|[mM][oO][cC][cC][aA][sS][iI][nN]|[nN][aA][vV][aA][jJ][oO][wW][hH][iI][tT][eE]|[nN][aA][vV][yY]|[nN][oO][nN][eE]|[oO][lL][dD][lL][aA][cC][eE]|[oO][lL][iI][vV][eE]|[oO][lL][iI][vV][eE][dD][rR][aA][bB]|[oO][rR][aA][nN][gG][eE]|[oO][rR][aA][nN][gG][eE][rR][eE][dD]|[oO][rR][cC][hH][iI][dD]|[pP][aA][lL][eE][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[pP][aA][lL][eE][gG][rR][eE][eE][nN]|[pP][aA][lL][eE][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[pP][aA][lL][eE][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[pP][aA][pP][aA][yY][aA][wW][hH][iI][pP]|[pP][eE][aA][cC][hH][pP][uU][fF][fF]|[pP][eE][rR][uU]|[pP][iI][nN][kK]|[pP][lL][uU][mM]|[pP][oO][wW][dD][eE][rR][bB][lL][uU][eE]|[pP][uU][rR][pP][lL][eE]|[rR][eE][bB][eE][cC][cC][aA][pP][uU][rR][pP][lL][eE]|[rR][eE][dD]|[rR][oO][sS][yY][bB][rR][oO][wW][nN]|[rR][oO][yY][aA][lL][bB][lL][uU][eE]|[sS][aA][dD][dD][lL][eE][bB][rR][oO][wW][nN]|[sS][aA][lL][mM][oO][nN]|[sS][aA][nN][dD][yY][bB][rR][oO][wW][nN]|[sS][cC][rR][oO][lL][lL][bB][aA][rR]|[sS][eE][aA][gG][rR][eE][eE][nN]|[sS][eE][aA][sS][hH][eE][lL][lL]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM][tT][eE][xX][tT]|[sS][iI][eE][nN][nN][aA]|[sS][iI][lL][vV][eE][rR]|[sS][kK][yY][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][gG][rR][aA][yY]|[sS][lL][aA][tT][eE][gG][rR][eE][yY]|[sS][nN][oO][wW]|[sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[sS][rR][gG][bB]|[sS][tT][eE][eE][lL][bB][lL][uU][eE]|[tT][aA][nN]|[tT][eE][aA][lL]|[tT][hH][iI][sS][tT][lL][eE]|[tT][hH][rR][eE][eE][dD][dD][aA][rR][kK][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][fF][aA][cC][eE]|[tT][hH][rR][eE][eE][dD][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[tT][hH][rR][eE][eE][dD][lL][iI][gG][hH][tT][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][sS][hH][aA][dD][oO][wW]|[tT][oO][mM][aA][tT][oO]|[tT][rR][aA][nN][sS][pP][aA][rR][eE][nN][tT]|[tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[vV][iI][oO][lL][eE][tT]|[vV][iI][sS][iI][tT][eE][dD][tT][eE][xX][tT]|[wW][hH][eE][aA][tT]|[wW][hH][iI][tT][eE]|[wW][hH][iI][tT][eE][sS][mM][oO][kK][eE]|[wW][iI][nN][dD][oO][wW]|[wW][iI][nN][dD][oO][wW][fF][rR][aA][mM][eE]|[wW][iI][nN][dD][oO][wW][tT][eE][xX][tT]|[xX][yY][zZ]|[yY][eE][lL][lL][oO][wW]|[yY][eE][lL][lL][oO][wW][gG][rR][eE][eE][nN])))(?:\\s+(?:(?:[Nn][Oo][Nn][Ee]|[Uu][Nn][Dd][Ee][Rr][Ll][Ii][Nn][Ee]|[Oo][Vv][Ee][Rr][Ll][Ii][Nn][Ee]|[Ll][Ii][Nn][Ee]-[Tt][Hh][Rr][Oo][Uu][Gg][Hh]|[Bb][Ll][Ii][Nn][Kk]|[Ss][Pp][Ee][Ll][Ll][Ii][Nn][Gg]-[Ee][Rr][Rr][Oo][Rr]|[Gg][Rr][Aa][Mm][Mm][Aa][Rr]-[Ee][Rr][Rr][Oo][Rr])|(?:[Ss][Oo][Ll][Ii][Dd]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Dd][Oo][Tt][Tt][Ee][Dd]|[Dd][Aa][Ss][Hh][Ee][Dd]|[Ww][Aa][Vv][Yy])|(?:[Tt][Hh][Ii][Nn]|[Mm][Ee][Dd][Ii][Uu][Mm]|[Tt][Hh][Ii][Cc][Kk]|[Aa][Uu][Tt][Oo]|[Ff][Rr][Oo][Mm]-[Ff][Oo][Nn][Tt])|(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*))|(?:[-+]?0+(?:\\.0+)?)|(?:#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}))|(?:[A-Za-z][A-Za-z0-9-]*\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))|(?:[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR]|[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR][tT][eE][xX][tT]|[aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[aA][cC][tT][iI][vV][eE][tT][eE][xX][tT]|[aA][lL][iI][cC][eE][bB][lL][uU][eE]|[aA][nN][tT][iI][qQ][uU][eE][wW][hH][iI][tT][eE]|[aA][pP][pP][wW][oO][rR][kK][sS][pP][aA][cC][eE]|[aA][qQ][uU][aA]|[aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[aA][zZ][uU][rR][eE]|[bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[bB][eE][iI][gG][eE]|[bB][iI][sS][qQ][uU][eE]|[bB][lL][aA][cC][kK]|[bB][lL][aA][nN][cC][hH][eE][dD][aA][lL][mM][oO][nN][dD]|[bB][lL][uU][eE]|[bB][lL][uU][eE][vV][iI][oO][lL][eE][tT]|[bB][rR][oO][wW][nN]|[bB][uU][rR][lL][yY][wW][oO][oO][dD]|[bB][uU][tT][tT][oO][nN][bB][oO][rR][dD][eE][rR]|[bB][uU][tT][tT][oO][nN][fF][aA][cC][eE]|[bB][uU][tT][tT][oO][nN][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[bB][uU][tT][tT][oO][nN][sS][hH][aA][dD][oO][wW]|[bB][uU][tT][tT][oO][nN][tT][eE][xX][tT]|[cC][aA][dD][eE][tT][bB][lL][uU][eE]|[cC][aA][nN][vV][aA][sS]|[cC][aA][nN][vV][aA][sS][tT][eE][xX][tT]|[cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[cC][hH][aA][rR][tT][rR][eE][uU][sS][eE]|[cC][hH][oO][cC][oO][lL][aA][tT][eE]|[cC][oO][rR][aA][lL]|[cC][oO][rR][nN][fF][lL][oO][wW][eE][rR][bB][lL][uU][eE]|[cC][oO][rR][nN][sS][iI][lL][kK]|[cC][rR][iI][mM][sS][oO][nN]|[cC][uU][rR][rR][eE][nN][tT][cC][oO][lL][oO][rR]|[cC][yY][aA][nN]|[dD][aA][rR][kK][bB][lL][uU][eE]|[dD][aA][rR][kK][cC][yY][aA][nN]|[dD][aA][rR][kK][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[dD][aA][rR][kK][gG][rR][aA][yY]|[dD][aA][rR][kK][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][gG][rR][eE][yY]|[dD][aA][rR][kK][kK][hH][aA][kK][iI]|[dD][aA][rR][kK][mM][aA][gG][eE][nN][tT][aA]|[dD][aA][rR][kK][oO][lL][iI][vV][eE][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][oO][rR][aA][nN][gG][eE]|[dD][aA][rR][kK][oO][rR][cC][hH][iI][dD]|[dD][aA][rR][kK][rR][eE][dD]|[dD][aA][rR][kK][sS][aA][lL][mM][oO][nN]|[dD][aA][rR][kK][sS][eE][aA][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[dD][aA][rR][kK][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[dD][aA][rR][kK][vV][iI][oO][lL][eE][tT]|[dD][eE][eE][pP][pP][iI][nN][kK]|[dD][eE][eE][pP][sS][kK][yY][bB][lL][uU][eE]|[dD][iI][mM][gG][rR][aA][yY]|[dD][iI][mM][gG][rR][eE][yY]|[dD][oO][dD][gG][eE][rR][bB][lL][uU][eE]|[fF][iI][eE][lL][dD]|[fF][iI][eE][lL][dD][tT][eE][xX][tT]|[fF][iI][rR][eE][bB][rR][iI][cC][kK]|[fF][lL][oO][rR][aA][lL][wW][hH][iI][tT][eE]|[fF][oO][rR][eE][sS][tT][gG][rR][eE][eE][nN]|[fF][uU][cC][hH][sS][iI][aA]|[gG][aA][iI][nN][sS][bB][oO][rR][oO]|[gG][hH][oO][sS][tT][wW][hH][iI][tT][eE]|[gG][oO][lL][dD]|[gG][oO][lL][dD][eE][nN][rR][oO][dD]|[gG][rR][aA][yY]|[gG][rR][aA][yY][tT][eE][xX][tT]|[gG][rR][eE][eE][nN]|[gG][rR][eE][eE][nN][yY][eE][lL][lL][oO][wW]|[gG][rR][eE][yY]|[hH][iI][gG][hH][lL][iI][gG][hH][tT]|[hH][iI][gG][hH][lL][iI][gG][hH][tT][tT][eE][xX][tT]|[hH][oO][nN][eE][yY][dD][eE][wW]|[hH][oO][tT][pP][iI][nN][kK]|[iI][nN][aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[iI][nN][dD][iI][aA][nN][rR][eE][dD]|[iI][nN][dD][iI][gG][oO]|[iI][nN][fF][oO][bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[iI][nN][fF][oO][tT][eE][xX][tT]|[iI][vV][oO][rR][yY]|[kK][hH][aA][kK][iI]|[lL][aA][vV][eE][nN][dD][eE][rR]|[lL][aA][vV][eE][nN][dD][eE][rR][bB][lL][uU][sS][hH]|[lL][aA][wW][nN][gG][rR][eE][eE][nN]|[lL][eE][mM][oO][nN][cC][hH][iI][fF][fF][oO][nN]|[lL][iI][gG][hH][tT][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][cC][oO][rR][aA][lL]|[lL][iI][gG][hH][tT][cC][yY][aA][nN]|[lL][iI][gG][hH][tT][gG][oO][lL][dD][eE][nN][rR][oO][dD][yY][eE][lL][lL][oO][wW]|[lL][iI][gG][hH][tT][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][pP][iI][nN][kK]|[lL][iI][gG][hH][tT][sS][aA][lL][mM][oO][nN]|[lL][iI][gG][hH][tT][sS][eE][aA][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][sS][kK][yY][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][sS][tT][eE][eE][lL][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][yY][eE][lL][lL][oO][wW]|[lL][iI][mM][eE]|[lL][iI][mM][eE][gG][rR][eE][eE][nN]|[lL][iI][nN][eE][nN]|[lL][iI][nN][kK][tT][eE][xX][tT]|[mM][aA][gG][eE][nN][tT][aA]|[mM][aA][rR][kK]|[mM][aA][rR][kK][tT][eE][xX][tT]|[mM][aA][rR][oO][oO][nN]|[mM][eE][dD][iI][uU][mM][aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[mM][eE][dD][iI][uU][mM][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][oO][rR][cC][hH][iI][dD]|[mM][eE][dD][iI][uU][mM][pP][uU][rR][pP][lL][eE]|[mM][eE][dD][iI][uU][mM][sS][eE][aA][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[mM][eE][dD][iI][uU][mM][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[mM][eE][nN][uU]|[mM][eE][nN][uU][tT][eE][xX][tT]|[mM][iI][dD][nN][iI][gG][hH][tT][bB][lL][uU][eE]|[mM][iI][nN][tT][cC][rR][eE][aA][mM]|[mM][iI][sS][tT][yY][rR][oO][sS][eE]|[mM][oO][cC][cC][aA][sS][iI][nN]|[nN][aA][vV][aA][jJ][oO][wW][hH][iI][tT][eE]|[nN][aA][vV][yY]|[nN][oO][nN][eE]|[oO][lL][dD][lL][aA][cC][eE]|[oO][lL][iI][vV][eE]|[oO][lL][iI][vV][eE][dD][rR][aA][bB]|[oO][rR][aA][nN][gG][eE]|[oO][rR][aA][nN][gG][eE][rR][eE][dD]|[oO][rR][cC][hH][iI][dD]|[pP][aA][lL][eE][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[pP][aA][lL][eE][gG][rR][eE][eE][nN]|[pP][aA][lL][eE][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[pP][aA][lL][eE][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[pP][aA][pP][aA][yY][aA][wW][hH][iI][pP]|[pP][eE][aA][cC][hH][pP][uU][fF][fF]|[pP][eE][rR][uU]|[pP][iI][nN][kK]|[pP][lL][uU][mM]|[pP][oO][wW][dD][eE][rR][bB][lL][uU][eE]|[pP][uU][rR][pP][lL][eE]|[rR][eE][bB][eE][cC][cC][aA][pP][uU][rR][pP][lL][eE]|[rR][eE][dD]|[rR][oO][sS][yY][bB][rR][oO][wW][nN]|[rR][oO][yY][aA][lL][bB][lL][uU][eE]|[sS][aA][dD][dD][lL][eE][bB][rR][oO][wW][nN]|[sS][aA][lL][mM][oO][nN]|[sS][aA][nN][dD][yY][bB][rR][oO][wW][nN]|[sS][cC][rR][oO][lL][lL][bB][aA][rR]|[sS][eE][aA][gG][rR][eE][eE][nN]|[sS][eE][aA][sS][hH][eE][lL][lL]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM][tT][eE][xX][tT]|[sS][iI][eE][nN][nN][aA]|[sS][iI][lL][vV][eE][rR]|[sS][kK][yY][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][gG][rR][aA][yY]|[sS][lL][aA][tT][eE][gG][rR][eE][yY]|[sS][nN][oO][wW]|[sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[sS][rR][gG][bB]|[sS][tT][eE][eE][lL][bB][lL][uU][eE]|[tT][aA][nN]|[tT][eE][aA][lL]|[tT][hH][iI][sS][tT][lL][eE]|[tT][hH][rR][eE][eE][dD][dD][aA][rR][kK][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][fF][aA][cC][eE]|[tT][hH][rR][eE][eE][dD][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[tT][hH][rR][eE][eE][dD][lL][iI][gG][hH][tT][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][sS][hH][aA][dD][oO][wW]|[tT][oO][mM][aA][tT][oO]|[tT][rR][aA][nN][sS][pP][aA][rR][eE][nN][tT]|[tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[vV][iI][oO][lL][eE][tT]|[vV][iI][sS][iI][tT][eE][dD][tT][eE][xX][tT]|[wW][hH][eE][aA][tT]|[wW][hH][iI][tT][eE]|[wW][hH][iI][tT][eE][sS][mM][oO][kK][eE]|[wW][iI][nN][dD][oO][wW]|[wW][iI][nN][dD][oO][wW][fF][rR][aA][mM][eE]|[wW][iI][nN][dD][oO][wW][tT][eE][xX][tT]|[xX][yY][zZ]|[yY][eE][lL][lL][oO][wW]|[yY][eE][lL][lL][oO][wW][gG][rR][eE][eE][nN])))*)$"
+    },
+    "text-transform-list": {
+      "title": "Text transform list",
+      "description": "Whitespace-separated sequence of text-transform keywords per Typography \u00a7text-transform and CSS Text Module Levels 3-4.",
+      "$comment": "Typography \u00a7text-transform: values MUST be composed of recognised keywords (for example none, uppercase, full-width, full-size-kana, or math-* variants), CSS global keywords, or custom property references via var().",
+      "type": "string",
+      "pattern": "^(?:(?:[Ii][Nn][Hh][Ee][Rr][Ii][Tt]|[Ii][Nn][Ii][Tt][Ii][Aa][Ll]|[Uu][Nn][Ss][Ee][Tt]|[Rr][Ee][Vv][Ee][Rr][Tt](?:-[Ll][Aa][Yy][Ee][Rr])?)|(?:[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\)|(?:(?:[Nn][Oo][Nn][Ee]|[Cc][Aa][Pp][Ii][Tt][Aa][Ll][Ii][Zz][Ee]|[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]|[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Ff][Uu][Ll][Ll]-[Ss][Ii][Zz][Ee]-[Kk][Aa][Nn][Aa]|[Mm][Aa][Tt][Hh]-[Aa][Uu][Tt][Oo]|[Mm][Aa][Tt][Hh](?:-[A-Za-z]+)+))(?:\\s+(?:[Nn][Oo][Nn][Ee]|[Cc][Aa][Pp][Ii][Tt][Aa][Ll][Ii][Zz][Ee]|[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]|[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Ff][Uu][Ll][Ll]-[Ss][Ii][Zz][Ee]-[Kk][Aa][Nn][Aa]|[Mm][Aa][Tt][Hh]-[Aa][Uu][Tt][Oo]|[Mm][Aa][Tt][Hh](?:-[A-Za-z]+)+))*)$"
+    },
     "platform-identifier": {
       "title": "Platform-qualified identifier",
       "description": "Lower-case dot-separated identifier prefixed with css, ios, or android per platform-qualified token members.",
@@ -1956,12 +1970,24 @@
           "$comment": "MUST match the CSS font-stretch grammar when present."
         },
         "textDecoration": {
-          "type": "string",
-          "$comment": "MUST encode the CSS text-decoration shorthand and associated line/style/thickness grammar."
+          "title": "Text decoration",
+          "description": "CSS text-decoration shorthand including line, style, colour, and thickness components per Typography \u00a7text-decoration.",
+          "$comment": "Typography \u00a7text-decoration: values MUST follow the CSS text-decoration shorthand grammar, including colour keywords and <length-percentage> thickness tokens.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/text-decoration-shorthand"
+            }
+          ]
         },
         "textTransform": {
-          "type": "string",
-          "$comment": "MUST conform to the CSS text-transform list grammar and preserve locale-sensitive casing."
+          "title": "Text transform",
+          "description": "Keyword list matching the CSS text-transform grammar per Typography \u00a7text-transform.",
+          "$comment": "Typography \u00a7text-transform: values MUST follow the <text-transform-list> grammar and remain locale-sensitive.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/text-transform-list"
+            }
+          ]
         },
         "color": {
           "$ref": "#/$defs/colorReference"
@@ -2085,9 +2111,22 @@
           "$comment": "Width MUST follow the <line-width> grammar, accepting CSS keywords or dimension values that respect point/density conversions for pt, dp, and sp units."
         },
         "style": {
+          "title": "Border line style",
+          "description": "CSS <line-style> keyword such as solid, dashed, or inset per Token types \u00a7border tokens.",
+          "$comment": "Token types \u00a7border tokens: style MUST match CSS <line-style> keywords none, hidden, dotted, dashed, solid, double, groove, ridge, inset, or outset (css-backgrounds-3).",
           "type": "string",
-          "pattern": "^[a-z-]+$",
-          "$comment": "MUST match CSS <line-style> keywords; native implementations map them to dash patterns or fall back to solid."
+          "enum": [
+            "none",
+            "hidden",
+            "dotted",
+            "dashed",
+            "solid",
+            "double",
+            "groove",
+            "ridge",
+            "inset",
+            "outset"
+          ]
         },
         "strokeStyle": {
           "oneOf": [
@@ -2382,8 +2421,31 @@
           "$comment": "Vertical offset MUST conform to CSS <length> or platform-native units such as points (pt) and density-independent pixels (dp)."
         },
         "blur": {
-          "$ref": "#/$defs/lengthDimensionReference",
-          "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
+          "title": "Shadow blur radius",
+          "description": "Length measurement describing blur spread per Token types \u00a7shadow tokens.",
+          "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/lengthDimensionReference"
+            },
+            {
+              "if": {
+                "type": "object",
+                "required": ["dimensionType"]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Non-negative blur value",
+                    "description": "Shadow blur radii MUST be zero or positive per CSS <shadow> grammar.",
+                    "$comment": "CSS <shadow> blur radii are non-negative lengths (css-backgrounds-3)."
+                  }
+                }
+              }
+            }
+          ]
         },
         "spread": {
           "$ref": "#/$defs/lengthDimensionReference",
@@ -3690,8 +3752,31 @@
           "$comment": "Vertical offset MUST conform to CSS <length> grammar and map to CALayer.shadowOffset.height, Paint#setShadowLayer dy, or View#setElevation displacement."
         },
         "blur": {
-          "$ref": "#/$defs/lengthDimensionReference",
-          "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics."
+          "title": "Elevation blur radius",
+          "description": "Length measurement describing the ambient blur per Token types \u00a7elevation tokens.",
+          "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/lengthDimensionReference"
+            },
+            {
+              "if": {
+                "type": "object",
+                "required": ["dimensionType"]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "title": "Non-negative blur value",
+                    "description": "Elevation blur radii MUST be zero or positive per CSS <shadow> grammar.",
+                    "$comment": "CSS <shadow> blur radii are non-negative lengths (css-backgrounds-3)."
+                  }
+                }
+              }
+            }
+          ]
         },
         "color": {
           "$ref": "#/$defs/colorReference",

@@ -1,0 +1,7 @@
+name: typography-text-decoration-transform
+description: typography token with valid text-decoration shorthand and text-transform list
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags: [typography]

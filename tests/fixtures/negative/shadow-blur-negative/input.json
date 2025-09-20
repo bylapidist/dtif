@@ -1,0 +1,30 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "shadow": {
+    "invalidBlur": {
+      "$type": "shadow",
+      "$value": {
+        "shadowType": "css.box-shadow",
+        "offsetX": {
+          "dimensionType": "length",
+          "value": 2,
+          "unit": "px"
+        },
+        "offsetY": {
+          "dimensionType": "length",
+          "value": 4,
+          "unit": "px"
+        },
+        "blur": {
+          "dimensionType": "length",
+          "value": -4,
+          "unit": "px"
+        },
+        "color": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0, 0.5]
+        }
+      }
+    }
+  }
+}

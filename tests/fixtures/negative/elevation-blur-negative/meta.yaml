@@ -1,0 +1,5 @@
+name: elevation-blur-negative
+description: elevation blur radius must not be negative
+assertions:
+  - schema
+tags: [elevation]
