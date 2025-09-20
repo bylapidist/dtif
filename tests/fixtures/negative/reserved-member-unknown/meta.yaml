@@ -1,0 +1,4 @@
+name: reserved-member-unknown
+description: tokens must not include unknown $-prefixed members
+assertions:
+  - schema

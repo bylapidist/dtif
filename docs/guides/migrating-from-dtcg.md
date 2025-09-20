@@ -19,9 +19,34 @@ DTCG and DTIF agree on storing tokens inside JSON documents but they diverge on 
 core behaviours:
 
 - **Collections instead of groups.** DTIF treats any object without a `$value` as a [collection](../spec/architecture-model.md#tokens-and-collections). DTCG groups may [declare a `$type` that applies to every nested token](https://www.designtokens.org/tr/drafts/format/#type-1), so copy inherited types onto each DTIF token because collections do not provide default typing. Collections may consist solely of metadata, so you can migrate group descriptions or governance fields without creating placeholder tokens. DTIF collections must omit `$type`, `$ref`, and `$value` entirely—those members belong to tokens—so strip inherited types or aliases from the container before validating.
-- **Reserved member prefixes.** Both formats reserve `$`-prefixed keys. DTCG documents, groups, and tokens use `$description`, `$type`, and `$extensions` members and [forbid `{`, `}`, and `.` in names](https://www.designtokens.org/tr/drafts/format/#character-restrictions). DTIF keeps the prefix rules and adds document-level members such as [`$version`](../spec/architecture-model.md#versioning) and [`$overrides`](../spec/theming-overrides.md#theming-and-overrides), so migrate any group metadata into the corresponding collections and resolve naming conflicts before publishing.
-- **Alias mechanics.** DTCG aliases rely on brace-delimited strings such as `"{button.background}"` described in the [alias section](https://www.designtokens.org/tr/drafts/format/#aliases-references). DTIF aliases use [`$ref` JSON Pointers](../spec/format-serialisation.md#ref) that start with `#` for local targets or include a URI fragment for external references. Convert each DTCG alias into a `$ref` and escape `/` or `~` characters as `~1` or `~0` per the pointer rules. DTIF additionally rejects directory traversal segments such as `../` or their percent-encoded form `%2E%2E`, so rewrite any exported DTCG file paths that rely on upward navigation before publishing.
-- **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set.
+- **Reserved member prefixes.** Both formats reserve `$`-prefixed keys. DTCG documents, groups, and tokens use `$description`, `$type`, and `$extensions` members and [forbid `{`, `}`, and `.` in names](https://www.designtokens.org/tr/drafts/format/#character-restrictions). DTIF keeps the prefix rules and adds document-level members such as [`$version`](../spec/architecture-model.md#versioning) and [`$overrides`](../spec/theming-overrides.md#theming-and-overrides), so migrate any group metadata into the corresponding collections and resolve naming conflicts before publishing. DTIF's schema now rejects unknown reserved members—any `$foo` fields that existed purely for tooling hints must move under `$extensions` with a vendor namespace so that validation succeeds.
+- **Alias mechanics.** DTCG aliases rely on brace-delimited strings such as `"{button.background}"` described in the [alias section](https://www.designtokens.org/tr/drafts/format/#aliases-references). DTIF aliases use [`$ref` JSON Pointers](../spec/format-serialisation.md#ref) that start with `#` for local targets or include a URI fragment for external references. Convert each DTCG alias into a `$ref` and escape `/` or `~` characters as `~1` or `~0` per the pointer rules. DTIF additionally rejects directory traversal segments such as `../` or their percent-encoded form `%2E%2E`, so rewrite any exported DTCG file paths that rely on upward navigation before publishing. Partially encoded sequences like `%2E./`, `.%2E/`, or `..%2F` are also rejected, so normalise build scripts that previously masked traversal with mixed escaping.
+- **CSS identifier escaping.** Fields such as `color.$value.colorSpace`, `gradient.$value.stops[].color`, and function names inside `$value.fn` follow the CSS `<ident>` and `<dashed-ident>` grammar. DTIF accepts the full Unicode range and CSS escape sequences, so identifiers beginning with digits or containing punctuation should be emitted using standard CSS escapes (for example `"\31 6px"`). Keeping identifiers within that grammar avoids migration surprises when tools round-trip colour spaces or platform identifiers.
+- **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set. Tokens that provide either `$value` or `$ref` should declare `$type` so automation can reason about the payload without resolving references; migrating tools ought to copy the original group type onto every token even when legacy exports omitted it.
+
+```json
+// DTCG export with a custom $category hint
+{
+  "button": {
+    "$type": "color",
+    "$value": "{palette.brand.primary}",
+    "$category": "actions"
+  }
+}
+
+// DTIF conversion that preserves the hint under $extensions
+{
+  "button": {
+    "$type": "color",
+    "$ref": "#/palette/brand/primary",
+    "$extensions": {
+      "org.example.workflow": {
+        "category": "actions"
+      }
+    }
+  }
+}
+```
 
 ### Example: groups, tokens, and aliases {#example-data-model}
 
@@ -90,6 +115,10 @@ literal, a `$ref` alias object, or a function expression. Consumers evaluate the
 entries in order and stop when a candidate resolves, so you can mix references
 to other tokens with serialised fallbacks. Arrays must contain at least one
 item.
+
+This non-empty rule applies even when the source token omitted `$type`. Replace
+placeholder arrays with real candidates or remove them entirely so the DTIF
+schema does not reject empty fallback slots during validation.
 
 ```json
 {
@@ -993,7 +1022,8 @@ matches the original DTCG payload.
 ```
 
 Convert fractional stop positions to percentage strings, add an explicit `gradientType`
-and CSS-formatted `angle` to describe the orientation, and keep the palette tokens as
+(`linear`, `radial`, or `conic`) and CSS-formatted `angle` to describe the orientation,
+and keep the palette tokens as
 dedicated `color` entries that gradient stops reference through `$ref` so palette aliases
 survive the migration.
 

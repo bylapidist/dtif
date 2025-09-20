@@ -1,0 +1,2 @@
+name: gradient-type-invalid
+description: gradientType must match CSS gradient functions

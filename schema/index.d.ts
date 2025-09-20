@@ -10,6 +10,10 @@
  */
 export type SchemaDeclaration = string;
 /**
+ * Human-readable explanation preserved for design intent per Metadata §metadata.
+ */
+export type Description = string;
+/**
  * Semantic Versioning identifier for the token document per Architecture and model §versioning.
  */
 export type DocumentVersion = string;
@@ -84,10 +88,6 @@ export type TokenOrCollectionNode = DesignToken | TokenCollection;
  */
 export type DesignToken = MetadataMembers & TokenCore & LifecycleTelemetryRequirements;
 /**
- * Human-readable explanation preserved for design intent per Metadata §metadata.
- */
-export type Description = string;
-/**
  * Namespaced metadata preserved by consumers per Format and serialisation §$extensions.
  */
 export type Extensions = ExtensionsMap;
@@ -143,12 +143,17 @@ export type TokenCore = {
   [k: string]: unknown;
 } & {
   $type?: TokenTypeIdentifier;
-  $value?: unknown;
+  $value?: TokenValue;
   $ref?: DTIFPointerReference;
-  /**
-   * This interface was referenced by `undefined`'s JSON-Schema definition
-   * via the `patternProperty` "^\$".
-   */
+  $description?: Description;
+  $extensions?: Extensions;
+  $deprecated?: DeprecationMetadata;
+  $lastModified?: LastModifiedTimestamp;
+  $lastUsed?: LastUsedTimestamp;
+  $usageCount?: UsageCount;
+  $author?: Author;
+  $tags?: Tags;
+  $hash?: Hash;
   [k: string]: unknown;
 };
 /**
@@ -170,10 +175,11 @@ export type TokenCollection = MetadataMembers & {
 
 export interface DesignTokenInterchangeFormat {
   $schema?: SchemaDeclaration;
+  $description?: Description;
   $version?: DocumentVersion;
   $extensions?: DocumentExtensions;
   $overrides?: Overrides;
-  [k: string]: unknown;
+  [k: string]: TokenOrCollectionNode;
 }
 /**
  * Namespaced metadata keyed by reverse-DNS identifiers per Format and serialisation §$extensions.
@@ -230,5 +236,11 @@ export interface MetadataMembers {
   $author?: Author;
   $tags?: Tags;
   $hash?: Hash;
+  [k: string]: unknown;
+}
+/**
+ * Design decision payload whose shape depends on $type per Token types §value.
+ */
+export interface TokenValue {
   [k: string]: unknown;
 }

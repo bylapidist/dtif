@@ -1,0 +1,11 @@
+name: color unicode ident
+description: accepts non-ASCII CSS <ident> values for color spaces
+assertions:
+  - schema
+  - refs
+  - type-compat
+  - roundtrip
+  - ordering
+tags:
+  - type:color
+  - color-space

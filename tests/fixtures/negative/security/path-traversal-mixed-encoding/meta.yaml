@@ -1,0 +1,7 @@
+name: path traversal mixed encoding
+description: block partially encoded directory traversal in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "color": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [1, 0.5, 0]
+    },
+    "$foo": true
+  }
+}
