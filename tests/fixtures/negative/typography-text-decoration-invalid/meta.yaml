@@ -1,0 +1,5 @@
+name: typography-text-decoration-invalid
+description: textDecoration must follow CSS text-decoration grammar
+assertions:
+  - schema
+tags: [typography]

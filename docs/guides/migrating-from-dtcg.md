@@ -732,6 +732,67 @@ would be in CSS. Ensure that `font.$value.family`, `font.$value.fallbacks`,
 `fontFace.$value.fontFamily`, `fontFace.$value.src[].local`, and
 `typography.$value.fontFamily` all use trimmed CSS identifiers.
 
+#### Text decoration and transform strings {#text-decoration-transform}
+
+The schema now validates the `textDecoration` and `textTransform` strings embedded in
+`typography` tokens against the CSS grammar. DTCG exports often serialise these
+members as free-form descriptions such as `"underline dashed red"` or
+`"capitalize smallcaps"`. DTIF requires the strings to follow the
+`<text-decoration>` shorthand and `<text-transform-list>` productions so that
+tooling can translate them directly into CSS, UIKit, and Android APIs without
+guessing the author’s intent.
+
+- **Decoration components.** Supply recognised line keywords (`none`,
+  `underline`, `overline`, `line-through`, `spelling-error`, `grammar-error`),
+  optional `<line-style>` keywords (`solid`, `dotted`, `dashed`, `double`,
+  `wavy`), colour values (CSS named colours, system colours, `#rrggbb`,
+  `color(...)`, or `var(...)`), and thickness tokens (`thin`, `medium`, `thick`,
+  `from-font`, `auto`, or `<length-percentage>`). Remove informal descriptors
+  such as `"bevelled"` and normalise vendor strings to the CSS keyword set.
+- **Transform lists.** Provide whitespace-separated keywords such as `none`,
+  `capitalize`, `uppercase`, `lowercase`, `full-width`, `full-size-kana`, or
+  `math-auto`. When a custom property drives the value, wrap it in `var(...)`
+  (`"var(--brand-transform)"`) instead of serialising plain text.
+
+```json
+// DTCG export with loosely defined decoration and transform strings
+{
+  "typography": {
+    "cta": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{fontFamily.accent}",
+        "fontSize": { "value": 16, "unit": "px" },
+        "textDecoration": "underline bevelled 2",
+        "textTransform": "capitalize smallcaps"
+      }
+    }
+  }
+}
+
+// DTIF conversion honouring the CSS grammar
+{
+  "typography": {
+    "cta": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "textDecoration": "underline color-mix(in srgb, #ff6600 40%, white) from-font",
+        "textTransform": "capitalize full-size-kana"
+      }
+    }
+  }
+}
+```
+
+Normalise DTCG strings before validation by lower-casing the CSS keywords, ensuring
+named colours map to the CSS colour registry, and providing explicit units for
+thickness measurements (`"2px"` instead of `"2"`). DTIF accepts system colour
+keywords (`AccentColor`, `CanvasText`) and `var()` references so existing theme
+hooks continue to work once their syntax matches the CSS specifications referenced
+above.
+
 ```json
 // DTCG export with loose font family strings
 {
@@ -909,6 +970,12 @@ DTIF `border` tokens capture the rendering context through `borderType`, reuse
 stroke metadata via a first-class `strokeStyle` token, and avoid vendor
 extensions for dash patterns.
 
+When migrating custom border styles, rewrite proprietary keywords to the CSS
+[`<line-style>`](../spec/token-types.md#border-tokens) values (`none`,
+`hidden`, `dotted`, `dashed`, `solid`, `double`, `groove`, `ridge`, `inset`, or
+`outset`). DTIF rejects unrecognised styles so normalising them up front keeps
+validation noise-free.
+
 ### Shadows {#shadows}
 
 #### DTCG shadow
@@ -1073,6 +1140,10 @@ extensions for dash patterns.
   }
 }
 ```
+
+Ensure every `blur` entry remains zero or positive. CSS `<shadow>` grammar and
+DTIF's schema both disallow negative blur radii, so adjust any exports that used
+sentinel values before validating the converted document.
 
 Shared colour and dimension primitives become first-class DTIF tokens that
 each shadow layer references via `$ref`, preserving the alias relationships

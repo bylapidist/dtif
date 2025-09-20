@@ -1,2 +1,5 @@
 # Ignore generated changelog files
 **/CHANGELOG.md
+
+# Ignore local changeset metadata
+.changeset/

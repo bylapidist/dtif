@@ -1,0 +1,14 @@
+{
+  "typography": {
+    "decorated": {
+      "$type": "typography",
+      "$value": {
+        "color": { "colorSpace": "srgb", "components": [1, 0.6, 0, 1] },
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "textDecoration": "underline color-mix(in srgb, #ffcc00 40%, white) from-font",
+        "textTransform": "capitalize full-size-kana math-auto"
+      }
+    }
+  }
+}
