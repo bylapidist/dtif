@@ -24,8 +24,9 @@ core behaviours:
 - **CSS identifier escaping.** Fields such as `color.$value.colorSpace`, `gradient.$value.stops[].color`, and function names inside `$value.fn` follow the CSS `<ident>` and `<dashed-ident>` grammar. DTIF accepts the full Unicode range and CSS escape sequences, so identifiers beginning with digits or containing punctuation should be emitted using standard CSS escapes (for example `"\31 6px"`). Keeping identifiers within that grammar avoids migration surprises when tools round-trip colour spaces or platform identifiers.
 - **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set. Tokens that provide either `$value` or `$ref` should declare `$type` so automation can reason about the payload without resolving references; migrating tools ought to copy the original group type onto every token even when legacy exports omitted it.
 
+DTCG export with vendor metadata in `$extensions`:
+
 ```json
-// DTCG export with vendor metadata in $extensions
 {
   "palette": {
     "brand": {
@@ -49,8 +50,11 @@ core behaviours:
     }
   }
 }
+```
 
-// DTIF conversion that preserves the hint under $extensions
+DTIF conversion that preserves the hint under `$extensions`:
+
+```json
 {
   "button": {
     "$type": "color",
@@ -179,8 +183,9 @@ that declare an `fn` keyword and optional `parameters` array as defined in
 literal, another function object, or a `$ref` alias that resolves to a token
 declaring the same `$type`.
 
+DTCG export recording a calc expression inside vendor metadata:
+
 ```json
-// DTCG export recording a calc expression inside vendor metadata
 {
   "spacing": {
     "side": {
@@ -194,8 +199,11 @@ declaring the same `$type`.
     }
   }
 }
+```
 
-// DTIF conversion using an explicit function object
+DTIF conversion using an explicit function object:
+
+```json
 {
   "spacing": {
     "side": {
@@ -229,8 +237,9 @@ target platform. Normalise each segment to lower-case ASCII, replace camel case 
 hyphenated words where needed, and join the segments with dots when you move these
 annotations into DTIF fields.
 
+DTCG export:
+
 ```json
-// DTCG export
 {
   "opacity": {
     "$type": "number",
@@ -240,8 +249,11 @@ annotations into DTIF fields.
     "$value": 0.4
   }
 }
+```
 
-// DTIF conversion
+DTIF conversion:
+
+```json
 {
   "opacity": {
     "$type": "opacity",
@@ -779,8 +791,9 @@ without guessing the author’s intent.
   `math-auto`. When a custom property drives the value, wrap it in `var(...)`
   (`"var(--brand-transform)"`) instead of serialising plain text.
 
+DTCG export with loose decoration metadata stored in `$extensions`:
+
 ```json
-// DTCG export with loose decoration metadata stored in $extensions
 {
   "fontFamily": {
     "accent": {
@@ -807,8 +820,11 @@ without guessing the author’s intent.
     }
   }
 }
+```
 
-// DTIF conversion honouring the CSS grammar
+DTIF conversion honouring the CSS grammar:
+
+```json
 {
   "typography": {
     "cta": {
@@ -834,8 +850,9 @@ keywords (`AccentColor`, `CanvasText`) and `var()` references so existing theme
 hooks continue to work once their syntax matches the CSS specifications referenced
 above.
 
+DTCG export with loose font family strings in `$extensions`:
+
 ```json
-// DTCG export with loose font family strings in $extensions
 {
   "fontFamily": {
     "accent": {
@@ -855,8 +872,11 @@ above.
     }
   }
 }
+```
 
-// DTIF conversion quoting the name and encoding the URL
+DTIF conversion quoting the name and encoding the URL:
+
+```json
 {
   "font": {
     "accent": {
@@ -1290,8 +1310,9 @@ survive the migration.
   labels to the standard `<rg-ending-shape>` keywords defined by CSS Images Module
   Level 3 before validating with the DTIF schema.
 
+DTCG gradient metadata stored in `$extensions`:
+
 ```json
-// DTCG gradient metadata stored in $extensions
 {
   "color": {
     "hero": {
@@ -1330,8 +1351,11 @@ survive the migration.
     }
   }
 }
+```
 
-// DTIF conversion with CSS-compliant strings
+DTIF conversion with CSS-compliant strings:
+
+```json
 {
   "gradient": {
     "hero-background": {
