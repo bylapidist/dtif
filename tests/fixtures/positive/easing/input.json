@@ -12,6 +12,13 @@
         "parameters": [0.42, 0, 0.58, 1]
       }
     },
+    "iosSpring": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "ios.spring",
+        "parameters": [0.85, 12, 1.2, -0.5]
+      }
+    },
     "linear": {
       "$type": "easing",
       "$value": { "easingFunction": "linear" }
@@ -28,6 +35,20 @@
       "$value": {
         "easingFunction": "steps",
         "parameters": [5, "start"]
+      }
+    },
+    "stepsCountOnly": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "steps",
+        "parameters": [4]
+      }
+    },
+    "stepsJumpEnd": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "steps",
+        "parameters": [3, "jump-end"]
       }
     }
   }

@@ -1,0 +1,7 @@
+name: zero-arg-function
+description: vendor function with no parameters defaults to an empty argument list
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [function:custom, type:dimension]

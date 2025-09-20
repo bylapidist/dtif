@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "font": {
+    "invalid": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": " Leading"
+      }
+    }
+  }
+}

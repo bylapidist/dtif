@@ -1,0 +1,5 @@
+name: easing-spring-negative
+description: spring easings must supply positive magnitude parameters
+assertions:
+  - schema
+tags: [temporal]

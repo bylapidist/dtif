@@ -1,0 +1,8 @@
+{
+  "noop": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "org.example.noop"
+    }
+  }
+}

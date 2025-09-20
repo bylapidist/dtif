@@ -185,6 +185,25 @@
       "pattern": "^-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*$",
       "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions including Unicode escapes (css-values-4, css-syntax-3)."
     },
+    "css-family-name": {
+      "title": "CSS family name",
+      "description": "Font family string following the CSS <family-name> grammar per CSS Fonts Module Level 4 \u00a7font-family-names.",
+      "$comment": "Typography \u00a7font and \u00a7font-face: fontFamily, family, and fallback strings MUST follow the CSS <family-name> production allowing quoted names or sequences of <ident> tokens.",
+      "type": "string",
+      "minLength": 1,
+      "anyOf": [
+        {
+          "pattern": "^(?:\"(?:[^\"\\\\]|\\\\.)+\"|'(?:[^'\\\\]|\\\\.)+')$",
+          "description": "Quoted CSS <string> production allowing escaped characters.",
+          "title": "Quoted family name"
+        },
+        {
+          "pattern": "^-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*(?:[ \\t]+-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*)*$",
+          "description": "Unquoted sequence of one or more CSS <ident> tokens separated by ASCII whitespace.",
+          "title": "Unquoted family name"
+        }
+      ]
+    },
     "platform-identifier": {
       "title": "Platform-qualified identifier",
       "description": "Lower-case dot-separated identifier prefixed with css, ios, or android per platform-qualified token members.",
@@ -1606,14 +1625,20 @@
           ]
         },
         "family": {
-          "type": "string",
-          "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+          "title": "Font family",
+          "description": "Family name following CSS <family-name> grammar or platform catalog registrations.",
+          "$comment": "CSS Fonts \u00a7font-family-names and Typography \u00a7font require CSS <family-name> strings or platform catalog identifiers.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/css-family-name"
+            }
+          ]
         },
         "fallbacks": {
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/trimmedString"
+            "$ref": "#/$defs/css-family-name"
           },
           "$comment": "Fallback stacks MUST preserve order and reuse CSS <family-name> grammar and generic family keywords (css-fonts-4) so they align with platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
         },
@@ -1696,8 +1721,16 @@
                 "required": ["url"],
                 "properties": {
                   "url": {
+                    "title": "Font resource URL",
+                    "description": "Relative or absolute URL compatible with CSS url() and native font registration APIs.",
                     "type": "string",
-                    "$comment": "Font URLs MUST resolve to resources used by CSS url() and native registration APIs (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+                    "format": "uri-reference",
+                    "$comment": "Font URLs MUST resolve to resources used by CSS url() and native registration APIs (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/trimmedString"
+                      }
+                    ]
                   },
                   "format": {
                     "oneOf": [
@@ -1730,8 +1763,14 @@
                 "required": ["local"],
                 "properties": {
                   "local": {
-                    "type": "string",
-                    "$comment": "Local font references MUST match CSS src local() <family-name> grammar and platform catalog registrations (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+                    "title": "Local font name",
+                    "description": "Local font reference matching CSS src local() <family-name> grammar and platform catalogs.",
+                    "$comment": "Local font references MUST match CSS src local() <family-name> grammar and platform catalog registrations (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
+                    "allOf": [
+                      {
+                        "$ref": "#/$defs/css-family-name"
+                      }
+                    ]
                   }
                 },
                 "additionalProperties": false
@@ -1740,8 +1779,14 @@
           }
         },
         "fontFamily": {
-          "type": "string",
-          "$comment": "MUST identify a family using CSS <family-name> grammar (css-fonts-4) or platform catalog registrations (IOS-FONT-CATALOG, ANDROID-FONT-FAMILY)."
+          "title": "Font family",
+          "description": "Family name following CSS <family-name> grammar or platform catalog registrations.",
+          "$comment": "Typography \u00a7font-face requires CSS <family-name> strings or platform catalog identifiers (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
+          "allOf": [
+            {
+              "$ref": "#/$defs/css-family-name"
+            }
+          ]
         },
         "fontWeight": {
           "oneOf": [
@@ -1831,9 +1876,16 @@
           "description": "Canonical values such as 'body', 'heading', and 'caption' are registered. Custom values matching this pattern MAY be used; consumers MUST ignore unrecognised types to preserve compatibility."
         },
         "fontFamily": {
+          "title": "Typography font family",
+          "description": "Family name string or reference providing the typography font family.",
+          "$comment": "Typography \u00a7typography: fontFamily strings MUST follow CSS <family-name> grammar or reference an existing font token.",
           "oneOf": [
             {
-              "type": "string"
+              "allOf": [
+                {
+                  "$ref": "#/$defs/css-family-name"
+                }
+              ]
             },
             {
               "$ref": "#/$defs/reference"
@@ -2911,6 +2963,9 @@
       ]
     },
     "easing": {
+      "title": "Easing payload",
+      "description": "Reusable timing curve identified by easingFunction per Token types \u00a7easing.",
+      "$comment": "Token types \u00a7easing: easingFunction names a CSS <single-easing-function> or native analogue and parameters follow that grammar.",
       "type": "object",
       "required": ["easingFunction"],
       "properties": {
@@ -2925,6 +2980,8 @@
           ]
         },
         "parameters": {
+          "title": "Easing parameters",
+          "description": "Ordered arguments consumed by the referenced easingFunction. Omit when the grammar takes no parameters.",
           "type": "array",
           "items": {
             "anyOf": [
@@ -2940,7 +2997,164 @@
           "$comment": "When present, MUST satisfy the argument grammar defined for the referenced easing function in CSS Easing Functions or platform timing APIs."
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "easingFunction": {
+                "const": "cubic-bezier"
+              }
+            },
+            "required": ["easingFunction"]
+          },
+          "then": {
+            "required": ["parameters"],
+            "properties": {
+              "parameters": {
+                "title": "cubic-bezier control points",
+                "description": "Four-number array [p1x, p1y, p2x, p2y] per CSS Easing Functions \u00a7cubic-bezier(). p1x and p2x MUST be within [0, 1].",
+                "$comment": "Token types \u00a7easing: cubic-bezier() requires four numeric arguments with domain constraints on the x control points (css-easing-1).",
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "number"
+                },
+                "prefixItems": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "title": "p1x"
+                  },
+                  {
+                    "type": "number",
+                    "title": "p1y"
+                  },
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "title": "p2x"
+                  },
+                  {
+                    "type": "number",
+                    "title": "p2y"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "easingFunction": {
+                "const": "steps"
+              }
+            },
+            "required": ["easingFunction"]
+          },
+          "then": {
+            "required": ["parameters"],
+            "properties": {
+              "parameters": {
+                "title": "steps() arguments",
+                "description": "Positive integer step count with optional <step-position> keyword per CSS Easing Functions \u00a7steps().",
+                "$comment": "Token types \u00a7easing: steps() requires a positive integer and optional step-position keyword (css-easing-1).",
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "title": "Step count"
+                  },
+                  {
+                    "type": "string",
+                    "enum": ["start", "end", "jump-start", "jump-end", "jump-none", "jump-both"],
+                    "title": "Step position"
+                  }
+                ],
+                "items": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "easingFunction": {
+                "pattern": "^(?:spring|(?:ios|android)\\.spring(?:[.-][a-z0-9]+)*)$"
+              }
+            },
+            "required": ["easingFunction"]
+          },
+          "then": {
+            "required": ["parameters"],
+            "properties": {
+              "parameters": {
+                "title": "Spring timing parameters",
+                "description": "Four-number array providing positive magnitudes followed by an initial velocity per UISpringTimingParameters and SpringForce.",
+                "$comment": "Token types \u00a7easing: spring-based easings supply positive magnitude arguments and any real initial velocity (UISpringTimingParameters, SpringForce).",
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "number"
+                },
+                "prefixItems": [
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "title": "Magnitude 1"
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "title": "Magnitude 2"
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "title": "Magnitude 3"
+                  },
+                  {
+                    "type": "number",
+                    "title": "Initial velocity"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "easingFunction": {
+                "enum": [
+                  "linear",
+                  "ease",
+                  "ease-in",
+                  "ease-out",
+                  "ease-in-out",
+                  "step-start",
+                  "step-end"
+                ]
+              }
+            },
+            "required": ["easingFunction"]
+          },
+          "then": {
+            "$comment": "Token types \u00a7easing: keyword easings MUST NOT declare parameters.",
+            "properties": {
+              "parameters": false
+            }
+          }
+        }
+      ]
     },
     "zIndexValueEntry": {
       "title": "Z-index value entry",
@@ -3544,10 +3758,10 @@
     },
     "function": {
       "title": "Function expression",
-      "description": "Computed value wrapper with a function name and parameters per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: $value MAY be a function object with fn and parameters members.",
+      "description": "Computed value wrapper with a function name and optional parameters per Token types \u00a7value.",
+      "$comment": "Token types \u00a7value: $value MAY be a function object with fn and optional parameters members.",
       "type": "object",
-      "required": ["fn", "parameters"],
+      "required": ["fn"],
       "properties": {
         "fn": {
           "title": "Function identifier",
@@ -3560,11 +3774,13 @@
         },
         "parameters": {
           "title": "Function parameters",
-          "description": "Ordered list of literals, references, nested functions, or arrays per Token types \u00a7value.",
+          "description": "Ordered list of literals, references, nested functions, or arrays per Token types \u00a7value. When omitted, consumers treat the list as empty per Token types \u00a7value.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/function-parameter"
-          }
+          },
+          "default": [],
+          "$comment": "Token types \u00a7value: parameters MAY be omitted when the referenced grammar takes no arguments; omitted parameters default to an empty array."
         }
       },
       "additionalProperties": false

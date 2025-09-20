@@ -1,0 +1,5 @@
+name: easing-cubic-bezier-domain
+description: cubic-bezier control points must remain within [0, 1]
+assertions:
+  - schema
+tags: [temporal]

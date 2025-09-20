@@ -1,0 +1,5 @@
+name: easing-keyword-parameters
+description: keyword easing functions must omit parameters
+assertions:
+  - schema
+tags: [temporal]

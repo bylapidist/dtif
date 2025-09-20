@@ -149,6 +149,41 @@ intend to supply fallbacks for those tokens, include at least one alias or
 function entry so the schema treats the array as an ordered fallback chain
 rather than a single composite value.
 
+### Translate computed values {#computed-values}
+
+DTCG exports typically serialise computed measurements as strings. DTIF encodes
+the same logic using function objects with `fn` and optional `parameters`
+members as defined in [Token types](../spec/token-types.md#value). Each
+parameter may be a literal, another function object, or a `$ref` alias that
+resolves to a token declaring the same `$type`.
+
+```json
+// DTCG export using a calc expression string
+{
+  "spacing": {
+    "side": {
+      "$type": "sizing",
+      "$value": "calc(100% - 1rem)"
+    }
+  }
+}
+
+// DTIF conversion using an explicit function object
+{
+  "spacing": {
+    "side": {
+      "$type": "dimension",
+      "$value": { "fn": "calc", "parameters": ["100%", "-", "1rem"] }
+    }
+  }
+}
+```
+
+When the referenced grammar takes no arguments—such as vendor-specific
+functions that behave like keywords—omit `parameters` entirely. The DTIF schema
+treats a missing member the same as an empty array, so migrating scripts can
+drop placeholder `[]` values instead of emitting redundant lists.
+
 ### Normalise platform identifiers {#normalise-platform-identifiers}
 
 Some DTCG workflows annotate platform targets inside `$extensions` metadata or rely on
@@ -532,6 +567,40 @@ keeping the numeric payloads intact.
 Wrap each duration with a `durationType` identifier and promote Bézier arrays to reusable
 `easing` tokens.
 
+#### Validate easing grammars
+
+DTIF validates each easing function against the grammar defined in
+[`Token types`](../spec/token-types.md#easing):
+
+- `cubic-bezier` values **must** provide exactly four numbers. The first and third
+  control points are clamped to the `[0, 1]` domain so CSS, UIKit, and Android renderers
+  stay in sync.
+- `steps` easings require a positive integer step count and, when the optional second
+  argument is present, it **must** be one of the CSS `<step-position>` keywords such as
+  `"start"`, `"jump-end"`, or `"jump-both"`.
+- Spring identifiers like `spring`, `ios.spring`, or `android.spring-force` demand four
+  numeric parameters: the first three are positive magnitudes published by
+  `UISpringTimingParameters` and `SpringForce`, and the final value is the initial
+  velocity, which may be any real number.
+
+```json
+{
+  "easing": {
+    "stagger": {
+      "$type": "easing",
+      "$value": { "easingFunction": "steps", "parameters": [4, "jump-end"] }
+    },
+    "spring": {
+      "$type": "easing",
+      "$value": { "easingFunction": "ios.spring", "parameters": [0.9, 12, 1.2, -0.4] }
+    }
+  }
+}
+```
+
+Adjust any DTCG exports that rely on looser validation so they satisfy these grammars
+before importing them into DTIF.
+
 ### Fonts and typography {#fonts}
 
 #### DTCG typography
@@ -653,6 +722,73 @@ adjustments must be converted into explicit `font-dimension` measurements or
 references to `dimension` tokens whose `dimensionType` is `"length"`. This ensures
 word spacing imports express concrete distances instead of relying on loosely defined
 user-agent heuristics.
+
+DTIF additionally validates every font family string using the CSS `<family-name>`
+grammar described in [Token types §font](../spec/token-types.md#font) and
+[Typography §font-face](../spec/typography.md#font-face). Any whitespace outside the
+name, including leading or trailing spaces, causes validation to fail, and names that
+begin with digits or contain special characters must be quoted or escaped just as they
+would be in CSS. Ensure that `font.$value.family`, `font.$value.fallbacks`,
+`fontFace.$value.fontFamily`, `fontFace.$value.src[].local`, and
+`typography.$value.fontFamily` all use trimmed CSS identifiers.
+
+```json
+// DTCG export with loose font family strings
+{
+  "font": {
+    "accent": {
+      "$type": "font",
+      "$value": {
+        "family": " 1 Example",
+        "fallbacks": ["Arial ", "sans-serif"]
+      }
+    }
+  },
+  "fontFace": {
+    "accent": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": " 1 Example ",
+        "src": [
+          { "local": " 1 Example " },
+          { "url": "fonts/Accent Regular.woff2" }
+        ]
+      }
+    }
+  }
+}
+
+// DTIF conversion quoting the name and encoding the URL
+{
+  "font": {
+    "accent": {
+      "$type": "font",
+      "$value": {
+        "family": "\"1 Example\"",
+        "fallbacks": ["\"1 Example\"", "sans-serif"]
+      }
+    }
+  },
+  "fontFace": {
+    "accent": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "\"1 Example\"",
+        "src": [
+          { "local": "\"1 Example\"" },
+          { "url": "fonts/Accent%20Regular.woff2", "format": "woff2" }
+        ]
+      }
+    }
+  }
+}
+```
+
+In addition to quoting the family, percent-encode any whitespace inside
+`fontFace.$value.src[].url` strings so they remain valid
+[`uri-reference`](https://datatracker.ietf.org/doc/html/rfc3986#section-4.1) values.
+DTIF rejects URLs containing raw spaces or other illegal characters, so update the
+export pipeline to emit encoded paths before validating the converted document.
 
 ## Convert composite tokens {#composite-tokens}
 

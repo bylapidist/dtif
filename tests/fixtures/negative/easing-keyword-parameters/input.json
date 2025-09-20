@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "easing": {
+    "invalid": {
+      "$type": "easing",
+      "$value": {
+        "easingFunction": "ease",
+        "parameters": [0.1]
+      }
+    }
+  }
+}

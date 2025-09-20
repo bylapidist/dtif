@@ -1,0 +1,5 @@
+name: easing-steps-invalid-count
+description: steps() requires a positive integer step count
+assertions:
+  - schema
+tags: [temporal]
