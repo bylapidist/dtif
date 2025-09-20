@@ -158,19 +158,25 @@ rather than a single composite value.
 
 ### Translate computed values {#computed-values}
 
-DTCG exports typically serialise computed measurements as strings. DTIF encodes
-the same logic using function objects with `fn` and optional `parameters`
-members as defined in [Token types](../spec/token-types.md#value). Each
-parameter may be a literal, another function object, or a `$ref` alias that
-resolves to a token declaring the same `$type`.
+DTCG exports express calculated measurements through function objects that
+supply a `function` identifier and an `arguments` array. Migration scripts can
+carry the `function` string into DTIF's `fn` member and copy the ordered
+`arguments` into the `parameters` array. DTIF encodes the same logic using
+function objects with `fn` and optional `parameters` members as defined in
+[Token types](../spec/token-types.md#value). Each argument or parameter may be a
+literal, another function object, or a `$ref` alias that resolves to a token
+declaring the same `$type`.
 
 ```json
-// DTCG export using a calc expression string
+// DTCG export using a calc function object
 {
   "spacing": {
     "side": {
       "$type": "dimension",
-      "$value": "calc(100% - 1rem)"
+      "$value": {
+        "function": "calc",
+        "arguments": ["100%", "-", "1rem"]
+      }
     }
   }
 }
