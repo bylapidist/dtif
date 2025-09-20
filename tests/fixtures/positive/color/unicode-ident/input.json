@@ -1,0 +1,12 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "accent": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "Δprimary",
+        "components": [0.18, 0.42, 0.73]
+      }
+    }
+  }
+}

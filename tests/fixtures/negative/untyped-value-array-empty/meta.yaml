@@ -1,0 +1,2 @@
+name: untyped-value-array-empty
+description: untyped $value arrays must include at least one candidate

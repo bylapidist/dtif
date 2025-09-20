@@ -10,6 +10,9 @@
       "description": "Optional JSON Schema identifier that helps tooling discover compatible vocabularies.",
       "$comment": "Format and serialisation \u00a7format: documents MAY declare $schema for tooling introspection."
     },
+    "$description": {
+      "$ref": "#/$defs/metadata-members/properties/$description"
+    },
     "$version": {
       "type": "string",
       "title": "Document version",
@@ -40,8 +43,7 @@
   "patternProperties": {
     "^(?!\\$)": {
       "$ref": "#/$defs/node"
-    },
-    "^\\$": {}
+    }
   },
   "unevaluatedProperties": false,
   "$defs": {
@@ -57,19 +59,25 @@
         {
           "$comment": "Directory traversal segments ../ at the start of the path are invalid (Format and serialisation \u00a7$ref step 1).",
           "not": {
-            "pattern": "^\\.\\.(?:\\/|\\?|#|$)"
+            "pattern": "^\\.\\.(?:\\/|%2[fF]|\\?|#|$)"
           }
         },
         {
           "$comment": "Directory traversal segments ../ inside the path before the fragment are invalid (Format and serialisation \u00a7$ref step 1).",
           "not": {
-            "pattern": "^[^#]*\\/\\.\\.(?:\\/|\\?|#|$)"
+            "pattern": "^[^#]*\\/\\.\\.(?:\\/|%2[fF]|\\?|#|$)"
           }
         },
         {
-          "$comment": "Percent-encoded .. segments (%2e%2e) are also rejected (Format and serialisation \u00a7$ref step 1).",
+          "$comment": "Percent-encoded or mixed-encoding .. segments such as %2e%2e/, %2e./, or .%2e/ are rejected (Format and serialisation \u00a7$ref step 1).",
           "not": {
-            "pattern": "^[^#]*%(?:2[eE])%(?:2[eE])"
+            "pattern": "^(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)"
+          }
+        },
+        {
+          "$comment": "Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation \u00a7$ref step 1).",
+          "not": {
+            "pattern": "^[^#]*\\/(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)"
           }
         },
         {
@@ -109,6 +117,9 @@
       "minItems": 1
     },
     "colorReference": {
+      "title": "Color literal or alias",
+      "description": "Inline colour payload or $ref alias per Token types \u00a7color and Format and serialisation \u00a7$ref.",
+      "$comment": "Token types \u00a7color: $value entries MAY embed literal colour objects or $ref aliases that resolve to the same $type.",
       "oneOf": [
         {
           "$ref": "#/$defs/color"
@@ -119,6 +130,9 @@
       ]
     },
     "dimensionReference": {
+      "title": "Dimension literal or alias",
+      "description": "Inline dimension measurement or $ref alias per Token types \u00a7dimension and Format and serialisation \u00a7$ref.",
+      "$comment": "Token types \u00a7dimension: $value entries MAY embed literal measurements or $ref aliases that resolve to the same $type.",
       "oneOf": [
         {
           "$ref": "#/$defs/dimension"
@@ -129,9 +143,19 @@
       ]
     },
     "fontDimensionReference": {
-      "$ref": "#/$defs/font-dimension"
+      "title": "Font dimension literal or alias",
+      "description": "Font-specific length measurement or $ref alias per Typography \u00a7font-dimensions and Format and serialisation \u00a7$ref.",
+      "$comment": "Typography \u00a7font-dimensions and \u00a7font-face: values MAY embed inline font measurements or alias another token with the same $type.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/font-dimension"
+        }
+      ]
     },
     "lengthDimensionReference": {
+      "title": "Length dimension literal or alias",
+      "description": "Length measurement or $ref alias per Token types \u00a7dimension (length) and Format and serialisation \u00a7$ref.",
+      "$comment": "Token types \u00a7dimension: length measurements MAY be serialized inline or referenced via $ref.",
       "oneOf": [
         {
           "$ref": "#/$defs/length-dimension"
@@ -142,6 +166,9 @@
       ]
     },
     "angleDimensionReference": {
+      "title": "Angle dimension literal or alias",
+      "description": "Angle measurement or $ref alias per Token types \u00a7dimension (angle) and Format and serialisation \u00a7$ref.",
+      "$comment": "Token types \u00a7dimension: angle measurements MAY be serialized inline or referenced via $ref.",
       "oneOf": [
         {
           "$ref": "#/$defs/angle-dimension"
@@ -152,9 +179,11 @@
       ]
     },
     "css-ident": {
+      "title": "CSS identifier",
+      "description": "Identifier matching the CSS <ident> or <dashed-ident> grammar per CSS Values and Units \u00a7css-identifier-syntax.",
       "type": "string",
-      "pattern": "^-{0,2}[A-Za-z_][A-Za-z0-9_-]*$",
-      "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions (css-values-4)."
+      "pattern": "^-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*$",
+      "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions including Unicode escapes (css-values-4, css-syntax-3)."
     },
     "platform-identifier": {
       "title": "Platform-qualified identifier",
@@ -376,13 +405,41 @@
         "$type": {
           "$ref": "#/$defs/type-identifier"
         },
-        "$value": {},
+        "$value": {
+          "title": "Token value",
+          "description": "Design decision payload whose shape depends on $type per Token types \u00a7value.",
+          "$comment": "Token types \u00a7value: $value MUST follow the grammar associated with $type."
+        },
         "$ref": {
           "$ref": "#/$defs/pointer"
+        },
+        "$description": {
+          "$ref": "#/$defs/metadata-members/properties/$description"
+        },
+        "$extensions": {
+          "$ref": "#/$defs/metadata-members/properties/$extensions"
+        },
+        "$deprecated": {
+          "$ref": "#/$defs/metadata-members/properties/$deprecated"
+        },
+        "$lastModified": {
+          "$ref": "#/$defs/metadata-members/properties/$lastModified"
+        },
+        "$lastUsed": {
+          "$ref": "#/$defs/metadata-members/properties/$lastUsed"
+        },
+        "$usageCount": {
+          "$ref": "#/$defs/metadata-members/properties/$usageCount"
+        },
+        "$author": {
+          "$ref": "#/$defs/metadata-members/properties/$author"
+        },
+        "$tags": {
+          "$ref": "#/$defs/metadata-members/properties/$tags"
+        },
+        "$hash": {
+          "$ref": "#/$defs/metadata-members/properties/$hash"
         }
-      },
-      "patternProperties": {
-        "^\\$": {}
       },
       "unevaluatedProperties": false,
       "allOf": [
@@ -408,6 +465,26 @@
           },
           "then": {
             "required": ["$type"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "$value": {
+                "type": "array"
+              }
+            },
+            "required": ["$value"]
+          },
+          "then": {
+            "properties": {
+              "$value": {
+                "title": "Non-empty $value array",
+                "description": "Array values MUST provide at least one entry per Token types \u00a7value.",
+                "$comment": "Token types \u00a7value: fallback arrays and composite lists MUST contain at least one item.",
+                "minItems": 1
+              }
+            }
           }
         },
         {
@@ -897,11 +974,39 @@
         },
         {
           "type": "object",
+          "properties": {
+            "$description": {
+              "$ref": "#/$defs/metadata-members/properties/$description"
+            },
+            "$extensions": {
+              "$ref": "#/$defs/metadata-members/properties/$extensions"
+            },
+            "$deprecated": {
+              "$ref": "#/$defs/metadata-members/properties/$deprecated"
+            },
+            "$lastModified": {
+              "$ref": "#/$defs/metadata-members/properties/$lastModified"
+            },
+            "$lastUsed": {
+              "$ref": "#/$defs/metadata-members/properties/$lastUsed"
+            },
+            "$usageCount": {
+              "$ref": "#/$defs/metadata-members/properties/$usageCount"
+            },
+            "$author": {
+              "$ref": "#/$defs/metadata-members/properties/$author"
+            },
+            "$tags": {
+              "$ref": "#/$defs/metadata-members/properties/$tags"
+            },
+            "$hash": {
+              "$ref": "#/$defs/metadata-members/properties/$hash"
+            }
+          },
           "patternProperties": {
             "^(?!\\$)": {
               "$ref": "#/$defs/node"
-            },
-            "^\\$": {}
+            }
           },
           "unevaluatedProperties": false,
           "allOf": [
@@ -2293,14 +2398,11 @@
       "required": ["gradientType", "stops"],
       "properties": {
         "gradientType": {
-          "title": "Gradient context identifier",
-          "description": "Rendering surface identifier such as css.linear-gradient, ios.radial, or android.sweep-gradient.",
-          "$comment": "MUST correspond to gradient function identifiers defined in CSS Images Module Level 4 or platform equivalents such as CAGradientLayer.type and Android shader classes.",
-          "allOf": [
-            {
-              "$ref": "#/$defs/context-identifier"
-            }
-          ]
+          "title": "Gradient function",
+          "description": "Gradient function name such as linear, radial, or conic per Token types \u00a7gradient tokens.",
+          "$comment": "Token types \u00a7gradient tokens: gradientType MUST be linear, radial, or conic matching CSS Images Module Level 4 gradient functions and mapping to CAGradientLayer.type or Android gradient shader constructors.",
+          "type": "string",
+          "enum": ["linear", "radial", "conic"]
         },
         "stops": {
           "type": "array",

@@ -11,7 +11,15 @@ export default function assertRefs(doc, opts = {}) {
       });
       return null;
     }
-    if (pointer.includes('../') || /%2e%2e/i.test(pointer)) {
+    const hashIndex = pointer.indexOf('#');
+    const beforeFragment = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+    const [pathBeforeQuery] = beforeFragment.split('?');
+    const normalisedPath = pathBeforeQuery.replace(/%2f/gi, '/').replace(/%2e/gi, '.');
+    const hasTraversal = normalisedPath
+      .split('/')
+      .filter((segment) => segment.length > 0)
+      .some((segment) => segment === '..');
+    if (hasTraversal) {
       errors.push({
         code: 'E_REF_PATH_TRAVERSAL',
         path: refPath,

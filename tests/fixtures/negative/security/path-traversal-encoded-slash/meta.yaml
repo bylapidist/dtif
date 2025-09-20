@@ -1,0 +1,7 @@
+name: path traversal encoded slash
+description: block encoded slash traversal in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security
