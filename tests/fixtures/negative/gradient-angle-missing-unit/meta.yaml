@@ -1,0 +1,2 @@
+description: gradient angle missing CSS units
+error: must match pattern "^(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])|[-+]?(?:0+(?:\\.0+)?|\\.0+)|[Tt][Oo]\\s+(?:(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt])(?:\\s+(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm]))?|(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])(?:\\s+(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]))?))$"

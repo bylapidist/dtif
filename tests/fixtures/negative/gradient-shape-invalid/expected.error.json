@@ -1,0 +1,5 @@
+{
+  "error": {
+    "message": "must match pattern \"^(?:[Cc][Ii][Rr][Cc][Ll][Ee]|[Ee][Ll][Ll][Ii][Pp][Ss][Ee])$\""
+  }
+}

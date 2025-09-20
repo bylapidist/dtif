@@ -2396,10 +2396,50 @@
       },
       "additionalProperties": false
     },
-    "color-stop-length-string": {
+    "gradient-line-angle": {
+      "title": "Gradient line orientation",
+      "description": "CSS linear-gradient line syntax accepting an <angle> or to <side-or-corner> keyword per Token types \u00a7gradient tokens.",
+      "$comment": "Token types \u00a7gradient tokens: string angles MUST be a CSS <angle> with units or the 'to <side-or-corner>' grammar (css-images-4).",
       "type": "string",
-      "pattern": "^(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+))(?:\\s+(?:(?:calc|min|max|clamp)\\([^]*\\)|[+-]?(?:\\d*\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[+-]?(?:0+(?:\\.0+)?|\\.0+)))?$",
-      "$comment": "Each token MUST be a CSS <length-percentage> or calc-style expression resolving to <length-percentage> (css-values-4, css-images-4)."
+      "pattern": "^(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])|[-+]?(?:0+(?:\\.0+)?|\\.0+)|[Tt][Oo]\\s+(?:(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt])(?:\\s+(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm]))?|(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])(?:\\s+(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]))?))$",
+      "examples": ["45deg", "to top right", "0", "-0.25turn"]
+    },
+    "gradient-position": {
+      "title": "Gradient position",
+      "description": "CSS <position> tokens composed of keywords, <length-percentage>, or calc-style functions per Token types \u00a7gradient tokens.",
+      "$comment": "Token types \u00a7gradient tokens: centre strings MUST follow the CSS <position> grammar used by radial-gradient() and conic-gradient() (css-images-4).",
+      "type": "string",
+      "pattern": "^(?:(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)|(?:[Cc][Ee][Nn][Tt][Ee][Rr]|[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]|[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])))(?:\\s+(?:(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)|(?:[Cc][Ee][Nn][Tt][Ee][Rr]|[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]|[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])))){0,3}$",
+      "examples": [
+        "center 25%",
+        "left top",
+        "calc(100% - 0.25rem) center",
+        "calc(min(10%, max(5%, var(--x))) + 2em) 50%"
+      ]
+    },
+    "gradient-ending-shape": {
+      "title": "Radial gradient ending shape",
+      "description": "CSS radial-gradient() ending shape keyword per Token types \u00a7gradient tokens.",
+      "$comment": "Token types \u00a7gradient tokens: shape MUST be the <rg-ending-shape> keyword circle or ellipse (css-images-3).",
+      "type": "string",
+      "pattern": "^(?:[Cc][Ii][Rr][Cc][Ll][Ee]|[Ee][Ll][Ll][Ii][Pp][Ss][Ee])$",
+      "examples": ["circle", "ellipse"]
+    },
+    "color-stop-length-string": {
+      "title": "Color stop length string",
+      "description": "CSS <color-stop-length> token composed of one or two <length-percentage> entries per Token types \u00a7gradient tokens.",
+      "$comment": "Token types \u00a7gradient tokens and css-images-4: stop positions expressed as strings MUST be a single <length-percentage> or a pair separated by ASCII whitespace.",
+      "type": "string",
+      "pattern": "^(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+))(?:\\s+(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)))?$",
+      "examples": ["0%", "calc(50% - 10px)", "var(--stop, 25%)"]
+    },
+    "color-hint-length-string": {
+      "title": "Color hint length string",
+      "description": "CSS <color-hint> token serialized as a single <length-percentage> entry per Token types \u00a7gradient tokens.",
+      "$comment": "Token types \u00a7gradient tokens and css-images-4: hint strings MUST be a solitary <length-percentage> expression without an optional second stop.",
+      "type": "string",
+      "pattern": "^(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+))$",
+      "examples": ["25%", "calc(10% + 2rem)", "var(--hint)"]
     },
     "gradientValueEntry": {
       "title": "Gradient value entry",
@@ -2485,8 +2525,8 @@
                     "$comment": "Normalised hints map to native midpoint interpolation controls."
                   },
                   {
-                    "$ref": "#/$defs/color-stop-length-string",
-                    "$comment": "MUST conform to the <color-hint> productions described in CSS Images Module Level 4."
+                    "$ref": "#/$defs/color-hint-length-string",
+                    "$comment": "MUST conform to the <color-hint> production described in CSS Images Module Level 4."
                   }
                 ]
               },
@@ -2499,11 +2539,11 @@
           "$comment": "Represents the CSS <color-stop-list> grammar and corresponding native stop arrays."
         },
         "angle": {
+          "title": "Gradient angle",
+          "description": "Linear gradient line orientation expressed as a CSS <angle> string or numeric degrees per Token types \u00a7gradient tokens.",
           "anyOf": [
             {
-              "type": "string",
-              "pattern": "\\S",
-              "$comment": "MUST conform to the linear-gradient line syntax using CSS <angle> or <side-or-corner> tokens."
+              "$ref": "#/$defs/gradient-line-angle"
             },
             {
               "type": "number",
@@ -2532,16 +2572,18 @@
               "$comment": "Unit-square coordinates map to CAGradientLayer start/end points and Android radial or conic gradient centres."
             },
             {
-              "type": "string",
-              "pattern": "\\S",
-              "$comment": "MUST conform to the CSS <position> production for radial and conic gradients."
+              "$ref": "#/$defs/gradient-position"
             }
           ]
         },
         "shape": {
-          "type": "string",
-          "pattern": "\\S",
-          "$comment": "MUST match <rg-ending-shape> keywords defined for radial-gradient() in CSS Images Module Level 3."
+          "title": "Gradient ending shape",
+          "description": "Radial gradient ending shape keyword such as circle or ellipse per Token types \u00a7gradient tokens.",
+          "allOf": [
+            {
+              "$ref": "#/$defs/gradient-ending-shape"
+            }
+          ]
         }
       },
       "additionalProperties": false,

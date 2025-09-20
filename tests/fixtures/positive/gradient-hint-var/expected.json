@@ -1,0 +1,25 @@
+{
+  "varHint": {
+    "$type": "gradient",
+    "$value": {
+      "gradientType": "linear",
+      "stops": [
+        {
+          "position": "var(--start-stop, 0%)",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [1, 0, 0, 1]
+          }
+        },
+        {
+          "position": "100%",
+          "hint": "var(--midpoint)",
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 1, 1]
+          }
+        }
+      ]
+    }
+  }
+}

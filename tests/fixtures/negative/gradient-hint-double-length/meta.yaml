@@ -1,0 +1,9 @@
+name: gradient hint double length
+description: gradient color hints reject strings that contain two stop positions
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags:
+  - type:gradient
+  - gradient:linear

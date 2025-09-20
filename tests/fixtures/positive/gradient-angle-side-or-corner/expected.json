@@ -1,0 +1,56 @@
+{
+  "gradients": {
+    "computed": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "conic",
+        "center": "calc(min(10%, max(5%, var(--x))) + 2em) 50%",
+        "stops": [
+          {
+            "position": 0,
+            "color": { "colorSpace": "srgb", "components": [0.2, 0.6, 0.8, 1] }
+          },
+          {
+            "position": 1,
+            "color": { "colorSpace": "srgb", "components": [0.8, 0.4, 0.2, 1] }
+          }
+        ]
+      }
+    },
+    "corner": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "angle": "to top left",
+        "stops": [
+          {
+            "position": 0,
+            "color": { "colorSpace": "srgb", "components": [0.1, 0.4, 0.9, 1] }
+          },
+          {
+            "position": 1,
+            "color": { "colorSpace": "srgb", "components": [0.9, 0.2, 0.4, 1] }
+          }
+        ]
+      }
+    },
+    "radial": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "radial",
+        "shape": "circle",
+        "center": "left 25%",
+        "stops": [
+          {
+            "position": 0,
+            "color": { "colorSpace": "srgb", "components": [1, 1, 1, 1] }
+          },
+          {
+            "position": 1,
+            "color": { "colorSpace": "srgb", "components": [0, 0, 0, 1] }
+          }
+        ]
+      }
+    }
+  }
+}
