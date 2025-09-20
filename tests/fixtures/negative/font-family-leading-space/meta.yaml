@@ -1,0 +1,8 @@
+name: font-family-leading-space
+description: font family strings must be trimmed and match CSS <family-name> grammar
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - type:font

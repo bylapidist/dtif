@@ -1,0 +1,10 @@
+name: font-family-css-grammar
+description: accepts CSS <family-name> strings including quoted names and relative font URLs
+assertions:
+  - schema
+  - roundtrip
+  - ordering
+tags:
+  - type:font
+  - type:font-face
+  - type:typography

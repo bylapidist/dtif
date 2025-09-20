@@ -1,0 +1,5 @@
+name: easing-steps-invalid-position
+description: steps() step-position keywords are limited to CSS-defined values
+assertions:
+  - schema
+tags: [temporal]

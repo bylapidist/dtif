@@ -1,0 +1,41 @@
+{
+  "font": {
+    "quoted": {
+      "$type": "font",
+      "$value": {
+        "fontType": "css.font-face",
+        "family": "\"1 Example\"",
+        "fallbacks": ["\"1 Example\"", "sans-serif"]
+      }
+    }
+  },
+  "fontFace": {
+    "quoted": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "\"1 Example\"",
+        "src": [
+          { "local": "\"1 Example\"" },
+          {
+            "url": "fonts/Example-Regular.woff2",
+            "format": "woff2"
+          }
+        ]
+      }
+    }
+  },
+  "typography": {
+    "quote": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "\"1 Example\"",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": 1.2
+      }
+    }
+  }
+}

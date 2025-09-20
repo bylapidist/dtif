@@ -1,0 +1,5 @@
+name: easing-cubic-bezier-parameter-count
+description: cubic-bezier requires four numeric parameters
+assertions:
+  - schema
+tags: [temporal]

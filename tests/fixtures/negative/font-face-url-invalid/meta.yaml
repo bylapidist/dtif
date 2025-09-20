@@ -1,0 +1,8 @@
+name: font-face-url-invalid
+description: font face src.url must be a valid uri-reference without whitespace
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - type:font-face

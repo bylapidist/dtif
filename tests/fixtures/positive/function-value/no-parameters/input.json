@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "noop": {
+    "$type": "dimension",
+    "$value": {
+      "fn": "org.example.noop"
+    }
+  }
+}

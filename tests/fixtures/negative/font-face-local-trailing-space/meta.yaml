@@ -1,0 +1,8 @@
+name: font-face-local-trailing-space
+description: font face local() names must be trimmed CSS <family-name> strings
+assertions:
+  - schema
+  - type-compat
+  - refs
+tags:
+  - type:font-face

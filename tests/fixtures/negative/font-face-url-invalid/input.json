@@ -1,0 +1,16 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "fontFace": {
+    "invalid": {
+      "$type": "fontFace",
+      "$value": {
+        "fontFamily": "Example Sans",
+        "src": [
+          {
+            "url": "fonts/Example Regular.woff2"
+          }
+        ]
+      }
+    }
+  }
+}
