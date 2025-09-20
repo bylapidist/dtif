@@ -1,5 +1,13 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.7
+
+### Patch Changes
+
+- [#49](https://github.com/bylapidist/dtif/pull/49) [`6edd6cb`](https://github.com/bylapidist/dtif/commit/6edd6cbc6c61279bdc8a0aae229fbd6a58f60224) Thanks [@brettdorrans](https://github.com/brettdorrans)! - - enforce CSS text-decoration shorthand and text-transform list grammar in typography tokens
+  - add fixtures that cover valid combinations and pattern failures for textDecoration/textTransform
+  - document the stricter validation for migrating DTCG exports
+
 ## 0.1.6
 
 ### Patch Changes
