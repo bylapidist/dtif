@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.4
+
+### Patch Changes
+
+- [#43](https://github.com/bylapidist/dtif/pull/43) [`e915ff3`](https://github.com/bylapidist/dtif/commit/e915ff3d8945280fe99eaefb82728872557c5678) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce non-empty `$value` arrays even when tokens omit `$type` and constrain `gradientType` to the linear/radial/conic functions documented by Token types, updating migration guidance and regression tests.
+
 ## 0.1.3
 
 ### Patch Changes
