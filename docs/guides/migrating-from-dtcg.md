@@ -25,12 +25,16 @@ core behaviours:
 - **Type identifiers.** DTCG `$type` strings often use short labels such as `"sizing"` or `"radius"`. DTIF [reserves a registry of built-in categories](../spec/format-serialisation.md#type) but also accepts vendor-defined identifiers composed of ASCII words separated by dots. Map DTCG categories to the closest DTIF primitive (for example `"sizing"` → `"dimension"`, `"color"` stays `"color"`). When you need bespoke semantics, mint a stable identifier—reverse-DNS prefixes like `com.example.tokens.radius` avoid collisions even though the schema only enforces the character set. Tokens that provide either `$value` or `$ref` should declare `$type` so automation can reason about the payload without resolving references; migrating tools ought to copy the original group type onto every token even when legacy exports omitted it.
 
 ```json
-// DTCG export with a custom $category hint
+// DTCG export with vendor metadata in $extensions
 {
   "button": {
     "$type": "color",
     "$value": "{palette.brand.primary}",
-    "$category": "actions"
+    "$extensions": {
+      "com.example.workflow": {
+        "category": "actions"
+      }
+    }
   }
 }
 
@@ -47,6 +51,9 @@ core behaviours:
   }
 }
 ```
+
+Both formats reserve the `$` prefix, so rewrite any legacy DTCG exports that still
+emit members such as `$category` to use `$extensions` before converting them to DTIF.
 
 ### Example: groups, tokens, and aliases {#example-data-model}
 
@@ -151,19 +158,25 @@ rather than a single composite value.
 
 ### Translate computed values {#computed-values}
 
-DTCG exports typically serialise computed measurements as strings. DTIF encodes
-the same logic using function objects with `fn` and optional `parameters`
-members as defined in [Token types](../spec/token-types.md#value). Each
-parameter may be a literal, another function object, or a `$ref` alias that
-resolves to a token declaring the same `$type`.
+DTCG exports express calculated measurements through function objects that
+supply a `function` identifier and an `arguments` array. Migration scripts can
+carry the `function` string into DTIF's `fn` member and copy the ordered
+`arguments` into the `parameters` array. DTIF encodes the same logic using
+function objects with `fn` and optional `parameters` members as defined in
+[Token types](../spec/token-types.md#value). Each argument or parameter may be a
+literal, another function object, or a `$ref` alias that resolves to a token
+declaring the same `$type`.
 
 ```json
-// DTCG export using a calc expression string
+// DTCG export using a calc function object
 {
   "spacing": {
     "side": {
-      "$type": "sizing",
-      "$value": "calc(100% - 1rem)"
+      "$type": "dimension",
+      "$value": {
+        "function": "calc",
+        "arguments": ["100%", "-", "1rem"]
+      }
     }
   }
 }
@@ -725,12 +738,10 @@ user-agent heuristics.
 
 DTIF additionally validates every font family string using the CSS `<family-name>`
 grammar described in [Token types §font](../spec/token-types.md#font) and
-[Typography §font-face](../spec/typography.md#font-face). Any whitespace outside the
-name, including leading or trailing spaces, causes validation to fail, and names that
-begin with digits or contain special characters must be quoted or escaped just as they
-would be in CSS. Ensure that `font.$value.family`, `font.$value.fallbacks`,
-`fontFace.$value.fontFamily`, `fontFace.$value.src[].local`, and
-`typography.$value.fontFamily` all use trimmed CSS identifiers.
+[Typography §font-face](../spec/typography.md#font-face). Trim leading and trailing
+whitespace, quote identifiers that start with digits, and clean any DTCG
+`$extensions` payloads that embed font metadata so the values you copy into DTIF
+`font`, `fontFace`, or `typography` tokens already match the CSS naming rules.
 
 #### Text decoration and transform strings {#text-decoration-transform}
 
@@ -794,26 +805,22 @@ hooks continue to work once their syntax matches the CSS specifications referenc
 above.
 
 ```json
-// DTCG export with loose font family strings
+// DTCG export with loose font family strings in $extensions
 {
-  "font": {
+  "fontFamily": {
     "accent": {
-      "$type": "font",
-      "$value": {
-        "family": " 1 Example",
-        "fallbacks": ["Arial ", "sans-serif"]
-      }
-    }
-  },
-  "fontFace": {
-    "accent": {
-      "$type": "fontFace",
-      "$value": {
-        "fontFamily": " 1 Example ",
-        "src": [
-          { "local": " 1 Example " },
-          { "url": "fonts/Accent Regular.woff2" }
-        ]
+      "$type": "fontFamily",
+      "$value": [" 1 Example", "Arial ", "sans-serif"],
+      "$extensions": {
+        "com.example.export": {
+          "fontFace": {
+            "fontFamily": " 1 Example ",
+            "src": [
+              { "local": " 1 Example " },
+              { "url": "fonts/Accent Regular.woff2", "format": "woff2" }
+            ]
+          }
+        }
       }
     }
   }
@@ -826,7 +833,7 @@ above.
       "$type": "font",
       "$value": {
         "family": "\"1 Example\"",
-        "fallbacks": ["\"1 Example\"", "sans-serif"]
+        "fallbacks": ["Arial", "sans-serif"]
       }
     }
   },
@@ -1254,32 +1261,41 @@ survive the migration.
   Level 3 before validating with the DTIF schema.
 
 ```json
-// DTCG angle and centre tokens
-"gradient": {
-  "hero-background": {
-    "$type": "gradient",
-    "$value": {
-      "angle": 45,
-      "stops": [
+// DTCG gradient metadata stored in $extensions
+{
+  "gradient": {
+    "hero-background": {
+      "$type": "gradient",
+      "$value": [
         { "color": "{color.hero.start}", "position": 0 },
         { "color": "{color.hero.end}", "position": 1 }
-      ]
+      ],
+      "$extensions": {
+        "com.example.export": {
+          "angle": 45,
+          "center": [0.5, 0.25],
+          "hint": [0.25, 0.75]
+        }
+      }
     }
   }
 }
 
 // DTIF conversion with CSS-compliant strings
-"gradient": {
-  "hero-background": {
-    "$type": "gradient",
-    "$value": {
-      "gradientType": "linear",
-      "angle": "45deg",
-      "center": "50% 25%",
-      "stops": [
-        { "position": "0%", "color": { "$ref": "#/color/hero-start" } },
-        { "position": "100%", "color": { "$ref": "#/color/hero-end" } }
-      ]
+{
+  "gradient": {
+    "hero-background": {
+      "$type": "gradient",
+      "$value": {
+        "gradientType": "linear",
+        "angle": "45deg",
+        "center": "50% 25%",
+        "hints": ["calc(25% + 2px)"],
+        "stops": [
+          { "position": "0%", "color": { "$ref": "#/color/hero-start" } },
+          { "position": "100%", "color": { "$ref": "#/color/hero-end" } }
+        ]
+      }
     }
   }
 }
