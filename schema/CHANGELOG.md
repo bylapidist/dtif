@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.1.3
+
+### Patch Changes
+
+- [`08c6750`](https://github.com/bylapidist/dtif/commit/08c6750655ca8f5908e199b2fb4e0e9801be3788) Thanks [@brettdorrans](https://github.com/brettdorrans)! - force release
+
 ## 0.1.2
 
 ### Patch Changes
