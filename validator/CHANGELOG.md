@@ -1,5 +1,14 @@
 # @lapidist/dtif-validator changelog
 
+## 0.1.2
+
+### Patch Changes
+
+- [`41257af`](https://github.com/bylapidist/dtif/commit/41257af19b8999d719fc56a5ae6d8ba3bda90362) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Add sRGB hex color serialisation, strokeStyle token support, font fallback stacks, layered shadow handling, and composite token reuse safeguards while enforcing reverse-DNS identifiers and clarifying shadow fallbacks, collection guards, and migration docs
+
+- Updated dependencies [[`41257af`](https://github.com/bylapidist/dtif/commit/41257af19b8999d719fc56a5ae6d8ba3bda90362)]:
+  - @lapidist/dtif-schema@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
