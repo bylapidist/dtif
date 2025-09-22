@@ -104,8 +104,10 @@ export default defineConfig({
           items: [
             { text: 'Guides overview', link: '/guides/' },
             { text: 'Getting started', link: '/guides/getting-started' },
+            { text: 'Migrating from the DTCG format', link: '/guides/migrating-from-dtcg' },
             { text: 'Tooling integration', link: '/guides/tooling' },
-            { text: 'Platform guidance', link: '/guides/platform-guidance' }
+            { text: 'Platform guidance', link: '/guides/platform-guidance' },
+            { text: 'Using the DTIF parser', link: '/guides/dtif-parser' }
           ]
         }
       ],
