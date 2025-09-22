@@ -1,5 +1,12 @@
 # @lapidist/dtif-schema changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- Align the schema package version with the parser release so all DTIF packages
+  publish together.
+
 ## 0.1.7
 
 ### Patch Changes

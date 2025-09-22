@@ -1,5 +1,14 @@
 # @lapidist/dtif-validator changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- Align the validator package version with the parser release so all DTIF
+  packages publish together.
+- Updated dependencies
+  - @lapidist/dtif-schema@0.2.0
+
 ## 0.1.7
 
 ### Patch Changes

@@ -313,6 +313,13 @@ export default async function assertPackages() {
         message: 'parser package must declare ./dist/index.d.ts as the type entry'
       });
     }
+    if (typeof parserPkg.version !== 'string' || !semverPattern.test(parserPkg.version)) {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_VERSION',
+        path: `${parserPackagePath}/version`,
+        message: 'parser package must declare a valid semver version'
+      });
+    }
     const parserRootExport = parserPkg.exports?.['.'];
     if (!parserRootExport || typeof parserRootExport !== 'object') {
       errors.push({
@@ -394,13 +401,13 @@ export default async function assertPackages() {
     });
   }
 
-  const versioned = [
+  const versionedPackages = [
     ['schema', schemaPkg],
     ['validator', validatorPkg],
     ['parser', parserPkg]
   ];
-  const publishedVersions = versioned
-    .filter(([, pkg]) => pkg?.version)
+  const publishedVersions = versionedPackages
+    .filter(([, pkg]) => typeof pkg?.version === 'string')
     .map(([, pkg]) => pkg.version);
   if (publishedVersions.length > 1) {
     const uniqueVersions = new Set(publishedVersions);
@@ -408,7 +415,7 @@ export default async function assertPackages() {
       errors.push({
         code: 'E_PACKAGE_VERSION_MISMATCH',
         path: 'schema/package.json/version',
-        message: 'schema and validator packages must share the same version'
+        message: 'schema, validator, and parser packages must share the same version'
       });
     }
   }
