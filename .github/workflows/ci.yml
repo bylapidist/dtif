@@ -35,3 +35,9 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Build parser package
+        run: npm run build --workspace=@lapidist/dtif-parser
+
+      - name: Test parser package
+        run: npm test --workspace=@lapidist/dtif-parser
