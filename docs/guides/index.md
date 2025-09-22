@@ -12,3 +12,4 @@ These guides offer non-normative workflows and implementation advice alongside t
 - [Tooling integration](./tooling.md#tooling-integration) summarises expectations for exporters, build systems, and linters.
 - [Platform guidance](./platform-guidance.md#platform-guidance) collects ecosystem-specific mapping tips.
 - [Migrating from the DTCG format](./migrating-from-dtcg.md#migrating-from-dtcg) walks through porting Design Tokens Community Group documents to DTIF.
+- [Using the DTIF parser](./dtif-parser.md#dtif-parser-guide) explains how to install, configure, and extend the canonical parser.

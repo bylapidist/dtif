@@ -1,0 +1,4 @@
+collection:
+  primary:
+    $type: color
+    $value: '#0050b3'
