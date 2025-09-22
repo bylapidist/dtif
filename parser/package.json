@@ -25,7 +25,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "test": "node --import tsx --test ./tests/**/*.test.ts"
+    "test": "node --import tsx --test ./tests/**/*.test.ts",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@lapidist/dtif-schema": "^0.1.7",
