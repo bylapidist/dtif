@@ -124,6 +124,7 @@ export {
   unionSourceSpans
 } from './utils/source.js';
 
+export { PluginRegistry, createPluginRegistry } from './plugins/index.js';
 export type {
   ParserPlugin,
   ExtensionHandler,

@@ -5,74 +5,10 @@ import { buildDocumentGraph } from './graph/builder.js';
 import { DefaultDocumentLoader, DocumentLoaderError, type DocumentLoader } from './io/document-loader.js';
 import { decodeDocument } from './io/decoder.js';
 import { createDocumentResolver } from './resolver/index.js';
-import { SchemaGuard, type SchemaGuardOptions } from './validation/schema-guard.js';
-import { PluginRegistry } from './plugins/index.js';
-import type { ParserPlugin } from './plugins/index.js';
-import type {
-  DocumentCache,
-  DocumentHandle,
-  ParseCollectionResult,
-  ParseInput,
-  ParseResult,
-  RawDocument
-} from './types.js';
-
-export type OverrideContext = ReadonlyMap<string, unknown> | Readonly<Record<string, unknown>>;
-
-export interface ParseSessionOptions {
-  readonly loader?: DocumentLoader;
-  readonly cache?: DocumentCache;
-  readonly allowHttp?: boolean;
-  readonly maxDepth?: number;
-  readonly overrideContext?: OverrideContext;
-  readonly schemaGuard?: SchemaGuard | SchemaGuardOptions;
-  readonly plugins?: readonly ParserPlugin[];
-}
-
-interface ResolvedParseSessionOptions {
-  readonly loader: DocumentLoader;
-  readonly cache?: DocumentCache;
-  readonly allowHttp: boolean;
-  readonly maxDepth: number;
-  readonly overrideContext: ReadonlyMap<string, unknown>;
-  readonly schemaGuard: SchemaGuard;
-  readonly plugins?: PluginRegistry;
-}
-
-const DEFAULT_MAX_DEPTH = 32;
-function resolveOptions(options: ParseSessionOptions = {}): ResolvedParseSessionOptions {
-  const allowHttp = options.allowHttp ?? false;
-  const schemaGuard =
-    options.schemaGuard instanceof SchemaGuard
-      ? options.schemaGuard
-      : new SchemaGuard(options.schemaGuard);
-  const plugins =
-    options.plugins && options.plugins.length > 0
-      ? new PluginRegistry(options.plugins)
-      : undefined;
-  return {
-    loader: options.loader ?? new DefaultDocumentLoader({ allowHttp }),
-    cache: options.cache,
-    allowHttp,
-    maxDepth: options.maxDepth ?? DEFAULT_MAX_DEPTH,
-    overrideContext: normalizeOverrideContext(options.overrideContext),
-    schemaGuard,
-    plugins
-  };
-}
-
-function normalizeOverrideContext(context?: OverrideContext): ReadonlyMap<string, unknown> {
-  if (!context) {
-    return new Map();
-  }
-
-  if (context instanceof Map) {
-    return context;
-  }
-
-  const entries = Object.entries(context);
-  return new Map(entries);
-}
+import type { DocumentHandle, ParseCollectionResult, ParseInput, ParseResult, RawDocument } from './types.js';
+import { resolveOptions, type ResolvedParseSessionOptions } from './session/internal/options.js';
+import type { ParseSessionOptions } from './session/types.js';
+export type { OverrideContext, ParseSessionOptions } from './session/types.js';
 
 async function* toAsyncIterable(
   inputs: Iterable<ParseInput> | AsyncIterable<ParseInput>
