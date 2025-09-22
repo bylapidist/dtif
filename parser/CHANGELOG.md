@@ -9,6 +9,8 @@
   resolution. Ship the `dtif-parse` CLI, document and cache integrations,
   configurable resolver depth limits, and plugin hooks that surface extension
   results and resolved-token transforms alongside structured diagnostics.
+- Align dependencies on @lapidist/dtif-schema and @lapidist/dtif-validator to
+  version 0.2.0 so all packages publish together.
 
 All notable changes to this project will be documented in this file.
 
