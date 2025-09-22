@@ -4,7 +4,8 @@
   "type": "module",
   "workspaces": [
     "schema",
-    "validator"
+    "validator",
+    "parser"
   ],
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
