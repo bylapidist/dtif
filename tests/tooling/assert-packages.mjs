@@ -282,9 +282,122 @@ export default async function assertPackages() {
     }
   }
 
+  const parserPackagePath = 'parser/package.json';
+  let parserPkg;
+  if (!fileExists(parserPackagePath)) {
+    errors.push({
+      code: 'E_PARSER_PACKAGE_META_MISSING',
+      path: parserPackagePath,
+      message: 'parser/package.json must exist'
+    });
+  } else {
+    parserPkg = readJson(parserPackagePath);
+    if (parserPkg.name !== '@lapidist/dtif-parser') {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_NAME',
+        path: `${parserPackagePath}/name`,
+        message: 'parser package must be published as @lapidist/dtif-parser'
+      });
+    }
+    if (parserPkg.main !== './dist/index.js') {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_MAIN',
+        path: `${parserPackagePath}/main`,
+        message: 'parser package must expose ./dist/index.js as the entry point'
+      });
+    }
+    if (parserPkg.types !== './dist/index.d.ts') {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_TYPES_FIELD',
+        path: `${parserPackagePath}/types`,
+        message: 'parser package must declare ./dist/index.d.ts as the type entry'
+      });
+    }
+    const parserRootExport = parserPkg.exports?.['.'];
+    if (!parserRootExport || typeof parserRootExport !== 'object') {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_EXPORTS',
+        path: `${parserPackagePath}/exports`,
+        message: 'parser package must provide an object export for the package root'
+      });
+    } else {
+      if (parserRootExport.import !== './dist/index.js') {
+        errors.push({
+          code: 'E_PARSER_PACKAGE_EXPORTS_IMPORT',
+          path: `${parserPackagePath}/exports`,
+          message: 'parser package must expose ./dist/index.js as the import entry'
+        });
+      }
+      if (parserRootExport.types !== './dist/index.d.ts') {
+        errors.push({
+          code: 'E_PARSER_PACKAGE_EXPORTS_TYPES',
+          path: `${parserPackagePath}/exports`,
+          message: 'parser package must expose ./dist/index.d.ts as the type entry'
+        });
+      }
+    }
+    const parserFiles = Array.isArray(parserPkg.files) ? parserPkg.files : [];
+    for (const required of ['dist', 'README.md', 'CHANGELOG.md']) {
+      if (!parserFiles.includes(required)) {
+        errors.push({
+          code: 'E_PARSER_PACKAGE_FILES',
+          path: `${parserPackagePath}/files`,
+          message: `parser package must ship ${required}`
+        });
+      }
+    }
+    const parserDependencies = parserPkg.dependencies || {};
+    if (!parserDependencies['@lapidist/dtif-schema']) {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_SCHEMA_DEP',
+        path: `${parserPackagePath}/dependencies`,
+        message: 'parser package must depend on @lapidist/dtif-schema'
+      });
+    }
+    if (!parserDependencies['@lapidist/dtif-validator']) {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_VALIDATOR_DEP',
+        path: `${parserPackagePath}/dependencies`,
+        message: 'parser package must depend on @lapidist/dtif-validator'
+      });
+    }
+    if (!parserDependencies.yaml) {
+      errors.push({
+        code: 'E_PARSER_PACKAGE_YAML_DEP',
+        path: `${parserPackagePath}/dependencies`,
+        message: 'parser package must depend on yaml'
+      });
+    }
+  }
+
+  if (!fileExists('parser/README.md')) {
+    errors.push({
+      code: 'E_PARSER_PACKAGE_README',
+      path: 'parser/README.md',
+      message: 'parser package must include a README'
+    });
+  }
+
+  if (!fileExists('parser/CHANGELOG.md')) {
+    errors.push({
+      code: 'E_PARSER_PACKAGE_CHANGELOG',
+      path: 'parser/CHANGELOG.md',
+      message: 'parser package must document changes in CHANGELOG.md'
+    });
+  }
+
+  if (fileExists('parser/dist/index.js') && !fileExists('parser/dist/index.d.ts')) {
+    errors.push({
+      code: 'E_PARSER_PACKAGE_TYPES_MISSING',
+      path: 'parser/dist/index.d.ts',
+      message: 'parser package must emit TypeScript declarations alongside the build output'
+    });
+  }
+
   const versioned = [
     ['schema', schemaPkg],
-    ['validator', validatorPkg]
+    ['validator', validatorPkg],
+    ['parser', parserPkg]
   ];
   const publishedVersions = versioned
     .filter(([, pkg]) => pkg?.version)
