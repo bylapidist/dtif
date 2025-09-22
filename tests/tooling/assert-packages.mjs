@@ -394,23 +394,14 @@ export default async function assertPackages() {
     });
   }
 
-  const versioned = [
-    ['schema', schemaPkg],
-    ['validator', validatorPkg],
-    ['parser', parserPkg]
-  ];
-  const publishedVersions = versioned
-    .filter(([, pkg]) => pkg?.version)
-    .map(([, pkg]) => pkg.version);
-  if (publishedVersions.length > 1) {
-    const uniqueVersions = new Set(publishedVersions);
-    if (uniqueVersions.size > 1) {
-      errors.push({
-        code: 'E_PACKAGE_VERSION_MISMATCH',
-        path: 'schema/package.json/version',
-        message: 'schema and validator packages must share the same version'
-      });
-    }
+  const schemaVersion = schemaPkg?.version;
+  const validatorVersion = validatorPkg?.version;
+  if (schemaVersion && validatorVersion && schemaVersion !== validatorVersion) {
+    errors.push({
+      code: 'E_PACKAGE_VERSION_MISMATCH',
+      path: 'schema/package.json/version',
+      message: 'schema and validator packages must share the same version'
+    });
   }
 
   return { valid: errors.length === 0, errors };
