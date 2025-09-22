@@ -5,7 +5,7 @@ package provides the reference pipeline for loading, validating, normalising,
 and resolving DTIF documents while emitting structured diagnostics for tooling
 and automation workflows.
 
-> Documentation: [Canonical parser architecture](../docs/guides/canonical-parser.md)
+> Documentation: [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser/)
 
 ## Installation
 
@@ -40,7 +40,7 @@ The workspace publishes a `dtif-parse` binary for quick inspection and CI
 pipelines:
 
 ```bash
-dtif-parse tokens/base.tokens.json --resolve color.brand.primary
+dtif-parse tokens/base.tokens.json --resolve "#/color/brand/primary"
 ```
 
 Use `dtif-parse --help` for the full list of options and output formats.

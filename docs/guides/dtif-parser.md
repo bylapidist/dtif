@@ -91,20 +91,24 @@ The default behaviour performs no caching. Provide a cache to speed up repeated 
 ```ts
 import { createSession, InMemoryDocumentCache } from '@lapidist/dtif-parser';
 
-const cache = new InMemoryDocumentCache({ ttl: 60_000, maxEntries: 100 });
+const cache = new InMemoryDocumentCache({ maxAgeMs: 60_000, maxEntries: 100 });
 const session = createSession({ cache });
 ```
 
-Caches receive decoded documents and are responsible for TTL and eviction policies. The parser validates cached bytes before reuse to avoid stale results.
+Caches receive decoded documents and are responsible for TTL (`maxAgeMs`) and eviction policies. The parser validates cached bytes before reuse to avoid stale results.
 
 ### Loader configuration {#loader}
 
 `DefaultDocumentLoader` resolves inline content, filesystem paths, and optionally HTTP(S) URLs. It enforces a 5&nbsp;MiB default byte cap. Override the loader to integrate custom protocols:
 
 ```ts
+import { createSession, DefaultDocumentLoader } from '@lapidist/dtif-parser';
+
+const defaultLoader = new DefaultDocumentLoader();
+
 const session = createSession({
   loader: {
-    async load(input) {
+    async load(input, context) {
       if (typeof input === 'string' && input.startsWith('memory://')) {
         return {
           uri: new URL(input),
@@ -112,7 +116,7 @@ const session = createSession({
           contentType: 'application/json'
         };
       }
-      return defaultLoader.load(input);
+      return defaultLoader.load(input, context);
     }
   }
 });
@@ -123,30 +127,32 @@ const session = createSession({
 Plugins extend the parser with `$extensions` collectors and resolution transforms.
 
 ```ts
-import { createSession, createPluginRegistry } from '@lapidist/dtif-parser';
+import { createSession } from '@lapidist/dtif-parser';
 
-const registry = createPluginRegistry([
-  {
-    name: 'example.extensions',
-    extensions: {
-      'example.extensions'({ value }) {
-        // validate extension payload
-        return { normalized: value };
+const session = createSession({
+  plugins: [
+    {
+      name: 'example.extensions',
+      extensions: {
+        'example.extensions'({ value }) {
+          // validate extension payload
+          return { normalized: value };
+        }
+      }
+    },
+    {
+      name: 'example.transforms',
+      transformResolvedToken(token) {
+        if (token.type === 'color') {
+          return { data: { rgb: convertToRgb(token.value) } };
+        }
       }
     }
-  },
-  {
-    name: 'example.transforms',
-    transformResolvedToken(token) {
-      if (token.type === 'color') {
-        return { data: { rgb: convertToRgb(token.value) } };
-      }
-    }
-  }
-]);
-
-const session = createSession({ plugins: registry });
+  ]
+});
 ```
+
+Use `createPluginRegistry` when you need to reuse a plugin set across sessions or feed the normalised transforms into manual resolver construction.
 
 Extension collectors run during normalisation; transform plugins run after resolution. Both may add diagnostics that flow into the session result.
 

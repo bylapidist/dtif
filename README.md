@@ -30,6 +30,7 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 
 - [Specification](https://dtif.lapidist.net/spec/) – normative chapters covering the format, token types, and conformance rules.
 - [Guides](https://dtif.lapidist.net/guides/) – implementation playbooks and tooling workflows.
+- [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser/) – configure the canonical parser, CLI, and plugin system.
 - [Examples](https://dtif.lapidist.net/examples/) – schema-valid token documents you can reuse in tests.
 - [Governance](https://dtif.lapidist.net/governance/) – processes for proposing changes and managing the registry.
 - [Roadmap](https://dtif.lapidist.net/roadmap/) – current focus areas and forward-looking drafts.
@@ -119,6 +120,44 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
    npm test
    npm run docs:dev   # optional: preview the docs locally
    ```
+
+## Parse DTIF documents
+
+Use the canonical parser package to cache decoded documents, resolve pointers, and drive extension plugins.
+
+1. **Install the parser**
+
+   ```bash
+   npm install @lapidist/dtif-parser
+   ```
+
+2. **Create a reusable parse session**
+
+   ```ts
+   import { createSession } from '@lapidist/dtif-parser';
+
+   const session = createSession({ allowHttp: false, maxDepth: 32 });
+   const result = await session.parseDocument('tokens/base.tokens.json');
+
+   if (result.diagnostics.hasErrors()) {
+     console.error(result.diagnostics.toArray());
+   }
+
+   const resolution = result.resolver?.resolve('#/color/brand/primary');
+   if (resolution?.token) {
+     console.log(resolution.token.value);
+   }
+   ```
+
+   Sessions expose the decoded document, normalised AST, document graph, diagnostic bag, and resolver so tooling can perform repeated lookups efficiently.
+
+3. **Inspect documents from the command line**
+
+   ```bash
+   npx dtif-parse tokens/base.tokens.json --resolve "#/color/brand/primary" --format json
+   ```
+
+   Run `dtif-parse --help` to view all CLI switches. The [parser guide](https://dtif.lapidist.net/guides/dtif-parser/) covers cache configuration, loader overrides, and plugin registration in more detail.
 
 ## TypeScript support
 
