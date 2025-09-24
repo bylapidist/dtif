@@ -16,7 +16,7 @@ aligned across platforms.
 
 ## Parser internals {#parser-internals}
 
-- [DTIF parser API reference](./dtif-parser-api-reference.md#dtif-parser-api-reference)
+- [DTIF parser guide](../guides/dtif-parser.md#dtif-parser-guide)
   – survey the `@lapidist/dtif-parser` entry points, session lifecycle, and tests before
   landing roadmap work.
 
