@@ -37,8 +37,8 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@lapidist/dtif-schema": "^0.2.1",
-    "@lapidist/dtif-validator": "^0.2.1",
+    "@lapidist/dtif-schema": "^0.3.0",
+    "@lapidist/dtif-validator": "^0.3.0",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
