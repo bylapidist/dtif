@@ -1,5 +1,11 @@
 # @lapidist/dtif-parser changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- [#64](https://github.com/bylapidist/dtif/pull/64) [`b8ff611`](https://github.com/bylapidist/dtif/commit/b8ff611a17394bd9bdc6822cc01f28f15ddd129b) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Expose the `parseTokens` helpers, metadata and resolution snapshots, diagnostic formatters, caching utilities, and a Node adapter surface for DTIF token parsing.
+
 ## 0.2.1
 
 ### Patch Changes
