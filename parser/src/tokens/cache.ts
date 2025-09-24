@@ -172,13 +172,9 @@ function normalizePlugins(
 }
 
 function resolveVariantOptions(variantOptions?: CacheVariantOverrides): CacheVariantOptions {
-  if (!variantOptions) {
-    return DEFAULT_CACHE_VARIANT_OPTIONS;
-  }
-
   return {
-    flatten: variantOptions.flatten ?? DEFAULT_CACHE_VARIANT_OPTIONS.flatten,
-    includeGraphs: variantOptions.includeGraphs ?? DEFAULT_CACHE_VARIANT_OPTIONS.includeGraphs
+    flatten: variantOptions?.flatten ?? DEFAULT_CACHE_VARIANT_OPTIONS.flatten,
+    includeGraphs: variantOptions?.includeGraphs ?? DEFAULT_CACHE_VARIANT_OPTIONS.includeGraphs
   };
 }
 
