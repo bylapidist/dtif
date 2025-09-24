@@ -1,5 +1,15 @@
 # @lapidist/dtif-parser changelog
 
+## 0.3.1
+
+### Patch Changes
+
+- [#66](https://github.com/bylapidist/dtif/pull/66) [`675271f`](https://github.com/bylapidist/dtif/commit/675271f8a75b8eb4b672822d09e1435cd4ba4033) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Add the parser to the fixed release group and align package versions.
+
+- Updated dependencies [[`675271f`](https://github.com/bylapidist/dtif/commit/675271f8a75b8eb4b672822d09e1435cd4ba4033)]:
+  - @lapidist/dtif-schema@0.3.1
+  - @lapidist/dtif-validator@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes

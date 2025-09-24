@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 0.3.1
+
+### Patch Changes
+
+- [#66](https://github.com/bylapidist/dtif/pull/66) [`675271f`](https://github.com/bylapidist/dtif/commit/675271f8a75b8eb4b672822d09e1435cd4ba4033) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Add the parser to the fixed release group and align package versions.
+
 ## 0.2.1
 
 ### Patch Changes
