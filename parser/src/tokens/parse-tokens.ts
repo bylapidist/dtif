@@ -21,7 +21,7 @@ import { createMetadataSnapshot, createResolutionSnapshot } from './snapshots.js
 import {
   computeDocumentHash,
   createCacheKey,
-  type CacheVariantOptions,
+  type CacheVariantOverrides,
   type ParseCache,
   type ParseCacheEntry,
   type ParseCacheKey
@@ -88,12 +88,10 @@ export async function parseTokens(
   const result = await session.parseDocument(normalizedInput);
   const cacheContext =
     parseCache && result.document
-      ? await resolveCacheContextAsync(
-          parseCache,
-          result.document,
-          session,
-          { flatten, includeGraphs }
-        )
+      ? await resolveCacheContextAsync(parseCache, result.document, session, {
+          flatten,
+          includeGraphs
+        })
       : undefined;
   const artifacts = buildParseTokensArtifacts(
     result,
@@ -376,12 +374,10 @@ interface SyncFinalizeOptions extends FinalizeOptions {
 function finalizeSync(result: ParseResult, options: SyncFinalizeOptions): ParseTokensResult {
   const cacheContext =
     options.parseCache && result.document
-      ? resolveCacheContextSync(
-          options.parseCache,
-          result.document,
-          options.session,
-          { flatten: options.flatten, includeGraphs: options.includeGraphs }
-        )
+      ? resolveCacheContextSync(options.parseCache, result.document, options.session, {
+          flatten: options.flatten,
+          includeGraphs: options.includeGraphs
+        })
       : undefined;
   const artifacts = buildParseTokensArtifacts(result, options, cacheContext);
 
@@ -396,7 +392,7 @@ async function resolveCacheContextAsync(
   cache: ParseCache,
   document: RawDocument,
   session: ParseSession,
-  variantOptions: CacheVariantOptions
+  variantOptions?: CacheVariantOverrides
 ): Promise<CacheContext> {
   const documentHash = computeDocumentHash(document);
   const key = createCacheKey(document.uri.href, session.options, variantOptions);
@@ -408,7 +404,7 @@ function resolveCacheContextSync(
   cache: ParseCache,
   document: RawDocument,
   session: ParseSession,
-  variantOptions: CacheVariantOptions
+  variantOptions?: CacheVariantOverrides
 ): CacheContext {
   const documentHash = computeDocumentHash(document);
   const key = createCacheKey(document.uri.href, session.options, variantOptions);

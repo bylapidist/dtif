@@ -21,6 +21,8 @@ export interface CacheVariantOptions {
   readonly includeGraphs: boolean;
 }
 
+export type CacheVariantOverrides = Partial<CacheVariantOptions>;
+
 export interface ParseCacheEntry {
   readonly documentHash: string;
   readonly flattened?: readonly DtifFlattenedToken[];
@@ -41,6 +43,10 @@ export interface InMemoryParseCacheOptions {
 }
 
 const DEFAULT_MAX_ENTRIES = 100;
+const DEFAULT_CACHE_VARIANT_OPTIONS: CacheVariantOptions = Object.freeze({
+  flatten: true,
+  includeGraphs: true
+});
 
 export class InMemoryParseCache implements ParseCache {
   readonly #maxEntries: number;
@@ -115,11 +121,12 @@ export function computeDocumentHash(input: Uint8Array | RawDocument): string {
 export function createCacheKey(
   uri: string,
   options: ResolvedParseSessionOptions,
-  variantOptions: CacheVariantOptions
+  variantOptions?: CacheVariantOverrides
 ): ParseCacheKey {
+  const resolvedVariantOptions = resolveVariantOptions(variantOptions);
   return {
     uri,
-    variant: createOptionsVariant(options, variantOptions)
+    variant: createOptionsVariant(options, resolvedVariantOptions)
   } satisfies ParseCacheKey;
 }
 
@@ -162,6 +169,17 @@ function normalizePlugins(
 
   const transformCount = plugins.transforms.length;
   return [`transforms:${transformCount}`];
+}
+
+function resolveVariantOptions(variantOptions?: CacheVariantOverrides): CacheVariantOptions {
+  if (!variantOptions) {
+    return DEFAULT_CACHE_VARIANT_OPTIONS;
+  }
+
+  return {
+    flatten: variantOptions.flatten ?? DEFAULT_CACHE_VARIANT_OPTIONS.flatten,
+    includeGraphs: variantOptions.includeGraphs ?? DEFAULT_CACHE_VARIANT_OPTIONS.includeGraphs
+  };
 }
 
 function serializeKey(key: ParseCacheKey): string {
