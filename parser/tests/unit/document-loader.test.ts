@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 
 import { DefaultDocumentLoader, DocumentLoaderError } from '../../src/io/document-loader.js';
-import type { ParseInputRecord } from '../../src/types.js';
+import type { ParseInputRecord, ParseDataInputRecord } from '../../src/types.js';
 
 const textDecoder = new TextDecoder();
 
@@ -49,6 +49,50 @@ test('supports explicit parse input records with URIs', async () => {
   assert.equal(handle.uri.href, 'memory://custom/document');
   assert.equal(handle.contentType, 'application/yaml');
   assert.equal(decodeBytes(handle.bytes), record.content);
+});
+
+test('loads design token objects into deterministic in-memory handles', async () => {
+  const loader = new DefaultDocumentLoader();
+  const tokens = {
+    $schema: 'https://dtif.lapidist.net/schema/core.json',
+    colors: {
+      brand: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0.1, 0.2, 0.3] }
+      }
+    }
+  } as const;
+
+  const firstHandle = await loader.load(tokens);
+  const secondHandle = await loader.load(tokens);
+
+  assert.equal(firstHandle.uri.href, secondHandle.uri.href);
+  assert.equal(firstHandle.contentType, 'application/json');
+  assert.equal(firstHandle.bytes.byteLength, 0);
+  assert.equal(firstHandle.text, undefined);
+  assert.notEqual(firstHandle.data, tokens);
+  assert.deepEqual(firstHandle.data, tokens);
+  assert.notEqual(firstHandle.data, secondHandle.data);
+});
+
+test('supports explicit data records containing design token objects', async () => {
+  const loader = new DefaultDocumentLoader();
+  const record: ParseDataInputRecord = {
+    uri: 'memory://custom/data-record.json',
+    data: {
+      $schema: 'https://dtif.lapidist.net/schema/core.json',
+      themes: {}
+    }
+  };
+
+  const handle = await loader.load(record);
+
+  assert.equal(handle.uri.href, 'memory://custom/data-record.json');
+  assert.equal(handle.contentType, 'application/json');
+  assert.equal(handle.bytes.byteLength, 0);
+  assert.equal(handle.text, undefined);
+  assert.notEqual(handle.data, record.data);
+  assert.deepEqual(handle.data, record.data);
 });
 
 test('rejects HTTP(S) requests when not allowed', async () => {

@@ -14,6 +14,12 @@ aligned across platforms.
 - [Design Lint](./design-lint.md#design-lint) – lint component libraries and build
   pipelines with a DTIF-native command-line interface.
 
+## Parser internals {#parser-internals}
+
+- [DTIF parser API reference](./dtif-parser-api-reference.md#dtif-parser-api-reference)
+  – survey the `@lapidist/dtif-parser` entry points, session lifecycle, and tests before
+  landing roadmap work.
+
 ## Contribute new tooling {#contribute-tooling}
 
 Have you built a DTIF integration, exporter, or quality gate? Open a pull request to add

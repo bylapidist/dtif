@@ -1,3 +1,4 @@
+import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 import type { DiagnosticBag } from './diagnostics/bag.js';
 import type { DiagnosticCode } from './diagnostics/codes.js';
 import type { DiagnosticSeverity } from './diagnostics/severity.js';
@@ -8,11 +9,23 @@ import type { ExtensionEvaluation } from './plugins/index.js';
 
 export type JsonPointer = `#${string}`;
 
-export type ParseInput = string | Uint8Array | URL | ParseInputRecord;
+export type ParseInput =
+  | string
+  | Uint8Array
+  | URL
+  | ParseInputRecord
+  | ParseDataInputRecord
+  | DesignTokenInterchangeFormat;
 
 export interface ParseInputRecord {
   readonly uri?: string | URL;
   readonly content: string | Uint8Array;
+  readonly contentType?: ContentType;
+}
+
+export interface ParseDataInputRecord {
+  readonly uri?: string | URL;
+  readonly data: DesignTokenInterchangeFormat;
   readonly contentType?: ContentType;
 }
 
@@ -54,6 +67,8 @@ export interface DocumentHandle {
   readonly uri: URL;
   readonly contentType: ContentType;
   readonly bytes: Uint8Array;
+  readonly text?: string;
+  readonly data?: unknown;
 }
 
 export interface RawDocument extends DocumentHandle {

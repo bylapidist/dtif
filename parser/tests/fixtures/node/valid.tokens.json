@@ -1,0 +1,15 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "colors": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.1, 0.2, 0.3]
+        },
+        "$description": "Primary brand color"
+      }
+    }
+  }
+}

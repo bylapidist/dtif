@@ -2,7 +2,16 @@ import { readFile as defaultReadFile } from 'node:fs/promises';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import type { ContentType, DocumentHandle, ParseInput, ParseInputRecord } from '../types.js';
+import type {
+  ContentType,
+  DocumentHandle,
+  ParseInput,
+  ParseInputRecord,
+  ParseDataInputRecord
+} from '../types.js';
+import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
+import { cloneJsonValue } from '../utils/clone-json.js';
+import { hashJsonValue } from '../utils/hash-json.js';
 
 const MEMORY_SCHEME = 'memory://dtif-document/';
 
@@ -89,12 +98,21 @@ export class DefaultDocumentLoader implements DocumentLoader {
         return this.#createHandle(
           uri,
           bytes,
-          detectContentType({ content: input, fallback: this.#defaultContentType })
+          detectContentType({ content: input, fallback: this.#defaultContentType }),
+          { text: input }
         );
       }
 
       const uri = this.#resolveUriFromString(input, context.baseUri);
       return this.#loadFromUrl(uri, context);
+    }
+
+    if (isParseDataInputRecord(input)) {
+      return this.#loadFromDataRecord(input, context.baseUri);
+    }
+
+    if (isDesignTokenDocument(input)) {
+      return this.#loadFromDesignTokens(input);
     }
 
     throw new TypeError(`Unsupported DTIF parse input: ${String(input)}`);
@@ -107,11 +125,18 @@ export class DefaultDocumentLoader implements DocumentLoader {
     if (typeof record.content === 'string') {
       const bytes = encodeText(record.content);
       this.#assertSizeWithinLimit(uri, bytes.byteLength);
-      return this.#createHandle(uri, bytes, contentType);
+      return this.#createHandle(uri, bytes, contentType, { text: record.content });
     }
 
     this.#assertSizeWithinLimit(uri, record.content.byteLength);
     return this.#createHandle(uri, record.content, contentType);
+  }
+
+  async #loadFromDataRecord(record: ParseDataInputRecord, baseUri?: URL): Promise<DocumentHandle> {
+    const uri = record.uri
+      ? this.#normalizeUri(record.uri, baseUri)
+      : this.#createMemoryUriFromDesignTokens(record.data);
+    return this.#createHandleFromDesignTokens(record.data, uri, record.contentType);
   }
 
   async #loadFromUrl(uri: URL, context: DocumentLoaderContext): Promise<DocumentHandle> {
@@ -151,13 +176,53 @@ export class DefaultDocumentLoader implements DocumentLoader {
     }
   }
 
-  #createHandle(uri: URL, bytes: Uint8Array, contentType: ContentType): DocumentHandle {
+  #loadFromDesignTokens(document: DesignTokenInterchangeFormat): DocumentHandle {
+    const uri = this.#createMemoryUriFromDesignTokens(document);
+    return this.#createHandleFromDesignTokens(document, uri);
+  }
+
+  #createHandle(
+    uri: URL,
+    bytes: Uint8Array,
+    contentType: ContentType,
+    extras: { text?: string; data?: DesignTokenInterchangeFormat } = {}
+  ): DocumentHandle {
     const copy = bytes instanceof Uint8Array ? new Uint8Array(bytes) : encodeText(String(bytes));
-    return Object.freeze({
+    const handle: DocumentHandle = {
       uri,
       contentType,
       bytes: copy
-    });
+    };
+
+    if (extras.text !== undefined) {
+      handle.text = extras.text;
+    }
+
+    if (extras.data !== undefined) {
+      handle.data = extras.data;
+    }
+
+    return Object.freeze(handle);
+  }
+
+  #createHandleFromDesignTokens(
+    data: DesignTokenInterchangeFormat,
+    uri: URL,
+    contentType: ContentType = 'application/json'
+  ): DocumentHandle {
+    const handle: DocumentHandle = {
+      uri,
+      contentType,
+      bytes: new Uint8Array(0),
+      data: cloneJsonValue(data)
+    };
+
+    return Object.freeze(handle);
+  }
+
+  #createMemoryUriFromDesignTokens(value: DesignTokenInterchangeFormat): URL {
+    const hash = hashJsonValue(value, { algorithm: 'sha1' });
+    return new URL(`${MEMORY_SCHEME}${hash}.json`);
   }
 
   #assertSizeWithinLimit(uri: URL, size: number): void {
@@ -211,6 +276,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
     const id = this.#memoryCounter++;
     return new URL(`${MEMORY_SCHEME}${id}`);
   }
+
 }
 
 function normalizeWorkingDirectory(input?: string | URL): string {
@@ -253,11 +319,40 @@ function resolveFilePath(reference: string, baseUri: URL | undefined, cwd: strin
 }
 
 function isParseInputRecord(value: ParseInput): value is ParseInputRecord {
-  return Boolean(value && typeof value === 'object' && 'content' in value);
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const record = value as { readonly content?: unknown };
+  return typeof record.content === 'string' || record.content instanceof Uint8Array;
+}
+
+function isParseDataInputRecord(value: ParseInput): value is ParseDataInputRecord {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return (
+    'data' in (value as Record<string, unknown>) &&
+    isDesignTokenDocument((value as { data?: unknown }).data)
+  );
 }
 
 function encodeText(content: string): Uint8Array {
   return new TextEncoder().encode(content);
+}
+
+function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  if (value instanceof URL || value instanceof Uint8Array) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }
 
 function detectContentType(params: {
