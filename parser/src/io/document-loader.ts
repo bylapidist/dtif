@@ -276,7 +276,6 @@ export class DefaultDocumentLoader implements DocumentLoader {
     const id = this.#memoryCounter++;
     return new URL(`${MEMORY_SCHEME}${id}`);
   }
-
 }
 
 function normalizeWorkingDirectory(input?: string | URL): string {
