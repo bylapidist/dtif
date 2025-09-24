@@ -21,6 +21,7 @@ import { createMetadataSnapshot, createResolutionSnapshot } from './snapshots.js
 import {
   computeDocumentHash,
   createCacheKey,
+  type CacheVariantOptions,
   type ParseCache,
   type ParseCacheEntry,
   type ParseCacheKey
@@ -87,7 +88,12 @@ export async function parseTokens(
   const result = await session.parseDocument(normalizedInput);
   const cacheContext =
     parseCache && result.document
-      ? await resolveCacheContextAsync(parseCache, result.document, session)
+      ? await resolveCacheContextAsync(
+          parseCache,
+          result.document,
+          session,
+          { flatten, includeGraphs }
+        )
       : undefined;
   const artifacts = buildParseTokensArtifacts(
     result,
@@ -370,7 +376,12 @@ interface SyncFinalizeOptions extends FinalizeOptions {
 function finalizeSync(result: ParseResult, options: SyncFinalizeOptions): ParseTokensResult {
   const cacheContext =
     options.parseCache && result.document
-      ? resolveCacheContextSync(options.parseCache, result.document, options.session)
+      ? resolveCacheContextSync(
+          options.parseCache,
+          result.document,
+          options.session,
+          { flatten: options.flatten, includeGraphs: options.includeGraphs }
+        )
       : undefined;
   const artifacts = buildParseTokensArtifacts(result, options, cacheContext);
 
@@ -384,10 +395,11 @@ function finalizeSync(result: ParseResult, options: SyncFinalizeOptions): ParseT
 async function resolveCacheContextAsync(
   cache: ParseCache,
   document: RawDocument,
-  session: ParseSession
+  session: ParseSession,
+  variantOptions: CacheVariantOptions
 ): Promise<CacheContext> {
   const documentHash = computeDocumentHash(document);
-  const key = createCacheKey(document.uri.href, session.options);
+  const key = createCacheKey(document.uri.href, session.options, variantOptions);
   const entry = await ensureAsync(cache.get(key));
   return { key, documentHash, entry: entry ?? undefined } satisfies CacheContext;
 }
@@ -395,10 +407,11 @@ async function resolveCacheContextAsync(
 function resolveCacheContextSync(
   cache: ParseCache,
   document: RawDocument,
-  session: ParseSession
+  session: ParseSession,
+  variantOptions: CacheVariantOptions
 ): CacheContext {
   const documentHash = computeDocumentHash(document);
-  const key = createCacheKey(document.uri.href, session.options);
+  const key = createCacheKey(document.uri.href, session.options, variantOptions);
   const candidate = cache.get(key);
   if (isPromiseLike(candidate)) {
     throw new Error('parseTokensSync requires caches with synchronous get/set semantics.');

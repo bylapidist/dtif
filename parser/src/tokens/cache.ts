@@ -16,6 +16,11 @@ export interface ParseCacheKey {
   readonly variant: string;
 }
 
+export interface CacheVariantOptions {
+  readonly flatten: boolean;
+  readonly includeGraphs: boolean;
+}
+
 export interface ParseCacheEntry {
   readonly documentHash: string;
   readonly flattened?: readonly DtifFlattenedToken[];
@@ -107,18 +112,27 @@ export function computeDocumentHash(input: Uint8Array | RawDocument): string {
   return createHash('sha256').update(input.bytes).digest('hex');
 }
 
-export function createCacheKey(uri: string, options: ResolvedParseSessionOptions): ParseCacheKey {
+export function createCacheKey(
+  uri: string,
+  options: ResolvedParseSessionOptions,
+  variantOptions: CacheVariantOptions
+): ParseCacheKey {
   return {
     uri,
-    variant: createOptionsVariant(options)
+    variant: createOptionsVariant(options, variantOptions)
   } satisfies ParseCacheKey;
 }
 
-function createOptionsVariant(options: ResolvedParseSessionOptions): string {
+function createOptionsVariant(
+  options: ResolvedParseSessionOptions,
+  variantOptions: CacheVariantOptions
+): string {
   const payload = {
     maxDepth: options.maxDepth,
     context: normalizeContext(options.overrideContext),
-    plugins: normalizePlugins(options.plugins)
+    plugins: normalizePlugins(options.plugins),
+    flatten: variantOptions.flatten,
+    includeGraphs: variantOptions.includeGraphs
   } satisfies Record<string, unknown>;
 
   return createHash('sha1').update(JSON.stringify(payload)).digest('hex');
