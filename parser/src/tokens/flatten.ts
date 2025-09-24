@@ -2,6 +2,7 @@ import type { DocumentGraph } from '../graph/nodes.js';
 import { getBaseType, getBaseValue, getTokenId, iterateTokenNodes } from './internal/graph.js';
 import { toPlainJson } from './internal/utils.js';
 import type { DtifFlattenedToken, ResolvedTokenView, TokenId } from './types.js';
+import { normalizeJsonPointer } from '../utils/json-pointer.js';
 
 export function flattenTokens(
   graph: DocumentGraph,
@@ -14,13 +15,14 @@ export function flattenTokens(
 
   for (const node of nodes) {
     const id = getTokenId(node.pointer);
+    const pointer = normalizeJsonPointer(node.pointer);
     const resolution = resolutionIndex.get(id);
     const baseType = getBaseType(node);
     const baseValue = toPlainJson(getBaseValue(node));
 
     flattened.push({
       id,
-      pointer: id,
+      pointer,
       name: node.name,
       path: node.path,
       type: resolution?.type ?? baseType,

@@ -445,7 +445,7 @@ function notifyDiagnostics(
 }
 
 function mergeDiagnostics(
-  ...groups: readonly (readonly TokenDiagnostic[])
+  ...groups: ReadonlyArray<ReadonlyArray<TokenDiagnostic>>
 ): readonly TokenDiagnostic[] {
   const map = new Map<string, TokenDiagnostic>();
   for (const group of groups) {
@@ -578,18 +578,13 @@ function createInlineHandle(input: InlineInput): DocumentHandle {
   const encoder = new TextEncoder();
   const bytes = typeof input.text === 'string' ? encoder.encode(input.text) : new Uint8Array(0);
   const uri = new URL(input.uri);
-  const handle: DocumentHandle = {
+  return Object.freeze({
     uri,
     contentType: input.contentType,
     bytes,
-    text: input.text
-  };
-
-  if (input.data !== undefined) {
-    handle.data = cloneJsonValue(input.data);
-  }
-
-  return Object.freeze(handle);
+    ...(input.text !== undefined ? { text: input.text } : {}),
+    ...(input.data !== undefined ? { data: cloneJsonValue(input.data) } : {})
+  });
 }
 
 function decodeDocumentSync(handle: DocumentHandle): RawDocument {

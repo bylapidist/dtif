@@ -191,16 +191,10 @@ export class DefaultDocumentLoader implements DocumentLoader {
     const handle: DocumentHandle = {
       uri,
       contentType,
-      bytes: copy
+      bytes: copy,
+      ...(extras.text !== undefined ? { text: extras.text } : {}),
+      ...(extras.data !== undefined ? { data: cloneJsonValue(extras.data) } : {})
     };
-
-    if (extras.text !== undefined) {
-      handle.text = extras.text;
-    }
-
-    if (extras.data !== undefined) {
-      handle.data = extras.data;
-    }
 
     return Object.freeze(handle);
   }

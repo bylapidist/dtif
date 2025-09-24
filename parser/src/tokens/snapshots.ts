@@ -3,6 +3,7 @@ import type { DocumentResolver } from '../resolver/index.js';
 import type { Diagnostic } from '../types.js';
 import { dedupePointers, toPlainJson } from './internal/utils.js';
 import { getBaseType, getBaseValue, getTokenId, iterateTokenNodes } from './internal/graph.js';
+import { normalizeJsonPointer } from '../utils/json-pointer.js';
 import type { ResolvedTokenView, TokenId, TokenMetadataSnapshot, TokenPointer } from './types.js';
 import type { NodeMetadata } from '../ast/nodes.js';
 
@@ -39,8 +40,8 @@ export function createResolutionSnapshot(
   const forwardDiagnostic = options.onDiagnostic;
 
   for (const node of iterateTokenNodes(graph)) {
-    const pointer = getTokenId(node.pointer);
-    const id = pointer;
+    const pointer = normalizeJsonPointer(node.pointer);
+    const id = getTokenId(node.pointer);
     const baseType = getBaseType(node);
     const rawValue = getBaseValue(node);
     const resolution = resolver.resolve(pointer);
@@ -60,7 +61,7 @@ export function createResolutionSnapshot(
       const target = node.ref.value;
       references.push({
         uri: target.uri.href,
-        pointer: getTokenId(target.pointer)
+        pointer: normalizeJsonPointer(target.pointer)
       });
     }
 
@@ -69,7 +70,7 @@ export function createResolutionSnapshot(
         if (override.source) {
           references.push({
             uri: override.source.uri.href,
-            pointer: getTokenId(override.source.pointer)
+            pointer: normalizeJsonPointer(override.source.pointer)
           });
         }
       }
@@ -86,7 +87,7 @@ export function createResolutionSnapshot(
       for (const step of resolvedToken.trace) {
         const tokenPointer: TokenPointer = {
           uri: documentUri,
-          pointer: getTokenId(step.pointer)
+          pointer: normalizeJsonPointer(step.pointer)
         };
         resolutionPath.push(tokenPointer);
         if (step.kind === 'alias') {
@@ -97,7 +98,7 @@ export function createResolutionSnapshot(
       if (resolvedToken.source) {
         references.push({
           uri: resolvedToken.source.uri.href,
-          pointer: getTokenId(resolvedToken.source.pointer)
+          pointer: normalizeJsonPointer(resolvedToken.source.pointer)
         });
       }
     }
@@ -201,7 +202,7 @@ function createTokenPointer(
 
     const base = new URL(documentUri);
     const resolved = new URL(trimmed, base);
-    const pointer = getTokenId(resolved.hash || trimmed);
+    const pointer = normalizeJsonPointer(resolved.hash || trimmed);
     resolved.hash = '';
     return {
       uri: resolved.href,

@@ -101,7 +101,7 @@ function mapRelated(
     return undefined;
   }
 
-  const entries: NonNullable<TokenDiagnostic['related']> = [];
+  const entries: Array<NonNullable<TokenDiagnostic['related']>[number]> = [];
 
   for (const item of related) {
     const span = resolveSpan(item.span, item.pointer, context);
