@@ -78,6 +78,8 @@ sync with the standard:
 - **Registry** – approved [`$type` identifiers, extensions, and namespaces](https://github.com/bylapidist/dtif/tree/main/registry).
 - **Conformance tests** – fixtures for verifying implementations and ensuring
   [compatibility](https://github.com/bylapidist/dtif/tree/main/tests).
+- **Design Lint** – a [DTIF-native CLI](https://design-lint.lapidist.net) for linting
+  component codebases and build pipelines.
 
 Each resource is maintained alongside the specification so updates ship together and
 are easy to adopt.
