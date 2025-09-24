@@ -117,7 +117,11 @@ export default defineConfig({
           text: 'Tooling built with DTIF',
           items: [
             { text: 'Tooling overview', link: '/tooling/' },
-            { text: 'Design Lint', link: '/tooling/design-lint' }
+            { text: 'Design Lint', link: '/tooling/design-lint' },
+            {
+              text: 'DTIF parser API reference',
+              link: '/tooling/dtif-parser-api-reference'
+            }
           ]
         }
       ],

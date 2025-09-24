@@ -15,6 +15,14 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./parse-tokens": {
+      "types": "./dist/tokens/parse-tokens.d.ts",
+      "import": "./dist/tokens/parse-tokens.js"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node/index.d.ts",
+      "import": "./dist/adapters/node/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [

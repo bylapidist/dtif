@@ -31,8 +31,70 @@ const resolved = result.resolver?.resolve('#/color/brand/primary');
 console.log(resolved?.value);
 ```
 
+To flatten tokens, collect metadata, and normalise diagnostics in a single step,
+use the `parseTokens` helper. It loads the document, builds the dependency graph,
+and returns resolved token snapshots alongside a flattened view of the document.
+
+```ts
+import { parseTokens } from '@lapidist/dtif-parser';
+
+const { flattened, metadataIndex, resolutionIndex, diagnostics } = await parseTokens('tokens.json');
+
+for (const token of flattened) {
+  console.log(token.pointer, token.value);
+}
+```
+
+Pass `onDiagnostic` to observe parser diagnostics as they are produced and `warn`
+to intercept non-fatal issues. Both callbacks receive `TokenDiagnostic`
+objects, allowing you to format or surface them immediately without waiting for
+the promise to resolve.
+
+```ts
+await parseTokens('tokens.json', {
+  onDiagnostic: (diagnostic) => {
+    console.error(diagnostic.message);
+  },
+  warn: (diagnostic) => {
+    console.warn('[warn]', diagnostic.message);
+  }
+});
+```
+
+Provide a `ParseCache` implementation, such as the built-in
+`InMemoryParseCache`, to reuse flattening and resolution results across runs or
+for synchronous parsing with `parseTokensSync` when your inputs are already
+available in memory.
+
 Create a session with `createSession` to reuse caches, install custom document
 loaders, register plugins, or parse multiple collections with shared state.
+
+### Node adapter
+
+For Node-based tooling, import the bundled adapter to read DTIF token files from
+disk with extension validation, formatted diagnostics, and ready-to-use token
+documents:
+
+```ts
+import { parseTokensFromFile, readTokensFile } from '@lapidist/dtif-parser/adapters/node';
+
+try {
+  const result = await parseTokensFromFile('tokens/base.tokens.json', {
+    onWarn: (message) => console.warn(message)
+  });
+  console.log(result.flattened.length);
+} catch (error) {
+  // DtifTokenParseError exposes the normalised diagnostics for reporting
+}
+
+const document = await readTokensFile('tokens/base.tokens.json');
+```
+
+## Development
+
+- [Parser package structure](../docs/tooling/dtif-parser-package-structure.md) documents the current
+  module layout, session lifecycle, and testing conventions that future
+  roadmap work will build upon.
 
 ## Command line interface
 

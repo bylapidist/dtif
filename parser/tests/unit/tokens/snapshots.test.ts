@@ -1,0 +1,88 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { createSession } from '../../../src/session.js';
+import { createMetadataSnapshot, createResolutionSnapshot } from '../../../src/tokens/snapshots.js';
+import type { Diagnostic } from '../../../src/types.js';
+
+const DOCUMENT = `
+$schema: https://dtif.lapidist.net/schema/core.json
+colors:
+  primary:
+    $type: color
+    $value:
+      colorSpace: srgb
+      components: [0.1, 0.2, 0.3]
+    $description: Primary brand color
+    $extensions:
+      vendor.test:
+        flag: true
+    $deprecated:
+      $replacement: "#/aliases/brand"
+aliases:
+  brand:
+    $type: color
+    $ref: "#/colors/primary"
+`;
+
+async function parseDocument() {
+  const session = createSession();
+  const result = await session.parseDocument(DOCUMENT);
+  assert.ok(result.document, 'expected document to be returned');
+  assert.ok(result.graph, 'expected graph to be returned');
+  assert.ok(result.resolver, 'expected resolver to be returned');
+  return result;
+}
+
+test('createMetadataSnapshot normalises node metadata', async () => {
+  const result = await parseDocument();
+  const metadata = createMetadataSnapshot(result.graph!);
+
+  const primary = metadata.get('#/colors/primary');
+  assert.ok(primary, 'expected metadata snapshot for primary token');
+  assert.equal(primary.description, 'Primary brand color');
+  assert.deepEqual(primary.extensions['vendor.test'], { flag: true });
+  assert.equal(primary.deprecated?.supersededBy?.pointer, '#/aliases/brand');
+  assert.equal(primary.deprecated?.supersededBy?.uri, result.document!.uri.href);
+  assert.equal(primary.source.uri, result.document!.uri.href);
+  assert.ok(primary.source.line >= 1, 'expected source line to be recorded');
+  assert.ok(primary.source.column >= 1, 'expected source column to be recorded');
+});
+
+test('createResolutionSnapshot captures references and alias traces', async () => {
+  const result = await parseDocument();
+  const diagnostics: Diagnostic[] = [];
+  const snapshot = createResolutionSnapshot(result.graph!, result.resolver!, {
+    onDiagnostic: (diagnostic) => diagnostics.push(diagnostic)
+  });
+
+  assert.equal(
+    diagnostics.length,
+    0,
+    'expected resolver not to emit diagnostics for valid document'
+  );
+
+  const primary = snapshot.get('#/colors/primary');
+  assert.ok(primary, 'expected resolution snapshot for primary token');
+  assert.equal(primary.type, 'color');
+  assert.deepEqual(primary.raw, { colorSpace: 'srgb', components: [0.1, 0.2, 0.3] });
+  assert.deepEqual(primary.value, primary.raw);
+  assert.equal(primary.references.length, 0, 'expected base token to have no references');
+
+  const alias = snapshot.get('#/aliases/brand');
+  assert.ok(alias, 'expected resolution snapshot for alias token');
+  assert.equal(alias.type, 'color');
+  assert.deepEqual(alias.value, primary.value);
+  assert.ok(
+    alias.references.some((reference) => reference.pointer === '#/colors/primary'),
+    'expected alias to record referenced token pointers'
+  );
+  assert.ok(
+    alias.appliedAliases.some((pointer) => pointer.pointer === '#/aliases/brand'),
+    'expected alias to mark applied alias pointers'
+  );
+  assert.ok(
+    alias.resolutionPath.some((pointer) => pointer.pointer === '#/colors/primary'),
+    'expected alias resolution path to include resolved token'
+  );
+});

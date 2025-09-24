@@ -83,6 +83,7 @@ export type {
   ParseCollectionResult,
   ParseInput,
   ParseInputRecord,
+  ParseDataInputRecord,
   ParseResult,
   RawDocument,
   RelatedInformation,
@@ -136,3 +137,38 @@ export type {
   ResolvedTokenTransformResult,
   ResolvedTokenTransformEvaluation
 } from './plugins/index.js';
+
+export { toTokenDiagnostic, formatTokenDiagnostic } from './tokens/diagnostics.js';
+export type {
+  FormatTokenDiagnosticOptions,
+  TokenDiagnostic,
+  TokenDiagnosticContext,
+  TokenId,
+  TokenPointer,
+  TokenMetadataSnapshot,
+  ResolvedTokenView,
+  TokenType,
+  JsonValue,
+  DtifFlattenedToken
+} from './tokens/types.js';
+export { parseTokens, parseTokensSync } from './tokens/parse-tokens.js';
+export type {
+  ParseTokensInput,
+  ParseTokensOptions,
+  ParseTokensResult
+} from './tokens/parse-tokens.js';
+export { createMetadataSnapshot, createResolutionSnapshot } from './tokens/snapshots.js';
+export { flattenTokens } from './tokens/flatten.js';
+export { InMemoryParseCache, createParseCache } from './tokens/cache.js';
+export type {
+  ParseCache,
+  ParseCacheEntry,
+  ParseCacheKey,
+  InMemoryParseCacheOptions
+} from './tokens/cache.js';
+export {
+  parseTokensFromFile,
+  readTokensFile,
+  DtifTokenParseError
+} from './adapters/node/token-parser.js';
+export type { NodeParseTokensOptions } from './adapters/node/token-parser.js';
