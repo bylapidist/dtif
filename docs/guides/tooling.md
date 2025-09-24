@@ -34,3 +34,9 @@ when you need a preconfigured Ajv instance inside CI or build steps.
 Linting tools _SHOULD_ warn on unknown `$type` values,
 unsupported units, and deprecated tokens. Warnings
 _SHOULD NOT_ fail builds by default.
+
+[Design Lint](https://design-lint.lapidist.net) ships as an npm package
+(`@lapidist/design-lint`). It parses DTIF payloads with the
+canonical schema, enforces rule sets tailored to component libraries and CSS authoring,
+and emits deterministic diagnostics and formatter output for both local development and
+CI pipelines.
