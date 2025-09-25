@@ -239,6 +239,14 @@ void test('parseTokensSync infers YAML content types for inline records', () => 
   );
 });
 
+void test('parseTokensSync does not treat URLs as inline YAML content', () => {
+  assert.throws(
+    () => parseTokensSync('https://dtif.lapidist.net/schema/core.json'),
+    /requires inline content/,
+    'expected URL strings to be treated as non-inline inputs'
+  );
+});
+
 void test('parseTokensSync throws when provided an asynchronous cache implementation', () => {
   const asyncCache = new AsyncParseCache();
   assert.throws(
