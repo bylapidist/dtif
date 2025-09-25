@@ -11,12 +11,16 @@ function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
   return handle.data !== undefined;
 }
 
+function ensureError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
 export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
   if (hasProvidedData(handle)) {
     try {
       return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
     } catch (error) {
-      return Promise.reject(error);
+      return Promise.reject(ensureError(error));
     }
   }
 
@@ -37,7 +41,7 @@ export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
       })
     );
   } catch (error) {
-    return Promise.reject(error);
+    return Promise.reject(ensureError(error));
   }
 }
 
