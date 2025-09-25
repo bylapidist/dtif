@@ -604,6 +604,9 @@ function looksLikeInlineDocument(value: string): boolean {
   if (trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
     return true;
   }
+  if (/^[^{}\[\]\r\n]+:\s*\S/u.test(trimmed)) {
+    return true;
+  }
   return false;
 }
 
@@ -613,6 +616,9 @@ function detectContentTypeFromContent(value: string): ContentType | undefined {
     return 'application/json';
   }
   if (trimmed.startsWith('---') || trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
+    return 'application/yaml';
+  }
+  if (/^[^{}\[\]\r\n]+:\s*\S/u.test(trimmed)) {
     return 'application/yaml';
   }
   return undefined;

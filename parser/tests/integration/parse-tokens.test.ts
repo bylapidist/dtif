@@ -26,6 +26,9 @@ aliases:
     $ref: "#/colors/primary"
 `;
 
+const SINGLE_LINE_INLINE_DOCUMENT =
+  '$schema: https://dtif.lapidist.net/schema/core.json colors: { primary: { $type: color, $value: { colorSpace: srgb, components: [0.1, 0.2, 0.3] } } }';
+
 void test('parseTokens flattens DTIF tokens with metadata and resolution snapshots', async () => {
   const result = await parseTokens(INLINE_DOCUMENT);
 
@@ -211,6 +214,29 @@ void test('parseTokensSync supports inline strings and design token objects', ()
   assert.ok(objectDocument, 'expected synchronous parse to return document');
   assert.notEqual(objectDocument.data, tokens);
   assert.deepEqual(objectDocument.data, tokens);
+});
+
+void test('parseTokensSync accepts single-line inline YAML content', () => {
+  const result = parseTokensSync(SINGLE_LINE_INLINE_DOCUMENT);
+
+  assert.equal(result.diagnostics.length, 0, 'expected no diagnostics for valid single-line YAML');
+  assert.equal(result.flattened.length, 1, 'expected single token to be flattened');
+
+  const [token] = result.flattened;
+  assert.equal(token.name, 'primary');
+  assert.equal(token.type, 'color');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.1, 0.2, 0.3] });
+});
+
+void test('parseTokensSync infers YAML content types for inline records', () => {
+  const result = parseTokensSync({ content: 'value: 42' });
+  const { document } = result;
+  assert.ok(document, 'expected synchronous parse to return document');
+  assert.equal(
+    document.contentType,
+    'application/yaml',
+    'expected YAML content type to be inferred from inline content'
+  );
 });
 
 void test('parseTokensSync throws when provided an asynchronous cache implementation', () => {
