@@ -231,7 +231,9 @@ function isParseInputRecord(value: unknown): value is ParseInputRecord {
   const { uri, contentType } = value;
   const validUri = uri === undefined || typeof uri === 'string' || uri instanceof URL;
   const validContentType =
-    contentType === undefined || contentType === 'application/json' || contentType === 'application/yaml';
+    contentType === undefined ||
+    contentType === 'application/json' ||
+    contentType === 'application/yaml';
 
   return validUri && validContentType;
 }
@@ -269,10 +271,7 @@ function createMemoryUriFromDesignTokens(
   return `memory://dtif-${kind}/${hash}.json`;
 }
 
-function resolveInlineUri(
-  value: string | URL | undefined,
-  fallback: () => string
-): string {
+function resolveInlineUri(value: string | URL | undefined, fallback: () => string): string {
   if (typeof value === 'string') {
     return value;
   }

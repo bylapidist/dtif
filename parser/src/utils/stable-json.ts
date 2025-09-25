@@ -8,9 +8,7 @@ function normalizeForStringify(value: unknown): unknown {
   }
 
   if (isRecord(value)) {
-    const entries = Object.entries(value).sort(([a], [b]) =>
-      a.localeCompare(b)
-    );
+    const entries = Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
     const normalized: Record<string, unknown> = {};
     for (const [key, entry] of entries) {
       normalized[key] = normalizeForStringify(entry);

@@ -16,9 +16,7 @@ import { resolveOptions, type ResolvedParseSessionOptions } from './session/inte
 import type { ParseSessionOptions } from './session/types.js';
 export type { OverrideContext, ParseSessionOptions } from './session/types.js';
 
-function isAsyncIterable<T>(
-  value: Iterable<T> | AsyncIterable<T>
-): value is AsyncIterable<T> {
+function isAsyncIterable<T>(value: Iterable<T> | AsyncIterable<T>): value is AsyncIterable<T> {
   const root: object = value;
   let current: object | null = root;
 

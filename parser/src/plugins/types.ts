@@ -15,9 +15,7 @@ export interface ExtensionHandlerResult {
   readonly diagnostics?: readonly Diagnostic[];
 }
 
-export type ExtensionHandler = (
-  input: ExtensionHandlerInput
-) => ExtensionHandlerResult | undefined;
+export type ExtensionHandler = (input: ExtensionHandlerInput) => ExtensionHandlerResult | undefined;
 
 export interface ExtensionEvaluation {
   readonly plugin: string;

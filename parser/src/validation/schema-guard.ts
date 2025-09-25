@@ -30,8 +30,7 @@ export class SchemaGuardError extends Error {
 }
 
 const CORE_SCHEMA = loadCoreSchema();
-const DEFAULT_SCHEMA_ID =
-  readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
+const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
 
 const DEFAULT_FORMAT_REGISTRAR: FormatRegistrar = (instance) => addFormats(instance);
 

@@ -31,10 +31,7 @@ export function createNormaliserContext(
   options: NormaliserOptions
 ): NormaliserContext {
   const diagnostics: Diagnostic[] = [];
-  const extensions = options.extensions?.createExtensionCollector(
-    document,
-    diagnostics
-  );
+  const extensions = options.extensions?.createExtensionCollector(document, diagnostics);
 
   return {
     document,
@@ -51,9 +48,7 @@ export function finalizeNormalisation(
     context.diagnostics.length === 0
       ? EMPTY_DIAGNOSTICS
       : Object.freeze(context.diagnostics.map((diagnostic) => Object.freeze(diagnostic)));
-  const extensions = context.extensions
-    ? context.extensions.results()
-    : EMPTY_EXTENSION_RESULTS;
+  const extensions = context.extensions ? context.extensions.results() : EMPTY_EXTENSION_RESULTS;
 
   return {
     ast,

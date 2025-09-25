@@ -7,7 +7,7 @@ const tsconfigRootDir = dirname(fileURLToPath(import.meta.url));
 
 export default [
   {
-    ignores: ['tests/fixtures/**'],
+    ignores: ['tests/fixtures/**']
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -15,24 +15,21 @@ export default [
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.eslint.json',
-        tsconfigRootDir,
-      },
+        tsconfigRootDir
+      }
     },
     plugins: { '@typescript-eslint': tsPlugin },
     rules: {
       ...tsPlugin.configs['strict-type-checked'].rules,
       ...tsPlugin.configs['stylistic-type-checked'].rules,
       '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/consistent-type-assertions': [
-        'error',
-        { assertionStyle: 'never' },
-      ],
-    },
+      '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }]
+    }
   },
   {
     files: ['tests/**/*.ts', 'tests/**/*.tsx'],
     rules: {
-      '@typescript-eslint/consistent-type-assertions': 'off',
-    },
-  },
+      '@typescript-eslint/consistent-type-assertions': 'off'
+    }
+  }
 ];

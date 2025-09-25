@@ -27,7 +27,9 @@ function assertIsDiagnosticsSummary(value: unknown): asserts value is CliOutput[
   }
 }
 
-function assertIsSerializableDiagnostics(value: unknown): asserts value is DocumentSummary['diagnostics'] {
+function assertIsSerializableDiagnostics(
+  value: unknown
+): asserts value is DocumentSummary['diagnostics'] {
   if (!Array.isArray(value)) {
     throw new TypeError('expected diagnostics to be an array');
   }

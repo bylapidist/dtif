@@ -21,9 +21,7 @@ export function resolveOptions(options: ParseSessionOptions = {}): ResolvedParse
   const allowHttp = options.allowHttp ?? false;
   const schemaGuardInput = options.schemaGuard;
   const schemaGuard =
-    schemaGuardInput instanceof SchemaGuard
-      ? schemaGuardInput
-      : new SchemaGuard(schemaGuardInput);
+    schemaGuardInput instanceof SchemaGuard ? schemaGuardInput : new SchemaGuard(schemaGuardInput);
   const plugins =
     options.plugins && options.plugins.length > 0 ? new PluginRegistry(options.plugins) : undefined;
 

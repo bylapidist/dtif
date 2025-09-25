@@ -137,9 +137,7 @@ function printResolvedToken(
     stdout.write(`${prefix}overrides:\n`);
     for (const override of token.overridesApplied) {
       stdout.write(
-        `${prefix}  - ${override.kind} ${override.pointer} (depth ${formatNumber(
-          override.depth
-        )})${
+        `${prefix}  - ${override.kind} ${override.pointer} (depth ${formatNumber(override.depth)})${
           override.span ? ` at ${formatSpan(override.span)}` : ''
         }${override.source ? ` from ${override.source.pointer}` : ''}\n`
       );
