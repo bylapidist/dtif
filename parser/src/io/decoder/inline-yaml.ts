@@ -14,8 +14,8 @@ export function normalizeInlineYamlText(text: string): string {
     return text;
   }
 
-  return text.replace(/ (?=[^{}\[\],\s][^{}\[\],:]*:\s)/gu, (match, offset, source) => {
-    const previous = offset > 0 ? source[offset - 1] : '';
+  return text.replace(/ (?=[^{}\[\],\s][^{}\[\],:]*:\s)/gu, (match: string, offset: number, source: string) => {
+    const previous = offset > 0 ? source.charAt(offset - 1) : '';
     if (previous === '{' || previous === '[' || previous === ',') {
       return match;
     }
