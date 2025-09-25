@@ -42,7 +42,7 @@ import { normalizeDocument } from '../ast/normaliser.js';
 import { buildDocumentGraph } from '../graph/builder.js';
 import { decodeBytes } from '../io/decoder/encoding.js';
 import { createSyntheticSourceMap } from '../io/decoder/synthetic-source-map.js';
-import { normalizeInlineYamlText } from '../io/decoder/inline-yaml.js';
+import { isSingleLineInlineYaml, normalizeInlineYamlText } from '../io/decoder/inline-yaml.js';
 import { parseYaml, toJavaScript } from '../io/decoder/yaml.js';
 import { buildSourceMap } from '../io/decoder/source-map.js';
 import { cloneJsonValue } from '../utils/clone-json.js';
@@ -605,7 +605,7 @@ function looksLikeInlineDocument(value: string): boolean {
   if (trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
     return true;
   }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
+  if (isSingleLineInlineYaml(trimmed)) {
     return true;
   }
   return false;
@@ -619,7 +619,7 @@ function detectContentTypeFromContent(value: string): ContentType | undefined {
   if (trimmed.startsWith('---') || trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
     return 'application/yaml';
   }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
+  if (isSingleLineInlineYaml(trimmed)) {
     return 'application/yaml';
   }
   return undefined;

@@ -1,12 +1,16 @@
 const SINGLE_LINE_INLINE_YAML_PATTERN = /^[^{}\[\]\r\n]+:\s+\S/u;
 
+export function isSingleLineInlineYaml(text: string): boolean {
+  return SINGLE_LINE_INLINE_YAML_PATTERN.test(text);
+}
+
 export function normalizeInlineYamlText(text: string): string {
   if (text.includes('\n')) {
     return text;
   }
 
   const trimmed = text.trimStart();
-  if (!SINGLE_LINE_INLINE_YAML_PATTERN.test(trimmed)) {
+  if (!isSingleLineInlineYaml(trimmed)) {
     return text;
   }
 
