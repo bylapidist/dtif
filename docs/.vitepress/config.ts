@@ -67,7 +67,6 @@ export default defineConfig({
     nav: [
       { text: 'Specification', link: '/spec/' },
       { text: 'Guides', link: '/guides/' },
-      { text: 'Tooling built with DTIF', link: '/tooling/' },
       { text: 'Examples', link: '/examples/' },
       { text: 'Governance', link: '/governance/' },
       { text: 'Roadmap', link: '/roadmap/' }
@@ -118,10 +117,7 @@ export default defineConfig({
           items: [
             { text: 'Tooling overview', link: '/tooling/' },
             { text: 'Design Lint', link: '/tooling/design-lint' },
-            {
-              text: 'DTIF parser API reference',
-              link: '/tooling/dtif-parser-api-reference'
-            }
+            { text: 'Using the DTIF parser', link: '/guides/dtif-parser' }
           ]
         }
       ],
