@@ -1,5 +1,12 @@
 # @lapidist/dtif-validator changelog
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @lapidist/dtif-schema@0.3.4
+
 ## 0.3.3
 
 ### Patch Changes
