@@ -14,6 +14,8 @@ prepare a release.
    - `npm run lint:ts` whenever you touch JavaScript or TypeScript sources
    - `npm test`
    - `npm run lint:docs` if you change files inside `docs/`
+   - `npm run --workspace parser test` whenever you modify files inside `parser/`
+   - Create a changeset covering `@lapidist/dtif-parser` whenever you modify files inside `parser/`
 3. When you modify the schema or validator packages, run `npm run build:packages` to confirm the generated artefacts stay in sync.
 4. If you touch the documentation site configuration (`docs/.vitepress`) or content that should build statically, run `npm run docs:build` before submitting.
 

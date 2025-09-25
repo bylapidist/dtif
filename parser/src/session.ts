@@ -22,8 +22,22 @@ function isAsyncIterable<T>(value: Iterable<T> | AsyncIterable<T>): value is Asy
 
   while (current) {
     const descriptor = Object.getOwnPropertyDescriptor(current, Symbol.asyncIterator);
-    if (descriptor && typeof descriptor.value === 'function') {
-      return true;
+    if (descriptor) {
+      if (typeof descriptor.value === 'function') {
+        return true;
+      }
+
+      if (typeof descriptor.get === 'function') {
+        try {
+          if (typeof descriptor.get.call(value) === 'function') {
+            return true;
+          }
+        } catch {
+          // ignore getter errors; treat as not async iterable
+        }
+      }
+
+      return false;
     }
 
     current = Reflect.getPrototypeOf(current);
