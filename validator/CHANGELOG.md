@@ -1,5 +1,14 @@
 # @lapidist/dtif-validator changelog
 
+## 0.3.3
+
+### Patch Changes
+
+- [#74](https://github.com/bylapidist/dtif/pull/74) [`c5af388`](https://github.com/bylapidist/dtif/commit/c5af38890d09da7360eb20c337a9ebcf1b58dcb3) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Document contributor workflow expectations in the repository-level agent guide.
+
+- Updated dependencies [[`c5af388`](https://github.com/bylapidist/dtif/commit/c5af38890d09da7360eb20c337a9ebcf1b58dcb3)]:
+  - @lapidist/dtif-schema@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
