@@ -434,6 +434,9 @@ function detectContentTypeFromContent(content: string): ContentType | undefined 
   if (trimmed.includes('\n')) {
     return 'application/yaml';
   }
+  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
+    return 'application/yaml';
+  }
   return undefined;
 }
 
@@ -446,6 +449,9 @@ function looksLikeInlineDocument(value: string): boolean {
     return true;
   }
   if (trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
+    return true;
+  }
+  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
     return true;
   }
   return false;
