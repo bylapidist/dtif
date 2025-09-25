@@ -1,5 +1,14 @@
 # @lapidist/dtif-validator changelog
 
+## 0.3.2
+
+### Patch Changes
+
+- [#71](https://github.com/bylapidist/dtif/pull/71) [`af99b1f`](https://github.com/bylapidist/dtif/commit/af99b1f5ed2f506788e45869b6c575521ab3a3bd) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Trigger a patch release for the DTIF packages.
+
+- Updated dependencies [[`af99b1f`](https://github.com/bylapidist/dtif/commit/af99b1f5ed2f506788e45869b6c575521ab3a3bd)]:
+  - @lapidist/dtif-schema@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
