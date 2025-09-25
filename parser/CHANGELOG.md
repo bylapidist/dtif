@@ -1,5 +1,15 @@
 # @lapidist/dtif-parser changelog
 
+## 0.3.4
+
+### Patch Changes
+
+- [#76](https://github.com/bylapidist/dtif/pull/76) [`7cd863d`](https://github.com/bylapidist/dtif/commit/7cd863dd0a6cdb4b405764e456adab6f7bd18260) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Improve async iterable detection so collections handle `Symbol.asyncIterator` getters correctly.
+
+- Updated dependencies []:
+  - @lapidist/dtif-schema@0.3.4
+  - @lapidist/dtif-validator@0.3.4
+
 ## 0.3.3
 
 ### Patch Changes

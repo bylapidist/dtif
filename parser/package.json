@@ -1,6 +1,6 @@
 {
   "name": "@lapidist/dtif-parser",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Canonical parser and runtime for Design Token Interchange Format (DTIF) documents.",
   "type": "module",
   "license": "MIT",
@@ -37,8 +37,8 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@lapidist/dtif-schema": "^0.3.3",
-    "@lapidist/dtif-validator": "^0.3.3",
+    "@lapidist/dtif-schema": "^0.3.4",
+    "@lapidist/dtif-validator": "^0.3.4",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
