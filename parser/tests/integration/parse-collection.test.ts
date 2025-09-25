@@ -86,3 +86,36 @@ void test('parseCollection returns per-document results with aggregated diagnost
     'expected aggregated diagnostics to expose schema failures'
   );
 });
+
+class GetterAsyncIterable<T> {
+  constructor(private readonly values: readonly T[]) {}
+
+  get [Symbol.asyncIterator]() {
+    const { values } = this;
+
+    return async function* () {
+      for (const value of values) {
+        await Promise.resolve();
+        yield value;
+      }
+    };
+  }
+}
+
+void test('parseCollection accepts async iterables that expose asyncIterator via a getter', async () => {
+  const session = createSession();
+  const inputs = new GetterAsyncIterable([
+    { uri: 'memory://collection/getter-valid.json', content: VALID_DOCUMENT }
+  ]);
+
+  const result = await session.parseCollection(inputs);
+
+  assert.equal(result.results.length, 1, 'expected getter-based async iterable to be consumed');
+  const [onlyResult] = result.results;
+  assert.ok(onlyResult.document, 'expected document to be decoded');
+  assert.equal(
+    onlyResult.diagnostics.hasErrors(),
+    false,
+    'expected no diagnostics for valid input'
+  );
+});
