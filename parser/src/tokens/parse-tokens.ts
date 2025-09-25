@@ -42,6 +42,7 @@ import { normalizeDocument } from '../ast/normaliser.js';
 import { buildDocumentGraph } from '../graph/builder.js';
 import { decodeBytes } from '../io/decoder/encoding.js';
 import { createSyntheticSourceMap } from '../io/decoder/synthetic-source-map.js';
+import { normalizeInlineYamlText } from '../io/decoder/inline-yaml.js';
 import { parseYaml, toJavaScript } from '../io/decoder/yaml.js';
 import { buildSourceMap } from '../io/decoder/source-map.js';
 import { cloneJsonValue } from '../utils/clone-json.js';
@@ -647,7 +648,8 @@ function decodeDocumentSync(handle: DocumentHandle): RawDocument {
     return Object.freeze(createRawDocumentFromProvidedData(handle, handle.data));
   }
 
-  const { text } = decodeBytes(handle.bytes);
+  const { text: decodedText } = decodeBytes(handle.bytes);
+  const text = normalizeInlineYamlText(decodedText);
   const { document: yamlDocument, lineCounter } = parseYaml(text);
   const data = toJavaScript(yamlDocument);
   const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
@@ -667,7 +669,7 @@ function createRawDocumentFromProvidedData(
   data: DesignTokenInterchangeFormat
 ): RawDocument {
   if (typeof handle.text === 'string' && handle.text.length > 0) {
-    const text = handle.text;
+    const text = normalizeInlineYamlText(handle.text);
     const { document: yamlDocument, lineCounter } = parseYaml(text);
     const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
 
@@ -681,7 +683,7 @@ function createRawDocumentFromProvidedData(
     } satisfies RawDocument;
   }
 
-  const text = handle.text ?? '';
+  const text = normalizeInlineYamlText(handle.text ?? '');
   const sourceMap = createSyntheticSourceMap(handle.uri, data);
 
   return {

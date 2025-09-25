@@ -1,6 +1,7 @@
 import type { DocumentHandle, RawDocument } from '../types.js';
 import { decodeBytes } from './decoder/encoding.js';
 import { buildSourceMap } from './decoder/source-map.js';
+import { normalizeInlineYamlText } from './decoder/inline-yaml.js';
 import { parseYaml, toJavaScript } from './decoder/yaml.js';
 import { cloneJsonValue } from '../utils/clone-json.js';
 import { createSyntheticSourceMap } from './decoder/synthetic-source-map.js';
@@ -25,7 +26,8 @@ export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
   }
 
   try {
-    const { text } = decodeBytes(handle.bytes);
+    const { text: decodedText } = decodeBytes(handle.bytes);
+    const text = normalizeInlineYamlText(decodedText);
     const { document: yamlDocument, lineCounter } = parseYaml(text);
     const data = toJavaScript(yamlDocument);
     const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
@@ -51,7 +53,7 @@ function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocum
   const data = cloneJsonValue(handle.data);
 
   if (typeof handle.text === 'string' && handle.text.length > 0) {
-    const text = handle.text;
+    const text = normalizeInlineYamlText(handle.text);
     const { document: yamlDocument, lineCounter } = parseYaml(text);
     const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
 
@@ -65,7 +67,7 @@ function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocum
     } satisfies RawDocument;
   }
 
-  const text = handle.text ?? '';
+  const text = normalizeInlineYamlText(handle.text ?? '');
   const sourceMap = createSyntheticSourceMap(handle.uri, data);
 
   return {
