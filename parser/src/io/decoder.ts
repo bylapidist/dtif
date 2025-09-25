@@ -13,24 +13,32 @@ function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
 
 export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
   if (hasProvidedData(handle)) {
-    return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
+    try {
+      return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
-  const { text } = decodeBytes(handle.bytes);
-  const { document: yamlDocument, lineCounter } = parseYaml(text);
-  const data = toJavaScript(yamlDocument);
-  const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
+  try {
+    const { text } = decodeBytes(handle.bytes);
+    const { document: yamlDocument, lineCounter } = parseYaml(text);
+    const data = toJavaScript(yamlDocument);
+    const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
 
-  return Promise.resolve(
-    Object.freeze({
-      uri: handle.uri,
-      contentType: handle.contentType,
-      bytes: handle.bytes,
-      text,
-      data,
-      sourceMap
-    })
-  );
+    return Promise.resolve(
+      Object.freeze({
+        uri: handle.uri,
+        contentType: handle.contentType,
+        bytes: handle.bytes,
+        text,
+        data,
+        sourceMap
+      })
+    );
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
