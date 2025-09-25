@@ -28,8 +28,8 @@ export class SchemaGuardError extends Error {
   }
 }
 
-const ajvModule = require('ajv/dist/2020.js');
-const formatsModule = require('ajv-formats');
+const ajvModule: unknown = require('ajv/dist/2020.js');
+const formatsModule: unknown = require('ajv-formats');
 
 const AJV_CONSTRUCTOR = resolveAjvConstructor(ajvModule);
 
@@ -292,18 +292,16 @@ function resolveAjvConstructor(exports: unknown): AjvConstructor {
 }
 
 function resolveFormatRegistrar(module: unknown): FormatRegistrar {
-  const candidate =
-    typeof module === 'function'
-      ? module
-      : isJsonObject(module) && typeof module.default === 'function'
-        ? module.default
-        : undefined;
-
-  if (typeof candidate !== 'function') {
-    throw new SchemaGuardError('Failed to load the AJV formats registrar.');
+  if (isFormatRegistrar(module)) {
+    return (instance) => module(instance);
   }
 
-  return (instance) => candidate(instance);
+  if (isJsonObject(module) && isFormatRegistrar(module.default)) {
+    const registrar = module.default;
+    return (instance) => registrar(instance);
+  }
+
+  throw new SchemaGuardError('Failed to load the AJV formats registrar.');
 }
 
 function isAjvConstructor(value: unknown): value is AjvConstructor {
@@ -311,8 +309,12 @@ function isAjvConstructor(value: unknown): value is AjvConstructor {
     return false;
   }
 
-  const prototype = value.prototype;
+  const prototype: unknown = Reflect.get(value, 'prototype');
   return typeof prototype === 'object' && prototype !== null;
+}
+
+function isFormatRegistrar(value: unknown): value is FormatRegistrar {
+  return typeof value === 'function';
 }
 
 function loadCoreSchema(): DtifValidator['schema'] {
