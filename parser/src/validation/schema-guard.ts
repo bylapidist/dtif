@@ -1,5 +1,3 @@
-import Ajv2020 from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
 import { createRequire } from 'node:module';
 import type { ErrorObject } from 'ajv';
 import type { CreateDtifValidatorOptions, DtifValidator } from '@lapidist/dtif-validator';
@@ -12,6 +10,7 @@ const require = createRequire(import.meta.url);
 
 type AjvInstance = import('ajv').default;
 type FormatRegistrar = (instance: AjvInstance) => unknown;
+type AjvConstructor = new (options?: object) => AjvInstance;
 
 export interface SchemaGuardOptions extends CreateDtifValidatorOptions {
   readonly validator?: DtifValidator;
@@ -29,10 +28,15 @@ export class SchemaGuardError extends Error {
   }
 }
 
+const ajvModule = require('ajv/dist/2020.js');
+const formatsModule = require('ajv-formats');
+
+const AJV_CONSTRUCTOR = resolveAjvConstructor(ajvModule);
+
+const DEFAULT_FORMAT_REGISTRAR = resolveFormatRegistrar(formatsModule);
+
 const CORE_SCHEMA = loadCoreSchema();
 const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
-
-const DEFAULT_FORMAT_REGISTRAR: FormatRegistrar = (instance) => addFormats(instance);
 
 const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,
@@ -42,7 +46,7 @@ const DEFAULT_VALIDATOR_OPTIONS = {
 } as const;
 
 function createAjvInstance(options: object): AjvInstance {
-  const instance: unknown = new Ajv2020(options);
+  const instance: unknown = new AJV_CONSTRUCTOR(options);
   if (!isAjvInstance(instance)) {
     throw new SchemaGuardError('Failed to create an AJV validator instance.');
   }
@@ -270,6 +274,45 @@ function formatAllowedValue(value: unknown): string {
 
 function pluralise(noun: string, quantity: number): string {
   return quantity === 1 ? noun : `${noun}s`;
+}
+
+function resolveAjvConstructor(exports: unknown): AjvConstructor {
+  if (isAjvConstructor(exports)) {
+    return exports;
+  }
+
+  if (isJsonObject(exports)) {
+    const candidate = exports.default;
+    if (isAjvConstructor(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new SchemaGuardError('Failed to load the AJV 2020 module.');
+}
+
+function resolveFormatRegistrar(module: unknown): FormatRegistrar {
+  const candidate =
+    typeof module === 'function'
+      ? module
+      : isJsonObject(module) && typeof module.default === 'function'
+        ? module.default
+        : undefined;
+
+  if (typeof candidate !== 'function') {
+    throw new SchemaGuardError('Failed to load the AJV formats registrar.');
+  }
+
+  return (instance) => candidate(instance);
+}
+
+function isAjvConstructor(value: unknown): value is AjvConstructor {
+  if (typeof value !== 'function') {
+    return false;
+  }
+
+  const prototype = value.prototype;
+  return typeof prototype === 'object' && prototype !== null;
 }
 
 function loadCoreSchema(): DtifValidator['schema'] {

@@ -7,8 +7,12 @@ import { createSyntheticSourceMap } from './decoder/synthetic-source-map.js';
 
 export { DecoderError } from './decoder/errors.js';
 
+function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
+  return handle.data !== undefined;
+}
+
 export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
-  if (handle.data !== undefined) {
+  if (hasProvidedData(handle)) {
     return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
   }
 

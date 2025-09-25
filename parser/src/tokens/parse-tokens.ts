@@ -196,26 +196,20 @@ function normalizeInput(input: ParseTokensInput): ParseInput {
     return input;
   }
 
-  if (!isRecord(input)) {
-    return input;
+  if (isRecord(input)) {
+    if (isParseInputRecord(input) || isParseDataRecord(input) || isDesignTokenDocument(input)) {
+      return input;
+    }
+
+    if (isContentsRecord(input)) {
+      return {
+        uri: input.uri,
+        content: input.contents
+      } satisfies ParseInput;
+    }
   }
 
-  if (isParseInputRecord(input) || isParseDataRecord(input)) {
-    return input;
-  }
-
-  if (isContentsRecord(input)) {
-    return {
-      uri: input.uri,
-      content: input.contents
-    } satisfies ParseInput;
-  }
-
-  if (isDesignTokenDocument(input)) {
-    return input;
-  }
-
-  return input;
+  throw new TypeError('Unsupported parse tokens input.');
 }
 
 function isParseInputRecord(value: unknown): value is ParseInputRecord {
