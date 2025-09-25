@@ -8,18 +8,14 @@ import type {
   GraphNode,
   GraphOverrideFallbackNode,
   GraphOverrideNode,
-  GraphReferenceTarget,
-  GraphTokenNode
+  GraphTokenNode,
+  GraphReferenceField
 } from '../graph/nodes.js';
-import type { AstField } from '../ast/nodes.js';
 import {
   EMPTY_DIAGNOSTICS,
   EMPTY_OVERRIDES,
-  EMPTY_TRACE,
   EMPTY_WARNINGS,
-  EMPTY_TRANSFORM_EVALUATIONS,
-  EMPTY_TRANSFORM_ENTRIES,
-  DEFAULT_MAX_DEPTH
+  EMPTY_TRANSFORM_EVALUATIONS
 } from './internal/constants.js';
 import {
   finalizeResolution,
@@ -43,10 +39,7 @@ import type {
   ResolutionResult,
   ResolutionSource,
   AppliedOverride,
-  AppliedOverrideKind,
-  ResolutionTraceStep,
-  ResolutionTraceStepKind,
-  ResolvedToken
+  ResolutionTraceStep
 } from './types.js';
 import type {
   ResolvedTokenTransformEntry,
@@ -137,7 +130,10 @@ export class DocumentResolver {
     depth: number
   ): ResolutionState | undefined {
     if (this.cache.has(pointer)) {
-      return this.cache.get(pointer)!;
+      const cached = this.cache.get(pointer);
+      if (cached) {
+        return cached;
+      }
     }
 
     if (this.pending.has(pointer)) {
@@ -153,7 +149,9 @@ export class DocumentResolver {
     if (depth > this.maxDepth) {
       diagnostics.add({
         code: DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED,
-        message: `Resolution depth exceeded maximum of ${this.maxDepth} while resolving "${pointer}".`,
+        message: `Resolution depth exceeded maximum of ${String(
+          this.maxDepth
+        )} while resolving "${pointer}".`,
         severity: 'error',
         pointer
       });
@@ -286,7 +284,7 @@ export class DocumentResolver {
       };
     }
 
-    const type = node.type.value ?? targetState.type;
+    const type = node.type.value;
 
     if (type && targetState.type && type !== targetState.type) {
       diagnostics.add({
@@ -393,11 +391,18 @@ export class DocumentResolver {
     let state: OverrideState | undefined;
 
     if (override.ref) {
-      state = this.resolveOverrideRef(override, base, diagnosticsList, traceSteps, depth);
+      state = this.resolveOverrideRef(
+        override,
+        override.ref,
+        base,
+        diagnosticsList,
+        traceSteps,
+        depth
+      );
     }
 
     if (!state && override.value) {
-      state = this.resolveOverrideValue(override, traceSteps);
+      state = this.resolveOverrideValue(override, override.value, traceSteps);
     }
 
     if (!state && override.fallback) {
@@ -449,12 +454,12 @@ export class DocumentResolver {
 
   private resolveOverrideRef(
     override: GraphOverrideNode,
+    ref: GraphReferenceField,
     base: ResolutionState,
     diagnostics: Diagnostic[],
     trace: ResolutionTraceStep[],
     depth: number
   ): OverrideState | undefined {
-    const ref = override.ref!;
     const target = ref.value;
 
     if (target.external) {
@@ -509,7 +514,7 @@ export class DocumentResolver {
       Object.freeze({
         pointer: override.pointer,
         span: override.span,
-        kind: 'override-ref' as AppliedOverrideKind,
+        kind: 'override-ref',
         depth: 0,
         source
       })
@@ -530,16 +535,16 @@ export class DocumentResolver {
 
   private resolveOverrideValue(
     override: GraphOverrideNode,
+    valueField: NonNullable<GraphOverrideNode['value']>,
     trace: ResolutionTraceStep[]
   ): OverrideState {
-    const valueField = override.value!;
     const source = createFieldSource(valueField, this.graph.uri);
 
     const overrides = Object.freeze([
       Object.freeze({
         pointer: override.pointer,
         span: override.span,
-        kind: 'override-value' as AppliedOverrideKind,
+        kind: 'override-value',
         depth: 0,
         source
       })
@@ -567,7 +572,9 @@ export class DocumentResolver {
     if (resolutionDepth > this.maxDepth) {
       diagnostics.push({
         code: DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED,
-        message: `Resolution depth exceeded maximum of ${this.maxDepth} while evaluating fallback chain for "${chain[0]?.pointer ?? base.pointer}".`,
+        message: `Resolution depth exceeded maximum of ${String(
+          this.maxDepth
+        )} while evaluating fallback chain for "${chain[0]?.pointer ?? base.pointer}".`,
         severity: 'error',
         pointer: chain[0]?.pointer ?? base.pointer
       });
@@ -609,7 +616,9 @@ export class DocumentResolver {
     if (resolutionDepth > this.maxDepth) {
       diagnostics.push({
         code: DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED,
-        message: `Resolution depth exceeded maximum of ${this.maxDepth} while evaluating fallback entry "${entry.pointer}".`,
+        message: `Resolution depth exceeded maximum of ${String(
+          this.maxDepth
+        )} while evaluating fallback entry "${entry.pointer}".`,
         severity: 'error',
         pointer: entry.pointer,
         span: entry.span
@@ -665,7 +674,7 @@ export class DocumentResolver {
             Object.freeze({
               pointer: entry.pointer,
               span: entry.span,
-              kind: 'fallback-ref' as AppliedOverrideKind,
+              kind: 'fallback-ref',
               depth,
               source
             })
@@ -692,7 +701,7 @@ export class DocumentResolver {
         Object.freeze({
           pointer: entry.pointer,
           span: entry.span,
-          kind: 'fallback-value' as AppliedOverrideKind,
+          kind: 'fallback-value',
           depth,
           source
         })

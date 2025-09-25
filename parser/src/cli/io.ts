@@ -11,9 +11,7 @@ export async function gatherInputs(
   let stdinPromise: Promise<Uint8Array | undefined> | undefined;
 
   const readStdinOnce = async (): Promise<Uint8Array | undefined> => {
-    if (!stdinPromise) {
-      stdinPromise = readFromStream(io.stdin);
-    }
+    stdinPromise ??= readFromStream(io.stdin);
     return stdinPromise;
   };
 
@@ -74,6 +72,6 @@ async function readFromStream(stream: NodeJS.ReadableStream): Promise<Uint8Array
 }
 
 function isInteractiveStdin(stream: NodeJS.ReadableStream): boolean {
-  const readStream = stream as NodeJS.ReadStream;
-  return Boolean(readStream && typeof readStream.isTTY === 'boolean' && readStream.isTTY);
+  const isTty: unknown = Reflect.get(stream, 'isTTY');
+  return typeof isTty === 'boolean' && isTty;
 }

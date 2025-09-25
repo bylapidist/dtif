@@ -64,12 +64,10 @@ export async function readTokensFile(
 }
 
 function toParseTokensOptions(options: NodeParseTokensOptions): ParseTokensOptions {
-  const { onWarn, diagnosticFormat, ...rest } = options;
+  const { onWarn, diagnosticFormat, warn: originalWarn, ...rest } = options;
   if (!onWarn) {
-    return rest;
+    return originalWarn ? { ...rest, warn: originalWarn } : rest;
   }
-
-  const originalWarn = rest.warn;
 
   return {
     ...rest,
@@ -119,6 +117,6 @@ function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeF
   if (!value || typeof value !== 'object') {
     return false;
   }
-  const prototype = Object.getPrototypeOf(value);
+  const prototype = Reflect.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
 }

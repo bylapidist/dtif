@@ -9,26 +9,28 @@ export function normalizeJsonPointer(pointer: string): JsonPointer {
     return JSON_POINTER_ROOT;
   }
 
-  if (pointer.startsWith('#/')) {
-    return `#${pointer.slice(1)}` as JsonPointer;
-  }
+  let normalized: string;
 
-  if (pointer.startsWith('#')) {
+  if (pointer.startsWith('#/')) {
+    normalized = `#${pointer.slice(1)}`;
+  } else if (pointer.startsWith('#')) {
     const remainder = pointer.slice(1);
     if (remainder.length === 0) {
       return JSON_POINTER_ROOT;
     }
     if (remainder.startsWith('/')) {
-      return `#${remainder}` as JsonPointer;
+      normalized = `#${remainder}`;
+    } else {
+      normalized = `#/${remainder}`;
     }
-    return `#/${remainder}` as JsonPointer;
+  } else if (pointer.startsWith('/')) {
+    normalized = `#${pointer}`;
+  } else {
+    normalized = `#/${pointer}`;
   }
 
-  if (pointer.startsWith('/')) {
-    return `#${pointer}` as JsonPointer;
-  }
-
-  return `#/${pointer}` as JsonPointer;
+  assertJsonPointer(normalized);
+  return normalized;
 }
 
 export function isJsonPointer(value: unknown): value is JsonPointer {
@@ -105,12 +107,20 @@ export function tailJsonPointer(pointer: JsonPointer): string | undefined {
 function buildPointerFromSegments(segments: Iterable<string>): JsonPointer {
   const encoded: string[] = [];
   for (const segment of segments) {
-    encoded.push(encodeJsonPointerSegment(String(segment)));
+    encoded.push(encodeJsonPointerSegment(segment));
   }
 
   if (encoded.length === 0) {
     return JSON_POINTER_ROOT;
   }
 
-  return `#/${encoded.join('/')}` as JsonPointer;
+  const pointer = `#/${encoded.join('/')}`;
+  assertJsonPointer(pointer);
+  return pointer;
+}
+
+function assertJsonPointer(value: string): asserts value is JsonPointer {
+  if (!value.startsWith('#')) {
+    throw new TypeError('Invalid JSON pointer');
+  }
 }

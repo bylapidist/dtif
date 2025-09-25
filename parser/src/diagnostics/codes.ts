@@ -33,11 +33,16 @@ export function formatDiagnosticCode(
   assertIntegerInRange(major, 0, 99, 'major');
   assertIntegerInRange(minor, 0, 9, 'minor');
 
-  const domainPart = String(domainValue);
+  const domainPart = domainValue.toString();
   const majorPart = major.toString().padStart(2, '0');
-  const minorPart = String(minor);
+  const minorPart = minor.toString();
+  const code = `DTIF${domainPart}${majorPart}${minorPart}`;
 
-  return `DTIF${domainPart}${majorPart}${minorPart}` as DiagnosticCode;
+  if (!isDiagnosticCode(code)) {
+    throw new RangeError('Invalid diagnostic code generated: ' + code);
+  }
+
+  return code;
 }
 
 function resolveDiagnosticDomain(domain: DiagnosticDomainInput): DiagnosticDomainValue {
@@ -45,17 +50,26 @@ function resolveDiagnosticDomain(domain: DiagnosticDomainInput): DiagnosticDomai
     return domain;
   }
 
-  if (domain in DiagnosticDomain) {
-    return DiagnosticDomain[domain as DiagnosticDomainKey];
+  if (isDiagnosticDomainKey(domain)) {
+    return DiagnosticDomain[domain];
   }
 
-  throw new RangeError(`Unknown diagnostic domain: ${String(domain)}`);
+  const domainLabel = typeof domain === 'string' ? domain : String(domain);
+
+  throw new RangeError(`Unknown diagnostic domain: ${domainLabel}`);
 }
 
 function assertIntegerInRange(value: number, min: number, max: number, label: string): void {
   if (!Number.isInteger(value) || value < min || value > max) {
-    throw new RangeError(`${label} must be an integer in the range [${min}, ${max}]`);
+    const minLabel = min.toString();
+    const maxLabel = max.toString();
+
+    throw new RangeError(`${label} must be an integer in the range [${minLabel}, ${maxLabel}]`);
   }
+}
+
+function isDiagnosticDomainKey(value: unknown): value is DiagnosticDomainKey {
+  return typeof value === 'string' && value in DiagnosticDomain;
 }
 
 export const DiagnosticCodes = {

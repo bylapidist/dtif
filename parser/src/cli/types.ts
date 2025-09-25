@@ -1,6 +1,5 @@
-import type { DiagnosticSeverity } from '../types.js';
+import type { DiagnosticSeverity, JsonPointer, ParseInput } from '../types.js';
 import type { AppliedOverride, ResolutionResult, ResolvedToken } from '../resolver/index.js';
-import type { Diagnostic, JsonPointer, ParseInput, SourcePosition, SourceSpan } from '../types.js';
 
 export interface CliOptions {
   readonly inputs: readonly string[];

@@ -5,7 +5,6 @@ import type {
   ExtensionHandler,
   ExtensionHandlerInput,
   ParserPlugin,
-  ResolvedTokenTransform,
   ResolvedTokenTransformEntry
 } from './types.js';
 
@@ -13,10 +12,10 @@ const EMPTY_DIAGNOSTICS: readonly Diagnostic[] = Object.freeze([]);
 const EMPTY_EXTENSION_EVALUATIONS: readonly ExtensionEvaluation[] = Object.freeze([]);
 const EMPTY_TRANSFORM_ENTRIES: readonly ResolvedTokenTransformEntry[] = Object.freeze([]);
 
-type ExtensionHandlerEntry = {
+interface ExtensionHandlerEntry {
   readonly plugin: string;
   readonly handler: ExtensionHandler;
-};
+}
 
 type ExtensionHandlerMap = ReadonlyMap<string, readonly ExtensionHandlerEntry[]>;
 
@@ -140,7 +139,7 @@ export class PluginRegistry {
     const transforms: ResolvedTokenTransformEntry[] = [];
 
     for (const plugin of plugins) {
-      if (!plugin || typeof plugin.name !== 'string' || plugin.name.trim() === '') {
+      if (typeof plugin.name !== 'string' || plugin.name.trim() === '') {
         throw new TypeError('Parser plugins must declare a non-empty name.');
       }
       const name = plugin.name;

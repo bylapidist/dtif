@@ -69,7 +69,7 @@ export function readOverrideConditions(
   }
 
   const fieldPointer = appendJsonPointer(pointer, '$when');
-  const raw = value['$when'];
+  const raw = value.$when;
 
   if (!isPlainObject(raw)) {
     context.diagnostics.push({

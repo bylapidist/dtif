@@ -15,7 +15,9 @@ export interface ExtensionHandlerResult {
   readonly diagnostics?: readonly Diagnostic[];
 }
 
-export type ExtensionHandler = (input: ExtensionHandlerInput) => ExtensionHandlerResult | void;
+export type ExtensionHandler = (
+  input: ExtensionHandlerInput
+) => ExtensionHandlerResult | undefined;
 
 export interface ExtensionEvaluation {
   readonly plugin: string;
@@ -39,7 +41,7 @@ export interface ResolvedTokenTransformResult {
 export type ResolvedTokenTransform = (
   token: ResolvedToken,
   context: ResolvedTokenTransformContext
-) => ResolvedTokenTransformResult | void;
+) => ResolvedTokenTransformResult | undefined;
 
 export interface ResolvedTokenTransformEvaluation {
   readonly plugin: string;

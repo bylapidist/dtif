@@ -70,8 +70,12 @@ export function serializeSpan(span?: SourceSpan): SerializableSpan | undefined {
 }
 
 export function formatSpan(span: SerializableSpan): string {
-  const start = `${span.start.line}:${span.start.column}`;
-  const end = `${span.end.line}:${span.end.column}`;
+  const startLine = span.start.line.toString();
+  const startColumn = span.start.column.toString();
+  const start = `${startLine}:${startColumn}`;
+  const endLine = span.end.line.toString();
+  const endColumn = span.end.column.toString();
+  const end = `${endLine}:${endColumn}`;
   if (start === end) {
     return `${span.uri} @ ${start}`;
   }

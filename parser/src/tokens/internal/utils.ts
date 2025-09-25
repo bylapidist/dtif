@@ -1,5 +1,33 @@
 import type { JsonValue, TokenPointer } from '../types.js';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isJsonValue(value: unknown): value is JsonValue {
+  if (value === null) {
+    return true;
+  }
+
+  if (typeof value === 'string' || typeof value === 'boolean') {
+    return true;
+  }
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+
+  if (isRecord(value)) {
+    return Object.values(value).every(isJsonValue);
+  }
+
+  return false;
+}
+
 export function toPlainJson(value: unknown): JsonValue | undefined {
   if (value === undefined) {
     return undefined;
@@ -11,7 +39,7 @@ export function toPlainJson(value: unknown): JsonValue | undefined {
     typeof value === 'boolean' ||
     (typeof value === 'number' && Number.isFinite(value))
   ) {
-    return value as JsonValue;
+    return value;
   }
 
   if (Array.isArray(value)) {
@@ -25,9 +53,9 @@ export function toPlainJson(value: unknown): JsonValue | undefined {
     return result;
   }
 
-  if (typeof value === 'object') {
+  if (isRecord(value)) {
     const result: Record<string, JsonValue> = {};
-    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+    for (const [key, entry] of Object.entries(value)) {
       const normalized = toPlainJson(entry);
       if (normalized !== undefined) {
         result[key] = normalized;
@@ -37,7 +65,13 @@ export function toPlainJson(value: unknown): JsonValue | undefined {
   }
 
   try {
-    return JSON.parse(JSON.stringify(value)) as JsonValue;
+    const serialized = JSON.stringify(value);
+    if (typeof serialized !== 'string') {
+      return undefined;
+    }
+
+    const parsed: unknown = JSON.parse(serialized);
+    return isJsonValue(parsed) ? parsed : undefined;
   } catch {
     return undefined;
   }

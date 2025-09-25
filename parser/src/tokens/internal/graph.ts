@@ -24,7 +24,7 @@ export function iterateTokenNodes(
 }
 
 export function getTokenId(pointer: string): TokenId {
-  return normalizeJsonPointer(pointer) as TokenId;
+  return normalizeJsonPointer(pointer);
 }
 
 export function getBaseType(node: GraphTokenNode | GraphAliasNode): string | undefined {

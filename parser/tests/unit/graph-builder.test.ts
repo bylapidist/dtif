@@ -21,12 +21,13 @@ async function buildGraphFromJson(json: unknown) {
   const handle = createHandle(JSON.stringify(json));
   const raw = await decodeDocument(handle);
   const normalised = normalizeDocument(raw);
-  assert.ok(normalised.ast, 'expected AST to be generated');
-  const graphResult = buildDocumentGraph(normalised.ast!);
-  return { graphResult, ast: normalised.ast! };
+  const { ast } = normalised;
+  assert.ok(ast, 'expected AST to be generated');
+  const graphResult = buildDocumentGraph(ast);
+  return { graphResult, ast };
 }
 
-test('buildDocumentGraph indexes collections, tokens, aliases, and overrides', async () => {
+void test('buildDocumentGraph indexes collections, tokens, aliases, and overrides', async () => {
   const json = {
     color: {
       brand: {
@@ -46,9 +47,9 @@ test('buildDocumentGraph indexes collections, tokens, aliases, and overrides', a
 
   const { graphResult } = await buildGraphFromJson(json);
   assert.equal(graphResult.diagnostics.length, 0);
-  assert.ok(graphResult.graph, 'expected document graph to be created');
+  const { graph } = graphResult;
+  assert.ok(graph, 'expected document graph to be created');
 
-  const graph = graphResult.graph!;
   assert.equal(graph.kind, 'document-graph');
   assert.deepEqual(graph.rootPointers, ['#/color']);
   assert.equal(graph.nodes.size, 5);
@@ -70,14 +71,20 @@ test('buildDocumentGraph indexes collections, tokens, aliases, and overrides', a
   const override = graph.overrides[0];
   assert.equal(override.token.value.pointer, '#/color/brand/primary');
   assert.equal(override.token.value.external, false);
-  assert.ok(override.fallback);
-  assert.equal(override.fallback!.length, 2);
-  assert.equal(override.fallback![0].ref?.value.pointer, '#/color/brand/inverted');
-  assert.equal(override.fallback![0].ref?.value.external, false);
-  assert.equal(override.fallback![1].value?.value, '#101010');
+  const { fallback } = override;
+  assert.ok(fallback);
+  assert.equal(fallback.length, 2);
+  const [firstFallback, secondFallback] = fallback;
+  const { ref } = firstFallback;
+  assert.ok(ref);
+  assert.equal(ref.value.pointer, '#/color/brand/inverted');
+  assert.equal(ref.value.external, false);
+  const { value } = secondFallback;
+  assert.ok(value);
+  assert.equal(value.value, '#101010');
 });
 
-test('buildDocumentGraph emits diagnostics for invalid alias references', async () => {
+void test('buildDocumentGraph emits diagnostics for invalid alias references', async () => {
   const json = {
     color: {
       base: { $type: 'color', $value: '#000000' },
@@ -89,11 +96,12 @@ test('buildDocumentGraph emits diagnostics for invalid alias references', async 
   const codes = graphResult.diagnostics.map((diagnostic) => diagnostic.code);
   assert.ok(codes.includes(DiagnosticCodes.graph.INVALID_REFERENCE));
 
-  assert.ok(graphResult.graph);
-  assert.equal(graphResult.graph!.nodes.has('#/color/alias'), false);
+  const { graph: invalidGraph } = graphResult;
+  assert.ok(invalidGraph);
+  assert.equal(invalidGraph.nodes.has('#/color/alias'), false);
 });
 
-test('buildDocumentGraph reports missing targets and invalid target kinds', async () => {
+void test('buildDocumentGraph reports missing targets and invalid target kinds', async () => {
   const json = {
     color: {
       base: { $type: 'color', $value: '#000000' },
@@ -113,7 +121,9 @@ test('buildDocumentGraph reports missing targets and invalid target kinds', asyn
   assert.ok(codes.includes(DiagnosticCodes.graph.MISSING_TARGET));
   assert.ok(codes.includes(DiagnosticCodes.graph.INVALID_TARGET_KIND));
 
-  const alias = graphResult.graph?.nodes.get('#/color/alias');
+  const { graph: missingGraph } = graphResult;
+  assert.ok(missingGraph);
+  const alias = missingGraph.nodes.get('#/color/alias');
   assert.ok(alias && alias.kind === 'alias');
   assert.equal(alias.ref.value.pointer, '#/color/missing');
 });

@@ -16,7 +16,7 @@ function createSpan() {
   );
 }
 
-test('toTokenDiagnostic maps pointer spans when no explicit span is provided', () => {
+void test('toTokenDiagnostic maps pointer spans when no explicit span is provided', () => {
   const span = createSpan();
   const diagnostic: Diagnostic = {
     code: 'parser.missingValue',
@@ -39,7 +39,7 @@ test('toTokenDiagnostic maps pointer spans when no explicit span is provided', (
   });
 });
 
-test('toTokenDiagnostic maps related information entries', () => {
+void test('toTokenDiagnostic maps related information entries', () => {
   const span = createSpan();
   const relatedSpan = createSourceSpan(
     DOCUMENT_URI,
@@ -72,12 +72,16 @@ test('toTokenDiagnostic maps related information entries', () => {
   });
 
   assert.ok(result.related);
-  assert.equal(result.related?.length, 2);
-  assert.deepEqual(result.related?.[0].target.range.start, { line: 0, character: 0 });
-  assert.deepEqual(result.related?.[1].target.range.start, { line: 1, character: 2 });
+  const related = result.related;
+  assert.equal(related.length, 2);
+  const [first, second] = related;
+  assert.ok(first);
+  assert.ok(second);
+  assert.deepEqual(first.target.range.start, { line: 0, character: 0 });
+  assert.deepEqual(second.target.range.start, { line: 1, character: 2 });
 });
 
-test('formatTokenDiagnostic renders human readable output', () => {
+void test('formatTokenDiagnostic renders human readable output', () => {
   const span = createSpan();
   const diagnostic = toTokenDiagnostic(
     {
@@ -98,7 +102,7 @@ test('formatTokenDiagnostic renders human readable output', () => {
   assert.match(formatted, /tokens.json:1:1/);
 });
 
-test('formatTokenDiagnostic applies ANSI colors when enabled', () => {
+void test('formatTokenDiagnostic applies ANSI colors when enabled', () => {
   const span = createSpan();
   const diagnostic = toTokenDiagnostic(
     {

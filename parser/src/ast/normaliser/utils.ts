@@ -36,23 +36,42 @@ export function createField<T>(
 }
 
 export function freezeRecord(value: Record<string, unknown>): Readonly<Record<string, unknown>> {
-  const entries = Object.entries(value).map(([key, entry]) => [key, freezeValue(entry)] as const);
-  return Object.freeze(Object.fromEntries(entries));
+  const frozenEntries: Record<string, unknown> = {};
+
+  for (const key of Object.keys(value)) {
+    frozenEntries[key] = freezeValue(value[key]);
+  }
+
+  return Object.freeze(frozenEntries);
 }
 
-export function freezeValue<T>(value: T): T {
-  if (Array.isArray(value)) {
-    return Object.freeze(value.map((entry) => freezeValue(entry))) as unknown as T;
+export function freezeValue<T>(value: readonly T[]): readonly T[];
+export function freezeValue<T>(value: Readonly<Record<string, T>>): Readonly<Record<string, T>>;
+export function freezeValue<T>(value: T): T;
+export function freezeValue(value: unknown): unknown {
+  if (isReadonlyArray(value)) {
+    return freezeArray(value);
   }
 
   if (isPlainObject(value)) {
-    const entries = Object.entries(value as Record<string, unknown>).map(
-      ([key, entry]) => [key, freezeValue(entry)] as const
-    );
-    return Object.freeze(Object.fromEntries(entries)) as unknown as T;
+    const frozenEntries: Record<string, unknown> = {};
+
+    for (const key of Object.keys(value)) {
+      frozenEntries[key] = freezeValue(value[key]);
+    }
+
+    return Object.freeze(frozenEntries);
   }
 
   return value;
+}
+
+function freezeArray<T>(array: readonly T[]): readonly T[] {
+  return Object.freeze(array.map((entry) => freezeValue(entry)));
+}
+
+function isReadonlyArray(value: unknown): value is readonly unknown[] {
+  return Array.isArray(value);
 }
 
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -64,6 +83,6 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
     return false;
   }
 
-  const prototype = Object.getPrototypeOf(value);
+  const prototype = Reflect.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
 }

@@ -2,11 +2,7 @@ import { normalizeDocument } from './ast/normaliser.js';
 import { DiagnosticBag } from './diagnostics/bag.js';
 import { DiagnosticCodes } from './diagnostics/codes.js';
 import { buildDocumentGraph } from './graph/builder.js';
-import {
-  DefaultDocumentLoader,
-  DocumentLoaderError,
-  type DocumentLoader
-} from './io/document-loader.js';
+import { DocumentLoaderError } from './io/document-loader.js';
 import { decodeDocument } from './io/decoder.js';
 import { createDocumentResolver } from './resolver/index.js';
 import type {
@@ -20,17 +16,35 @@ import { resolveOptions, type ResolvedParseSessionOptions } from './session/inte
 import type { ParseSessionOptions } from './session/types.js';
 export type { OverrideContext, ParseSessionOptions } from './session/types.js';
 
+function isAsyncIterable<T>(
+  value: Iterable<T> | AsyncIterable<T>
+): value is AsyncIterable<T> {
+  const root: object = value;
+  let current: object | null = root;
+
+  while (current) {
+    const descriptor = Object.getOwnPropertyDescriptor(current, Symbol.asyncIterator);
+    if (descriptor && typeof descriptor.value === 'function') {
+      return true;
+    }
+
+    current = Reflect.getPrototypeOf(current);
+  }
+
+  return false;
+}
+
 async function* toAsyncIterable(
   inputs: Iterable<ParseInput> | AsyncIterable<ParseInput>
 ): AsyncGenerator<ParseInput, void, unknown> {
-  if (typeof (inputs as AsyncIterable<ParseInput>)[Symbol.asyncIterator] === 'function') {
-    for await (const value of inputs as AsyncIterable<ParseInput>) {
+  if (isAsyncIterable(inputs)) {
+    for await (const value of inputs) {
       yield value;
     }
     return;
   }
 
-  for (const value of inputs as Iterable<ParseInput>) {
+  for (const value of inputs) {
     yield value;
   }
 }

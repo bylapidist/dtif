@@ -82,15 +82,20 @@ function createBaseNode<TKind extends DocumentChildNode['kind']>(
   child: Extract<DocumentChildNode, { kind: TKind }>,
   parentPointer: JsonPointer
 ): GraphNodeBase & { readonly kind: TKind } {
-  return Object.freeze({
+  const pathSegments = splitJsonPointer(child.pointer);
+  const path = Object.freeze([...pathSegments]);
+
+  const base = {
     kind: child.kind,
     name: child.name,
     pointer: child.pointer,
     span: child.span,
-    path: Object.freeze(splitJsonPointer(child.pointer)),
+    path,
     parent: parentPointer,
     metadata: child.metadata
-  }) as GraphNodeBase & { readonly kind: TKind };
+  } satisfies GraphNodeBase & { readonly kind: TKind };
+
+  return Object.freeze(base);
 }
 
 function createCollectionNode(

@@ -13,7 +13,7 @@ function decodeBytes(bytes: Uint8Array): string {
   return textDecoder.decode(bytes);
 }
 
-test('loads inline JSON content into a memory-backed handle', async () => {
+void test('loads inline JSON content into a memory-backed handle', async () => {
   const loader = new DefaultDocumentLoader();
   const json = '{\n  "foo": "bar"\n}';
 
@@ -24,7 +24,7 @@ test('loads inline JSON content into a memory-backed handle', async () => {
   assert.equal(decodeBytes(handle.bytes), json);
 });
 
-test('loads filesystem documents using relative paths', async () => {
+void test('loads filesystem documents using relative paths', async () => {
   const loader = new DefaultDocumentLoader();
   const fixturePath = path.join('tests', 'fixtures', 'sample.json');
   const handle = await loader.load(fixturePath);
@@ -36,7 +36,7 @@ test('loads filesystem documents using relative paths', async () => {
   assert.equal(decodeBytes(handle.bytes), decodeBytes(fileBytes));
 });
 
-test('supports explicit parse input records with URIs', async () => {
+void test('supports explicit parse input records with URIs', async () => {
   const loader = new DefaultDocumentLoader();
   const record: ParseInputRecord = {
     uri: 'memory://custom/document',
@@ -51,7 +51,7 @@ test('supports explicit parse input records with URIs', async () => {
   assert.equal(decodeBytes(handle.bytes), record.content);
 });
 
-test('loads design token objects into deterministic in-memory handles', async () => {
+void test('loads design token objects into deterministic in-memory handles', async () => {
   const loader = new DefaultDocumentLoader();
   const tokens = {
     $schema: 'https://dtif.lapidist.net/schema/core.json',
@@ -75,7 +75,7 @@ test('loads design token objects into deterministic in-memory handles', async ()
   assert.notEqual(firstHandle.data, secondHandle.data);
 });
 
-test('supports explicit data records containing design token objects', async () => {
+void test('supports explicit data records containing design token objects', async () => {
   const loader = new DefaultDocumentLoader();
   const record: ParseDataInputRecord = {
     uri: 'memory://custom/data-record.json',
@@ -95,7 +95,7 @@ test('supports explicit data records containing design token objects', async () 
   assert.deepEqual(handle.data, record.data);
 });
 
-test('rejects HTTP(S) requests when not allowed', async () => {
+void test('rejects HTTP(S) requests when not allowed', async () => {
   const loader = new DefaultDocumentLoader();
 
   await assert.rejects(
@@ -104,23 +104,38 @@ test('rejects HTTP(S) requests when not allowed', async () => {
   );
 });
 
-test('fetches HTTP resources when allowed', async () => {
+function hasRequestUrl(value: unknown): value is { url: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const urlValue: unknown = Reflect.get(value, 'url');
+  return typeof urlValue === 'string';
+}
+
+void test('fetches HTTP resources when allowed', async () => {
   const body = new TextEncoder().encode('{"ok":true}');
   let requestedUrl: URL | undefined;
 
-  const fetchStub: typeof fetch = async (input) => {
-    const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+  const fetchStub: typeof fetch = (input) => {
+    const href =
+      typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.href
+          : hasRequestUrl(input)
+            ? input.url
+            : (() => {
+                throw new Error('Unsupported fetch input');
+              })();
+
     requestedUrl = new URL(href);
-    return {
-      ok: true,
+    const response = new Response(body.slice(), {
       status: 200,
-      headers: {
-        get(name: string) {
-          return name.toLowerCase() === 'content-type' ? 'application/json' : null;
-        }
-      },
-      arrayBuffer: async () => body.slice().buffer
-    } as unknown as Response;
+      headers: { 'content-type': 'application/json' }
+    });
+
+    return Promise.resolve(response);
   };
 
   const loader = new DefaultDocumentLoader({ allowHttp: true, fetch: fetchStub });
@@ -131,7 +146,7 @@ test('fetches HTTP resources when allowed', async () => {
   assert.equal(decodeBytes(handle.bytes), decodeBytes(body));
 });
 
-test('resolves relative paths against a base URI', async () => {
+void test('resolves relative paths against a base URI', async () => {
   const loader = new DefaultDocumentLoader();
   const baseDirectory = path.resolve('tests/fixtures');
   const baseWithSlash = baseDirectory.endsWith(path.sep)
@@ -145,7 +160,7 @@ test('resolves relative paths against a base URI', async () => {
   assert.equal(handle.contentType, 'application/yaml');
 });
 
-test('treats Uint8Array input as raw bytes', async () => {
+void test('treats Uint8Array input as raw bytes', async () => {
   const loader = new DefaultDocumentLoader();
   const content = new TextEncoder().encode('---\nfoo: bar\n');
 
@@ -156,7 +171,7 @@ test('treats Uint8Array input as raw bytes', async () => {
   assert.equal(decodeBytes(handle.bytes), decodeBytes(content));
 });
 
-test('enforces the configured maximum byte length for inline content', async () => {
+void test('enforces the configured maximum byte length for inline content', async () => {
   const loader = new DefaultDocumentLoader({ maxBytes: 64 });
   const payload = JSON.stringify({ value: 'x'.repeat(80) });
 
@@ -167,7 +182,7 @@ test('enforces the configured maximum byte length for inline content', async () 
       assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
       assert.equal(error.limit, 64);
       assert.ok(
-        /exceeding the configured maximum/.test(error.message),
+        error.message.includes('exceeding the configured maximum'),
         'expected error message to mention configured maximum'
       );
       return true;
@@ -175,7 +190,7 @@ test('enforces the configured maximum byte length for inline content', async () 
   );
 });
 
-test('allows larger documents when raising the byte limit', async () => {
+void test('allows larger documents when raising the byte limit', async () => {
   const loader = new DefaultDocumentLoader({ maxBytes: 256 });
   const content = new TextEncoder().encode('a'.repeat(200));
 

@@ -10,7 +10,10 @@ import {
 const VALID_FIXTURE = new URL('../fixtures/node/valid.tokens.json', import.meta.url);
 const INVALID_FIXTURE = new URL('../fixtures/node/invalid.tokens.json', import.meta.url);
 
-test('parseTokensFromFile returns flattened tokens for supported files', async () => {
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+void test('parseTokensFromFile returns flattened tokens for supported files', async () => {
   const diagnostics: unknown[] = [];
   const result = await parseTokensFromFile(VALID_FIXTURE, {
     onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
@@ -28,7 +31,7 @@ test('parseTokensFromFile returns flattened tokens for supported files', async (
   assert.equal(result.flattened[0]?.name, 'primary');
 });
 
-test('parseTokensFromFile rejects unsupported file extensions', async () => {
+void test('parseTokensFromFile rejects unsupported file extensions', async () => {
   await assert.rejects(
     parseTokensFromFile('tokens.json'),
     /Unsupported design tokens file/,
@@ -36,7 +39,7 @@ test('parseTokensFromFile rejects unsupported file extensions', async () => {
   );
 });
 
-test('parseTokensFromFile throws DtifTokenParseError for invalid documents', async () => {
+void test('parseTokensFromFile throws DtifTokenParseError for invalid documents', async () => {
   await assert.rejects(parseTokensFromFile(INVALID_FIXTURE), (error: unknown) => {
     assert.ok(error instanceof DtifTokenParseError, 'expected DtifTokenParseError instance');
     assert.ok(error.message.includes('Failed to parse DTIF document'));
@@ -47,10 +50,19 @@ test('parseTokensFromFile throws DtifTokenParseError for invalid documents', asy
   });
 });
 
-test('readTokensFile returns parsed DTIF contents', async () => {
+void test('readTokensFile returns parsed DTIF contents', async () => {
   const document = await readTokensFile(VALID_FIXTURE);
-  assert.equal(typeof document, 'object');
-  const colors = (document as Record<string, unknown>).colors as Record<string, any> | undefined;
-  assert.ok(colors?.brand?.primary);
-  assert.equal(colors.brand.primary.$type, 'color');
+  assert.ok(isRecord(document), 'expected document to be an object');
+
+  const colors = document.colors;
+  assert.ok(isRecord(colors), 'expected document to expose a colors record');
+
+  const brand = colors.brand;
+  assert.ok(isRecord(brand), 'expected colors.brand to be an object');
+
+  const primary = brand.primary;
+  assert.ok(isRecord(primary), 'expected colors.brand.primary to be a token object');
+  const tokenType = primary.$type;
+  assert.equal(typeof tokenType, 'string', 'expected token type to be a string');
+  assert.equal(tokenType, 'color');
 });

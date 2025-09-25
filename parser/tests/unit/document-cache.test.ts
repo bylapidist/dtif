@@ -7,7 +7,7 @@ import type { RawDocument } from '../../src/types.js';
 
 const encoder = new TextEncoder();
 
-test('stores and retrieves documents', async () => {
+void test('stores and retrieves documents', async () => {
   const cache = new InMemoryDocumentCache();
   const document = await createDocument('memory://cache/basic', 1);
 
@@ -16,7 +16,7 @@ test('stores and retrieves documents', async () => {
   assert.equal(cache.get(document.uri), document);
 });
 
-test('evicts the least recently used document when capacity is exceeded', async () => {
+void test('evicts the least recently used document when capacity is exceeded', async () => {
   const cache = new InMemoryDocumentCache({ maxEntries: 2 });
   const first = await createDocument('memory://cache/lru-1', 1);
   const second = await createDocument('memory://cache/lru-2', 2);
@@ -39,7 +39,7 @@ test('evicts the least recently used document when capacity is exceeded', async 
   assert.equal(cache.get(third.uri), third);
 });
 
-test('supports unbounded capacity when maxEntries is non-finite', async () => {
+void test('supports unbounded capacity when maxEntries is non-finite', async () => {
   const cache = new InMemoryDocumentCache({ maxEntries: Number.POSITIVE_INFINITY });
   const first = await createDocument('memory://cache/unbounded-1', 1);
   const second = await createDocument('memory://cache/unbounded-2', 2);
@@ -54,7 +54,7 @@ test('supports unbounded capacity when maxEntries is non-finite', async () => {
   assert.equal(cache.get(third.uri), third);
 });
 
-test('expires documents after the configured max age', async () => {
+void test('expires documents after the configured max age', async () => {
   let now = 0;
   const cache = new InMemoryDocumentCache({ maxAgeMs: 1000, clock: () => now });
   const document = await createDocument('memory://cache/ttl', 1);
@@ -73,7 +73,7 @@ test('expires documents after the configured max age', async () => {
   );
 });
 
-test('applies a default expiration when maxAgeMs is omitted', async () => {
+void test('applies a default expiration when maxAgeMs is omitted', async () => {
   let now = 0;
   const cache = new InMemoryDocumentCache({ clock: () => now });
   const document = await createDocument('memory://cache/default-ttl', 1);
@@ -91,7 +91,7 @@ test('applies a default expiration when maxAgeMs is omitted', async () => {
   );
 });
 
-test('treats non-finite maxAgeMs as unbounded', async () => {
+void test('treats non-finite maxAgeMs as unbounded', async () => {
   let now = 0;
   const cache = new InMemoryDocumentCache({ maxAgeMs: Number.POSITIVE_INFINITY, clock: () => now });
   const document = await createDocument('memory://cache/unbounded', 1);
@@ -103,7 +103,7 @@ test('treats non-finite maxAgeMs as unbounded', async () => {
   assert.equal(cache.get(document.uri), document);
 });
 
-test('delete removes cached documents', async () => {
+void test('delete removes cached documents', async () => {
   const cache = new InMemoryDocumentCache();
   const document = await createDocument('memory://cache/delete', 1);
 
@@ -113,7 +113,7 @@ test('delete removes cached documents', async () => {
   assert.equal(cache.get(document.uri), undefined);
 });
 
-test('clear removes all cached documents', async () => {
+void test('clear removes all cached documents', async () => {
   const cache = new InMemoryDocumentCache();
   const first = await createDocument('memory://cache/clear-1', 1);
   const second = await createDocument('memory://cache/clear-2', 2);
@@ -126,7 +126,7 @@ test('clear removes all cached documents', async () => {
   assert.equal(cache.get(second.uri), undefined);
 });
 
-test('maxEntries equal to zero disables caching entirely', async () => {
+void test('maxEntries equal to zero disables caching entirely', async () => {
   const cache = new InMemoryDocumentCache({ maxEntries: 0 });
   const document = await createDocument('memory://cache/disabled', 1);
 

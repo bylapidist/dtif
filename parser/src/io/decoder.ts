@@ -7,9 +7,9 @@ import { createSyntheticSourceMap } from './decoder/synthetic-source-map.js';
 
 export { DecoderError } from './decoder/errors.js';
 
-export async function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
+export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
   if (handle.data !== undefined) {
-    return Object.freeze(createRawDocumentFromProvidedData(handle));
+    return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
   }
 
   const { text } = decodeBytes(handle.bytes);
@@ -17,18 +17,22 @@ export async function decodeDocument(handle: DocumentHandle): Promise<RawDocumen
   const data = toJavaScript(yamlDocument);
   const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
 
-  return Object.freeze({
-    uri: handle.uri,
-    contentType: handle.contentType,
-    bytes: handle.bytes,
-    text,
-    data,
-    sourceMap
-  });
+  return Promise.resolve(
+    Object.freeze({
+      uri: handle.uri,
+      contentType: handle.contentType,
+      bytes: handle.bytes,
+      text,
+      data,
+      sourceMap
+    })
+  );
 }
 
-function createRawDocumentFromProvidedData(handle: DocumentHandle): RawDocument {
-  const data = cloneJsonValue(handle.data!);
+type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
+
+function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocument {
+  const data = cloneJsonValue(handle.data);
 
   if (typeof handle.text === 'string' && handle.text.length > 0) {
     const text = handle.text;

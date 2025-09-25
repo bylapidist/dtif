@@ -17,12 +17,12 @@ export function toTokenDiagnostic(
   context: TokenDiagnosticContext = {}
 ): TokenDiagnostic {
   const span = resolveSpan(diagnostic.span, diagnostic.pointer, context);
-  const targetUri = span?.uri?.href ?? context.documentUri ?? DEFAULT_URI;
+  const targetUri = span ? span.uri.href : (context.documentUri ?? DEFAULT_URI);
   const targetRange = span ? toRange(span) : createZeroRange();
 
   return {
     severity: diagnostic.severity,
-    code: String(diagnostic.code),
+    code: diagnostic.code,
     message: diagnostic.message,
     source: 'dtif-parser',
     target: {
@@ -101,11 +101,11 @@ function mapRelated(
     return undefined;
   }
 
-  const entries: Array<NonNullable<TokenDiagnostic['related']>[number]> = [];
+  const entries: NonNullable<TokenDiagnostic['related']>[number][] = [];
 
   for (const item of related) {
     const span = resolveSpan(item.span, item.pointer, context);
-    const uri = span?.uri?.href ?? context.documentUri ?? DEFAULT_URI;
+    const uri = span ? span.uri.href : (context.documentUri ?? DEFAULT_URI);
     entries.push({
       message: item.message,
       target: {
@@ -139,7 +139,9 @@ function formatTarget(target: TokenDiagnostic['target'], cwd: string | undefined
   const location = formatUri(uri, cwd);
   const line = range.start.line + 1;
   const character = range.start.character + 1;
-  return `${location}:${line}:${character}`;
+  const lineLabel = line.toString();
+  const characterLabel = character.toString();
+  return `${location}:${lineLabel}:${characterLabel}`;
 }
 
 function formatUri(uri: string, cwd: string | undefined): string {

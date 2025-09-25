@@ -148,7 +148,7 @@ function createOptionsVariant(
 function normalizeContext(
   context: ResolvedParseSessionOptions['overrideContext']
 ): Record<string, unknown> | undefined {
-  if (!context) {
+  if (context.size === 0) {
     return undefined;
   }
 
@@ -167,7 +167,7 @@ function normalizePlugins(
     return undefined;
   }
 
-  const transformCount = plugins.transforms.length;
+  const transformCount = String(plugins.transforms.length);
   return [`transforms:${transformCount}`];
 }
 

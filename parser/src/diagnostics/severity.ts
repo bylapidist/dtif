@@ -8,10 +8,10 @@ const SEVERITY_TO_WEIGHT: Record<DiagnosticSeverity, number> = {
   info: 2
 };
 
-const SEVERITY_SET = new Set<DiagnosticSeverity>(DIAGNOSTIC_SEVERITIES);
+const SEVERITY_SET: ReadonlySet<string> = new Set(DIAGNOSTIC_SEVERITIES);
 
 export function isDiagnosticSeverity(value: unknown): value is DiagnosticSeverity {
-  return typeof value === 'string' && SEVERITY_SET.has(value as DiagnosticSeverity);
+  return typeof value === 'string' && SEVERITY_SET.has(value);
 }
 
 export function compareDiagnosticSeverity(a: DiagnosticSeverity, b: DiagnosticSeverity): number {

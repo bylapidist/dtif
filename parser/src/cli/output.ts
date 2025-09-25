@@ -14,14 +14,18 @@ export function printPrettyOutput(
   stdout: NodeJS.WritableStream
 ): void {
   const documentCount = output.documents.length;
-  stdout.write(`Parsed ${documentCount} document${documentCount === 1 ? '' : 's'}.\n`);
   stdout.write(
-    `Summary: ${output.summary.error} error(s), ${output.summary.warning} warning(s), ${output.summary.info} info message(s).\n`
+    `Parsed ${formatNumber(documentCount)} document${documentCount === 1 ? '' : 's'}.\n`
+  );
+  stdout.write(
+    `Summary: ${formatNumber(output.summary.error)} error(s), ${formatNumber(
+      output.summary.warning
+    )} warning(s), ${formatNumber(output.summary.info)} info message(s).\n`
   );
 
   output.documents.forEach((document, index) => {
     const title = document.uri ?? '<inline document>';
-    stdout.write(`\nDocument ${index + 1}: ${title}\n`);
+    stdout.write(`\nDocument ${formatNumber(index + 1)}: ${title}\n`);
     printDiagnosticsSummary(document.diagnosticCounts, document.diagnostics, stdout);
 
     if (pointers.length === 0) {
@@ -56,7 +60,9 @@ function printDiagnosticsSummary(
   }
 
   stdout.write(
-    `  Diagnostics: ${counts.error} error(s), ${counts.warning} warning(s), ${counts.info} info message(s)\n`
+    `  Diagnostics: ${formatNumber(counts.error)} error(s), ${formatNumber(
+      counts.warning
+    )} warning(s), ${formatNumber(counts.info)} info message(s)\n`
   );
   for (const diagnostic of diagnostics) {
     printDiagnostic('    ', diagnostic, stdout);
@@ -131,7 +137,9 @@ function printResolvedToken(
     stdout.write(`${prefix}overrides:\n`);
     for (const override of token.overridesApplied) {
       stdout.write(
-        `${prefix}  - ${override.kind} ${override.pointer} (depth ${override.depth})${
+        `${prefix}  - ${override.kind} ${override.pointer} (depth ${formatNumber(
+          override.depth
+        )})${
           override.span ? ` at ${formatSpan(override.span)}` : ''
         }${override.source ? ` from ${override.source.pointer}` : ''}\n`
       );
@@ -141,16 +149,19 @@ function printResolvedToken(
     const trace = token.trace.map((step) => `${step.kind}(${step.pointer})`).join(' -> ');
     stdout.write(`${prefix}trace: ${trace}\n`);
   }
-  if (token.warnings.length > 0) {
-    stdout.write(`${prefix}warnings:\n`);
-    for (const warning of token.warnings) {
-      printDiagnostic(`${prefix}  `, warning, stdout);
+  const { warnings } = token;
+  let headerWritten = false;
+  for (const warning of warnings) {
+    if (!headerWritten) {
+      stdout.write(`${prefix}warnings:\n`);
+      headerWritten = true;
     }
+    printDiagnostic(`${prefix}  `, warning, stdout);
   }
 }
 
 function printValue(prefix: string, value: unknown, stdout: NodeJS.WritableStream): void {
-  const serialized = JSON.stringify(value, null, 2);
+  const serialized = safeStringify(value);
   if (serialized === undefined) {
     stdout.write(`${prefix}value: undefined\n`);
     return;
@@ -160,4 +171,12 @@ function printValue(prefix: string, value: unknown, stdout: NodeJS.WritableStrea
   for (const line of lines.slice(1)) {
     stdout.write(`${prefix}       ${line}\n`);
   }
+}
+
+function formatNumber(value: number): string {
+  return value.toString();
+}
+
+function safeStringify(value: unknown): string | undefined {
+  return JSON.stringify(value, null, 2);
 }

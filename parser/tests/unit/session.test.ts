@@ -10,6 +10,10 @@ import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { DocumentCache, DocumentHandle, RawDocument } from '../../src/types.js';
 import type { DocumentLoader } from '../../src/io/document-loader.js';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
 const VALID_DOCUMENT = JSON.stringify(
   {
     $schema: 'https://dtif.lapidist.net/schema/core.json',
@@ -48,7 +52,7 @@ const INVALID_DOCUMENT = JSON.stringify(
   2
 );
 
-test('parseDocument surfaces schema guard diagnostics alongside decoded documents', async () => {
+void test('parseDocument surfaces schema guard diagnostics alongside decoded documents', async () => {
   const session = createSession();
   const result = await session.parseDocument(INVALID_DOCUMENT);
 
@@ -83,7 +87,7 @@ class RecordingSchemaGuard extends SchemaGuard {
   }
 }
 
-test('ParseSession honours a provided SchemaGuard instance', async () => {
+void test('ParseSession honours a provided SchemaGuard instance', async () => {
   const guard = new RecordingSchemaGuard();
   const session = new ParseSession({ schemaGuard: guard });
 
@@ -95,27 +99,32 @@ test('ParseSession honours a provided SchemaGuard instance', async () => {
   assert.equal(guard.lastDocument, result.document);
 });
 
-test('parseDocument returns a normalised AST when schema validation succeeds', async () => {
+void test('parseDocument returns a normalised AST when schema validation succeeds', async () => {
   const session = createSession();
   const result = await session.parseDocument(VALID_DOCUMENT);
 
   assert.ok(result.ast, 'expected AST to be returned for valid documents');
   assert.ok(result.graph, 'expected document graph to be returned for valid documents');
   assert.ok(result.resolver, 'expected document resolver to be returned for valid documents');
-  const collections = result.ast!.children;
+  const { ast, resolver } = result;
+  assert.ok(ast);
+  assert.ok(resolver);
+  const collections = ast.children;
   assert.ok(collections.length > 0);
   assert.equal(collections[0].kind, 'collection');
 
-  const resolution = result.resolver!.resolve('#/color/brand/primary');
+  const resolution = resolver.resolve('#/color/brand/primary');
   assert.ok(resolution.token, 'expected resolver to produce a token');
   assert.equal(resolution.diagnostics.length, 0);
-  assert.deepEqual(resolution.token?.value, {
+  const { token } = resolution;
+  assert.ok(token);
+  assert.deepEqual(token.value, {
     colorSpace: 'srgb',
     components: [0, 0, 0]
   });
 });
 
-test('ParseSession reuses cached documents when bytes match', async () => {
+void test('ParseSession reuses cached documents when bytes match', async () => {
   const uri = new URL('memory://cache/reuse');
   const cachedDocument = await decodeDocument(createMemoryHandle(uri, VALID_DOCUMENT));
   const loader = new StaticLoader(uri, VALID_DOCUMENT);
@@ -131,7 +140,7 @@ test('ParseSession reuses cached documents when bytes match', async () => {
   assert.equal(result.diagnostics.hasErrors(), false);
 });
 
-test('parseDocument surfaces loader diagnostics when documents exceed the byte limit', async () => {
+void test('parseDocument surfaces loader diagnostics when documents exceed the byte limit', async () => {
   const loader = new DefaultDocumentLoader({ maxBytes: 32 });
   const session = new ParseSession({ loader });
   const oversized = JSON.stringify({ value: 'x'.repeat(64) });
@@ -152,7 +161,7 @@ test('parseDocument surfaces loader diagnostics when documents exceed the byte l
   assert.equal(result.diagnostics.hasErrors(), true);
 });
 
-test('ParseSession refreshes the cache when document bytes change', async () => {
+void test('ParseSession refreshes the cache when document bytes change', async () => {
   const uri = new URL('memory://cache/refresh');
   const staleDocument = await decodeDocument(
     createMemoryHandle(
@@ -205,7 +214,7 @@ test('ParseSession refreshes the cache when document bytes change', async () => 
   assert.equal(result.diagnostics.hasErrors(), false);
 });
 
-test('ParseSession surfaces diagnostics when cache writes fail', async () => {
+void test('ParseSession surfaces diagnostics when cache writes fail', async () => {
   const uri = new URL('memory://cache/failure');
   const loader = new StaticLoader(uri, VALID_DOCUMENT);
   const cache = new FailingCache();
@@ -219,18 +228,18 @@ test('ParseSession surfaces diagnostics when cache writes fail', async () => {
   );
 
   assert.ok(cacheDiagnostic, 'expected cache failure diagnostic');
-  assert.equal(cacheDiagnostic?.severity, 'warning');
+  assert.equal(cacheDiagnostic.severity, 'warning');
   assert.equal(cache.setCalls, 1, 'expected cache set to be attempted');
   assert.ok(result.document);
   assert.equal(result.diagnostics.hasErrors(), false);
 });
 
-test('ParseSession invokes extension plugins and records results', async () => {
+void test('ParseSession invokes extension plugins and records results', async () => {
   const plugin: ParserPlugin = {
     name: 'extension-plugin',
     extensions: {
       'com.example': ({ value, pointer }) => ({
-        normalized: { ...(value as Record<string, unknown>), role: 'PRIMARY' },
+        normalized: { ...(isRecord(value) ? value : {}), role: 'PRIMARY' },
         diagnostics: [
           {
             code: DiagnosticCodes.core.NOT_IMPLEMENTED,
@@ -264,7 +273,8 @@ test('ParseSession invokes extension plugins and records results', async () => {
   assert.ok(result.ast);
   const extensionResults = result.extensions ?? [];
   assert.equal(extensionResults.length, 1);
-  const evaluation = extensionResults[0];
+  const [evaluation] = extensionResults;
+  assert.ok(evaluation);
   assert.equal(evaluation.plugin, 'extension-plugin');
   assert.equal(evaluation.namespace, 'com.example');
   assert.equal(evaluation.pointer, '#/color/brand/$extensions/com.example');
@@ -278,7 +288,7 @@ test('ParseSession invokes extension plugins and records results', async () => {
   assert.ok(pluginDiagnostic, 'expected plugin diagnostic from extension handler');
 });
 
-test('ParseSession surfaces diagnostics when extension plugins throw', async () => {
+void test('ParseSession surfaces diagnostics when extension plugins throw', async () => {
   const plugin: ParserPlugin = {
     name: 'broken-extension',
     extensions: {
@@ -311,9 +321,10 @@ test('ParseSession surfaces diagnostics when extension plugins throw', async () 
     .find((entry) => entry.code === DiagnosticCodes.plugins.EXTENSION_FAILED);
 
   assert.ok(diagnostic, 'expected extension failure diagnostic');
-  assert.equal(diagnostic?.pointer, '#/color/brand/$extensions/com.example');
-  assert.equal(diagnostic?.severity, 'error');
-  assert.equal(result.extensions?.length ?? 0, 0);
+  assert.equal(diagnostic.pointer, '#/color/brand/$extensions/com.example');
+  assert.equal(diagnostic.severity, 'error');
+  const extensions = result.extensions ?? [];
+  assert.equal(extensions.length, 0);
 });
 
 class StaticLoader implements DocumentLoader {
@@ -322,8 +333,8 @@ class StaticLoader implements DocumentLoader {
     private readonly text: string
   ) {}
 
-  async load(): Promise<DocumentHandle> {
-    return createMemoryHandle(this.uri, this.text);
+  load(): Promise<DocumentHandle> {
+    return Promise.resolve(createMemoryHandle(this.uri, this.text));
   }
 }
 
@@ -337,18 +348,19 @@ class RecordingCache implements DocumentCache {
     this.document = document;
   }
 
-  async get(uri: URL): Promise<RawDocument | undefined> {
+  get(uri: URL): Promise<RawDocument | undefined> {
     this.getCalls++;
     if (this.document && this.document.uri.href !== uri.href) {
-      return undefined;
+      return Promise.resolve(undefined);
     }
-    return this.document;
+    return Promise.resolve(this.document);
   }
 
-  async set(document: RawDocument): Promise<void> {
+  set(document: RawDocument): Promise<void> {
     this.setCalls++;
     this.lastSet = document;
     this.document = document;
+    return Promise.resolve();
   }
 }
 
@@ -356,14 +368,14 @@ class FailingCache implements DocumentCache {
   getCalls = 0;
   setCalls = 0;
 
-  async get(): Promise<RawDocument | undefined> {
+  get(): Promise<RawDocument | undefined> {
     this.getCalls++;
-    return undefined;
+    return Promise.resolve(undefined);
   }
 
-  async set(): Promise<void> {
+  set(): Promise<void> {
     this.setCalls++;
-    throw new Error('cache write failed');
+    return Promise.reject(new Error('cache write failed'));
   }
 }
 

@@ -26,7 +26,7 @@ aliases:
     $ref: "#/colors/primary"
 `;
 
-test('parseTokens flattens DTIF tokens with metadata and resolution snapshots', async () => {
+void test('parseTokens flattens DTIF tokens with metadata and resolution snapshots', async () => {
   const result = await parseTokens(INLINE_DOCUMENT);
 
   assert.equal(result.diagnostics.length, 0, 'expected no diagnostics for valid document');
@@ -38,42 +38,41 @@ test('parseTokens flattens DTIF tokens with metadata and resolution snapshots', 
 
   const primary = result.flattened.find((token) => token.name === 'primary');
   assert.ok(primary, 'expected primary token to be flattened');
-  assert.equal(primary?.type, 'color', 'expected flattened type to match base type');
+  assert.equal(primary.type, 'color', 'expected flattened type to match base type');
+  const primaryValue = { colorSpace: 'srgb', components: [0.1, 0.2, 0.3] };
   assert.deepEqual(
-    primary?.value,
-    { colorSpace: 'srgb', components: [0.1, 0.2, 0.3] },
+    primary.value,
+    primaryValue,
     'expected flattened value to reflect resolved token'
   );
 
   const alias = result.flattened.find((token) => token.name === 'brand');
   assert.ok(alias, 'expected alias token to be flattened');
-  assert.deepEqual(
-    alias?.value,
-    primary?.value,
-    'expected alias value to resolve to primary value'
-  );
+  assert.deepEqual(alias.value, primaryValue, 'expected alias value to resolve to primary value');
 
   const primaryMetadata = result.metadataIndex.get('#/colors/primary');
   assert.ok(primaryMetadata, 'expected metadata snapshot for primary token');
-  assert.equal(primaryMetadata?.description, 'Primary brand color');
-  assert.deepEqual(primaryMetadata?.extensions['vendor.test'], { note: 'keep' });
+  assert.equal(primaryMetadata.description, 'Primary brand color');
+  assert.deepEqual(primaryMetadata.extensions['vendor.test'], { note: 'keep' });
+  const supersededBy = primaryMetadata.deprecated?.supersededBy;
+  assert.ok(supersededBy, 'expected deprecated metadata to resolve replacement pointer');
   assert.equal(
-    primaryMetadata?.deprecated?.supersededBy?.pointer,
+    supersededBy.pointer,
     '#/aliases/brand',
     'expected deprecated metadata to resolve replacement pointer'
   );
 
   const aliasResolution = result.resolutionIndex.get('#/aliases/brand');
   assert.ok(aliasResolution, 'expected resolution snapshot for alias token');
-  assert.ok(aliasResolution?.references.some((ref) => ref.pointer === '#/colors/primary'));
+  assert.ok(aliasResolution.references.some((ref) => ref.pointer === '#/colors/primary'));
   assert.deepEqual(
-    aliasResolution?.value,
-    primary?.value,
+    aliasResolution.value,
+    primaryValue,
     'expected alias resolution value to match flattened alias value'
   );
 });
 
-test('parseTokens accepts in-memory design token objects', async () => {
+void test('parseTokens accepts in-memory design token objects', async () => {
   const tokens = {
     $schema: 'https://dtif.lapidist.net/schema/core.json',
     colors: {
@@ -91,12 +90,13 @@ test('parseTokens accepts in-memory design token objects', async () => {
   const [token] = result.flattened;
   assert.equal(token.name, 'brand');
   assert.equal(token.type, 'color');
-  assert.ok(result.document, 'expected document to be returned');
-  assert.notEqual(result.document?.data, tokens);
-  assert.deepEqual(result.document?.data, tokens);
+  const { document } = result;
+  assert.ok(document, 'expected document to be returned');
+  assert.notEqual(document.data, tokens);
+  assert.deepEqual(document.data, tokens);
 });
 
-test('parseTokens reuses cached artifacts when ParseCache entries are fresh', async () => {
+void test('parseTokens reuses cached artifacts when ParseCache entries are fresh', async () => {
   const cache = new RecordingParseCache();
 
   const first = await parseTokens(INLINE_DOCUMENT, { cache });
@@ -109,7 +109,7 @@ test('parseTokens reuses cached artifacts when ParseCache entries are fresh', as
   assert.equal(second.flattened.length, 2, 'expected flattened tokens from cached parse');
 });
 
-test('parseTokens forwards diagnostics to callbacks', async () => {
+void test('parseTokens forwards diagnostics to callbacks', async () => {
   const invalidDocument = `
 $schema: https://dtif.lapidist.net/schema/core.json
 colors:
@@ -138,9 +138,9 @@ colors:
   assert.equal(warnCalled, false, 'expected warn callback to be skipped for errors');
 });
 
-test('parseTokens invokes warn callbacks for cached non-error diagnostics', async () => {
+void test('parseTokens invokes warn callbacks for cached non-error diagnostics', async () => {
   const initial = await parseTokens(INLINE_DOCUMENT);
-  const document = initial.document;
+  const { document } = initial;
   assert.ok(document, 'expected document in initial parse');
 
   const warning: TokenDiagnostic = {
@@ -170,7 +170,10 @@ test('parseTokens invokes warn callbacks for cached non-error diagnostics', asyn
     get() {
       return cacheEntry;
     },
-    set() {}
+    set(key, value) {
+      void key;
+      void value;
+    }
   };
 
   const warnings: TokenDiagnostic[] = [];
@@ -188,7 +191,7 @@ test('parseTokens invokes warn callbacks for cached non-error diagnostics', asyn
   assert.equal(warnings[0].message, 'cached warning');
 });
 
-test('parseTokensSync supports inline strings and design token objects', () => {
+void test('parseTokensSync supports inline strings and design token objects', () => {
   const syncResult = parseTokensSync(INLINE_DOCUMENT);
   assert.equal(syncResult.flattened.length, 2, 'expected synchronous parsing to flatten tokens');
 
@@ -204,12 +207,13 @@ test('parseTokensSync supports inline strings and design token objects', () => {
 
   const objectResult = parseTokensSync(tokens);
   assert.equal(objectResult.flattened.length, 1, 'expected object input to parse synchronously');
-  assert.ok(objectResult.document, 'expected synchronous parse to return document');
-  assert.notEqual(objectResult.document?.data, tokens);
-  assert.deepEqual(objectResult.document?.data, tokens);
+  const { document: objectDocument } = objectResult;
+  assert.ok(objectDocument, 'expected synchronous parse to return document');
+  assert.notEqual(objectDocument.data, tokens);
+  assert.deepEqual(objectDocument.data, tokens);
 });
 
-test('parseTokensSync throws when provided an asynchronous cache implementation', () => {
+void test('parseTokensSync throws when provided an asynchronous cache implementation', () => {
   const asyncCache = new AsyncParseCache();
   assert.throws(
     () => parseTokensSync(INLINE_DOCUMENT, { cache: asyncCache }),

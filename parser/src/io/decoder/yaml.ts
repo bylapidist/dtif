@@ -32,7 +32,9 @@ export function toJavaScript(document: YamlDocument): unknown {
 function formatYamlError(error: YAMLError): string {
   if (error.linePos && error.linePos.length > 0) {
     const [{ line, col }] = error.linePos;
-    return `${error.message} (line ${line}, column ${col})`;
+    const lineText = String(line);
+    const columnText = String(col);
+    return `${error.message} (line ${lineText}, column ${columnText})`;
   }
   return error.message;
 }

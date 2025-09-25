@@ -7,8 +7,8 @@ function normalizeForStringify(value: unknown): unknown {
     return value.map(normalizeForStringify);
   }
 
-  if (value && typeof value === 'object') {
-    const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
+  if (isRecord(value)) {
+    const entries = Object.entries(value).sort(([a], [b]) =>
       a.localeCompare(b)
     );
     const normalized: Record<string, unknown> = {};
@@ -19,4 +19,8 @@ function normalizeForStringify(value: unknown): unknown {
   }
 
   return value;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
 }

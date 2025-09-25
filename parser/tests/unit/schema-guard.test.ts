@@ -18,7 +18,7 @@ async function decodeJsonDocument(json: string): Promise<RawDocument> {
   return decodeDocument(handle);
 }
 
-test('SchemaGuard accepts documents that satisfy the DTIF schema', async () => {
+void test('SchemaGuard accepts documents that satisfy the DTIF schema', async () => {
   const json = JSON.stringify(
     {
       $schema: 'https://dtif.lapidist.net/schema/core.json',
@@ -47,7 +47,7 @@ test('SchemaGuard accepts documents that satisfy the DTIF schema', async () => {
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('SchemaGuard reports diagnostics with pointers and spans for schema violations', async () => {
+void test('SchemaGuard reports diagnostics with pointers and spans for schema violations', async () => {
   const json = JSON.stringify(
     {
       $schema: 'https://dtif.lapidist.net/schema/core.json',
@@ -80,12 +80,13 @@ test('SchemaGuard reports diagnostics with pointers and spans for schema violati
   );
 
   assert.ok(diagnostic, 'expected diagnostic for the components pointer');
-  assert.equal(diagnostic?.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
-  assert.equal(diagnostic?.severity, 'error');
-  assert.ok(diagnostic?.span);
-  assert.ok(diagnostic && /schema violation/i.test(diagnostic.message));
+  assert.equal(diagnostic.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
+  assert.equal(diagnostic.severity, 'error');
+  assert.ok(diagnostic.span);
+  assert.ok(/schema violation/i.test(diagnostic.message));
+  const related = diagnostic.related ?? [];
   assert.ok(
-    diagnostic?.related?.some((info) => /at least 1 item/i.test(info.message)) ?? false,
+    related.some((info) => /at least 1 item/i.test(info.message)),
     'expected related information describing the minItems violation'
   );
 });

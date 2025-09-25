@@ -19,7 +19,7 @@ import {
   unionSourceSpans
 } from '../../src/utils/source.js';
 
-test('createSourcePosition normalises bounds', () => {
+void test('createSourcePosition normalises bounds', () => {
   const position = createSourcePosition(-3.7, 0, 0);
   assert.equal(position.offset, 0);
   assert.equal(position.line, 1);
@@ -32,7 +32,7 @@ test('createSourcePosition normalises bounds', () => {
   assert.ok(isSourcePosition(ZERO_SOURCE_POSITION));
 });
 
-test('compareSourcePositions orders offsets, lines, and columns', () => {
+void test('compareSourcePositions orders offsets, lines, and columns', () => {
   const a = createSourcePosition(0, 1, 1);
   const b = createSourcePosition(10, 2, 5);
   const c = createSourcePosition(10, 2, 7);
@@ -44,7 +44,7 @@ test('compareSourcePositions orders offsets, lines, and columns', () => {
   assert.deepEqual(maxSourcePosition(a, b, c), c);
 });
 
-test('createSourceSpan orders endpoints and reports length', () => {
+void test('createSourceSpan orders endpoints and reports length', () => {
   const uri = new URL('file:///tokens.json');
   const start = createSourcePosition(20, 3, 1);
   const end = createSourcePosition(10, 2, 15);
@@ -60,7 +60,7 @@ test('createSourceSpan orders endpoints and reports length', () => {
   assert.ok(isSourceSpan(span));
 });
 
-test('spanContainsPosition and spansOverlap check spatial relationships', () => {
+void test('spanContainsPosition and spansOverlap check spatial relationships', () => {
   const uri = new URL('file:///tokens.json');
   const a = createSourceSpan(uri, createSourcePosition(0, 1, 1), createSourcePosition(5, 1, 6));
   const b = createSourceSpan(uri, createSourcePosition(4, 1, 5), createSourcePosition(8, 1, 9));
@@ -76,7 +76,7 @@ test('spanContainsPosition and spansOverlap check spatial relationships', () => 
   assert.equal(spansOverlap(a, otherUriSpan), false);
 });
 
-test('unionSourceSpans merges spans sharing a URI', () => {
+void test('unionSourceSpans merges spans sharing a URI', () => {
   const uri = new URL('file:///tokens.json');
   const span = unionSourceSpans([
     createSourceSpan(uri, createSourcePosition(0, 1, 1), createSourcePosition(5, 1, 6)),
@@ -84,8 +84,8 @@ test('unionSourceSpans merges spans sharing a URI', () => {
   ]);
 
   assert.ok(span);
-  assert.equal(span?.start.offset, 0);
-  assert.equal(span?.end.offset, 9);
+  assert.equal(span.start.offset, 0);
+  assert.equal(span.end.offset, 9);
 
   assert.throws(() =>
     unionSourceSpans([
@@ -99,7 +99,7 @@ test('unionSourceSpans merges spans sharing a URI', () => {
   );
 });
 
-test('translateSourceSpan shifts offsets while maintaining ordering', () => {
+void test('translateSourceSpan shifts offsets while maintaining ordering', () => {
   const uri = new URL('file:///tokens.json');
   const original = createSourceSpan(
     uri,

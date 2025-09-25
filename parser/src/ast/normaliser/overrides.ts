@@ -20,7 +20,7 @@ export function normalizeOverrides(
     return EMPTY_OVERRIDES;
   }
 
-  const overridesValue = value['$overrides'];
+  const overridesValue = value.$overrides;
   const overridesPointer = appendJsonPointer(pointer, '$overrides');
 
   if (!Array.isArray(overridesValue)) {
@@ -68,11 +68,11 @@ export function normalizeOverrideNode(
   const refField = readOptionalStringField(context, value, '$ref', pointer);
   const valueField =
     '$value' in value
-      ? createField(context, value['$value'], appendJsonPointer(pointer, '$value'))
+      ? createField(context, value.$value, appendJsonPointer(pointer, '$value'))
       : undefined;
   const fallback =
     '$fallback' in value
-      ? normalizeFallbackChain(context, value['$fallback'], appendJsonPointer(pointer, '$fallback'))
+      ? normalizeFallbackChain(context, value.$fallback, appendJsonPointer(pointer, '$fallback'))
       : undefined;
 
   if (!token || !when) {
@@ -162,11 +162,11 @@ function normalizeFallbackEntry(
   const refField = readOptionalStringField(context, value, '$ref', pointer);
   const valueField =
     '$value' in value
-      ? createField(context, value['$value'], appendJsonPointer(pointer, '$value'))
+      ? createField(context, value.$value, appendJsonPointer(pointer, '$value'))
       : undefined;
   const fallback =
     '$fallback' in value
-      ? normalizeFallbackChain(context, value['$fallback'], appendJsonPointer(pointer, '$fallback'))
+      ? normalizeFallbackChain(context, value.$fallback, appendJsonPointer(pointer, '$fallback'))
       : undefined;
 
   if (!refField && !valueField) {
