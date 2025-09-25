@@ -1,5 +1,5 @@
 import { DefaultDocumentLoader } from '../../io/document-loader.js';
-import { SchemaGuard, type SchemaGuardOptions } from '../../validation/schema-guard.js';
+import { SchemaGuard } from '../../validation/schema-guard.js';
 import { PluginRegistry } from '../../plugins/index.js';
 import type { DocumentLoader } from '../../io/document-loader.js';
 import type { DocumentCache } from '../../types.js';
@@ -19,10 +19,9 @@ const DEFAULT_MAX_DEPTH = 32;
 
 export function resolveOptions(options: ParseSessionOptions = {}): ResolvedParseSessionOptions {
   const allowHttp = options.allowHttp ?? false;
+  const schemaGuardInput = options.schemaGuard;
   const schemaGuard =
-    options.schemaGuard instanceof SchemaGuard
-      ? options.schemaGuard
-      : new SchemaGuard(options.schemaGuard as SchemaGuardOptions | undefined);
+    schemaGuardInput instanceof SchemaGuard ? schemaGuardInput : new SchemaGuard(schemaGuardInput);
   const plugins =
     options.plugins && options.plugins.length > 0 ? new PluginRegistry(options.plugins) : undefined;
 

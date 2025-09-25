@@ -1,17 +1,27 @@
-export function cloneJsonValue<T>(value: T): T {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function createRecordWithPrototype(prototype: object | null): Record<string, unknown> {
+  const record: Record<string, unknown> = {};
+  Reflect.setPrototypeOf(record, prototype);
+  return record;
+}
+
+export function cloneJsonValue(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value.map((item) => cloneJsonValue(item)) as unknown as T;
+    return value.map((item) => cloneJsonValue(item));
   }
 
-  if (value && typeof value === 'object') {
-    const prototype = Object.getPrototypeOf(value as object);
-    const clone: Record<string, unknown> = Object.create(prototype ?? null);
+  if (isRecord(value)) {
+    const prototype = Reflect.getPrototypeOf(value);
+    const clone = createRecordWithPrototype(prototype);
 
-    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+    for (const [key, entry] of Object.entries(value)) {
       clone[key] = cloneJsonValue(entry);
     }
 
-    return clone as unknown as T;
+    return clone;
   }
 
   return value;

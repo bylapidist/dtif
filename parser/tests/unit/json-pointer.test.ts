@@ -15,7 +15,7 @@ import {
   tailJsonPointer
 } from '../../src/utils/json-pointer.js';
 
-test('normalizeJsonPointer canonicalises pointer prefixes', () => {
+void test('normalizeJsonPointer canonicalises pointer prefixes', () => {
   assert.equal(normalizeJsonPointer('#'), '#');
   assert.equal(normalizeJsonPointer('#/color'), '#/color');
   assert.equal(normalizeJsonPointer('color'), '#/color');
@@ -23,7 +23,7 @@ test('normalizeJsonPointer canonicalises pointer prefixes', () => {
   assert.equal(normalizeJsonPointer('#color'), '#/color');
 });
 
-test('splitJsonPointer decodes segments', () => {
+void test('splitJsonPointer decodes segments', () => {
   assert.deepEqual(splitJsonPointer(JSON_POINTER_ROOT), []);
   assert.deepEqual(splitJsonPointer('#/color/brand'), ['color', 'brand']);
   assert.deepEqual(splitJsonPointer('#/'), ['']);
@@ -32,7 +32,7 @@ test('splitJsonPointer decodes segments', () => {
   assert.deepEqual(splitJsonPointer(pointer), ['foo/bar', '~tilde']);
 });
 
-test('joinJsonPointer and appendJsonPointer encode segments correctly', () => {
+void test('joinJsonPointer and appendJsonPointer encode segments correctly', () => {
   const pointer = joinJsonPointer(['layer', 'tokens']);
   assert.equal(pointer, '#/layer/tokens');
 
@@ -41,7 +41,7 @@ test('joinJsonPointer and appendJsonPointer encode segments correctly', () => {
   assert.deepEqual(splitJsonPointer(nested), ['layer', 'tokens', 'accent/primary', '~value']);
 });
 
-test('jsonPointerStartsWith and parentJsonPointer inspect hierarchy', () => {
+void test('jsonPointerStartsWith and parentJsonPointer inspect hierarchy', () => {
   const pointer = appendJsonPointer(JSON_POINTER_ROOT, 'a', 'b', 'c');
   assert.ok(jsonPointerStartsWith(pointer, JSON_POINTER_ROOT));
   assert.ok(jsonPointerStartsWith(pointer, appendJsonPointer(JSON_POINTER_ROOT, 'a')));
@@ -55,14 +55,14 @@ test('jsonPointerStartsWith and parentJsonPointer inspect hierarchy', () => {
   assert.equal(tailJsonPointer(pointer), 'c');
 });
 
-test('encodeJsonPointerSegment and decodeJsonPointerSegment round-trip values', () => {
+void test('encodeJsonPointerSegment and decodeJsonPointerSegment round-trip values', () => {
   const original = 'value/with~specials';
   const encoded = encodeJsonPointerSegment(original);
   assert.equal(encoded, 'value~1with~0specials');
   assert.equal(decodeJsonPointerSegment(encoded), original);
 });
 
-test('isJsonPointer validates pointer syntax', () => {
+void test('isJsonPointer validates pointer syntax', () => {
   assert.equal(isJsonPointer('#/foo/bar'), true);
   assert.equal(isJsonPointer('/foo/bar'), true);
   assert.equal(isJsonPointer('foo/bar'), true);

@@ -1,6 +1,9 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import schema from '@lapidist/dtif-schema/core.json' assert { type: 'json' };
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const schema = require('@lapidist/dtif-schema/core.json');
 
 const DEFAULT_OPTIONS = {
   allErrors: true,

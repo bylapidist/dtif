@@ -18,7 +18,7 @@ import {
 } from '../../src/diagnostics/severity.js';
 import type { Diagnostic } from '../../src/types.js';
 
-test('DiagnosticBag collects and tracks severity counts', () => {
+void test('DiagnosticBag collects and tracks severity counts', () => {
   const bag = new DiagnosticBag();
 
   const error: Diagnostic = {
@@ -53,7 +53,7 @@ test('DiagnosticBag collects and tracks severity counts', () => {
   assert.notStrictEqual(arr, bag.toArray());
 });
 
-test('DiagnosticBag can be constructed from iterables and extended', () => {
+void test('DiagnosticBag can be constructed from iterables and extended', () => {
   const initial: Diagnostic[] = [
     {
       code: DiagnosticCodes.core.NOT_IMPLEMENTED,
@@ -81,26 +81,26 @@ test('DiagnosticBag can be constructed from iterables and extended', () => {
   assert.ok(bag.hasSeverity('info'));
 });
 
-test('compareDiagnosticSeverity reflects repository ordering', () => {
+void test('compareDiagnosticSeverity reflects repository ordering', () => {
   const sorted = [...DIAGNOSTIC_SEVERITIES].sort(compareDiagnosticSeverity);
   assert.deepEqual(sorted, ['error', 'warning', 'info']);
   assert.equal(severityWeight('error') < severityWeight('warning'), true);
   assert.equal(severityWeight('warning') < severityWeight('info'), true);
 });
 
-test('maxDiagnosticSeverity and minDiagnosticSeverity choose extremes', () => {
+void test('maxDiagnosticSeverity and minDiagnosticSeverity choose extremes', () => {
   assert.equal(maxDiagnosticSeverity('info', 'warning', 'error'), 'error');
   assert.equal(minDiagnosticSeverity('info', 'warning', 'error'), 'info');
   assert.equal(maxDiagnosticSeverity(), undefined);
   assert.equal(minDiagnosticSeverity(), undefined);
 });
 
-test('isDiagnosticSeverity validates allowed severities', () => {
+void test('isDiagnosticSeverity validates allowed severities', () => {
   assert.equal(isDiagnosticSeverity('error'), true);
   assert.equal(isDiagnosticSeverity('fatal'), false);
 });
 
-test('diagnostic code helpers format deterministic identifiers', () => {
+void test('diagnostic code helpers format deterministic identifiers', () => {
   assert.equal(formatDiagnosticCode('Core', 1, 0), 'DTIF0010');
   assert.equal(formatDiagnosticCode(DiagnosticDomain.Resolver, 1, 0), 'DTIF1010');
   assert.equal(isDiagnosticCode('DTIF1010'), true);

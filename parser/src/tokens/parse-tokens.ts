@@ -7,6 +7,8 @@ import type { ParseSession } from '../session.js';
 import type { ParseSessionOptions } from '../session.js';
 import type {
   ParseInput,
+  ParseInputRecord,
+  ParseDataInputRecord,
   ParseResult,
   RawDocument,
   Diagnostic,
@@ -190,8 +192,12 @@ export function parseTokensSync(
 }
 
 function normalizeInput(input: ParseTokensInput): ParseInput {
-  if (typeof input === 'object' && input !== null) {
-    if (isParseInputRecord(input)) {
+  if (typeof input === 'string' || input instanceof Uint8Array || input instanceof URL) {
+    return input;
+  }
+
+  if (isRecord(input)) {
+    if (isParseInputRecord(input) || isParseDataRecord(input) || isDesignTokenDocument(input)) {
       return input;
     }
 
@@ -199,39 +205,56 @@ function normalizeInput(input: ParseTokensInput): ParseInput {
       return {
         uri: input.uri,
         content: input.contents
-      };
+      } satisfies ParseInput;
     }
-
-    return input as ParseInput;
   }
 
-  return input as ParseInput;
+  throw new TypeError('Unsupported parse tokens input.');
 }
 
-function isParseInputRecord(value: unknown): value is { content: string | Uint8Array } {
-  if (!value || typeof value !== 'object') {
+function isParseInputRecord(value: unknown): value is ParseInputRecord {
+  if (!isRecord(value)) {
     return false;
   }
-  return 'content' in (value as Record<string, unknown>);
+
+  const content = value.content;
+  if (typeof content !== 'string' && !(content instanceof Uint8Array)) {
+    return false;
+  }
+
+  const { uri, contentType } = value;
+  const validUri = uri === undefined || typeof uri === 'string' || uri instanceof URL;
+  const validContentType =
+    contentType === undefined ||
+    contentType === 'application/json' ||
+    contentType === 'application/yaml';
+
+  return validUri && validContentType;
 }
 
 function isContentsRecord(value: unknown): value is { contents: string; uri?: string } {
-  if (!value || typeof value !== 'object') {
+  if (!isRecord(value)) {
     return false;
   }
-  return 'contents' in (value as Record<string, unknown>);
+
+  if (typeof value.contents !== 'string') {
+    return false;
+  }
+
+  const { uri } = value;
+  return uri === undefined || typeof uri === 'string';
 }
 
-function isParseDataRecord(value: unknown): value is {
-  readonly data: DesignTokenInterchangeFormat;
-  readonly uri?: string | URL;
-  readonly contentType?: ContentType;
-} {
-  if (!value || typeof value !== 'object') {
+function isParseDataRecord(value: unknown): value is ParseDataInputRecord {
+  if (!isRecord(value)) {
     return false;
   }
 
-  return 'data' in (value as Record<string, unknown>);
+  if (!('data' in value)) {
+    return false;
+  }
+
+  return isDesignTokenDocument(value.data);
 }
 
 function createMemoryUriFromDesignTokens(
@@ -240,6 +263,18 @@ function createMemoryUriFromDesignTokens(
 ): string {
   const hash = hashJsonValue(value, { algorithm: 'sha1' });
   return `memory://dtif-${kind}/${hash}.json`;
+}
+
+function resolveInlineUri(value: string | URL | undefined, fallback: () => string): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (value instanceof URL) {
+    return value.toString();
+  }
+
+  return fallback();
 }
 
 interface FinalizeOptions {
@@ -273,8 +308,8 @@ function buildParseTokensArtifacts(
   const flatten = options.flatten;
 
   const diagnosticContext: TokenDiagnosticContext = {
-    documentUri: document?.uri.href,
-    pointerSpans: document?.sourceMap?.pointers
+    documentUri: document ? document.uri.href : undefined,
+    pointerSpans: document ? document.sourceMap.pointers : undefined
   };
 
   const baseDiagnostics = result.diagnostics.toArray();
@@ -427,7 +462,12 @@ function ensureSync<T>(value: T | Promise<T>): T {
 }
 
 function isPromiseLike<T>(value: T | Promise<T>): value is Promise<T> {
-  return typeof (value as PromiseLike<T>)?.then === 'function';
+  if (!isObjectLike(value)) {
+    return false;
+  }
+
+  const then = Reflect.get(value, 'then');
+  return typeof then === 'function';
 }
 
 function notifyDiagnostics(
@@ -454,7 +494,7 @@ function notifyDiagnostics(
 }
 
 function mergeDiagnostics(
-  ...groups: ReadonlyArray<ReadonlyArray<TokenDiagnostic>>
+  ...groups: readonly (readonly TokenDiagnostic[])[]
 ): readonly TokenDiagnostic[] {
   const map = new Map<string, TokenDiagnostic>();
   for (const group of groups) {
@@ -507,15 +547,13 @@ function normalizeInlineInput(input: ParseTokensInput): InlineInput | undefined 
     return undefined;
   }
 
-  if (typeof input === 'object' && input !== null) {
+  if (isRecord(input)) {
     if (isParseInputRecord(input)) {
       const content =
         typeof input.content === 'string' ? input.content : new TextDecoder().decode(input.content);
+      const uri = resolveInlineUri(input.uri, () => createMemoryUriFromText(content));
       return {
-        uri:
-          typeof input.uri === 'string'
-            ? input.uri
-            : (input.uri?.toString() ?? createMemoryUriFromText(content)),
+        uri,
         text: content,
         contentType:
           input.contentType ?? detectContentTypeFromContent(content) ?? 'application/json'
@@ -523,18 +561,18 @@ function normalizeInlineInput(input: ParseTokensInput): InlineInput | undefined 
     }
 
     if (isContentsRecord(input)) {
+      const uri = input.uri ?? createMemoryUriFromText(input.contents);
       return {
-        uri: input.uri ?? createMemoryUriFromText(input.contents),
+        uri,
         text: input.contents,
         contentType: detectContentTypeFromContent(input.contents) ?? 'application/json'
       } satisfies InlineInput;
     }
 
     if (isParseDataRecord(input)) {
-      const uri =
-        typeof input.uri === 'string'
-          ? input.uri
-          : (input.uri?.toString() ?? createMemoryUriFromDesignTokens(input.data, 'token'));
+      const uri = resolveInlineUri(input.uri, () =>
+        createMemoryUriFromDesignTokens(input.data, 'token')
+      );
       return {
         uri,
         contentType: input.contentType ?? 'application/json',
@@ -542,12 +580,14 @@ function normalizeInlineInput(input: ParseTokensInput): InlineInput | undefined 
       } satisfies InlineInput;
     }
 
-    const uri = createMemoryUriFromDesignTokens(input as DesignTokenInterchangeFormat, 'token');
-    return {
-      uri,
-      contentType: 'application/json',
-      data: input as DesignTokenInterchangeFormat
-    } satisfies InlineInput;
+    if (isDesignTokenDocument(input)) {
+      const uri = createMemoryUriFromDesignTokens(input, 'token');
+      return {
+        uri,
+        contentType: 'application/json',
+        data: input
+      } satisfies InlineInput;
+    }
   }
 
   return undefined;
@@ -597,8 +637,8 @@ function createInlineHandle(input: InlineInput): DocumentHandle {
 }
 
 function decodeDocumentSync(handle: DocumentHandle): RawDocument {
-  if (handle.data !== undefined) {
-    return Object.freeze(createRawDocumentFromProvidedData(handle));
+  if (handle.data !== undefined && isDesignTokenDocument(handle.data)) {
+    return Object.freeze(createRawDocumentFromProvidedData(handle, handle.data));
   }
 
   const { text } = decodeBytes(handle.bytes);
@@ -616,12 +656,14 @@ function decodeDocumentSync(handle: DocumentHandle): RawDocument {
   });
 }
 
-function createRawDocumentFromProvidedData(handle: DocumentHandle): RawDocument {
+function createRawDocumentFromProvidedData(
+  handle: DocumentHandle,
+  data: DesignTokenInterchangeFormat
+): RawDocument {
   if (typeof handle.text === 'string' && handle.text.length > 0) {
     const text = handle.text;
     const { document: yamlDocument, lineCounter } = parseYaml(text);
     const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
-    const data = handle.data!;
 
     return {
       uri: handle.uri,
@@ -634,7 +676,6 @@ function createRawDocumentFromProvidedData(handle: DocumentHandle): RawDocument 
   }
 
   const text = handle.text ?? '';
-  const data = handle.data!;
   const sourceMap = createSyntheticSourceMap(handle.uri, data);
 
   return {
@@ -645,4 +686,25 @@ function createRawDocumentFromProvidedData(handle: DocumentHandle): RawDocument 
     data,
     sourceMap
   } satisfies RawDocument;
+}
+
+function isObjectLike(value: unknown): value is Record<PropertyKey, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return isObjectLike(value);
+}
+
+function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
+  if (!isObjectLike(value)) {
+    return false;
+  }
+
+  if (value instanceof URL || value instanceof Uint8Array) {
+    return false;
+  }
+
+  const prototype = Reflect.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }

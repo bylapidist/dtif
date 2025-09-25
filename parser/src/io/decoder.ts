@@ -7,28 +7,48 @@ import { createSyntheticSourceMap } from './decoder/synthetic-source-map.js';
 
 export { DecoderError } from './decoder/errors.js';
 
-export async function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
-  if (handle.data !== undefined) {
-    return Object.freeze(createRawDocumentFromProvidedData(handle));
-  }
-
-  const { text } = decodeBytes(handle.bytes);
-  const { document: yamlDocument, lineCounter } = parseYaml(text);
-  const data = toJavaScript(yamlDocument);
-  const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
-
-  return Object.freeze({
-    uri: handle.uri,
-    contentType: handle.contentType,
-    bytes: handle.bytes,
-    text,
-    data,
-    sourceMap
-  });
+function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
+  return handle.data !== undefined;
 }
 
-function createRawDocumentFromProvidedData(handle: DocumentHandle): RawDocument {
-  const data = cloneJsonValue(handle.data!);
+function ensureError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
+export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
+  if (hasProvidedData(handle)) {
+    try {
+      return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
+    } catch (error) {
+      return Promise.reject(ensureError(error));
+    }
+  }
+
+  try {
+    const { text } = decodeBytes(handle.bytes);
+    const { document: yamlDocument, lineCounter } = parseYaml(text);
+    const data = toJavaScript(yamlDocument);
+    const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
+
+    return Promise.resolve(
+      Object.freeze({
+        uri: handle.uri,
+        contentType: handle.contentType,
+        bytes: handle.bytes,
+        text,
+        data,
+        sourceMap
+      })
+    );
+  } catch (error) {
+    return Promise.reject(ensureError(error));
+  }
+}
+
+type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
+
+function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocument {
+  const data = cloneJsonValue(handle.data);
 
   if (typeof handle.text === 'string' && handle.text.length > 0) {
     const text = handle.text;

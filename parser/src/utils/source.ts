@@ -125,24 +125,43 @@ export function translateSourceSpan(
 }
 
 export function isSourceSpan(value: unknown): value is SourceSpan {
-  if (!value || typeof value !== 'object') {
+  if (value === null || typeof value !== 'object') {
     return false;
   }
 
-  const span = value as Partial<SourceSpan>;
-  return span.uri instanceof URL && isSourcePosition(span.start) && isSourcePosition(span.end);
+  if (!('uri' in value) || !(value.uri instanceof URL)) {
+    return false;
+  }
+
+  if (!('start' in value) || !isSourcePosition(value.start)) {
+    return false;
+  }
+
+  if (!('end' in value) || !isSourcePosition(value.end)) {
+    return false;
+  }
+
+  return true;
 }
 
 export function isSourcePosition(value: unknown): value is SourcePosition {
-  if (!value || typeof value !== 'object') {
+  if (value === null || typeof value !== 'object') {
     return false;
   }
-  const position = value as Partial<SourcePosition>;
-  return (
-    typeof position.offset === 'number' &&
-    typeof position.line === 'number' &&
-    typeof position.column === 'number'
-  );
+
+  if (!('offset' in value) || typeof value.offset !== 'number') {
+    return false;
+  }
+
+  if (!('line' in value) || typeof value.line !== 'number') {
+    return false;
+  }
+
+  if (!('column' in value) || typeof value.column !== 'number') {
+    return false;
+  }
+
+  return true;
 }
 
 function orderSpanEndpoints(

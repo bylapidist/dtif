@@ -22,21 +22,26 @@ function populatePointers(
 
   if (Array.isArray(value)) {
     value.forEach((item, index) => {
-      const childPointer = appendJsonPointer(pointer, String(index)) as JsonPointer;
+      const childPointer = appendJsonPointer(pointer, String(index));
       pointers.set(childPointer, createSourceSpan(uri, ZERO_SOURCE_POSITION, ZERO_SOURCE_POSITION));
       populatePointers(item, childPointer, pointers, uri);
     });
     return;
   }
 
-  if (typeof value === 'object') {
-    const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
-      a.localeCompare(b)
-    );
+  if (isRecord(value)) {
+    const entries = Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
     for (const [key, childValue] of entries) {
-      const childPointer = appendJsonPointer(pointer, key) as JsonPointer;
+      const childPointer = appendJsonPointer(pointer, key);
       pointers.set(childPointer, createSourceSpan(uri, ZERO_SOURCE_POSITION, ZERO_SOURCE_POSITION));
       populatePointers(childValue, childPointer, pointers, uri);
     }
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  if (value === null) {
+    return false;
+  }
+  return typeof value === 'object';
 }

@@ -37,7 +37,7 @@ export function extractMetadata(
 
   if ('$extensions' in value) {
     const fieldPointer = appendJsonPointer(pointer, '$extensions');
-    const raw = value['$extensions'];
+    const raw = value.$extensions;
     if (!isPlainObject(raw)) {
       context.diagnostics.push({
         code: DiagnosticCodes.normaliser.INVALID_MEMBER_TYPE,
@@ -60,9 +60,7 @@ export function extractMetadata(
       const frozen = freezeRecord(raw);
       metadata.extensions = createField(context, frozen, fieldPointer);
       if (context.extensions) {
-        for (const [namespace, extensionValue] of Object.entries(
-          frozen as Record<string, unknown>
-        )) {
+        for (const [namespace, extensionValue] of Object.entries(frozen)) {
           const entryPointer = appendJsonPointer(fieldPointer, namespace);
           context.extensions.handle({
             namespace,
@@ -77,7 +75,7 @@ export function extractMetadata(
 
   if ('$deprecated' in value) {
     const fieldPointer = appendJsonPointer(pointer, '$deprecated');
-    const raw = value['$deprecated'];
+    const raw = value.$deprecated;
 
     if (typeof raw === 'boolean') {
       metadata.deprecated = createField(context, { active: raw }, fieldPointer);
@@ -117,7 +115,7 @@ export function extractMetadata(
 
   if ('$usageCount' in value) {
     const fieldPointer = appendJsonPointer(pointer, '$usageCount');
-    const raw = value['$usageCount'];
+    const raw = value.$usageCount;
 
     if (typeof raw !== 'number' || !Number.isInteger(raw) || raw < 0) {
       context.diagnostics.push({
@@ -141,7 +139,7 @@ export function extractMetadata(
 
   if ('$tags' in value) {
     const fieldPointer = appendJsonPointer(pointer, '$tags');
-    const raw = value['$tags'];
+    const raw = value.$tags;
     if (!Array.isArray(raw)) {
       context.diagnostics.push({
         code: DiagnosticCodes.normaliser.INVALID_MEMBER_TYPE,

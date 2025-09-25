@@ -44,7 +44,7 @@ function updateHashWithValue(hash: Hash, value: unknown): void {
     }
     case 'symbol': {
       hash.update('symbol:');
-      hash.update(String(value.description ?? ''));
+      hash.update(value.description ?? '');
       return;
     }
     case 'function': {
@@ -63,10 +63,13 @@ function updateHashWithValue(hash: Hash, value: unknown): void {
         return;
       }
 
+      if (!isRecord(value)) {
+        hash.update('object');
+        return;
+      }
+
       hash.update('object{');
-      const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
-        a.localeCompare(b)
-      );
+      const entries = Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
       for (const [key, entryValue] of entries) {
         hash.update(key);
         hash.update(':');
@@ -80,4 +83,8 @@ function updateHashWithValue(hash: Hash, value: unknown): void {
       hash.update('unknown');
     }
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object';
 }

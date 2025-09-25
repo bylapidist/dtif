@@ -13,13 +13,13 @@ export function createMetadataSnapshot(graph: DocumentGraph): Map<TokenId, Token
 
   for (const node of iterateTokenNodes(graph)) {
     const id = getTokenId(node.pointer);
-    const sourceUri = node.span?.uri?.href ?? documentUri;
+    const sourceUri = node.span ? node.span.uri.href : documentUri;
     const metadata = normalizeMetadata(
       node.metadata,
       {
         uri: sourceUri,
-        line: node.span?.start?.line,
-        column: node.span?.start?.column
+        line: node.span ? node.span.start.line : undefined,
+        column: node.span ? node.span.start.column : undefined
       },
       documentUri
     );
@@ -65,21 +65,21 @@ export function createResolutionSnapshot(
       });
     }
 
-    if (resolvedToken?.overridesApplied) {
-      for (const override of resolvedToken.overridesApplied) {
-        if (override.source) {
-          references.push({
-            uri: override.source.uri.href,
-            pointer: normalizeJsonPointer(override.source.pointer)
-          });
-        }
-      }
-    }
-
     const resolutionPath: TokenPointer[] = [];
     const appliedAliases: TokenPointer[] = [];
     if (resolvedToken) {
-      if (forwardDiagnostic && resolvedToken.warnings) {
+      if (resolvedToken.overridesApplied.length > 0) {
+        for (const override of resolvedToken.overridesApplied) {
+          if (override.source) {
+            references.push({
+              uri: override.source.uri.href,
+              pointer: normalizeJsonPointer(override.source.pointer)
+            });
+          }
+        }
+      }
+
+      if (forwardDiagnostic && resolvedToken.warnings.length > 0) {
         for (const warning of resolvedToken.warnings) {
           forwardDiagnostic(warning);
         }
@@ -126,8 +126,9 @@ function normalizeMetadata(
     typeof metadata.description?.value === 'string' ? metadata.description.value : undefined;
   const extensions = cloneExtensions(metadata.extensions);
   const deprecated = normalizeDeprecated(metadata, documentUri);
-  const line = Number.isFinite(source.line) ? (source.line as number) : 1;
-  const column = Number.isFinite(source.column) ? (source.column as number) : 1;
+  const line = typeof source.line === 'number' && Number.isFinite(source.line) ? source.line : 1;
+  const column =
+    typeof source.column === 'number' && Number.isFinite(source.column) ? source.column : 1;
 
   return {
     description,
@@ -143,12 +144,12 @@ function normalizeMetadata(
 
 function cloneExtensions(value: NodeMetadata['extensions']): Record<string, unknown> {
   const extensionsValue = value?.value;
-  if (!extensionsValue || typeof extensionsValue !== 'object') {
+  if (!isRecord(extensionsValue)) {
     return {};
   }
 
   const copy: Record<string, unknown> = {};
-  for (const [key, entry] of Object.entries(extensionsValue as Record<string, unknown>)) {
+  for (const [key, entry] of Object.entries(extensionsValue)) {
     const cloned = toPlainJson(entry);
     copy[key] = cloned === undefined ? entry : cloned;
   }
@@ -161,45 +162,50 @@ function normalizeDeprecated(
   documentUri: string
 ): TokenMetadataSnapshot['deprecated'] {
   const deprecated = metadata.deprecated?.value;
-  if (!deprecated || typeof deprecated !== 'object') {
+  if (!isRecord(deprecated)) {
     return undefined;
   }
 
-  if ('active' in deprecated && deprecated.active) {
-    const replacementField = (deprecated as { readonly replacement?: { readonly value: string } })
-      .replacement;
-    const supersededBy = replacementField
-      ? createTokenPointer(replacementField.value, documentUri)
-      : undefined;
-
-    if (supersededBy) {
-      return { supersededBy };
-    }
-
-    return {};
+  if (!('active' in deprecated) || typeof deprecated.active !== 'boolean') {
+    return undefined;
   }
 
-  return undefined;
+  if (!deprecated.active) {
+    return undefined;
+  }
+
+  const supersededBy = extractReplacementPointer(deprecated, documentUri);
+  if (supersededBy) {
+    return { supersededBy };
+  }
+
+  return {};
 }
 
-function createTokenPointer(
-  reference: string | undefined,
+function extractReplacementPointer(
+  deprecated: Record<string, unknown>,
   documentUri: string
-): TokenMetadataSnapshot['deprecated'] extends infer T
-  ? T extends { supersededBy?: infer P }
-    ? P
-    : never
-  : never {
-  if (!reference || typeof reference !== 'string') {
-    return undefined as never;
+): TokenPointer | undefined {
+  const replacement = deprecated.replacement;
+  if (!isRecord(replacement)) {
+    return undefined;
+  }
+
+  const reference = replacement.value;
+  return createTokenPointer(reference, documentUri);
+}
+
+function createTokenPointer(reference: unknown, documentUri: string): TokenPointer | undefined {
+  if (typeof reference !== 'string') {
+    return undefined;
+  }
+
+  const trimmed = reference.trim();
+  if (trimmed.length === 0) {
+    return undefined;
   }
 
   try {
-    const trimmed = reference.trim();
-    if (trimmed.length === 0) {
-      return undefined as never;
-    }
-
     const base = new URL(documentUri);
     const resolved = new URL(trimmed, base);
     const pointer = normalizeJsonPointer(resolved.hash || trimmed);
@@ -207,8 +213,12 @@ function createTokenPointer(
     return {
       uri: resolved.href,
       pointer
-    } as never;
+    };
   } catch {
-    return undefined as never;
+    return undefined;
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }

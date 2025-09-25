@@ -66,21 +66,21 @@ export class DiagnosticBag implements Iterable<Diagnostic> {
     return highest;
   }
 
-  add(diagnostic: Diagnostic): DiagnosticBag {
+  add(diagnostic: Diagnostic): this {
     const normalized = freezeDiagnostic(diagnostic);
     this.diagnostics.push(normalized);
     this.counts[normalized.severity]++;
     return this;
   }
 
-  addMany(diagnostics: Iterable<Diagnostic>): DiagnosticBag {
+  addMany(diagnostics: Iterable<Diagnostic>): this {
     for (const diagnostic of diagnostics) {
       this.add(diagnostic);
     }
     return this;
   }
 
-  extend(other: DiagnosticBag | Iterable<Diagnostic>): DiagnosticBag {
+  extend(other: DiagnosticBag | Iterable<Diagnostic>): this {
     if (other instanceof DiagnosticBag) {
       return this.addMany(other.diagnostics);
     }
@@ -116,10 +116,18 @@ export class DiagnosticBag implements Iterable<Diagnostic> {
 }
 
 function freezeDiagnostic(diagnostic: Diagnostic): Diagnostic {
-  const related = diagnostic.related?.map((info) => Object.freeze({ ...info }));
-  const normalized = {
+  const related = diagnostic.related?.map((info) => {
+    const normalizedRelated = { ...info };
+    Object.freeze(normalizedRelated);
+    return normalizedRelated;
+  });
+
+  const normalized: Diagnostic = {
     ...diagnostic,
     related: related ? Object.freeze(related) : undefined
-  } as Diagnostic;
-  return Object.freeze(normalized);
+  };
+
+  Object.freeze(normalized);
+
+  return normalized;
 }

@@ -84,7 +84,7 @@ function normalizeTokenNode(
   const typeField = readOptionalStringField(context, value, '$type', pointer);
   const valueField =
     '$value' in value
-      ? createField(context, value['$value'], appendJsonPointer(pointer, '$value'))
+      ? createField(context, value.$value, appendJsonPointer(pointer, '$value'))
       : undefined;
 
   if (!valueField) {

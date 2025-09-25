@@ -1,5 +1,3 @@
-import Ajv2020 from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
 import { createRequire } from 'node:module';
 import type { ErrorObject } from 'ajv';
 import type { CreateDtifValidatorOptions, DtifValidator } from '@lapidist/dtif-validator';
@@ -9,20 +7,10 @@ import { JSON_POINTER_ROOT, normalizeJsonPointer } from '../utils/json-pointer.j
 import type { Diagnostic, RawDocument, RelatedInformation, SourceSpan } from '../types.js';
 
 const require = createRequire(import.meta.url);
-const CORE_SCHEMA = require('@lapidist/dtif-schema/core.json') as DtifValidator['schema'];
-const DEFAULT_SCHEMA_ID =
-  (CORE_SCHEMA as { readonly $id?: string }).$id ?? 'https://dtif.lapidist.net/schema/core.json';
-
-const DEFAULT_VALIDATOR_OPTIONS = {
-  allErrors: true,
-  allowUnionTypes: true,
-  strict: false,
-  $data: true
-} as const;
 
 type AjvInstance = import('ajv').default;
-
-const AjvConstructor = Ajv2020 as unknown as new (options?: object) => AjvInstance;
+type FormatRegistrar = (instance: AjvInstance) => unknown;
+type AjvConstructor = new (options?: object) => AjvInstance;
 
 export interface SchemaGuardOptions extends CreateDtifValidatorOptions {
   readonly validator?: DtifValidator;
@@ -40,25 +28,49 @@ export class SchemaGuardError extends Error {
   }
 }
 
+const ajvModule: unknown = require('ajv/dist/2020.js');
+const formatsModule: unknown = require('ajv-formats');
+
+const AJV_CONSTRUCTOR = resolveAjvConstructor(ajvModule);
+
+const DEFAULT_FORMAT_REGISTRAR = resolveFormatRegistrar(formatsModule);
+
+const CORE_SCHEMA = loadCoreSchema();
+const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
+
+const DEFAULT_VALIDATOR_OPTIONS = {
+  allErrors: true,
+  allowUnionTypes: true,
+  strict: false,
+  $data: true
+} as const;
+
+function createAjvInstance(options: object): AjvInstance {
+  const instance: unknown = new AJV_CONSTRUCTOR(options);
+  if (!isAjvInstance(instance)) {
+    throw new SchemaGuardError('Failed to create an AJV validator instance.');
+  }
+  return instance;
+}
+
 function createSchemaValidator(options: CreateDtifValidatorOptions = {}): DtifValidator {
   const {
     ajv: existingAjv,
     ajvOptions = {},
-    formats = addFormats,
+    formats = DEFAULT_FORMAT_REGISTRAR,
     schemaId = DEFAULT_SCHEMA_ID
   } = options;
 
   const ajv: AjvInstance =
     existingAjv ??
-    new AjvConstructor({
+    createAjvInstance({
       ...DEFAULT_VALIDATOR_OPTIONS,
       ...ajvOptions
     });
 
   if (formats) {
-    const register = (typeof formats === 'function' ? formats : addFormats) as (
-      instance: AjvInstance
-    ) => unknown;
+    const register: FormatRegistrar =
+      typeof formats === 'function' ? formats : DEFAULT_FORMAT_REGISTRAR;
     register(ajv);
   }
 
@@ -75,7 +87,7 @@ function createSchemaValidator(options: CreateDtifValidatorOptions = {}): DtifVa
     schema: CORE_SCHEMA,
     schemaId,
     validate: compiled
-  } as DtifValidator;
+  };
 }
 
 export class SchemaGuard {
@@ -109,7 +121,7 @@ export class SchemaGuard {
   }
 
   private createDiagnostic(error: ErrorObject, document: RawDocument): Diagnostic {
-    const pointer = normalizeJsonPointer(`#${error.instancePath ?? ''}`);
+    const pointer = normalizeJsonPointer(`#${error.instancePath}`);
     const span =
       this.resolveSpan(pointer, document) ?? this.resolveSpan(JSON_POINTER_ROOT, document);
     const related = buildRelatedInformation(error);
@@ -166,74 +178,76 @@ function buildRelatedInformation(error: ErrorObject): RelatedInformation[] {
 }
 
 function formatErrorDetail(keyword: string, params: ErrorObject['params']): string | undefined {
-  if (!params || typeof params !== 'object') {
+  if (!isJsonObject(params)) {
     return undefined;
   }
 
-  const record = params as Record<string, unknown>;
-
   switch (keyword) {
     case 'required': {
-      const name = record.missingProperty;
+      const name = params.missingProperty;
       return typeof name === 'string' ? `Missing property: ${name}` : undefined;
     }
     case 'additionalProperties': {
-      const name = record.additionalProperty;
+      const name = params.additionalProperty;
       return typeof name === 'string' ? `Unexpected property: ${name}` : undefined;
     }
     case 'type': {
-      const expected = record.type;
+      const expected = params.type;
       return typeof expected === 'string' ? `Expected type: ${expected}` : undefined;
     }
     case 'enum': {
-      const values = record.allowedValues;
+      const values = params.allowedValues;
       return Array.isArray(values) ? `Allowed values: ${formatAllowedValues(values)}` : undefined;
     }
     case 'const': {
-      const value = record.allowedValue;
+      const value = params.allowedValue;
       return value !== undefined ? `Expected value: ${formatAllowedValue(value)}` : undefined;
     }
     case 'pattern': {
-      const pattern = record.pattern;
+      const pattern = params.pattern;
       return typeof pattern === 'string' ? `Required pattern: ${pattern}` : undefined;
     }
     case 'format': {
-      const format = record.format;
+      const format = params.format;
       return typeof format === 'string' ? `Expected format: ${format}` : undefined;
     }
     case 'minItems':
     case 'minLength': {
-      const limit = record.limit;
+      const limit = params.limit;
       if (typeof limit === 'number') {
         const noun = keyword === 'minItems' ? 'item' : 'character';
-        return `Expected at least ${limit} ${pluralise(noun, limit)}.`;
+        const limitText = limit.toString();
+        return `Expected at least ${limitText} ${pluralise(noun, limit)}.`;
       }
       return undefined;
     }
     case 'maxItems':
     case 'maxLength': {
-      const limit = record.limit;
+      const limit = params.limit;
       if (typeof limit === 'number') {
         const noun = keyword === 'maxItems' ? 'item' : 'character';
-        return `Expected no more than ${limit} ${pluralise(noun, limit)}.`;
+        const limitText = limit.toString();
+        return `Expected no more than ${limitText} ${pluralise(noun, limit)}.`;
       }
       return undefined;
     }
     case 'minimum':
     case 'exclusiveMinimum': {
-      const limit = record.limit;
+      const limit = params.limit;
       if (typeof limit === 'number') {
         const comparator = keyword === 'exclusiveMinimum' ? 'greater than' : 'at least';
-        return `Value must be ${comparator} ${limit}.`;
+        const limitText = limit.toString();
+        return `Value must be ${comparator} ${limitText}.`;
       }
       return undefined;
     }
     case 'maximum':
     case 'exclusiveMaximum': {
-      const limit = record.limit;
+      const limit = params.limit;
       if (typeof limit === 'number') {
         const comparator = keyword === 'exclusiveMaximum' ? 'less than' : 'at most';
-        return `Value must be ${comparator} ${limit}.`;
+        const limitText = limit.toString();
+        return `Value must be ${comparator} ${limitText}.`;
       }
       return undefined;
     }
@@ -260,4 +274,80 @@ function formatAllowedValue(value: unknown): string {
 
 function pluralise(noun: string, quantity: number): string {
   return quantity === 1 ? noun : `${noun}s`;
+}
+
+function resolveAjvConstructor(exports: unknown): AjvConstructor {
+  if (isAjvConstructor(exports)) {
+    return exports;
+  }
+
+  if (isJsonObject(exports)) {
+    const candidate = exports.default;
+    if (isAjvConstructor(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new SchemaGuardError('Failed to load the AJV 2020 module.');
+}
+
+function resolveFormatRegistrar(module: unknown): FormatRegistrar {
+  if (isFormatRegistrar(module)) {
+    return (instance) => module(instance);
+  }
+
+  if (isJsonObject(module) && isFormatRegistrar(module.default)) {
+    const registrar = module.default;
+    return (instance) => registrar(instance);
+  }
+
+  throw new SchemaGuardError('Failed to load the AJV formats registrar.');
+}
+
+function isAjvConstructor(value: unknown): value is AjvConstructor {
+  if (typeof value !== 'function') {
+    return false;
+  }
+
+  const prototype: unknown = Reflect.get(value, 'prototype');
+  return typeof prototype === 'object' && prototype !== null;
+}
+
+function isFormatRegistrar(value: unknown): value is FormatRegistrar {
+  return typeof value === 'function';
+}
+
+function loadCoreSchema(): DtifValidator['schema'] {
+  const schema: unknown = require('@lapidist/dtif-schema/core.json');
+  assertIsDtifSchema(schema);
+  return schema;
+}
+
+function readSchemaId(schema: DtifValidator['schema']): string | undefined {
+  if (isJsonObject(schema) && '$id' in schema) {
+    const value = schema.$id;
+    if (typeof value === 'string' && value.length > 0) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function assertIsDtifSchema(value: unknown): asserts value is DtifValidator['schema'] {
+  if (!isJsonObject(value)) {
+    throw new SchemaGuardError('Failed to load the DTIF core schema.');
+  }
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isAjvInstance(value: unknown): value is AjvInstance {
+  return (
+    isJsonObject(value) &&
+    typeof value.compile === 'function' &&
+    typeof value.getSchema === 'function' &&
+    typeof value.addSchema === 'function'
+  );
 }

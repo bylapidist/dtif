@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "types": ["node"]
+  },
+  "include": [
+    "parser/**/*.ts",
+    "parser/**/*.tsx",
+    "docs/.vitepress/**/*.ts",
+    "docs/**/*.ts",
+    "docs/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "schema/**/*.d.ts",
+    "validator/**/*.d.ts"
+  ]
+}

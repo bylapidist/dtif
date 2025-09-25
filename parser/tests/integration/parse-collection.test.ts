@@ -42,7 +42,7 @@ const INVALID_DOCUMENT = JSON.stringify(
   2
 );
 
-test('parseCollection returns per-document results with aggregated diagnostics', async () => {
+void test('parseCollection returns per-document results with aggregated diagnostics', async () => {
   const session = createSession();
   const inputs = [
     { uri: 'memory://collection/valid.json', content: VALID_DOCUMENT },

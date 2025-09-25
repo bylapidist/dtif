@@ -22,7 +22,7 @@ async function normalise(content: string) {
   return normalizeDocument(raw);
 }
 
-test('normalises collections, tokens, aliases, and metadata', async () => {
+void test('normalises collections, tokens, aliases, and metadata', async () => {
   const json = JSON.stringify(
     {
       $schema: 'https://dtif.lapidist.net/schema/core.json',
@@ -49,9 +49,9 @@ test('normalises collections, tokens, aliases, and metadata', async () => {
   const result = await normalise(json);
 
   assert.equal(result.diagnostics.length, 0);
-  assert.ok(result.ast, 'expected document AST to be created');
+  const { ast } = result;
+  assert.ok(ast, 'expected document AST to be created');
 
-  const ast = result.ast!;
   assert.equal(ast.kind, 'document');
   assert.equal(ast.pointer, JSON_POINTER_ROOT);
   assert.equal(ast.schema?.value, 'https://dtif.lapidist.net/schema/core.json');
@@ -76,7 +76,7 @@ test('normalises collections, tokens, aliases, and metadata', async () => {
   assert.equal(accentAlias.ref.value, '#/color/brand');
 });
 
-test('normalises overrides with fallback chains', async () => {
+void test('normalises overrides with fallback chains', async () => {
   const json = JSON.stringify(
     {
       token: {
@@ -103,22 +103,29 @@ test('normalises overrides with fallback chains', async () => {
   );
 
   const result = await normalise(json);
-  assert.ok(result.ast);
+  const { ast } = result;
+  assert.ok(ast);
   assert.equal(result.diagnostics.length, 0);
 
-  const override = result.ast!.overrides[0];
+  const override = ast.overrides[0];
   assert.equal(override.token.value, '#/token');
   assert.deepEqual(override.when.value, { mode: 'dark' });
-  assert.ok(override.fallback);
-  assert.equal(override.fallback!.length, 2);
-  assert.equal(override.fallback![0].ref?.value, '#/alternate');
-  assert.deepEqual(override.fallback![1].value?.value, {
+  const { fallback } = override;
+  assert.ok(fallback);
+  assert.equal(fallback.length, 2);
+  const [firstFallback, secondFallback] = fallback;
+  const { ref } = firstFallback;
+  assert.ok(ref);
+  assert.equal(ref.value, '#/alternate');
+  const { value } = secondFallback;
+  assert.ok(value);
+  assert.deepEqual(value.value, {
     colorSpace: 'srgb',
     components: [0.5, 0.5, 0.5, 1]
   });
 });
 
-test('emits diagnostics when alias tokens omit $type', async () => {
+void test('emits diagnostics when alias tokens omit $type', async () => {
   const json = JSON.stringify(
     {
       color: {

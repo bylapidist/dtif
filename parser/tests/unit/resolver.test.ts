@@ -8,7 +8,7 @@ import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import type { RawDocument } from '../../src/types.js';
 import type { ResolvedTokenTransformEntry } from '../../src/plugins/index.js';
 
-test('DocumentResolver resolves inline token values', () => {
+void test('DocumentResolver resolves inline token values', () => {
   const { resolver } = buildResolver({
     color: {
       primary: {
@@ -20,12 +20,13 @@ test('DocumentResolver resolves inline token values', () => {
 
   const result = resolver.resolve('#/color/primary');
 
-  assert.ok(result.token, 'expected token to resolve');
-  assert.deepEqual(result.token?.value, { colorSpace: 'srgb', components: [0, 0, 0, 1] });
+  const { token } = result;
+  assert.ok(token, 'expected token to resolve');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0, 0, 0, 1] });
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver resolves alias chains', () => {
+void test('DocumentResolver resolves alias chains', () => {
   const { resolver } = buildResolver({
     color: {
       base: {
@@ -41,12 +42,13 @@ test('DocumentResolver resolves alias chains', () => {
 
   const result = resolver.resolve('#/color/brand');
 
-  assert.ok(result.token, 'expected alias to resolve');
-  assert.deepEqual(result.token?.value, { colorSpace: 'srgb', components: [1, 1, 1, 1] });
+  const { token } = result;
+  assert.ok(token, 'expected alias to resolve');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [1, 1, 1, 1] });
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver applies overrides when context matches', () => {
+void test('DocumentResolver applies overrides when context matches', () => {
   const { resolver } = buildResolver(
     {
       $overrides: [
@@ -69,12 +71,13 @@ test('DocumentResolver applies overrides when context matches', () => {
 
   const result = resolver.resolve('#/button/bg');
 
-  assert.ok(result.token, 'expected override to produce a token');
-  assert.equal(result.token?.value, 'dark');
+  const { token } = result;
+  assert.ok(token, 'expected override to produce a token');
+  assert.equal(token.value, 'dark');
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver ignores overrides when context does not match', () => {
+void test('DocumentResolver ignores overrides when context does not match', () => {
   const { resolver } = buildResolver({
     $overrides: [
       {
@@ -94,12 +97,13 @@ test('DocumentResolver ignores overrides when context does not match', () => {
 
   const result = resolver.resolve('#/button/bg');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, 'light');
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, 'light');
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver prefers the last matching override', () => {
+void test('DocumentResolver prefers the last matching override', () => {
   const { resolver } = buildResolver(
     {
       $overrides: [
@@ -127,12 +131,13 @@ test('DocumentResolver prefers the last matching override', () => {
 
   const result = resolver.resolve('#/button/bg');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, 'custom');
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, 'custom');
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver uses fallback chains to resolve values', () => {
+void test('DocumentResolver uses fallback chains to resolve values', () => {
   const { resolver } = buildResolver(
     {
       $overrides: [
@@ -155,12 +160,13 @@ test('DocumentResolver uses fallback chains to resolve values', () => {
 
   const result = resolver.resolve('#/button/bg');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, 'dark');
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, 'dark');
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DocumentResolver reports cycles for recursive aliases', () => {
+void test('DocumentResolver reports cycles for recursive aliases', () => {
   const { resolver } = buildResolver({
     color: {
       cyclic: { $type: 'color', $ref: '#/color/cyclic' }
@@ -169,15 +175,16 @@ test('DocumentResolver reports cycles for recursive aliases', () => {
 
   const result = resolver.resolve('#/color/cyclic');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, undefined);
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, undefined);
   const diagnostic = result.diagnostics.find(
     (entry) => entry.code === DiagnosticCodes.resolver.CYCLE_DETECTED
   );
   assert.ok(diagnostic, 'expected cycle diagnostic');
 });
 
-test('DocumentResolver reports unsupported external references', () => {
+void test('DocumentResolver reports unsupported external references', () => {
   const { resolver } = buildResolver({
     color: {
       external: { $type: 'color', $ref: 'https://example.com/tokens.json#/color/primary' }
@@ -186,15 +193,16 @@ test('DocumentResolver reports unsupported external references', () => {
 
   const result = resolver.resolve('#/color/external');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, undefined);
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, undefined);
   const diagnostic = result.diagnostics.find(
     (entry) => entry.code === DiagnosticCodes.resolver.EXTERNAL_REFERENCE
   );
   assert.ok(diagnostic, 'expected external reference diagnostic');
 });
 
-test('DocumentResolver enforces the configured max depth', () => {
+void test('DocumentResolver enforces the configured max depth', () => {
   const { resolver } = buildResolver(
     {
       color: {
@@ -209,16 +217,17 @@ test('DocumentResolver enforces the configured max depth', () => {
 
   const result = resolver.resolve('#/color/level1');
 
-  assert.ok(result.token);
-  assert.equal(result.token?.value, undefined, 'expected unresolved token when depth exceeded');
+  const { token } = result;
+  assert.ok(token);
+  assert.equal(token.value, undefined, 'expected unresolved token when depth exceeded');
   const diagnostic = result.diagnostics.find(
     (entry) => entry.code === DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED
   );
   assert.ok(diagnostic, 'expected max depth diagnostic');
-  assert.equal(diagnostic?.severity, 'error');
+  assert.equal(diagnostic.severity, 'error');
 });
 
-test('DocumentResolver applies transform plugins to resolved tokens', () => {
+void test('DocumentResolver applies transform plugins to resolved tokens', () => {
   const transforms: ResolvedTokenTransformEntry[] = [
     {
       plugin: 'transform-plugin',
@@ -245,9 +254,12 @@ test('DocumentResolver applies transform plugins to resolved tokens', () => {
 
   const result = resolver.resolve('#/token');
 
-  assert.ok(result.token);
-  assert.equal(result.transforms.length, 1);
-  const evaluation = result.transforms[0];
+  const { token } = result;
+  assert.ok(token);
+  const transformsResult = result.transforms;
+  assert.equal(transformsResult.length, 1);
+  const [evaluation] = transformsResult;
+  assert.ok(evaluation);
   assert.equal(evaluation.plugin, 'transform-plugin');
   assert.equal(evaluation.pointer, '#/token');
   assert.deepEqual(evaluation.data, { pointer: '#/token' });
@@ -265,17 +277,30 @@ function buildResolver(
 ): { resolver: ReturnType<typeof createDocumentResolver> } {
   const document = createRawDocument(data);
   const normalised = normalizeDocument(document);
-  assert.ok(normalised.ast, 'expected document to normalise successfully');
+  const { ast } = normalised;
+  assert.ok(ast, 'expected document to normalise successfully');
   assert.equal(normalised.diagnostics.length, 0, 'expected normaliser diagnostics to be empty');
-  const graphResult = buildDocumentGraph(normalised.ast);
-  assert.ok(graphResult.graph, 'expected document graph to be created');
+  const graphResult = buildDocumentGraph(ast);
+  const { graph } = graphResult;
+  assert.ok(graph, 'expected document graph to be created');
   assert.equal(graphResult.diagnostics.length, 0, 'expected graph diagnostics to be empty');
   const resolverOptions = normalizeResolverOptions(options);
-  const resolver = createDocumentResolver(graphResult.graph!, {
+  const resolver = createDocumentResolver(graph, {
     ...resolverOptions,
     document
   });
   return { resolver };
+}
+
+function isDocumentResolverOptions(options: unknown): options is DocumentResolverOptions {
+  return (
+    typeof options === 'object' &&
+    options !== null &&
+    ('context' in options ||
+      'maxDepth' in options ||
+      'document' in options ||
+      'transforms' in options)
+  );
 }
 
 function normalizeResolverOptions(
@@ -285,16 +310,12 @@ function normalizeResolverOptions(
     return {};
   }
 
-  if (
-    'context' in options ||
-    'maxDepth' in options ||
-    'document' in options ||
-    'transforms' in options
-  ) {
-    return options as DocumentResolverOptions;
+  if (isDocumentResolverOptions(options)) {
+    return options;
   }
 
-  return { context: options } as DocumentResolverOptions;
+  const resolverOptions: DocumentResolverOptions = { context: options };
+  return resolverOptions;
 }
 
 function createRawDocument(data: unknown): RawDocument {

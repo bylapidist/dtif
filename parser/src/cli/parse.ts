@@ -10,16 +10,29 @@ import { createDiagnosticSummary, serializeDiagnostic, serializeResolution } fro
 import type { CliIo, CliOutput, CliRunOptions, ResolutionSummary } from './types.js';
 
 const require = createRequire(import.meta.url);
-const { version: PACKAGE_VERSION } = require('../../package.json') as { readonly version?: string };
+const PACKAGE_VERSION = getPackageVersion(require('../../package.json'));
+
+function getPackageVersion(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null) {
+    return undefined;
+  }
+
+  const version: unknown = Reflect.get(value, 'version');
+  return typeof version === 'string' ? version : undefined;
+}
 
 export async function runCli(
   args: readonly string[],
   options: CliRunOptions = {}
 ): Promise<number> {
+  const stdin = options.stdin ?? process.stdin;
+  const stdout = options.stdout ?? process.stdout;
+  const stderr = options.stderr ?? process.stderr;
+
   const io: CliIo = {
-    stdin: options.stdin ?? process.stdin,
-    stdout: options.stdout ?? process.stdout,
-    stderr: options.stderr ?? process.stderr
+    stdin,
+    stdout,
+    stderr
   };
 
   const parsed = parseArguments(args);
@@ -75,26 +88,25 @@ export async function runCli(
   const collection = await session.parseCollection(gatherResult.inputs);
 
   let exitCode = collection.diagnostics.hasErrors() ? 1 : 0;
-  let resolutionError = false;
 
   const documents: CliOutput['documents'] = collection.results.map((result) => {
-    const uri = result.document?.uri?.href ?? null;
+    const uri = result.document?.uri.href ?? null;
     const diagnostics = result.diagnostics.toArray().map(serializeDiagnostic);
     const diagnosticCounts = createDiagnosticSummary(result.diagnostics);
-    const resolverAvailable = Boolean(result.resolver);
+    const resolver = result.resolver;
+    const resolverAvailable = Boolean(resolver);
     let resolutions: Record<string, ResolutionSummary> | undefined;
 
-    if (resolverAvailable && cliOptions.pointers.length > 0 && result.resolver) {
+    if (resolver && cliOptions.pointers.length > 0) {
       resolutions = {};
       for (const pointer of cliOptions.pointers) {
-        const resolution = result.resolver.resolve(pointer);
+        const resolution = resolver.resolve(pointer);
         const summary = serializeResolution(pointer, resolution);
         if (
           resolution.diagnostics.some((diagnostic) => diagnostic.severity === 'error') ||
-          (resolution.token &&
-            resolution.token.warnings.some((warning) => warning.severity === 'error'))
+          (resolution.token?.warnings.some((warning) => warning.severity === 'error') ?? false)
         ) {
-          resolutionError = true;
+          exitCode = 1;
         }
         resolutions[pointer] = summary;
       }
@@ -122,10 +134,6 @@ export async function runCli(
     io.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
   } else {
     printPrettyOutput(output, cliOptions.pointers, io.stdout);
-  }
-
-  if (resolutionError) {
-    exitCode = 1;
   }
 
   return exitCode;
@@ -156,7 +164,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     (code) => {
       process.exit(code);
     },
-    (error) => {
+    (error: unknown) => {
       console.error(error);
       process.exit(1);
     }

@@ -118,7 +118,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
     throw new TypeError(`Unsupported DTIF parse input: ${String(input)}`);
   }
 
-  async #loadFromRecord(record: ParseInputRecord, baseUri?: URL): Promise<DocumentHandle> {
+  #loadFromRecord(record: ParseInputRecord, baseUri?: URL): DocumentHandle {
     const uri = record.uri ? this.#normalizeUri(record.uri, baseUri) : this.#createMemoryUri();
     const contentType = record.contentType ?? detectContentType({ uri, content: record.content });
 
@@ -132,7 +132,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
     return this.#createHandle(uri, record.content, contentType);
   }
 
-  async #loadFromDataRecord(record: ParseDataInputRecord, baseUri?: URL): Promise<DocumentHandle> {
+  #loadFromDataRecord(record: ParseDataInputRecord, baseUri?: URL): DocumentHandle {
     const uri = record.uri
       ? this.#normalizeUri(record.uri, baseUri)
       : this.#createMemoryUriFromDesignTokens(record.data);
@@ -159,14 +159,14 @@ export class DefaultDocumentLoader implements DocumentLoader {
         }
         const response = await this.#fetch(uri, { signal: context.signal });
         if (!response.ok) {
-          throw new Error(`Failed to fetch DTIF document. HTTP status: ${response.status}`);
+          throw new Error(`Failed to fetch DTIF document. HTTP status: ${String(response.status)}`);
         }
         const arrayBuffer = await response.arrayBuffer();
         const bytes = new Uint8Array(arrayBuffer);
         this.#assertSizeWithinLimit(uri, bytes.byteLength);
         const contentType = detectContentType({
           uri,
-          header: response.headers?.get?.('content-type') ?? undefined,
+          header: response.headers.get('content-type') ?? undefined,
           fallback: this.#defaultContentType
         });
         return this.#createHandle(uri, bytes, contentType);
@@ -224,9 +224,12 @@ export class DefaultDocumentLoader implements DocumentLoader {
       return;
     }
 
+    const sizeText = String(size);
+    const limitText = String(this.#maxBytes);
+
     throw new DocumentLoaderError(
       'MAX_BYTES_EXCEEDED',
-      `DTIF document ${uri.href} is ${size} bytes, exceeding the configured maximum of ${this.#maxBytes} bytes.`,
+      `DTIF document ${uri.href} is ${sizeText} bytes, exceeding the configured maximum of ${limitText} bytes.`,
       { uri, limit: this.#maxBytes, size }
     );
   }
@@ -268,7 +271,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
 
   #createMemoryUri(): URL {
     const id = this.#memoryCounter++;
-    return new URL(`${MEMORY_SCHEME}${id}`);
+    return new URL(`${MEMORY_SCHEME}${String(id)}`);
   }
 }
 
@@ -311,24 +314,49 @@ function resolveFilePath(reference: string, baseUri: URL | undefined, cwd: strin
   return path.resolve(cwd, reference);
 }
 
+interface ContentCarrier {
+  readonly content?: unknown;
+}
+
+interface DataCarrier {
+  readonly data?: unknown;
+}
+
+function hasContentProperty(value: object): value is ContentCarrier {
+  return 'content' in value;
+}
+
+function hasDataProperty(value: object): value is DataCarrier {
+  return 'data' in value;
+}
+
+function isObjectLike(value: unknown): value is object {
+  return typeof value === 'object' && value !== null;
+}
+
 function isParseInputRecord(value: ParseInput): value is ParseInputRecord {
-  if (!value || typeof value !== 'object') {
+  if (!isObjectLike(value)) {
     return false;
   }
 
-  const record = value as { readonly content?: unknown };
-  return typeof record.content === 'string' || record.content instanceof Uint8Array;
+  if (!hasContentProperty(value)) {
+    return false;
+  }
+
+  const { content } = value;
+  return typeof content === 'string' || content instanceof Uint8Array;
 }
 
 function isParseDataInputRecord(value: ParseInput): value is ParseDataInputRecord {
-  if (!value || typeof value !== 'object') {
+  if (!isObjectLike(value)) {
     return false;
   }
 
-  return (
-    'data' in (value as Record<string, unknown>) &&
-    isDesignTokenDocument((value as { data?: unknown }).data)
-  );
+  if (!hasDataProperty(value)) {
+    return false;
+  }
+
+  return isDesignTokenDocument(value.data);
 }
 
 function encodeText(content: string): Uint8Array {
@@ -344,7 +372,7 @@ function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeF
     return false;
   }
 
-  const prototype = Object.getPrototypeOf(value);
+  const prototype = Reflect.getPrototypeOf(value);
   return prototype === Object.prototype || prototype === null;
 }
 

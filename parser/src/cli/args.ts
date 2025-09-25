@@ -2,12 +2,16 @@ import { normalizeJsonPointer } from '../utils/json-pointer.js';
 import type { CliArguments, CliOptions } from './types.js';
 import type { JsonPointer } from '../types.js';
 
+const DEFAULT_INPUTS: readonly string[] = [];
+const DEFAULT_POINTERS: readonly JsonPointer[] = [];
+const DEFAULT_CONTEXT: ReadonlyMap<string, unknown> = new Map();
+
 const DEFAULT_CLI_OPTIONS: CliOptions = {
-  inputs: [],
+  inputs: DEFAULT_INPUTS,
   allowHttp: false,
   format: 'pretty',
-  pointers: [] as JsonPointer[],
-  context: new Map()
+  pointers: DEFAULT_POINTERS,
+  context: DEFAULT_CONTEXT
 };
 
 export function parseArguments(args: readonly string[]): CliArguments {

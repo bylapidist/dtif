@@ -82,7 +82,7 @@ function resolveReferenceTarget(
 
   try {
     resolved = new URL(raw, context.ast.uri);
-  } catch (error) {
+  } catch {
     context.diagnostics.push({
       code: DiagnosticCodes.graph.INVALID_REFERENCE,
       message: `${label} "${raw}" is not a valid URL or JSON Pointer.`,
@@ -93,7 +93,7 @@ function resolveReferenceTarget(
     return undefined;
   }
 
-  const fragment = resolved.hash ?? '';
+  const fragment = resolved.hash;
   const pointerValue = fragment.length === 0 ? JSON_POINTER_ROOT : fragment;
 
   if (!isJsonPointer(pointerValue)) {

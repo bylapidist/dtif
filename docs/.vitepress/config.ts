@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
+import type { Plugin, ViteDevServer } from 'vite';
+import type { PluginContext } from 'rollup';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
+type MiddlewareNext = (error?: unknown) => void;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,11 +17,11 @@ function readSchema() {
   return fs.readFileSync(schemaPath, 'utf8');
 }
 
-const schemaStaticPlugin = {
+const schemaStaticPlugin: Plugin = {
   name: 'dtif-schema-static',
-  configureServer(server) {
+  configureServer(server: ViteDevServer) {
     server.watcher.add(schemaPath);
-    server.middlewares.use((req, res, next) => {
+    server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: MiddlewareNext) => {
       if (!req.url) {
         next();
         return;
@@ -41,20 +46,20 @@ const schemaStaticPlugin = {
           return;
         }
         res.end(contents);
-      } catch (error) {
+      } catch {
         res.statusCode = 500;
         res.end('');
       }
     });
   },
-  generateBundle() {
+  generateBundle(this: PluginContext) {
     this.emitFile({
       type: 'asset',
       fileName: schemaRequestPath.slice(1),
       source: readSchema()
     });
   }
-};
+} satisfies Plugin;
 
 export default defineConfig({
   title: 'DTIF',
