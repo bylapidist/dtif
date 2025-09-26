@@ -5,7 +5,8 @@
   "workspaces": [
     "schema",
     "validator",
-    "parser"
+    "parser",
+    "language-server"
   ],
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",

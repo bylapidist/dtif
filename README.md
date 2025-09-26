@@ -159,6 +159,10 @@ Use the canonical parser package to cache decoded documents, resolve pointers, a
 
    Run `dtif-parse --help` to view all CLI switches. The [parser guide](https://dtif.lapidist.net/guides/dtif-parser/) covers cache configuration, loader overrides, and plugin registration in more detail.
 
+## Language tooling
+
+The [`@lapidist/dtif-language-server`](language-server/README.md) package delivers Language Server Protocol (LSP) features for DTIF projects. It shares the repository's TypeScript tooling and can be embedded in editors that launch Node.js-based language servers over stdio or socket transports. The server now supports pointer rename refactors and quick fixes for common schema violations in addition to navigation and hover tooling.
+
 ## TypeScript support
 
 `@lapidist/dtif-schema` bundles TypeScript declarations so editors and
