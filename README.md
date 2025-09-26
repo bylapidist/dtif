@@ -159,9 +159,28 @@ Use the canonical parser package to cache decoded documents, resolve pointers, a
 
    Run `dtif-parse --help` to view all CLI switches. The [parser guide](https://dtif.lapidist.net/guides/dtif-parser/) covers cache configuration, loader overrides, and plugin registration in more detail.
 
-## Language tooling
+## Packages at a glance
 
-The [`@lapidist/dtif-language-server`](language-server/README.md) package delivers Language Server Protocol (LSP) features for DTIF projects. It shares the repository's TypeScript tooling and can be embedded in editors that launch Node.js-based language servers over stdio or socket transports. The server now supports pointer rename refactors and quick fixes for common schema violations in addition to navigation and hover tooling.
+| Package                                                       | Description                                                                                                   |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [`@lapidist/dtif-schema`](schema/README.md)                   | Canonical JSON Schema, bundled TypeScript declarations, and supporting metadata.                              |
+| [`@lapidist/dtif-validator`](validator/README.md)             | Programmatic validation utilities that wrap the schema with Ajv best practices.                               |
+| [`@lapidist/dtif-parser`](parser/README.md)                   | A streaming parser that builds pointer graphs, resolver APIs, and diagnostics for tooling.                    |
+| [`@lapidist/dtif-language-server`](language-server/README.md) | Language Server Protocol (LSP) implementation that powers diagnostics and editor workflows for DTIF projects. |
+
+Each workspace shares formatting, linting, and test infrastructure so upgrades remain consistent across the ecosystem.
+
+## DTIF language server
+
+Embed the [`@lapidist/dtif-language-server`](language-server/README.md) package in any editor that hosts Node.js-based LSP servers. Core capabilities include:
+
+- JSON parsing with schema-backed diagnostics and precise ranges.
+- Jump-to-definition, hover documentation, and pointer-aware navigation for `$ref` targets.
+- Rename refactors that update pointer declarations alongside every in-memory reference.
+- Quick fixes for common schema violations such as missing `$type` or `$ref` members.
+- Contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the registry.
+
+See the [language server guide](docs/tooling/language-server.md) for client configuration, workspace settings, and transport options.
 
 ## TypeScript support
 
