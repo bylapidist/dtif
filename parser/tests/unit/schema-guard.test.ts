@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SchemaGuard } from '../../src/validation/schema-guard.js';
+import { SchemaGuard, DEFAULT_VALIDATOR_OPTIONS } from '../../src/validation/schema-guard.js';
 import { decodeDocument } from '../../src/io/decoder.js';
 import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import type { DocumentHandle, RawDocument } from '../../src/types.js';
@@ -89,4 +89,13 @@ void test('SchemaGuard reports diagnostics with pointers and spans for schema vi
     related.some((info) => /at least 1 item/i.test(info.message)),
     'expected related information describing the minItems violation'
   );
+});
+
+void test('SchemaGuard configures Ajv with strict mode by default', () => {
+  assert.equal(DEFAULT_VALIDATOR_OPTIONS.strict, true);
+  assert.equal(DEFAULT_VALIDATOR_OPTIONS.$data, true);
+  assert.ok(!('allowUnionTypes' in DEFAULT_VALIDATOR_OPTIONS));
+  // Ensure guard instantiation succeeds with strict defaults.
+  const guard = new SchemaGuard();
+  assert.ok(guard);
 });

@@ -84,7 +84,7 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 2. **Run the JSON Schema**
 
    ```bash
-   npx ajv validate --spec=draft2020 --strict=false -c ajv-formats \
+   npx ajv validate --spec=draft2020 --strict=true --data=true -c ajv-formats \
      -s schema/core.json -d path/to/tokens.json
    ```
 
@@ -94,7 +94,7 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 
    ```bash
    npm install --save-dev @lapidist/dtif-schema
-   npx ajv validate --spec=draft2020 --strict=false -c ajv-formats \
+   npx ajv validate --spec=draft2020 --strict=true --data=true -c ajv-formats \
      -s node_modules/@lapidist/dtif-schema/core.json -d path/to/tokens.json
    ```
 

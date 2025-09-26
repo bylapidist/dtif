@@ -32,18 +32,18 @@ if (!result.valid) {
 }
 ```
 
-By default the helper uses Ajv's 2020-12 mode, disables strict schema
-validation to match the official tooling, and registers the `ajv-formats`
-plugin so string formats (URIs, dates, etc.) are enforced. Pass an
-existing Ajv instance or override the options when you need to extend the
-validator.
+By default the helper uses Ajv's 2020-12 mode, enables strict schema
+validation, turns on Ajv's `$data` support, and registers the
+`ajv-formats` plugin so string formats (URIs, dates, etc.) are enforced.
+Pass an existing Ajv instance or override the options when you need to
+extend the validator.
 
 ```js
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { createDtifValidator } from '@lapidist/dtif-validator';
 
-const ajv = new Ajv2020({ strict: false, allErrors: true });
+const ajv = new Ajv2020({ strict: true, allErrors: true, $data: true });
 addFormats(ajv);
 
 const { validate } = createDtifValidator({ ajv });

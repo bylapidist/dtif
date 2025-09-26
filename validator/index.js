@@ -7,8 +7,7 @@ const schema = require('@lapidist/dtif-schema/core.json');
 
 const DEFAULT_OPTIONS = {
   allErrors: true,
-  allowUnionTypes: true,
-  strict: false,
+  strict: true,
   $data: true
 };
 

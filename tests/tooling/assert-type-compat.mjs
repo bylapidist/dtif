@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const schemaPath = path.resolve(__dirname, '../../schema/core.json');
 const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
 const schemaId = schema.$id || 'https://dtif.lapidist.net/schema/core.json';
-const ajv = new Ajv({ allErrors: true, strict: false, $data: true });
+const ajv = new Ajv({ allErrors: true, strict: true, $data: true });
 addFormats(ajv);
 ajv.addSchema(schema);
 let tokenValidator = ajv.getSchema(`${schemaId}#/$defs/token`);

@@ -12,6 +12,7 @@ import assertRegistry from './assert-registry.mjs';
 import assertRegistryContactHttpsRegression from './assert-registry-contact-https-regression.mjs';
 import assertRegistryHttpsRegression from './assert-registry-https-regression.mjs';
 import assertPackages from './assert-packages.mjs';
+import assertValidatorDefaults from './assert-validator-defaults.mjs';
 import codegenCSS from './codegen-css.mjs';
 import codegenIOS from './codegen-ios.mjs';
 import diffSnapshots from './diff-snapshots.mjs';
@@ -62,6 +63,14 @@ if (!packagesRes.valid) {
   failures += packagesRes.errors.length || 1;
 } else {
   console.log('✔ schema and validator packages');
+}
+
+const validatorDefaultsRes = assertValidatorDefaults();
+if (!validatorDefaultsRes.valid) {
+  console.error('validator default errors:', validatorDefaultsRes.errors);
+  failures += validatorDefaultsRes.errors?.length || 1;
+} else {
+  console.log('✔ validator strict defaults');
 }
 
 for (const dir of walk(fixturesRoot)) {

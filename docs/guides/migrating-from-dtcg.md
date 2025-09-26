@@ -1577,8 +1577,13 @@ to express responsive behaviour that DTCG cannot model directly.
 1. **Run the schema.** Validate each migrated file with the published schema or the validator package described in [Getting started](./getting-started.md#getting-started). Example using Ajv:
 
    ```bash
-   npx --yes ajv-cli validate -s schema/core.json -d "examples/dtcg-migration/*.tokens.json"
+   npx --yes ajv-cli validate --spec=draft2020 --strict=true --data=true -c ajv-formats \
+     -s schema/core.json -d "examples/dtcg-migration/*.tokens.json"
    ```
+
+   Strict Ajv settings help catch remaining schema mismatches in migrated fixtures.
+   Temporarily pass `--strict=false` only when auditing exports that still rely on
+   legacy semantics.
 
 2. **Adopt automated tests.** Integrate [`@lapidist/dtif-validator`](https://www.npmjs.com/package/@lapidist/dtif-validator) in your CI pipeline to catch regressions and enforce pointer resolution.
 3. **Document extensions.** When you port proprietary extension data, follow the [extension naming guidelines](../spec/format-serialisation.md#extension-naming-guidelines) so collaborators can understand and validate the additional payloads.

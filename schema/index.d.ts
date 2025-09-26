@@ -35,7 +35,7 @@ export type TargetToken = DTIFPointerReference;
 /**
  * JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation §$ref.
  */
-export type DTIFPointerReference = {
+export type DTIFPointerReference = string & {
   [k: string]: unknown;
 } & Pointer;
 export type Pointer = string;
@@ -66,12 +66,28 @@ export type FallbackReference = DTIFPointerReference;
  * Optional nested fallback chain evaluated when this entry fails per Theming and overrides §$overrides.
  */
 export type NestedFallback = FallbackChain1;
-export type FallbackResolutionRequirement = {
-  [k: string]: unknown;
-};
-export type OverrideResolutionRequirement = {
-  [k: string]: unknown;
-};
+export type FallbackResolutionRequirement =
+  | {
+      $ref: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $value: unknown;
+      [k: string]: unknown;
+    };
+export type OverrideResolutionRequirement =
+  | {
+      $ref: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $value: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $fallback: unknown;
+      [k: string]: unknown;
+    };
 /**
  * Conditional overrides evaluated in order per Theming and overrides §$overrides.
  */
@@ -139,7 +155,16 @@ export type Hash = HashString;
  * Stable identifier with no whitespace per Metadata §metadata.
  */
 export type HashString = string;
-export type TokenCore = {
+export type TokenCore = (
+  | {
+      $value: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $ref: unknown;
+      [k: string]: unknown;
+    }
+) & {
   [k: string]: unknown;
 } & {
   $type?: TokenTypeIdentifier;
