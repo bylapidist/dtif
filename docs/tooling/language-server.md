@@ -12,7 +12,7 @@ outline: [2, 3]
 
 `@lapidist/dtif-language-server` embeds the Design Token Interchange Format (DTIF) specification inside the Language Server Protocol. Editors that speak LSP gain schema-backed diagnostics, pointer navigation, and guided authoring from a single Node.js runtime.
 
-## Why teams adopt the DTIF language server {#why-adopt}
+## Capabilities at a glance {#why-adopt}
 
 - **Immediate feedback.** JSON parsing and schema validation surface precise diagnostics as soon as documents change.
 - **Pointer intelligence.** Jump-to-definition, hover documentation, and rename refactors understand `$ref` relationships across files.
