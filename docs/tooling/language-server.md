@@ -10,7 +10,7 @@ outline: [2, 3]
 
 # DTIF Language Server {#dtif-language-server}
 
-`@lapidist/dtif-language-server` embeds the Design Token Interchange Format (DTIF) specification inside the Language Server Protocol. Editors that speak LSP gain schema-backed diagnostics, pointer navigation, authoring assistance, and telemetry-aware tooling from a single Node.js runtime.
+`@lapidist/dtif-language-server` embeds the Design Token Interchange Format (DTIF) specification inside the Language Server Protocol. Editors that speak LSP gain schema-backed diagnostics, pointer navigation, and guided authoring from a single Node.js runtime.
 
 ## Why teams adopt the DTIF language server {#why-adopt}
 
@@ -59,10 +59,9 @@ start({ connection });
 
 The server reads optional configuration from the `dtifLanguageServer` section. Clients should implement [`workspace/configuration`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_configuration) to supply values.
 
-| Setting             | Type            | Default | Effect                                                                                              |
-| ------------------- | --------------- | ------- | --------------------------------------------------------------------------------------------------- |
-| `validation.mode`   | `'on' \| 'off'` | `'on'`  | Controls whether schema diagnostics are published. Navigation remains available even when disabled. |
-| `telemetry.enabled` | `boolean`       | `false` | Toggles telemetry emission through the LSP `telemetry/event` channel.                               |
+| Setting           | Type            | Default | Effect                                                                                              |
+| ----------------- | --------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `validation.mode` | `'on' \| 'off'` | `'on'`  | Controls whether schema diagnostics are published. Navigation remains available even when disabled. |
 
 ### VS Code
 
@@ -71,32 +70,12 @@ The server reads optional configuration from the `dtifLanguageServer` section. C
   "dtifLanguageServer": {
     "validation": {
       "mode": "on"
-    },
-    "telemetry": {
-      "enabled": false
     }
   }
 }
 ```
 
 Add the configuration to `settings.json` or workspace settings. Pair it with an LSP client extension or custom `package.json` contribution that launches the bundled server.
-
-### JetBrains IDEs
-
-Install the [LSP Support plugin](https://plugins.jetbrains.com/plugin/10209-lsp-support) and register the DTIF server:
-
-```jsonc
-{
-  "command": ["node", "./node_modules/@lapidist/dtif-language-server/dist/server.js"],
-  "options": {
-    "env": {
-      "NODE_OPTIONS": "--enable-source-maps"
-    }
-  }
-}
-```
-
-The server automatically selects stdio transport when launched directly with Node.js.
 
 ### Neovim
 
@@ -117,17 +96,16 @@ Adapt the command path to match your package manager or bundler.
 ## Operational guidance {#operational-guidance}
 
 - **Performance.** The server incrementally indexes documents to keep navigation responsive. Long-running parse jobs honour LSP cancellation tokens to avoid blocking the UI.
-- **Telemetry.** When enabled, telemetry payloads omit token values and only include anonymised metadata such as pointer counts and diagnostic categories.
 - **Versioning.** Changesets ensure the language server, parser, validator, and schema release in lockstep. Consumers can pin a single version in `package.json` to stay consistent.
 - **Testing.** Integration tests under `language-server/tests/` simulate full JSON-RPC sessions. Use them as templates for workspace-specific scenarios.
 
 ## Troubleshooting {#troubleshooting}
 
-| Symptom                         | Resolution                                                                                                                                                             |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Diagnostics are missing         | Confirm `validation.mode` is `'on'` and that the client sends `textDocument/didOpen` events for DTIF files.                                                            |
-| Rename refactor misses files    | LSP rename works on documents currently loaded by the client. Ensure relevant files are open or preloaded before invoking the command.                                 |
-| Completion results feel stale   | The server refreshes the document index on each content change. If completions lag, verify the client forwards incremental changes instead of full document snapshots. |
-| Telemetry errors appear in logs | Disable telemetry or review proxy settings. All telemetry is best-effort and never blocks user commands.                                                               |
+| Symptom                                             | Resolution                                                                                                                                                             |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Diagnostics are missing                             | Confirm `validation.mode` is `'on'` and that the client sends `textDocument/didOpen` events for DTIF files.                                                            |
+| Rename refactor misses files                        | LSP rename works on documents currently loaded by the client. Ensure relevant files are open or preloaded before invoking the command.                                 |
+| Completion results feel stale                       | The server refreshes the document index on each content change. If completions lag, verify the client forwards incremental changes instead of full document snapshots. |
+| Diagnostics stay disabled after toggling validation | Some clients cache configuration responses. Trigger a manual refresh (for example, reloading the window) so the server receives the latest settings.                   |
 
 For further questions or to propose editor-specific configurations, open a [discussion](https://github.com/bylapidist/dtif/discussions).

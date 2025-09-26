@@ -29,11 +29,6 @@
 - Supplies contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the DTIF registry.
 - Orders completion results by relevance to the active pointer scope.
 
-### Telemetry and logging
-
-- Emits structured telemetry over the `telemetry/event` channel when enabled.
-- Logs operational issues to the LSP client console with consistent formatting helpers shared across the runtime.
-
 ## Installation
 
 ```bash
@@ -70,10 +65,9 @@ start({ connection });
 
 The language server reads optional workspace configuration under the `dtifLanguageServer` section.
 
-| Setting             | Type            | Default | Description                                                                     |
-| ------------------- | --------------- | ------- | ------------------------------------------------------------------------------- |
-| `validation.mode`   | `'on' \| 'off'` | `'on'`  | Enables or suppresses schema diagnostics while keeping navigation indexes warm. |
-| `telemetry.enabled` | `boolean`       | `false` | Allows telemetry payloads to flow through the LSP `telemetry/event` channel.    |
+| Setting           | Type            | Default | Description                                                                     |
+| ----------------- | --------------- | ------- | ------------------------------------------------------------------------------- |
+| `validation.mode` | `'on' \| 'off'` | `'on'`  | Enables or suppresses schema diagnostics while keeping navigation indexes warm. |
 
 Settings can be supplied by clients that implement [`workspace/configuration`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_configuration) or via editor-specific configuration files.
 
@@ -84,22 +78,6 @@ Settings can be supplied by clients that implement [`workspace/configuration`](h
   "dtifLanguageServer": {
     "validation": {
       "mode": "on"
-    },
-    "telemetry": {
-      "enabled": false
-    }
-  }
-}
-```
-
-### JetBrains example (LSP Support plugin)
-
-```jsonc
-{
-  "command": ["node", "./node_modules/@lapidist/dtif-language-server/dist/server.js"],
-  "options": {
-    "env": {
-      "NODE_OPTIONS": "--enable-source-maps"
     }
   }
 }
@@ -119,11 +97,11 @@ Integration tests in `language-server/tests/` spin up the LSP over JSON-RPC stre
 
 ## Troubleshooting
 
-| Symptom                         | Suggested action                                                                                                                  |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Diagnostics do not appear       | Confirm `validation.mode` is set to `'on'` and the client calls `textDocument/didOpen` for DTIF files.                            |
-| Rename edits miss some files    | Only documents opened by the client are available to the server. Ensure the editor loads relevant files before triggering rename. |
-| Telemetry errors in client logs | Disable telemetry or review client permissions; all payloads are JSON and omit token values for privacy.                          |
+| Symptom                                               | Suggested action                                                                                                                  |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Diagnostics do not appear                             | Confirm `validation.mode` is set to `'on'` and the client calls `textDocument/didOpen` for DTIF files.                            |
+| Rename edits miss some files                          | Only documents opened by the client are available to the server. Ensure the editor loads relevant files before triggering rename. |
+| Diagnostics do not reappear after toggling validation | Ensure the client re-requests configuration after edits. Some editors only refetch settings on save or focus changes.             |
 
 ## License
 

@@ -1,7 +1,7 @@
 import { type Connection, type TextDocumentChangeEvent } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import type { DtifLanguageServerSettings } from '../settings.js';
-import type { DocumentValidator } from '../diagnostics/index.js';
+import { DocumentValidator } from '../diagnostics/index.js';
 import { DocumentAnalysisStore } from '../core/documents/analysis-store.js';
 import type { ManagedDocuments } from './documents.js';
 import { buildInitializeResult, getServerName, type DtifInitializeResult } from './initialize.js';
@@ -10,9 +10,6 @@ import {
   SettingsReadError,
   type SettingsChange
 } from './services/settings-controller.js';
-import { TelemetryReporter } from './services/telemetry-reporter.js';
-import { DiagnosticsManager } from './services/diagnostics-manager.js';
-import { DocumentAnalysisCoordinator } from './services/document-analysis-coordinator.js';
 import { describeError } from './utils/errors.js';
 
 export interface LanguageServerSessionOptions {
@@ -28,26 +25,14 @@ export class LanguageServerSession {
   readonly store: DocumentAnalysisStore;
 
   #settings: SettingsController;
-  #telemetry: TelemetryReporter;
-  #diagnostics: DiagnosticsManager;
-  #analysis: DocumentAnalysisCoordinator;
+  #validator: DocumentValidator;
 
   constructor(options: LanguageServerSessionOptions) {
     this.connection = options.connection;
     this.documents = options.documents;
     this.store = options.store ?? new DocumentAnalysisStore();
-    this.#telemetry = new TelemetryReporter(this.connection);
     this.#settings = new SettingsController(this.connection);
-    this.#diagnostics = new DiagnosticsManager({
-      connection: this.connection,
-      validator: options.validator,
-      telemetry: this.#telemetry
-    });
-    this.#analysis = new DocumentAnalysisCoordinator({
-      connection: this.connection,
-      store: this.store,
-      telemetry: this.#telemetry
-    });
+    this.#validator = options.validator ?? new DocumentValidator();
   }
 
   get settings(): DtifLanguageServerSettings {
@@ -56,13 +41,12 @@ export class LanguageServerSession {
 
   handleInitialize(): DtifInitializeResult {
     this.#settings.reset();
-    this.#telemetry.update(this.#settings.current);
     return buildInitializeResult();
   }
 
   async handleInitialized(): Promise<void> {
     this.connection.console.info(`${getServerName()} initialised.`);
-    await this.refreshSettings('initial');
+    await this.refreshSettings();
   }
 
   handleShutdown(): void {
@@ -70,25 +54,25 @@ export class LanguageServerSession {
   }
 
   async handleDidChangeConfiguration(): Promise<void> {
-    await this.refreshSettings('change');
+    await this.refreshSettings();
   }
 
   handleDocumentOpen(event: TextDocumentChangeEvent<TextDocument>): void {
-    this.#analysis.update(event.document);
-    void this.#diagnostics.publish(event.document, this.#settings.current);
+    this.indexDocument(event.document);
+    void this.publishDiagnostics(event.document, this.#settings.current);
   }
 
   handleDocumentChange(event: TextDocumentChangeEvent<TextDocument>): void {
-    this.#analysis.update(event.document);
-    void this.#diagnostics.publish(event.document, this.#settings.current);
+    this.indexDocument(event.document);
+    void this.publishDiagnostics(event.document, this.#settings.current);
   }
 
   handleDocumentClose(event: TextDocumentChangeEvent<TextDocument>): void {
-    this.#analysis.remove(event.document.uri);
-    void this.#diagnostics.clear(event.document.uri);
+    this.store.remove(event.document.uri);
+    void this.clearDiagnostics(event.document.uri);
   }
 
-  private async refreshSettings(reason: 'initial' | 'change'): Promise<void> {
+  private async refreshSettings(): Promise<void> {
     let change: SettingsChange;
     try {
       change = await this.#settings.refresh();
@@ -101,25 +85,72 @@ export class LanguageServerSession {
       return;
     }
 
-    this.#telemetry.update(change.current);
-
     if (!change.changed) {
       return;
     }
 
-    if (change.current.telemetry.enabled && !change.previous.telemetry.enabled) {
-      this.#telemetry.log('dtifLanguageServer/telemetryEnabled', { reason });
-    }
-
     if (change.previous.validation.mode !== change.current.validation.mode) {
-      this.#analysis.reindex(this.documents.all());
-      await this.#diagnostics.publishAll(this.documents.all(), change.current);
+      this.reindexDocuments();
+      await this.publishDiagnosticsForAll(change.current);
     }
   }
 
   private logSettingsError(error: unknown): void {
     const message = describeError(error);
     this.connection.console.error(`Failed to load DTIF language server settings: ${message}`);
-    this.#telemetry.log('dtifLanguageServer/settingsError', { message });
+  }
+
+  private indexDocument(document: TextDocument): void {
+    const result = this.store.update(document);
+    if (!result.ok && result.error) {
+      this.logIndexError(result.error);
+    }
+  }
+
+  private reindexDocuments(): void {
+    for (const document of this.documents.all()) {
+      this.indexDocument(document);
+    }
+  }
+
+  private async publishDiagnostics(
+    document: TextDocument,
+    settings: DtifLanguageServerSettings
+  ): Promise<void> {
+    if (settings.validation.mode === 'off') {
+      await this.clearDiagnostics(document.uri);
+      return;
+    }
+
+    try {
+      const diagnostics = this.#validator.validate(document);
+      await this.connection.sendDiagnostics({ uri: document.uri, diagnostics });
+    } catch (error: unknown) {
+      this.logValidationError(error);
+    }
+  }
+
+  private async publishDiagnosticsForAll(settings: DtifLanguageServerSettings): Promise<void> {
+    for (const document of this.documents.all()) {
+      await this.publishDiagnostics(document, settings);
+    }
+  }
+
+  private async clearDiagnostics(uri: string): Promise<void> {
+    try {
+      await this.connection.sendDiagnostics({ uri, diagnostics: [] });
+    } catch (error: unknown) {
+      this.logValidationError(error);
+    }
+  }
+
+  private logIndexError(error: unknown): void {
+    const message = describeError(error);
+    this.connection.console.error(`Failed to analyse DTIF document: ${message}`);
+  }
+
+  private logValidationError(error: unknown): void {
+    const message = describeError(error);
+    this.connection.console.error(`Failed to validate DTIF document: ${message}`);
   }
 }

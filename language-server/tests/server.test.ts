@@ -48,20 +48,6 @@ function queueConfigurationResponses(
   });
 }
 
-interface TelemetryPayload {
-  event: string;
-  data?: unknown;
-}
-
-function isTelemetryPayload(value: unknown): value is TelemetryPayload {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const event: unknown = Reflect.get(value, 'event');
-  return typeof event === 'string';
-}
-
 void test('buildInitializeResult advertises incremental sync', () => {
   const result = buildInitializeResult();
   assert.equal(result.capabilities.textDocumentSync, TextDocumentSyncKind.Incremental);
@@ -304,9 +290,9 @@ void test('language server honours validation configuration', async () => {
   clientConnection.listen();
 
   const configurationResponses: DtifLanguageServerSettings[] = [
-    { validation: { mode: 'on' }, telemetry: { enabled: false } },
-    { validation: { mode: 'off' }, telemetry: { enabled: false } },
-    { validation: { mode: 'on' }, telemetry: { enabled: false } }
+    { validation: { mode: 'on' } },
+    { validation: { mode: 'off' } },
+    { validation: { mode: 'on' } }
   ];
 
   queueConfigurationResponses(clientConnection, configurationResponses);
@@ -396,79 +382,6 @@ void test('language server honours validation configuration', async () => {
     (params) => params.uri === uri && params.diagnostics.length > 0
   );
   assert.ok(restoredDiagnostics.diagnostics.length > 0);
-
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
-  await new Promise((resolve) => setImmediate(resolve));
-
-  clientConnection.dispose();
-});
-
-void test('language server emits telemetry when enabled', async () => {
-  const clientToServer = new PassThrough();
-  const serverToClient = new PassThrough();
-
-  const serverConnection = createConnection(
-    new StreamMessageReader(clientToServer),
-    new StreamMessageWriter(serverToClient),
-    undefined,
-    ProposedFeatures.all
-  );
-
-  const telemetryEvents: TelemetryPayload[] = [];
-  serverConnection.telemetry.log = (data: unknown) => {
-    if (isTelemetryPayload(data)) {
-      telemetryEvents.push(data);
-    }
-  };
-
-  const documents = new TextDocuments(TextDocument);
-  const server = createServer({ connection: serverConnection, documents });
-
-  const clientConnection = createMessageConnection(
-    new StreamMessageReader(serverToClient),
-    new StreamMessageWriter(clientToServer)
-  );
-  clientConnection.listen();
-
-  const configurationResponses: DtifLanguageServerSettings[] = [
-    { validation: { mode: 'on' }, telemetry: { enabled: false } },
-    { validation: { mode: 'on' }, telemetry: { enabled: true } }
-  ];
-
-  queueConfigurationResponses(clientConnection, configurationResponses);
-
-  const capabilities: ClientCapabilities = {};
-  const initializeParams: InitializeParams = {
-    processId: null,
-    clientInfo: undefined,
-    locale: undefined,
-    rootPath: null,
-    rootUri: null,
-    capabilities,
-    initializationOptions: undefined,
-    trace: 'off',
-    workspaceFolders: null
-  };
-
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
-
-  server.listen();
-
-  await initializePromise;
-
-  void clientConnection.sendNotification(InitializedNotification.type, {});
-  await new Promise((resolve) => setImmediate(resolve));
-
-  void clientConnection.sendNotification(DidChangeConfigurationNotification.type, {
-    settings: { telemetry: { enabled: true } }
-  });
-
-  await new Promise((resolve) => setImmediate(resolve));
-
-  assert.deepEqual(telemetryEvents, [
-    { event: 'dtifLanguageServer/telemetryEnabled', data: { reason: 'change' } }
-  ]);
 
   await clientConnection.sendRequest(ShutdownRequest.type);
   void clientConnection.sendNotification(ExitNotification.type);
