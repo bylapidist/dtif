@@ -9,7 +9,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import type { Node as JsonNode } from 'jsonc-parser';
 import { DocumentAnalysisStore } from './core/documents/analysis-store.js';
 import { isRecord } from './core/utils/object.js';
-import type { DtifDiagnosticData } from './diagnostics.js';
+import type { DtifDiagnosticData } from './diagnostics/index.js';
 
 const INDENT_UNIT = '  ';
 const LEADING_WHITESPACE = /^\s*/u;

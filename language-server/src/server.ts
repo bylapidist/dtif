@@ -14,7 +14,7 @@ import { buildCompletions } from './features/completions/index.js';
 import { buildHover } from './features/hover.js';
 import { findDefinition } from './features/definition.js';
 import { buildRenameEdit } from './features/rename.js';
-import { DocumentValidator } from './diagnostics.js';
+import { DocumentValidator } from './diagnostics/index.js';
 import { DocumentAnalysisStore } from './core/documents/analysis-store.js';
 import { createManagedDocuments, type ManagedDocuments } from './runtime/documents.js';
 import { LanguageServerSession } from './runtime/session.js';

@@ -1,7 +1,7 @@
 import { type Connection, type TextDocumentChangeEvent } from 'vscode-languageserver/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import type { DtifLanguageServerSettings } from '../settings.js';
-import type { DocumentValidator } from '../diagnostics.js';
+import type { DocumentValidator } from '../diagnostics/index.js';
 import { DocumentAnalysisStore } from '../core/documents/analysis-store.js';
 import type { ManagedDocuments } from './documents.js';
 import { buildInitializeResult, getServerName, type DtifInitializeResult } from './initialize.js';
@@ -12,6 +12,7 @@ import {
 } from './services/settings-controller.js';
 import { TelemetryReporter } from './services/telemetry-reporter.js';
 import { DiagnosticsManager } from './services/diagnostics-manager.js';
+import { DocumentAnalysisCoordinator } from './services/document-analysis-coordinator.js';
 import { describeError } from './utils/errors.js';
 
 export interface LanguageServerSessionOptions {
@@ -29,6 +30,7 @@ export class LanguageServerSession {
   #settings: SettingsController;
   #telemetry: TelemetryReporter;
   #diagnostics: DiagnosticsManager;
+  #analysis: DocumentAnalysisCoordinator;
 
   constructor(options: LanguageServerSessionOptions) {
     this.connection = options.connection;
@@ -39,6 +41,10 @@ export class LanguageServerSession {
     this.#diagnostics = new DiagnosticsManager({
       connection: this.connection,
       validator: options.validator,
+      telemetry: this.#telemetry
+    });
+    this.#analysis = new DocumentAnalysisCoordinator({
+      connection: this.connection,
       store: this.store,
       telemetry: this.#telemetry
     });
@@ -68,14 +74,17 @@ export class LanguageServerSession {
   }
 
   handleDocumentOpen(event: TextDocumentChangeEvent<TextDocument>): void {
+    this.#analysis.update(event.document);
     void this.#diagnostics.publish(event.document, this.#settings.current);
   }
 
   handleDocumentChange(event: TextDocumentChangeEvent<TextDocument>): void {
+    this.#analysis.update(event.document);
     void this.#diagnostics.publish(event.document, this.#settings.current);
   }
 
   handleDocumentClose(event: TextDocumentChangeEvent<TextDocument>): void {
+    this.#analysis.remove(event.document.uri);
     void this.#diagnostics.clear(event.document.uri);
   }
 
@@ -103,6 +112,7 @@ export class LanguageServerSession {
     }
 
     if (change.previous.validation.mode !== change.current.validation.mode) {
+      this.#analysis.reindex(this.documents.all());
       await this.#diagnostics.publishAll(this.documents.all(), change.current);
     }
   }
