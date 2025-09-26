@@ -9,8 +9,9 @@ outline: [2, 3]
 Explore DTIF-aware tooling that accelerates production workflows and keeps design tokens
 aligned across platforms.
 
-## CLI and automation {#cli-and-automation}
+## Editor and automation tooling {#editor-automation}
 
+- [DTIF Language Server](./language-server.md#dtif-language-server) – power diagnostics, navigation, and completions in editors that speak the Language Server Protocol.
 - [Design Lint](./design-lint.md#design-lint) – lint component libraries and build
   pipelines with a DTIF-native command-line interface.
 
