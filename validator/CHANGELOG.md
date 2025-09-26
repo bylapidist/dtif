@@ -1,5 +1,16 @@
 # @lapidist/dtif-validator changelog
 
+## 0.4.0
+
+### Minor Changes
+
+- [#79](https://github.com/bylapidist/dtif/pull/79) [`32ffb62`](https://github.com/bylapidist/dtif/commit/32ffb62bbece47047411cd7e1b52e43ba56906cb) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enable Ajv strict mode across the schema, validator, parser, and tooling.
+
+### Patch Changes
+
+- Updated dependencies [[`32ffb62`](https://github.com/bylapidist/dtif/commit/32ffb62bbece47047411cd7e1b52e43ba56906cb)]:
+  - @lapidist/dtif-schema@0.4.0
+
 ## 0.3.4
 
 ### Patch Changes
