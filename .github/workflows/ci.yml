@@ -44,3 +44,9 @@ jobs:
 
       - name: Test parser package
         run: npm test --workspace=@lapidist/dtif-parser
+
+      - name: Build language server package
+        run: npm run build --workspace=@lapidist/dtif-language-server
+
+      - name: Test language server package
+        run: npm test --workspace=@lapidist/dtif-language-server

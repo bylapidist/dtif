@@ -13,6 +13,7 @@ prepare a release.
    - `npm run lint`
    - `npm run lint:ts` whenever you touch JavaScript or TypeScript sources
    - `npm test`
+   - `npm run build --workspace=@lapidist/dtif-language-server` and `npm test --workspace=@lapidist/dtif-language-server` when you modify files inside `language-server/`
    - `npm run lint:docs` if you change files inside `docs/`
    - `npm run --workspace parser test` whenever you modify files inside `parser/`
    - Create a changeset covering `@lapidist/dtif-parser` whenever you modify files inside `parser/`

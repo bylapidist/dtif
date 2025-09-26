@@ -5,7 +5,8 @@
   "workspaces": [
     "schema",
     "validator",
-    "parser"
+    "parser",
+    "language-server"
   ],
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
@@ -35,6 +36,9 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
     "eslint": "^9.15.0",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.6.3",
     "vite": "^7.0.0",
     "ajv-cli": "^5.0.0",
     "ajv-formats": "^3.0.1",
