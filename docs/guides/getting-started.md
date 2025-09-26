@@ -20,15 +20,22 @@ Token documents are UTF-8 encoded JSON files. The following example is valid:
 Validate a document using:
 
 ```bash
-npx --yes ajv-cli validate -s schema/core.json -d your.tokens.json
+npx --yes ajv-cli validate --spec=draft2020 --strict=true --data=true -c ajv-formats \
+  -s schema/core.json -d your.tokens.json
 ```
+
+Strict mode surfaces schema integration issues early. Only disable it (for example,
+with `--strict=false`) when migrating legacy documents that you plan to fix later.
+The schema also relies on Ajv's `$data` reference support, which is why `--data=true`
+is required in the examples above.
 
 When you prefer an npm distribution instead of cloning the repository, install
 the published schema package:
 
 ```bash
 npm install --save-dev @lapidist/dtif-schema
-npx --yes ajv-cli validate -s node_modules/@lapidist/dtif-schema/core.json -d your.tokens.json
+npx --yes ajv-cli validate --spec=draft2020 --strict=true --data=true -c ajv-formats \
+  -s node_modules/@lapidist/dtif-schema/core.json -d your.tokens.json
 ```
 
 Programmatic validation is available through

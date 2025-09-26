@@ -8,7 +8,7 @@
       "type": "string",
       "title": "Schema declaration",
       "description": "Optional JSON Schema identifier that helps tooling discover compatible vocabularies.",
-      "$comment": "Format and serialisation \u00a7format: documents MAY declare $schema for tooling introspection."
+      "$comment": "Format and serialisation §format: documents MAY declare $schema for tooling introspection."
     },
     "$description": {
       "$ref": "#/$defs/metadata-members/properties/$description"
@@ -16,14 +16,14 @@
     "$version": {
       "type": "string",
       "title": "Document version",
-      "description": "Semantic Versioning identifier for the token document per Architecture and model \u00a7versioning.",
-      "$comment": "Architecture and model \u00a7versioning.",
+      "description": "Semantic Versioning identifier for the token document per Architecture and model §versioning.",
+      "$comment": "Architecture and model §versioning.",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-(?:0|[1-9]\\d*|[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|[a-zA-Z-][0-9a-zA-Z-]*))*)?(?:\\+[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*)?$"
     },
     "$extensions": {
       "title": "Document extensions",
-      "description": "Namespaced metadata that applies to the entire document per Format and serialisation \u00a7$extensions.",
-      "$comment": "Format and serialisation \u00a7$extensions.",
+      "description": "Namespaced metadata that applies to the entire document per Format and serialisation §$extensions.",
+      "$comment": "Format and serialisation §$extensions.",
       "allOf": [
         {
           "$ref": "#/$defs/extensions"
@@ -32,8 +32,8 @@
     },
     "$overrides": {
       "title": "Overrides",
-      "description": "Conditional overrides evaluated in order per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides.",
+      "description": "Conditional overrides evaluated in order per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides.",
       "type": "array",
       "items": {
         "$ref": "#/$defs/override"
@@ -49,57 +49,64 @@
   "$defs": {
     "pointer": {
       "title": "DTIF pointer reference",
-      "description": "JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation \u00a7$ref.",
+      "description": "JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation §$ref.",
       "type": "string",
       "allOf": [
         {
-          "$comment": "RFC 6901 pointer grammar with mandatory # fragment (Format and serialisation \u00a7$ref).",
-          "pattern": "^(?:#|[^#]+#)(?:\\/[^~\\/]*(?:~[01][^~\\/]*)*)*$"
+          "$comment": "RFC 6901 pointer grammar with mandatory # fragment (Format and serialisation §$ref).",
+          "pattern": "^(?:#|[^#]+#)(?:\\/[^~\\/]*(?:~[01][^~\\/]*)*)*$",
+          "type": "string"
         },
         {
-          "$comment": "Directory traversal segments ../ at the start of the path are invalid (Format and serialisation \u00a7$ref step 1).",
+          "$comment": "Directory traversal segments ../ at the start of the path are invalid (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^\\.\\.(?:\\/|%2[fF]|\\?|#|$)"
+            "pattern": "^\\.\\.(?:\\/|%2[fF]|\\?|#|$)",
+            "type": "string"
           }
         },
         {
-          "$comment": "Directory traversal segments ../ inside the path before the fragment are invalid (Format and serialisation \u00a7$ref step 1).",
+          "$comment": "Directory traversal segments ../ inside the path before the fragment are invalid (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^[^#]*\\/\\.\\.(?:\\/|%2[fF]|\\?|#|$)"
+            "pattern": "^[^#]*\\/\\.\\.(?:\\/|%2[fF]|\\?|#|$)",
+            "type": "string"
           }
         },
         {
-          "$comment": "Percent-encoded or mixed-encoding .. segments such as %2e%2e/, %2e./, or .%2e/ are rejected (Format and serialisation \u00a7$ref step 1).",
+          "$comment": "Percent-encoded or mixed-encoding .. segments such as %2e%2e/, %2e./, or .%2e/ are rejected (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)"
+            "pattern": "^(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)",
+            "type": "string"
           }
         },
         {
-          "$comment": "Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation \u00a7$ref step 1).",
+          "$comment": "Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^[^#]*\\/(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)"
+            "pattern": "^[^#]*\\/(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)",
+            "type": "string"
           }
         },
         {
           "if": {
-            "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*://"
+            "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*://",
+            "type": "string"
           },
           "then": {
-            "pattern": "^https?://"
+            "pattern": "^https?://",
+            "type": "string"
           }
         }
       ]
     },
     "reference": {
       "title": "Pointer alias",
-      "description": "Object aliasing another token via $ref per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: alias objects contain only $ref and MUST resolve to the same $type.",
+      "description": "Object aliasing another token via $ref per Token types §value.",
+      "$comment": "Token types §value: alias objects contain only $ref and MUST resolve to the same $type.",
       "type": "object",
       "required": ["$ref"],
       "properties": {
         "$ref": {
           "title": "Alias target",
-          "description": "Pointer to the referenced token per Format and serialisation \u00a7$ref.",
+          "description": "Pointer to the referenced token per Format and serialisation §$ref.",
           "allOf": [
             {
               "$ref": "#/$defs/pointer"
@@ -111,15 +118,15 @@
     },
     "nonEmptyArray": {
       "title": "Non-empty array",
-      "description": "Array containing at least one candidate per Token types \u00a7value fallback semantics.",
-      "$comment": "Token types \u00a7value: fallback arrays MUST provide at least one entry.",
+      "description": "Array containing at least one candidate per Token types §value fallback semantics.",
+      "$comment": "Token types §value: fallback arrays MUST provide at least one entry.",
       "type": "array",
       "minItems": 1
     },
     "colorReference": {
       "title": "Color literal or alias",
-      "description": "Inline colour payload or $ref alias per Token types \u00a7color and Format and serialisation \u00a7$ref.",
-      "$comment": "Token types \u00a7color: $value entries MAY embed literal colour objects or $ref aliases that resolve to the same $type.",
+      "description": "Inline colour payload or $ref alias per Token types §color and Format and serialisation §$ref.",
+      "$comment": "Token types §color: $value entries MAY embed literal colour objects or $ref aliases that resolve to the same $type.",
       "oneOf": [
         {
           "$ref": "#/$defs/color"
@@ -131,8 +138,8 @@
     },
     "dimensionReference": {
       "title": "Dimension literal or alias",
-      "description": "Inline dimension measurement or $ref alias per Token types \u00a7dimension and Format and serialisation \u00a7$ref.",
-      "$comment": "Token types \u00a7dimension: $value entries MAY embed literal measurements or $ref aliases that resolve to the same $type.",
+      "description": "Inline dimension measurement or $ref alias per Token types §dimension and Format and serialisation §$ref.",
+      "$comment": "Token types §dimension: $value entries MAY embed literal measurements or $ref aliases that resolve to the same $type.",
       "oneOf": [
         {
           "$ref": "#/$defs/dimension"
@@ -144,8 +151,8 @@
     },
     "fontDimensionReference": {
       "title": "Font dimension literal or alias",
-      "description": "Font-specific length measurement or $ref alias per Typography \u00a7font-dimensions and Format and serialisation \u00a7$ref.",
-      "$comment": "Typography \u00a7font-dimensions and \u00a7font-face: values MAY embed inline font measurements or alias another token with the same $type.",
+      "description": "Font-specific length measurement or $ref alias per Typography §font-dimensions and Format and serialisation §$ref.",
+      "$comment": "Typography §font-dimensions and §font-face: values MAY embed inline font measurements or alias another token with the same $type.",
       "allOf": [
         {
           "$ref": "#/$defs/font-dimension"
@@ -154,8 +161,8 @@
     },
     "lengthDimensionReference": {
       "title": "Length dimension literal or alias",
-      "description": "Length measurement or $ref alias per Token types \u00a7dimension (length) and Format and serialisation \u00a7$ref.",
-      "$comment": "Token types \u00a7dimension: length measurements MAY be serialized inline or referenced via $ref.",
+      "description": "Length measurement or $ref alias per Token types §dimension (length) and Format and serialisation §$ref.",
+      "$comment": "Token types §dimension: length measurements MAY be serialized inline or referenced via $ref.",
       "oneOf": [
         {
           "$ref": "#/$defs/length-dimension"
@@ -167,8 +174,8 @@
     },
     "angleDimensionReference": {
       "title": "Angle dimension literal or alias",
-      "description": "Angle measurement or $ref alias per Token types \u00a7dimension (angle) and Format and serialisation \u00a7$ref.",
-      "$comment": "Token types \u00a7dimension: angle measurements MAY be serialized inline or referenced via $ref.",
+      "description": "Angle measurement or $ref alias per Token types §dimension (angle) and Format and serialisation §$ref.",
+      "$comment": "Token types §dimension: angle measurements MAY be serialized inline or referenced via $ref.",
       "oneOf": [
         {
           "$ref": "#/$defs/angle-dimension"
@@ -180,88 +187,90 @@
     },
     "css-ident": {
       "title": "CSS identifier",
-      "description": "Identifier matching the CSS <ident> or <dashed-ident> grammar per CSS Values and Units \u00a7css-identifier-syntax.",
+      "description": "Identifier matching the CSS <ident> or <dashed-ident> grammar per CSS Values and Units §css-identifier-syntax.",
       "type": "string",
       "pattern": "^-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*$",
       "$comment": "MUST conform to CSS <ident> / <dashed-ident> productions including Unicode escapes (css-values-4, css-syntax-3)."
     },
     "css-family-name": {
       "title": "CSS family name",
-      "description": "Font family string following the CSS <family-name> grammar per CSS Fonts Module Level 4 \u00a7font-family-names.",
-      "$comment": "Typography \u00a7font and \u00a7font-face: fontFamily, family, and fallback strings MUST follow the CSS <family-name> production allowing quoted names or sequences of <ident> tokens.",
+      "description": "Font family string following the CSS <family-name> grammar per CSS Fonts Module Level 4 §font-family-names.",
+      "$comment": "Typography §font and §font-face: fontFamily, family, and fallback strings MUST follow the CSS <family-name> production allowing quoted names or sequences of <ident> tokens.",
       "type": "string",
       "minLength": 1,
       "anyOf": [
         {
           "pattern": "^(?:\"(?:[^\"\\\\]|\\\\.)+\"|'(?:[^'\\\\]|\\\\.)+')$",
           "description": "Quoted CSS <string> production allowing escaped characters.",
-          "title": "Quoted family name"
+          "title": "Quoted family name",
+          "type": "string"
         },
         {
           "pattern": "^-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*(?:[ \\t]+-{0,2}(?:[A-Za-z_]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])(?:[A-Za-z0-9_-]|[^\\x00-\\x7F]|\\\\[0-9A-Fa-f]{1,6}(?:\\r\\n|[ \\t\\n\\r\\f])?|\\\\[^\\r\\n\\f0-9A-Fa-f])*)*$",
           "description": "Unquoted sequence of one or more CSS <ident> tokens separated by ASCII whitespace.",
-          "title": "Unquoted family name"
+          "title": "Unquoted family name",
+          "type": "string"
         }
       ]
     },
     "text-decoration-shorthand": {
       "title": "Text decoration shorthand",
-      "description": "CSS text-decoration shorthand accepting line, style, colour, and thickness components per Typography \u00a7text-decoration and CSS Text Decoration Module Level 4.",
-      "$comment": "Typography \u00a7text-decoration: serialised strings MUST follow the CSS text-decoration grammar, including named colours, system colours, calc()/var() functions, and <length-percentage> thickness values.",
+      "description": "CSS text-decoration shorthand accepting line, style, colour, and thickness components per Typography §text-decoration and CSS Text Decoration Module Level 4.",
+      "$comment": "Typography §text-decoration: serialised strings MUST follow the CSS text-decoration grammar, including named colours, system colours, calc()/var() functions, and <length-percentage> thickness values.",
       "type": "string",
       "pattern": "^(?:(?:[Ii][Nn][Hh][Ee][Rr][Ii][Tt]|[Ii][Nn][Ii][Tt][Ii][Aa][Ll]|[Uu][Nn][Ss][Ee][Tt]|[Rr][Ee][Vv][Ee][Rr][Tt](?:-[Ll][Aa][Yy][Ee][Rr])?)|(?:(?:(?:[Nn][Oo][Nn][Ee]|[Uu][Nn][Dd][Ee][Rr][Ll][Ii][Nn][Ee]|[Oo][Vv][Ee][Rr][Ll][Ii][Nn][Ee]|[Ll][Ii][Nn][Ee]-[Tt][Hh][Rr][Oo][Uu][Gg][Hh]|[Bb][Ll][Ii][Nn][Kk]|[Ss][Pp][Ee][Ll][Ll][Ii][Nn][Gg]-[Ee][Rr][Rr][Oo][Rr]|[Gg][Rr][Aa][Mm][Mm][Aa][Rr]-[Ee][Rr][Rr][Oo][Rr])|(?:[Ss][Oo][Ll][Ii][Dd]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Dd][Oo][Tt][Tt][Ee][Dd]|[Dd][Aa][Ss][Hh][Ee][Dd]|[Ww][Aa][Vv][Yy])|(?:[Tt][Hh][Ii][Nn]|[Mm][Ee][Dd][Ii][Uu][Mm]|[Tt][Hh][Ii][Cc][Kk]|[Aa][Uu][Tt][Oo]|[Ff][Rr][Oo][Mm]-[Ff][Oo][Nn][Tt])|(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*))|(?:[-+]?0+(?:\\.0+)?)|(?:#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}))|(?:[A-Za-z][A-Za-z0-9-]*\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))|(?:[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR]|[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR][tT][eE][xX][tT]|[aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[aA][cC][tT][iI][vV][eE][tT][eE][xX][tT]|[aA][lL][iI][cC][eE][bB][lL][uU][eE]|[aA][nN][tT][iI][qQ][uU][eE][wW][hH][iI][tT][eE]|[aA][pP][pP][wW][oO][rR][kK][sS][pP][aA][cC][eE]|[aA][qQ][uU][aA]|[aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[aA][zZ][uU][rR][eE]|[bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[bB][eE][iI][gG][eE]|[bB][iI][sS][qQ][uU][eE]|[bB][lL][aA][cC][kK]|[bB][lL][aA][nN][cC][hH][eE][dD][aA][lL][mM][oO][nN][dD]|[bB][lL][uU][eE]|[bB][lL][uU][eE][vV][iI][oO][lL][eE][tT]|[bB][rR][oO][wW][nN]|[bB][uU][rR][lL][yY][wW][oO][oO][dD]|[bB][uU][tT][tT][oO][nN][bB][oO][rR][dD][eE][rR]|[bB][uU][tT][tT][oO][nN][fF][aA][cC][eE]|[bB][uU][tT][tT][oO][nN][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[bB][uU][tT][tT][oO][nN][sS][hH][aA][dD][oO][wW]|[bB][uU][tT][tT][oO][nN][tT][eE][xX][tT]|[cC][aA][dD][eE][tT][bB][lL][uU][eE]|[cC][aA][nN][vV][aA][sS]|[cC][aA][nN][vV][aA][sS][tT][eE][xX][tT]|[cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[cC][hH][aA][rR][tT][rR][eE][uU][sS][eE]|[cC][hH][oO][cC][oO][lL][aA][tT][eE]|[cC][oO][rR][aA][lL]|[cC][oO][rR][nN][fF][lL][oO][wW][eE][rR][bB][lL][uU][eE]|[cC][oO][rR][nN][sS][iI][lL][kK]|[cC][rR][iI][mM][sS][oO][nN]|[cC][uU][rR][rR][eE][nN][tT][cC][oO][lL][oO][rR]|[cC][yY][aA][nN]|[dD][aA][rR][kK][bB][lL][uU][eE]|[dD][aA][rR][kK][cC][yY][aA][nN]|[dD][aA][rR][kK][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[dD][aA][rR][kK][gG][rR][aA][yY]|[dD][aA][rR][kK][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][gG][rR][eE][yY]|[dD][aA][rR][kK][kK][hH][aA][kK][iI]|[dD][aA][rR][kK][mM][aA][gG][eE][nN][tT][aA]|[dD][aA][rR][kK][oO][lL][iI][vV][eE][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][oO][rR][aA][nN][gG][eE]|[dD][aA][rR][kK][oO][rR][cC][hH][iI][dD]|[dD][aA][rR][kK][rR][eE][dD]|[dD][aA][rR][kK][sS][aA][lL][mM][oO][nN]|[dD][aA][rR][kK][sS][eE][aA][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[dD][aA][rR][kK][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[dD][aA][rR][kK][vV][iI][oO][lL][eE][tT]|[dD][eE][eE][pP][pP][iI][nN][kK]|[dD][eE][eE][pP][sS][kK][yY][bB][lL][uU][eE]|[dD][iI][mM][gG][rR][aA][yY]|[dD][iI][mM][gG][rR][eE][yY]|[dD][oO][dD][gG][eE][rR][bB][lL][uU][eE]|[fF][iI][eE][lL][dD]|[fF][iI][eE][lL][dD][tT][eE][xX][tT]|[fF][iI][rR][eE][bB][rR][iI][cC][kK]|[fF][lL][oO][rR][aA][lL][wW][hH][iI][tT][eE]|[fF][oO][rR][eE][sS][tT][gG][rR][eE][eE][nN]|[fF][uU][cC][hH][sS][iI][aA]|[gG][aA][iI][nN][sS][bB][oO][rR][oO]|[gG][hH][oO][sS][tT][wW][hH][iI][tT][eE]|[gG][oO][lL][dD]|[gG][oO][lL][dD][eE][nN][rR][oO][dD]|[gG][rR][aA][yY]|[gG][rR][aA][yY][tT][eE][xX][tT]|[gG][rR][eE][eE][nN]|[gG][rR][eE][eE][nN][yY][eE][lL][lL][oO][wW]|[gG][rR][eE][yY]|[hH][iI][gG][hH][lL][iI][gG][hH][tT]|[hH][iI][gG][hH][lL][iI][gG][hH][tT][tT][eE][xX][tT]|[hH][oO][nN][eE][yY][dD][eE][wW]|[hH][oO][tT][pP][iI][nN][kK]|[iI][nN][aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[iI][nN][dD][iI][aA][nN][rR][eE][dD]|[iI][nN][dD][iI][gG][oO]|[iI][nN][fF][oO][bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[iI][nN][fF][oO][tT][eE][xX][tT]|[iI][vV][oO][rR][yY]|[kK][hH][aA][kK][iI]|[lL][aA][vV][eE][nN][dD][eE][rR]|[lL][aA][vV][eE][nN][dD][eE][rR][bB][lL][uU][sS][hH]|[lL][aA][wW][nN][gG][rR][eE][eE][nN]|[lL][eE][mM][oO][nN][cC][hH][iI][fF][fF][oO][nN]|[lL][iI][gG][hH][tT][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][cC][oO][rR][aA][lL]|[lL][iI][gG][hH][tT][cC][yY][aA][nN]|[lL][iI][gG][hH][tT][gG][oO][lL][dD][eE][nN][rR][oO][dD][yY][eE][lL][lL][oO][wW]|[lL][iI][gG][hH][tT][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][pP][iI][nN][kK]|[lL][iI][gG][hH][tT][sS][aA][lL][mM][oO][nN]|[lL][iI][gG][hH][tT][sS][eE][aA][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][sS][kK][yY][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][sS][tT][eE][eE][lL][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][yY][eE][lL][lL][oO][wW]|[lL][iI][mM][eE]|[lL][iI][mM][eE][gG][rR][eE][eE][nN]|[lL][iI][nN][eE][nN]|[lL][iI][nN][kK][tT][eE][xX][tT]|[mM][aA][gG][eE][nN][tT][aA]|[mM][aA][rR][kK]|[mM][aA][rR][kK][tT][eE][xX][tT]|[mM][aA][rR][oO][oO][nN]|[mM][eE][dD][iI][uU][mM][aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[mM][eE][dD][iI][uU][mM][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][oO][rR][cC][hH][iI][dD]|[mM][eE][dD][iI][uU][mM][pP][uU][rR][pP][lL][eE]|[mM][eE][dD][iI][uU][mM][sS][eE][aA][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[mM][eE][dD][iI][uU][mM][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[mM][eE][nN][uU]|[mM][eE][nN][uU][tT][eE][xX][tT]|[mM][iI][dD][nN][iI][gG][hH][tT][bB][lL][uU][eE]|[mM][iI][nN][tT][cC][rR][eE][aA][mM]|[mM][iI][sS][tT][yY][rR][oO][sS][eE]|[mM][oO][cC][cC][aA][sS][iI][nN]|[nN][aA][vV][aA][jJ][oO][wW][hH][iI][tT][eE]|[nN][aA][vV][yY]|[nN][oO][nN][eE]|[oO][lL][dD][lL][aA][cC][eE]|[oO][lL][iI][vV][eE]|[oO][lL][iI][vV][eE][dD][rR][aA][bB]|[oO][rR][aA][nN][gG][eE]|[oO][rR][aA][nN][gG][eE][rR][eE][dD]|[oO][rR][cC][hH][iI][dD]|[pP][aA][lL][eE][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[pP][aA][lL][eE][gG][rR][eE][eE][nN]|[pP][aA][lL][eE][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[pP][aA][lL][eE][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[pP][aA][pP][aA][yY][aA][wW][hH][iI][pP]|[pP][eE][aA][cC][hH][pP][uU][fF][fF]|[pP][eE][rR][uU]|[pP][iI][nN][kK]|[pP][lL][uU][mM]|[pP][oO][wW][dD][eE][rR][bB][lL][uU][eE]|[pP][uU][rR][pP][lL][eE]|[rR][eE][bB][eE][cC][cC][aA][pP][uU][rR][pP][lL][eE]|[rR][eE][dD]|[rR][oO][sS][yY][bB][rR][oO][wW][nN]|[rR][oO][yY][aA][lL][bB][lL][uU][eE]|[sS][aA][dD][dD][lL][eE][bB][rR][oO][wW][nN]|[sS][aA][lL][mM][oO][nN]|[sS][aA][nN][dD][yY][bB][rR][oO][wW][nN]|[sS][cC][rR][oO][lL][lL][bB][aA][rR]|[sS][eE][aA][gG][rR][eE][eE][nN]|[sS][eE][aA][sS][hH][eE][lL][lL]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM][tT][eE][xX][tT]|[sS][iI][eE][nN][nN][aA]|[sS][iI][lL][vV][eE][rR]|[sS][kK][yY][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][gG][rR][aA][yY]|[sS][lL][aA][tT][eE][gG][rR][eE][yY]|[sS][nN][oO][wW]|[sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[sS][rR][gG][bB]|[sS][tT][eE][eE][lL][bB][lL][uU][eE]|[tT][aA][nN]|[tT][eE][aA][lL]|[tT][hH][iI][sS][tT][lL][eE]|[tT][hH][rR][eE][eE][dD][dD][aA][rR][kK][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][fF][aA][cC][eE]|[tT][hH][rR][eE][eE][dD][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[tT][hH][rR][eE][eE][dD][lL][iI][gG][hH][tT][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][sS][hH][aA][dD][oO][wW]|[tT][oO][mM][aA][tT][oO]|[tT][rR][aA][nN][sS][pP][aA][rR][eE][nN][tT]|[tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[vV][iI][oO][lL][eE][tT]|[vV][iI][sS][iI][tT][eE][dD][tT][eE][xX][tT]|[wW][hH][eE][aA][tT]|[wW][hH][iI][tT][eE]|[wW][hH][iI][tT][eE][sS][mM][oO][kK][eE]|[wW][iI][nN][dD][oO][wW]|[wW][iI][nN][dD][oO][wW][fF][rR][aA][mM][eE]|[wW][iI][nN][dD][oO][wW][tT][eE][xX][tT]|[xX][yY][zZ]|[yY][eE][lL][lL][oO][wW]|[yY][eE][lL][lL][oO][wW][gG][rR][eE][eE][nN])))(?:\\s+(?:(?:[Nn][Oo][Nn][Ee]|[Uu][Nn][Dd][Ee][Rr][Ll][Ii][Nn][Ee]|[Oo][Vv][Ee][Rr][Ll][Ii][Nn][Ee]|[Ll][Ii][Nn][Ee]-[Tt][Hh][Rr][Oo][Uu][Gg][Hh]|[Bb][Ll][Ii][Nn][Kk]|[Ss][Pp][Ee][Ll][Ll][Ii][Nn][Gg]-[Ee][Rr][Rr][Oo][Rr]|[Gg][Rr][Aa][Mm][Mm][Aa][Rr]-[Ee][Rr][Rr][Oo][Rr])|(?:[Ss][Oo][Ll][Ii][Dd]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Dd][Oo][Tt][Tt][Ee][Dd]|[Dd][Aa][Ss][Hh][Ee][Dd]|[Ww][Aa][Vv][Yy])|(?:[Tt][Hh][Ii][Nn]|[Mm][Ee][Dd][Ii][Uu][Mm]|[Tt][Hh][Ii][Cc][Kk]|[Aa][Uu][Tt][Oo]|[Ff][Rr][Oo][Mm]-[Ff][Oo][Nn][Tt])|(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*))|(?:[-+]?0+(?:\\.0+)?)|(?:#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}))|(?:[A-Za-z][A-Za-z0-9-]*\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))|(?:[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR]|[aA][cC][cC][eE][nN][tT][cC][oO][lL][oO][rR][tT][eE][xX][tT]|[aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[aA][cC][tT][iI][vV][eE][tT][eE][xX][tT]|[aA][lL][iI][cC][eE][bB][lL][uU][eE]|[aA][nN][tT][iI][qQ][uU][eE][wW][hH][iI][tT][eE]|[aA][pP][pP][wW][oO][rR][kK][sS][pP][aA][cC][eE]|[aA][qQ][uU][aA]|[aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[aA][zZ][uU][rR][eE]|[bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[bB][eE][iI][gG][eE]|[bB][iI][sS][qQ][uU][eE]|[bB][lL][aA][cC][kK]|[bB][lL][aA][nN][cC][hH][eE][dD][aA][lL][mM][oO][nN][dD]|[bB][lL][uU][eE]|[bB][lL][uU][eE][vV][iI][oO][lL][eE][tT]|[bB][rR][oO][wW][nN]|[bB][uU][rR][lL][yY][wW][oO][oO][dD]|[bB][uU][tT][tT][oO][nN][bB][oO][rR][dD][eE][rR]|[bB][uU][tT][tT][oO][nN][fF][aA][cC][eE]|[bB][uU][tT][tT][oO][nN][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[bB][uU][tT][tT][oO][nN][sS][hH][aA][dD][oO][wW]|[bB][uU][tT][tT][oO][nN][tT][eE][xX][tT]|[cC][aA][dD][eE][tT][bB][lL][uU][eE]|[cC][aA][nN][vV][aA][sS]|[cC][aA][nN][vV][aA][sS][tT][eE][xX][tT]|[cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[cC][hH][aA][rR][tT][rR][eE][uU][sS][eE]|[cC][hH][oO][cC][oO][lL][aA][tT][eE]|[cC][oO][rR][aA][lL]|[cC][oO][rR][nN][fF][lL][oO][wW][eE][rR][bB][lL][uU][eE]|[cC][oO][rR][nN][sS][iI][lL][kK]|[cC][rR][iI][mM][sS][oO][nN]|[cC][uU][rR][rR][eE][nN][tT][cC][oO][lL][oO][rR]|[cC][yY][aA][nN]|[dD][aA][rR][kK][bB][lL][uU][eE]|[dD][aA][rR][kK][cC][yY][aA][nN]|[dD][aA][rR][kK][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[dD][aA][rR][kK][gG][rR][aA][yY]|[dD][aA][rR][kK][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][gG][rR][eE][yY]|[dD][aA][rR][kK][kK][hH][aA][kK][iI]|[dD][aA][rR][kK][mM][aA][gG][eE][nN][tT][aA]|[dD][aA][rR][kK][oO][lL][iI][vV][eE][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][oO][rR][aA][nN][gG][eE]|[dD][aA][rR][kK][oO][rR][cC][hH][iI][dD]|[dD][aA][rR][kK][rR][eE][dD]|[dD][aA][rR][kK][sS][aA][lL][mM][oO][nN]|[dD][aA][rR][kK][sS][eE][aA][gG][rR][eE][eE][nN]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[dD][aA][rR][kK][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[dD][aA][rR][kK][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[dD][aA][rR][kK][vV][iI][oO][lL][eE][tT]|[dD][eE][eE][pP][pP][iI][nN][kK]|[dD][eE][eE][pP][sS][kK][yY][bB][lL][uU][eE]|[dD][iI][mM][gG][rR][aA][yY]|[dD][iI][mM][gG][rR][eE][yY]|[dD][oO][dD][gG][eE][rR][bB][lL][uU][eE]|[fF][iI][eE][lL][dD]|[fF][iI][eE][lL][dD][tT][eE][xX][tT]|[fF][iI][rR][eE][bB][rR][iI][cC][kK]|[fF][lL][oO][rR][aA][lL][wW][hH][iI][tT][eE]|[fF][oO][rR][eE][sS][tT][gG][rR][eE][eE][nN]|[fF][uU][cC][hH][sS][iI][aA]|[gG][aA][iI][nN][sS][bB][oO][rR][oO]|[gG][hH][oO][sS][tT][wW][hH][iI][tT][eE]|[gG][oO][lL][dD]|[gG][oO][lL][dD][eE][nN][rR][oO][dD]|[gG][rR][aA][yY]|[gG][rR][aA][yY][tT][eE][xX][tT]|[gG][rR][eE][eE][nN]|[gG][rR][eE][eE][nN][yY][eE][lL][lL][oO][wW]|[gG][rR][eE][yY]|[hH][iI][gG][hH][lL][iI][gG][hH][tT]|[hH][iI][gG][hH][lL][iI][gG][hH][tT][tT][eE][xX][tT]|[hH][oO][nN][eE][yY][dD][eE][wW]|[hH][oO][tT][pP][iI][nN][kK]|[iI][nN][aA][cC][tT][iI][vV][eE][bB][oO][rR][dD][eE][rR]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN]|[iI][nN][aA][cC][tT][iI][vV][eE][cC][aA][pP][tT][iI][oO][nN][tT][eE][xX][tT]|[iI][nN][dD][iI][aA][nN][rR][eE][dD]|[iI][nN][dD][iI][gG][oO]|[iI][nN][fF][oO][bB][aA][cC][kK][gG][rR][oO][uU][nN][dD]|[iI][nN][fF][oO][tT][eE][xX][tT]|[iI][vV][oO][rR][yY]|[kK][hH][aA][kK][iI]|[lL][aA][vV][eE][nN][dD][eE][rR]|[lL][aA][vV][eE][nN][dD][eE][rR][bB][lL][uU][sS][hH]|[lL][aA][wW][nN][gG][rR][eE][eE][nN]|[lL][eE][mM][oO][nN][cC][hH][iI][fF][fF][oO][nN]|[lL][iI][gG][hH][tT][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][cC][oO][rR][aA][lL]|[lL][iI][gG][hH][tT][cC][yY][aA][nN]|[lL][iI][gG][hH][tT][gG][oO][lL][dD][eE][nN][rR][oO][dD][yY][eE][lL][lL][oO][wW]|[lL][iI][gG][hH][tT][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][pP][iI][nN][kK]|[lL][iI][gG][hH][tT][sS][aA][lL][mM][oO][nN]|[lL][iI][gG][hH][tT][sS][eE][aA][gG][rR][eE][eE][nN]|[lL][iI][gG][hH][tT][sS][kK][yY][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][aA][yY]|[lL][iI][gG][hH][tT][sS][lL][aA][tT][eE][gG][rR][eE][yY]|[lL][iI][gG][hH][tT][sS][tT][eE][eE][lL][bB][lL][uU][eE]|[lL][iI][gG][hH][tT][yY][eE][lL][lL][oO][wW]|[lL][iI][mM][eE]|[lL][iI][mM][eE][gG][rR][eE][eE][nN]|[lL][iI][nN][eE][nN]|[lL][iI][nN][kK][tT][eE][xX][tT]|[mM][aA][gG][eE][nN][tT][aA]|[mM][aA][rR][kK]|[mM][aA][rR][kK][tT][eE][xX][tT]|[mM][aA][rR][oO][oO][nN]|[mM][eE][dD][iI][uU][mM][aA][qQ][uU][aA][mM][aA][rR][iI][nN][eE]|[mM][eE][dD][iI][uU][mM][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][oO][rR][cC][hH][iI][dD]|[mM][eE][dD][iI][uU][mM][pP][uU][rR][pP][lL][eE]|[mM][eE][dD][iI][uU][mM][sS][eE][aA][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][sS][lL][aA][tT][eE][bB][lL][uU][eE]|[mM][eE][dD][iI][uU][mM][sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[mM][eE][dD][iI][uU][mM][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[mM][eE][dD][iI][uU][mM][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[mM][eE][nN][uU]|[mM][eE][nN][uU][tT][eE][xX][tT]|[mM][iI][dD][nN][iI][gG][hH][tT][bB][lL][uU][eE]|[mM][iI][nN][tT][cC][rR][eE][aA][mM]|[mM][iI][sS][tT][yY][rR][oO][sS][eE]|[mM][oO][cC][cC][aA][sS][iI][nN]|[nN][aA][vV][aA][jJ][oO][wW][hH][iI][tT][eE]|[nN][aA][vV][yY]|[nN][oO][nN][eE]|[oO][lL][dD][lL][aA][cC][eE]|[oO][lL][iI][vV][eE]|[oO][lL][iI][vV][eE][dD][rR][aA][bB]|[oO][rR][aA][nN][gG][eE]|[oO][rR][aA][nN][gG][eE][rR][eE][dD]|[oO][rR][cC][hH][iI][dD]|[pP][aA][lL][eE][gG][oO][lL][dD][eE][nN][rR][oO][dD]|[pP][aA][lL][eE][gG][rR][eE][eE][nN]|[pP][aA][lL][eE][tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[pP][aA][lL][eE][vV][iI][oO][lL][eE][tT][rR][eE][dD]|[pP][aA][pP][aA][yY][aA][wW][hH][iI][pP]|[pP][eE][aA][cC][hH][pP][uU][fF][fF]|[pP][eE][rR][uU]|[pP][iI][nN][kK]|[pP][lL][uU][mM]|[pP][oO][wW][dD][eE][rR][bB][lL][uU][eE]|[pP][uU][rR][pP][lL][eE]|[rR][eE][bB][eE][cC][cC][aA][pP][uU][rR][pP][lL][eE]|[rR][eE][dD]|[rR][oO][sS][yY][bB][rR][oO][wW][nN]|[rR][oO][yY][aA][lL][bB][lL][uU][eE]|[sS][aA][dD][dD][lL][eE][bB][rR][oO][wW][nN]|[sS][aA][lL][mM][oO][nN]|[sS][aA][nN][dD][yY][bB][rR][oO][wW][nN]|[sS][cC][rR][oO][lL][lL][bB][aA][rR]|[sS][eE][aA][gG][rR][eE][eE][nN]|[sS][eE][aA][sS][hH][eE][lL][lL]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM]|[sS][eE][lL][eE][cC][tT][eE][dD][iI][tT][eE][mM][tT][eE][xX][tT]|[sS][iI][eE][nN][nN][aA]|[sS][iI][lL][vV][eE][rR]|[sS][kK][yY][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][bB][lL][uU][eE]|[sS][lL][aA][tT][eE][gG][rR][aA][yY]|[sS][lL][aA][tT][eE][gG][rR][eE][yY]|[sS][nN][oO][wW]|[sS][pP][rR][iI][nN][gG][gG][rR][eE][eE][nN]|[sS][rR][gG][bB]|[sS][tT][eE][eE][lL][bB][lL][uU][eE]|[tT][aA][nN]|[tT][eE][aA][lL]|[tT][hH][iI][sS][tT][lL][eE]|[tT][hH][rR][eE][eE][dD][dD][aA][rR][kK][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][fF][aA][cC][eE]|[tT][hH][rR][eE][eE][dD][hH][iI][gG][hH][lL][iI][gG][hH][tT]|[tT][hH][rR][eE][eE][dD][lL][iI][gG][hH][tT][sS][hH][aA][dD][oO][wW]|[tT][hH][rR][eE][eE][dD][sS][hH][aA][dD][oO][wW]|[tT][oO][mM][aA][tT][oO]|[tT][rR][aA][nN][sS][pP][aA][rR][eE][nN][tT]|[tT][uU][rR][qQ][uU][oO][iI][sS][eE]|[vV][iI][oO][lL][eE][tT]|[vV][iI][sS][iI][tT][eE][dD][tT][eE][xX][tT]|[wW][hH][eE][aA][tT]|[wW][hH][iI][tT][eE]|[wW][hH][iI][tT][eE][sS][mM][oO][kK][eE]|[wW][iI][nN][dD][oO][wW]|[wW][iI][nN][dD][oO][wW][fF][rR][aA][mM][eE]|[wW][iI][nN][dD][oO][wW][tT][eE][xX][tT]|[xX][yY][zZ]|[yY][eE][lL][lL][oO][wW]|[yY][eE][lL][lL][oO][wW][gG][rR][eE][eE][nN])))*)$"
     },
     "text-transform-list": {
       "title": "Text transform list",
-      "description": "Whitespace-separated sequence of text-transform keywords per Typography \u00a7text-transform and CSS Text Module Levels 3-4.",
-      "$comment": "Typography \u00a7text-transform: values MUST be composed of recognised keywords (for example none, uppercase, full-width, full-size-kana, or math-* variants), CSS global keywords, or custom property references via var().",
+      "description": "Whitespace-separated sequence of text-transform keywords per Typography §text-transform and CSS Text Module Levels 3-4.",
+      "$comment": "Typography §text-transform: values MUST be composed of recognised keywords (for example none, uppercase, full-width, full-size-kana, or math-* variants), CSS global keywords, or custom property references via var().",
       "type": "string",
       "pattern": "^(?:(?:[Ii][Nn][Hh][Ee][Rr][Ii][Tt]|[Ii][Nn][Ii][Tt][Ii][Aa][Ll]|[Uu][Nn][Ss][Ee][Tt]|[Rr][Ee][Vv][Ee][Rr][Tt](?:-[Ll][Aa][Yy][Ee][Rr])?)|(?:[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\)|(?:(?:[Nn][Oo][Nn][Ee]|[Cc][Aa][Pp][Ii][Tt][Aa][Ll][Ii][Zz][Ee]|[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]|[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Ff][Uu][Ll][Ll]-[Ss][Ii][Zz][Ee]-[Kk][Aa][Nn][Aa]|[Mm][Aa][Tt][Hh]-[Aa][Uu][Tt][Oo]|[Mm][Aa][Tt][Hh](?:-[A-Za-z]+)+))(?:\\s+(?:[Nn][Oo][Nn][Ee]|[Cc][Aa][Pp][Ii][Tt][Aa][Ll][Ii][Zz][Ee]|[Uu][Pp][Pp][Ee][Rr][Cc][Aa][Ss][Ee]|[Ll][Oo][Ww][Ee][Rr][Cc][Aa][Ss][Ee]|[Ff][Uu][Ll][Ll]-[Ww][Ii][Dd][Tt][Hh]|[Ff][Uu][Ll][Ll]-[Ss][Ii][Zz][Ee]-[Kk][Aa][Nn][Aa]|[Mm][Aa][Tt][Hh]-[Aa][Uu][Tt][Oo]|[Mm][Aa][Tt][Hh](?:-[A-Za-z]+)+))*)$"
     },
     "platform-identifier": {
       "title": "Platform-qualified identifier",
       "description": "Lower-case dot-separated identifier prefixed with css, ios, or android per platform-qualified token members.",
-      "$comment": "Token types \u00a7cursor, \u00a7filter tokens, \u00a7opacity, \u00a7duration, \u00a7z-index, \u00a7motion tokens, Typography \u00a7font, and \u00a7font-face require css/ios/android-qualified identifiers for context selection.",
+      "$comment": "Token types §cursor, §filter tokens, §opacity, §duration, §z-index, §motion tokens, Typography §font, and §font-face require css/ios/android-qualified identifiers for context selection.",
       "type": "string",
       "pattern": "^(?:css|ios|android)(?:\\.[a-z0-9]+(?:-[a-z0-9]+)*)+$"
     },
     "namespaced-function-identifier": {
       "title": "Function identifier",
       "description": "Lower-case identifier optionally namespaced with dot-separated segments for CSS and platform functions.",
-      "$comment": "Token types \u00a7value, \u00a7filter tokens, and \u00a7easing use function identifiers aligned with CSS grammars and vendor-qualified variants.",
+      "$comment": "Token types §value, §filter tokens, and §easing use function identifiers aligned with CSS grammars and vendor-qualified variants.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z0-9]+(?:-[a-z0-9]+)*)*$"
     },
     "context-identifier": {
       "title": "Rendering context identifier",
       "description": "Lower-case identifier describing rendering surfaces such as css.box-shadow or ios.layer.",
-      "$comment": "Token types \u00a7shadow tokens, \u00a7gradient tokens, and \u00a7elevation tokens use dotted identifiers that mirror CSS and native surface nomenclature.",
+      "$comment": "Token types §shadow tokens, §gradient tokens, and §elevation tokens use dotted identifiers that mirror CSS and native surface nomenclature.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z0-9-]+)*$"
     },
     "type-identifier": {
       "title": "Token type identifier",
-      "description": "Registered DTIF $type or vendor-defined identifier per Format and serialisation \u00a7$type.",
+      "description": "Registered DTIF $type or vendor-defined identifier per Format and serialisation §$type.",
       "type": "string",
       "pattern": "^(?:[A-Za-z][A-Za-z0-9_-]*)(?:\\.[A-Za-z0-9_-]+)*$",
-      "$comment": "Format and serialisation \u00a7$type: registry types include border, color, component, cursor, dimension, duration, easing, elevation, filter, font, fontFace, gradient, line-height, motion, opacity, shadow, strokeStyle, typography, and z-index. Vendors MAY mint additional identifiers and SHOULD namespace them (Extensibility \u00a7extensibility) but the schema accepts any dot-separated ASCII identifier without whitespace.",
+      "$comment": "Format and serialisation §$type: registry types include border, color, component, cursor, dimension, duration, easing, elevation, filter, font, fontFace, gradient, line-height, motion, opacity, shadow, strokeStyle, typography, and z-index. Vendors MAY mint additional identifiers and SHOULD namespace them (Extensibility §extensibility) but the schema accepts any dot-separated ASCII identifier without whitespace.",
       "examples": ["color", "typography", "com.example.tokens.radius"]
     },
     "metadata-members": {
       "title": "Metadata members",
-      "description": "Optional metadata fields defined in Metadata \u00a7metadata applied to tokens and collections.",
-      "$comment": "Metadata \u00a7metadata table.",
+      "description": "Optional metadata fields defined in Metadata §metadata applied to tokens and collections.",
+      "$comment": "Metadata §metadata table.",
       "properties": {
         "$description": {
           "type": "string",
           "title": "Description",
-          "description": "Human-readable explanation preserved for design intent per Metadata \u00a7metadata.",
+          "description": "Human-readable explanation preserved for design intent per Metadata §metadata.",
           "$comment": "Metadata table: $description is optional free-form text."
         },
         "$extensions": {
           "title": "Extensions",
-          "description": "Namespaced metadata preserved by consumers per Format and serialisation \u00a7$extensions.",
-          "$comment": "Format and serialisation \u00a7$extensions.",
+          "description": "Namespaced metadata preserved by consumers per Format and serialisation §$extensions.",
+          "$comment": "Format and serialisation §$extensions.",
           "allOf": [
             {
               "$ref": "#/$defs/extensions"
@@ -270,7 +279,7 @@
         },
         "$deprecated": {
           "title": "Deprecation metadata",
-          "description": "Boolean indicator or replacement pointer per Metadata \u00a7metadata.",
+          "description": "Boolean indicator or replacement pointer per Metadata §metadata.",
           "$comment": "Metadata table: $deprecated MAY be a boolean or an object with $replacement.",
           "oneOf": [
             {
@@ -282,7 +291,7 @@
               "properties": {
                 "$replacement": {
                   "title": "Replacement token pointer",
-                  "description": "Pointer to the successor token that MUST resolve to the same $type per Metadata \u00a7metadata.",
+                  "description": "Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.",
                   "allOf": [
                     {
                       "$ref": "#/$defs/pointer"
@@ -298,26 +307,26 @@
           "type": "string",
           "format": "date-time",
           "title": "Last modified timestamp",
-          "description": "RFC 3339 date-time recording governance actions per Metadata \u00a7metadata.",
+          "description": "RFC 3339 date-time recording governance actions per Metadata §metadata.",
           "$comment": "Metadata table: $lastModified establishes the lower bound for $lastUsed."
         },
         "$lastUsed": {
           "type": "string",
           "format": "date-time",
           "title": "Last used timestamp",
-          "description": "RFC 3339 date-time capturing usage telemetry per Metadata \u00a7metadata.",
+          "description": "RFC 3339 date-time capturing usage telemetry per Metadata §metadata.",
           "$comment": "Metadata table: $lastUsed MUST NOT precede $lastModified and requires $usageCount > 0."
         },
         "$usageCount": {
           "type": "integer",
           "minimum": 0,
           "title": "Usage count",
-          "description": "Non-negative adoption counter per Metadata \u00a7metadata.",
+          "description": "Non-negative adoption counter per Metadata §metadata.",
           "$comment": "Metadata table: $usageCount records adoption and pairs with $lastUsed when greater than zero."
         },
         "$author": {
           "title": "Author",
-          "description": "Contributor name without leading or trailing whitespace per Metadata \u00a7metadata.",
+          "description": "Contributor name without leading or trailing whitespace per Metadata §metadata.",
           "$comment": "Metadata table: $author MUST be a non-empty trimmed string.",
           "allOf": [
             {
@@ -327,7 +336,7 @@
         },
         "$tags": {
           "title": "Tags",
-          "description": "Unique classification strings free of surrounding whitespace per Metadata \u00a7metadata.",
+          "description": "Unique classification strings free of surrounding whitespace per Metadata §metadata.",
           "$comment": "Metadata table: $tags MUST be an array of trimmed, unique strings.",
           "allOf": [
             {
@@ -337,7 +346,7 @@
         },
         "$hash": {
           "title": "Hash",
-          "description": "Stable identifier without whitespace for change tracking per Metadata \u00a7metadata.",
+          "description": "Stable identifier without whitespace for change tracking per Metadata §metadata.",
           "$comment": "Metadata table: $hash MUST be non-empty and contain no whitespace.",
           "allOf": [
             {
@@ -345,17 +354,18 @@
             }
           ]
         }
-      }
+      },
+      "type": "object"
     },
     "override-core": {
       "title": "Override rule members",
-      "description": "Shared override members applied to $overrides entries per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides.",
+      "description": "Shared override members applied to $overrides entries per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides.",
       "type": "object",
       "properties": {
         "$token": {
           "title": "Target token",
-          "description": "Pointer to the token being overridden per Theming and overrides \u00a7$overrides.",
+          "description": "Pointer to the token being overridden per Theming and overrides §$overrides.",
           "allOf": [
             {
               "$ref": "#/$defs/pointer"
@@ -366,16 +376,17 @@
           "type": "object",
           "minProperties": 1,
           "title": "Override conditions",
-          "description": "Context map describing when the override applies per Theming and overrides \u00a7$overrides.",
-          "$comment": "Override contexts MUST declare at least one condition per Theming and overrides \u00a7$overrides.",
+          "description": "Context map describing when the override applies per Theming and overrides §$overrides.",
+          "$comment": "Override contexts MUST declare at least one condition per Theming and overrides §$overrides.",
           "propertyNames": {
             "minLength": 1,
-            "$comment": "Condition keys MUST be non-empty strings."
+            "$comment": "Condition keys MUST be non-empty strings.",
+            "type": "string"
           }
         },
         "$ref": {
           "title": "Override reference",
-          "description": "Pointer to the replacement token per Theming and overrides \u00a7$overrides.",
+          "description": "Pointer to the replacement token per Theming and overrides §$overrides.",
           "allOf": [
             {
               "$ref": "#/$defs/pointer"
@@ -384,12 +395,12 @@
         },
         "$value": {
           "title": "Inline override value",
-          "description": "Direct replacement that MUST satisfy the overridden token's $type per Theming and overrides \u00a7$overrides.",
+          "description": "Direct replacement that MUST satisfy the overridden token's $type per Theming and overrides §$overrides.",
           "$comment": "Inline override values must conform to the target token's $type."
         },
         "$fallback": {
           "title": "Fallback chain",
-          "description": "Single fallback object or array evaluated when primary override resolution fails per Theming and overrides \u00a7$overrides.",
+          "description": "Single fallback object or array evaluated when primary override resolution fails per Theming and overrides §$overrides.",
           "allOf": [
             {
               "$ref": "#/$defs/fallback"
@@ -402,13 +413,13 @@
     },
     "fallback-entry-core": {
       "title": "Fallback entry members",
-      "description": "Shared fallback members evaluated when overrides fail per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides.",
+      "description": "Shared fallback members evaluated when overrides fail per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides.",
       "type": "object",
       "properties": {
         "$ref": {
           "title": "Fallback reference",
-          "description": "Pointer to an alternate token per Theming and overrides \u00a7$overrides.",
+          "description": "Pointer to an alternate token per Theming and overrides §$overrides.",
           "allOf": [
             {
               "$ref": "#/$defs/pointer"
@@ -417,12 +428,12 @@
         },
         "$value": {
           "title": "Inline fallback value",
-          "description": "Inline fallback that MUST conform to the overridden token's $type per Theming and overrides \u00a7$overrides.",
+          "description": "Inline fallback that MUST conform to the overridden token's $type per Theming and overrides §$overrides.",
           "$comment": "Fallback values must conform to the overridden token's $type."
         },
         "$fallback": {
           "title": "Nested fallback",
-          "description": "Optional nested fallback chain evaluated when this entry fails per Theming and overrides \u00a7$overrides.",
+          "description": "Optional nested fallback chain evaluated when this entry fails per Theming and overrides §$overrides.",
           "allOf": [
             {
               "$ref": "#/$defs/fallback"
@@ -440,8 +451,8 @@
         },
         "$value": {
           "title": "Token value",
-          "description": "Design decision payload whose shape depends on $type per Token types \u00a7value.",
-          "$comment": "Token types \u00a7value: $value MUST follow the grammar associated with $type."
+          "description": "Design decision payload whose shape depends on $type per Token types §value.",
+          "$comment": "Token types §value: $value MUST follow the grammar associated with $type."
         },
         "$ref": {
           "$ref": "#/$defs/pointer"
@@ -481,23 +492,47 @@
             {
               "required": ["$value"],
               "not": {
-                "required": ["$ref"]
+                "required": ["$ref"],
+                "type": "object",
+                "properties": {
+                  "$ref": {}
+                }
+              },
+              "type": "object",
+              "properties": {
+                "$value": {}
               }
             },
             {
               "required": ["$ref"],
               "not": {
-                "required": ["$value"]
+                "required": ["$value"],
+                "type": "object",
+                "properties": {
+                  "$value": {}
+                }
+              },
+              "type": "object",
+              "properties": {
+                "$ref": {}
               }
             }
           ]
         },
         {
           "if": {
-            "required": ["$ref"]
+            "required": ["$ref"],
+            "type": "object",
+            "properties": {
+              "$ref": {}
+            }
           },
           "then": {
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object",
+            "properties": {
+              "$type": {}
+            }
           }
         },
         {
@@ -507,17 +542,20 @@
                 "type": "array"
               }
             },
-            "required": ["$value"]
+            "required": ["$value"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "title": "Non-empty $value array",
-                "description": "Array values MUST provide at least one entry per Token types \u00a7value.",
-                "$comment": "Token types \u00a7value: fallback arrays and composite lists MUST contain at least one item.",
-                "minItems": 1
+                "description": "Array values MUST provide at least one entry per Token types §value.",
+                "$comment": "Token types §value: fallback arrays and composite lists MUST contain at least one item.",
+                "minItems": 1,
+                "type": "array"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -527,14 +565,16 @@
                 "const": "dimension"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/dimensionTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -544,14 +584,16 @@
                 "const": "color"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/colorTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -561,14 +603,16 @@
                 "const": "font"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/fontTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -578,14 +622,16 @@
                 "const": "fontFace"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/fontFaceTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -595,14 +641,16 @@
                 "const": "line-height"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/lineHeightTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -612,14 +660,16 @@
                 "const": "typography"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/typographyTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -629,14 +679,16 @@
                 "const": "border"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/borderTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -646,14 +698,16 @@
                 "const": "strokeStyle"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/strokeStyleTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -663,14 +717,16 @@
                 "const": "cursor"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/cursorTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -680,14 +736,16 @@
                 "const": "shadow"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/shadowTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -697,14 +755,16 @@
                 "const": "gradient"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/gradientTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -714,14 +774,16 @@
                 "const": "filter"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/filterTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -731,14 +793,16 @@
                 "const": "opacity"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/opacityTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -748,14 +812,16 @@
                 "const": "duration"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/durationTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -765,14 +831,16 @@
                 "const": "easing"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/easingTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -782,14 +850,16 @@
                 "const": "z-index"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/zIndexTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -799,14 +869,16 @@
                 "const": "motion"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/motionTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -816,14 +888,16 @@
                 "const": "elevation"
               }
             },
-            "required": ["$type"]
+            "required": ["$type"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "$value": {
                 "$ref": "#/$defs/elevationTokenValue"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -831,9 +905,11 @@
             "properties": {
               "$type": {
                 "const": "component"
-              }
+              },
+              "$value": {}
             },
-            "required": ["$type", "$value"]
+            "required": ["$type", "$value"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -845,7 +921,8 @@
                     "type": "object",
                     "minProperties": 1,
                     "propertyNames": {
-                      "pattern": "^(?!\\$)"
+                      "pattern": "^(?!\\$)",
+                      "type": "string"
                     },
                     "patternProperties": {
                       "^(?!\\$)": {
@@ -860,7 +937,8 @@
                                   "const": "component"
                                 }
                               },
-                              "required": ["$type"]
+                              "required": ["$type"],
+                              "type": "object"
                             }
                           }
                         ]
@@ -871,15 +949,16 @@
                 },
                 "additionalProperties": true
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "override": {
       "title": "Override rule",
-      "description": "Contextual substitution entry evaluated against $when conditions per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides.",
+      "description": "Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides.",
       "allOf": [
         {
           "$ref": "#/$defs/override-core"
@@ -887,13 +966,25 @@
         {
           "anyOf": [
             {
-              "required": ["$ref"]
+              "required": ["$ref"],
+              "type": "object",
+              "properties": {
+                "$ref": {}
+              }
             },
             {
-              "required": ["$value"]
+              "required": ["$value"],
+              "type": "object",
+              "properties": {
+                "$value": {}
+              }
             },
             {
-              "required": ["$fallback"]
+              "required": ["$fallback"],
+              "type": "object",
+              "properties": {
+                "$fallback": {}
+              }
             }
           ],
           "$comment": "Override entries MUST declare $ref, $value, or $fallback.",
@@ -901,32 +992,42 @@
         },
         {
           "if": {
-            "required": ["$ref"]
+            "required": ["$ref"],
+            "type": "object",
+            "properties": {
+              "$ref": {}
+            }
           },
           "then": {
             "properties": {
               "$value": false
             },
-            "$comment": "Entries using $ref MUST NOT also declare $value."
+            "$comment": "Entries using $ref MUST NOT also declare $value.",
+            "type": "object"
           }
         },
         {
           "if": {
-            "required": ["$value"]
+            "required": ["$value"],
+            "type": "object",
+            "properties": {
+              "$value": {}
+            }
           },
           "then": {
             "properties": {
               "$ref": false
             },
-            "$comment": "Entries using inline $value MUST NOT also declare $ref."
+            "$comment": "Entries using inline $value MUST NOT also declare $ref.",
+            "type": "object"
           }
         }
       ]
     },
     "fallback": {
       "title": "Fallback chain",
-      "description": "Single fallback entry or ordered array evaluated when primary overrides fail per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides: $fallback MAY be a single entry or an array processed sequentially.",
+      "description": "Single fallback entry or ordered array evaluated when primary overrides fail per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides: $fallback MAY be a single entry or an array processed sequentially.",
       "oneOf": [
         {
           "$ref": "#/$defs/fallbackEntry"
@@ -942,8 +1043,8 @@
     },
     "fallbackEntry": {
       "title": "Fallback entry",
-      "description": "Single fallback candidate containing a $ref or inline $value per Theming and overrides \u00a7$overrides.",
-      "$comment": "Theming and overrides \u00a7$overrides: fallback entries mirror override semantics.",
+      "description": "Single fallback candidate containing a $ref or inline $value per Theming and overrides §$overrides.",
+      "$comment": "Theming and overrides §$overrides: fallback entries mirror override semantics.",
       "allOf": [
         {
           "$ref": "#/$defs/fallback-entry-core"
@@ -951,10 +1052,18 @@
         {
           "anyOf": [
             {
-              "required": ["$ref"]
+              "required": ["$ref"],
+              "type": "object",
+              "properties": {
+                "$ref": {}
+              }
             },
             {
-              "required": ["$value"]
+              "required": ["$value"],
+              "type": "object",
+              "properties": {
+                "$value": {}
+              }
             }
           ],
           "$comment": "Fallback entries MUST declare either $ref or $value.",
@@ -962,32 +1071,42 @@
         },
         {
           "if": {
-            "required": ["$ref"]
+            "required": ["$ref"],
+            "type": "object",
+            "properties": {
+              "$ref": {}
+            }
           },
           "then": {
             "properties": {
               "$value": false
             },
-            "$comment": "Fallback entries using $ref MUST NOT also declare $value."
+            "$comment": "Fallback entries using $ref MUST NOT also declare $value.",
+            "type": "object"
           }
         },
         {
           "if": {
-            "required": ["$value"]
+            "required": ["$value"],
+            "type": "object",
+            "properties": {
+              "$value": {}
+            }
           },
           "then": {
             "properties": {
               "$ref": false
             },
-            "$comment": "Fallback entries using inline $value MUST NOT also declare $ref."
+            "$comment": "Fallback entries using inline $value MUST NOT also declare $ref.",
+            "type": "object"
           }
         }
       ]
     },
     "node": {
       "title": "Token or collection node",
-      "description": "Tree node that is either a token or a collection per Architecture and model \u00a7tokens-and-collections.",
-      "$comment": "Architecture and model \u00a7tokens-and-collections.",
+      "description": "Tree node that is either a token or a collection per Architecture and model §tokens-and-collections.",
+      "$comment": "Architecture and model §tokens-and-collections.",
       "oneOf": [
         {
           "$ref": "#/$defs/token"
@@ -999,8 +1118,8 @@
     },
     "collection": {
       "title": "Token collection",
-      "description": "Object without $value whose non-reserved members are tokens or collections per Architecture and model \u00a7tokens-and-collections.",
-      "$comment": "Architecture and model \u00a7tokens-and-collections.",
+      "description": "Object without $value whose non-reserved members are tokens or collections per Architecture and model §tokens-and-collections.",
+      "$comment": "Architecture and model §tokens-and-collections.",
       "allOf": [
         {
           "$ref": "#/$defs/metadata-members"
@@ -1045,19 +1164,31 @@
           "allOf": [
             {
               "not": {
-                "required": ["$value"]
+                "required": ["$value"],
+                "type": "object",
+                "properties": {
+                  "$value": {}
+                }
               },
               "$comment": "Collections remain valid without child tokens as long as they omit $value; metadata-only collections support migration scenarios."
             },
             {
               "not": {
-                "required": ["$type"]
+                "required": ["$type"],
+                "type": "object",
+                "properties": {
+                  "$type": {}
+                }
               },
               "$comment": "Collections do not declare $type because they do not provide default typing for nested tokens."
             },
             {
               "not": {
-                "required": ["$ref"]
+                "required": ["$ref"],
+                "type": "object",
+                "properties": {
+                  "$ref": {}
+                }
               },
               "$comment": "Collections cannot alias other nodes; only tokens use $ref."
             }
@@ -1070,8 +1201,8 @@
     },
     "token": {
       "title": "Design token",
-      "description": "Object declaring either $value or $ref along with optional metadata per Terminology \u00a7token and Format and serialisation \u00a7$ref.",
-      "$comment": "Terminology \u00a7token and Format and serialisation \u00a7$ref.",
+      "description": "Object declaring either $value or $ref along with optional metadata per Terminology §token and Format and serialisation §$ref.",
+      "$comment": "Terminology §token and Format and serialisation §$ref.",
       "allOf": [
         {
           "$ref": "#/$defs/metadata-members"
@@ -1086,8 +1217,8 @@
     },
     "dimensionValueEntry": {
       "title": "Dimension value entry",
-      "description": "Literal measurement, alias, or computed expression per Token types \u00a7dimension.",
-      "$comment": "Token types \u00a7dimension and \u00a7value: dimension tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal measurement, alias, or computed expression per Token types §dimension.",
+      "$comment": "Token types §dimension and §value: dimension tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/dimensionReference"
@@ -1099,8 +1230,8 @@
     },
     "dimensionValueFallback": {
       "title": "Dimension fallback list",
-      "description": "Ordered fallback list of dimension values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of dimension values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1108,14 +1239,15 @@
         {
           "items": {
             "$ref": "#/$defs/dimensionValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "dimensionTokenValue": {
       "title": "Dimension token value",
-      "description": "Dimension literal, alias, or fallback list per Token types \u00a7dimension.",
-      "$comment": "Token types \u00a7dimension: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Dimension literal, alias, or fallback list per Token types §dimension.",
+      "$comment": "Token types §dimension: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/dimensionValueEntry"
@@ -1154,7 +1286,8 @@
                 "const": "length"
               }
             },
-            "required": ["dimensionType"]
+            "required": ["dimensionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -1163,7 +1296,8 @@
                 "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
                 "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -1173,7 +1307,8 @@
                 "const": "angle"
               }
             },
-            "required": ["dimensionType"]
+            "required": ["dimensionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -1184,8 +1319,13 @@
               }
             },
             "not": {
-              "required": ["fontScale"]
-            }
+              "required": ["fontScale"],
+              "type": "object",
+              "properties": {
+                "fontScale": {}
+              }
+            },
+            "type": "object"
           }
         },
         {
@@ -1195,7 +1335,8 @@
                 "const": "resolution"
               }
             },
-            "required": ["dimensionType"]
+            "required": ["dimensionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -1206,8 +1347,13 @@
               }
             },
             "not": {
-              "required": ["fontScale"]
-            }
+              "required": ["fontScale"],
+              "type": "object",
+              "properties": {
+                "fontScale": {}
+              }
+            },
+            "type": "object"
           }
         },
         {
@@ -1217,7 +1363,8 @@
                 "const": "custom"
               }
             },
-            "required": ["dimensionType"]
+            "required": ["dimensionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -1227,8 +1374,13 @@
               }
             },
             "not": {
-              "required": ["fontScale"]
-            }
+              "required": ["fontScale"],
+              "type": "object",
+              "properties": {
+                "fontScale": {}
+              }
+            },
+            "type": "object"
           }
         }
       ]
@@ -1306,8 +1458,8 @@
     },
     "lineHeightValueEntry": {
       "title": "Line-height value entry",
-      "description": "Ratio, font-dimension, alias, or computed expression per Typography \u00a7line-height.",
-      "$comment": "Typography \u00a7line-height and Token types \u00a7value: line-height tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Ratio, font-dimension, alias, or computed expression per Typography §line-height.",
+      "$comment": "Typography §line-height and Token types §value: line-height tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/line-height"
@@ -1322,8 +1474,8 @@
     },
     "lineHeightValueFallback": {
       "title": "Line-height fallback list",
-      "description": "Ordered fallback list of line-height values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of line-height values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1331,14 +1483,15 @@
         {
           "items": {
             "$ref": "#/$defs/lineHeightValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "lineHeightTokenValue": {
       "title": "Line-height token value",
-      "description": "Line-height literal, alias, or fallback list per Typography \u00a7line-height.",
-      "$comment": "Typography \u00a7line-height: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Line-height literal, alias, or fallback list per Typography §line-height.",
+      "$comment": "Typography §line-height: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/lineHeightValueEntry"
@@ -1350,8 +1503,8 @@
     },
     "line-height": {
       "title": "Line height value",
-      "description": "Unitless ratio or font-dimension measurement describing baseline spacing per Typography \u00a7line-height.",
-      "$comment": "Typography \u00a7line-height: value MUST be a non-negative ratio or font-dimension measurement.",
+      "description": "Unitless ratio or font-dimension measurement describing baseline spacing per Typography §line-height.",
+      "$comment": "Typography §line-height: value MUST be a non-negative ratio or font-dimension measurement.",
       "oneOf": [
         {
           "type": "number",
@@ -1365,7 +1518,11 @@
             },
             {
               "if": {
-                "required": ["$ref"]
+                "required": ["$ref"],
+                "type": "object",
+                "properties": {
+                  "$ref": {}
+                }
               },
               "then": {},
               "else": {
@@ -1375,7 +1532,8 @@
                     "minimum": 0,
                     "description": "Non-negative font-dimension magnitude for line height measurements."
                   }
-                }
+                },
+                "type": "object"
               }
             }
           ]
@@ -1384,8 +1542,8 @@
     },
     "colorValueEntry": {
       "title": "Color value entry",
-      "description": "Literal colour payload, alias, or computed expression per Token types \u00a7color.",
-      "$comment": "Token types \u00a7color and \u00a7value: color tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal colour payload, alias, or computed expression per Token types §color.",
+      "$comment": "Token types §color and §value: color tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/color"
@@ -1400,8 +1558,8 @@
     },
     "colorValueFallback": {
       "title": "Color fallback list",
-      "description": "Ordered fallback list of colour values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of colour values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1409,14 +1567,15 @@
         {
           "items": {
             "$ref": "#/$defs/colorValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "colorTokenValue": {
       "title": "Color token value",
-      "description": "Color literal, alias, or fallback list per Token types \u00a7color.",
-      "$comment": "Token types \u00a7color: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Color literal, alias, or fallback list per Token types §color.",
+      "$comment": "Token types §color: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/colorValueEntry"
@@ -1458,15 +1617,27 @@
       "allOf": [
         {
           "if": {
-            "required": ["alpha"]
+            "required": ["alpha"],
+            "type": "object",
+            "properties": {
+              "alpha": {}
+            }
           },
           "then": {
-            "required": ["hex"]
+            "required": ["hex"],
+            "type": "object",
+            "properties": {
+              "hex": {}
+            }
           }
         },
         {
           "if": {
-            "required": ["hex"]
+            "required": ["hex"],
+            "type": "object",
+            "properties": {
+              "hex": {}
+            }
           },
           "then": {
             "properties": {
@@ -1474,15 +1645,16 @@
                 "const": "srgb",
                 "$comment": "Hexadecimal strings serialize sRGB colours (css-color-4)."
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "cursorValueEntry": {
       "title": "Cursor value entry",
-      "description": "Literal cursor payload, alias, or computed expression per Token types \u00a7cursor.",
-      "$comment": "Token types \u00a7cursor and \u00a7value: cursor tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal cursor payload, alias, or computed expression per Token types §cursor.",
+      "$comment": "Token types §cursor and §value: cursor tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/cursor"
@@ -1497,8 +1669,8 @@
     },
     "cursorValueFallback": {
       "title": "Cursor fallback list",
-      "description": "Ordered fallback list of cursor values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of cursor values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1506,14 +1678,15 @@
         {
           "items": {
             "$ref": "#/$defs/cursorValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "cursorTokenValue": {
       "title": "Cursor token value",
-      "description": "Cursor literal, alias, or fallback list per Token types \u00a7cursor.",
-      "$comment": "Token types \u00a7cursor: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Cursor literal, alias, or fallback list per Token types §cursor.",
+      "$comment": "Token types §cursor: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/cursorValueEntry"
@@ -1582,8 +1755,8 @@
     },
     "fontValueEntry": {
       "title": "Font value entry",
-      "description": "Literal font payload, alias, or computed expression per Token types \u00a7font.",
-      "$comment": "Token types \u00a7font and \u00a7value: font tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal font payload, alias, or computed expression per Token types §font.",
+      "$comment": "Token types §font and §value: font tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/font"
@@ -1598,8 +1771,8 @@
     },
     "fontValueFallback": {
       "title": "Font fallback list",
-      "description": "Ordered fallback list of font values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of font values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1607,14 +1780,15 @@
         {
           "items": {
             "$ref": "#/$defs/fontValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "fontTokenValue": {
       "title": "Font token value",
-      "description": "Font literal, alias, or fallback list per Token types \u00a7font.",
-      "$comment": "Token types \u00a7font: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Font literal, alias, or fallback list per Token types §font.",
+      "$comment": "Token types §font: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/fontValueEntry"
@@ -1641,7 +1815,7 @@
         "family": {
           "title": "Font family",
           "description": "Family name following CSS <family-name> grammar or platform catalog registrations.",
-          "$comment": "CSS Fonts \u00a7font-family-names and Typography \u00a7font require CSS <family-name> strings or platform catalog identifiers.",
+          "$comment": "CSS Fonts §font-family-names and Typography §font require CSS <family-name> strings or platform catalog identifiers.",
           "allOf": [
             {
               "$ref": "#/$defs/css-family-name"
@@ -1678,8 +1852,8 @@
     },
     "fontFaceValueEntry": {
       "title": "Font face value entry",
-      "description": "Literal font-face payload, alias, or computed expression per Typography \u00a7font-face.",
-      "$comment": "Typography \u00a7font-face and Token types \u00a7value: fontFace tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal font-face payload, alias, or computed expression per Typography §font-face.",
+      "$comment": "Typography §font-face and Token types §value: fontFace tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/fontFace"
@@ -1694,8 +1868,8 @@
     },
     "fontFaceValueFallback": {
       "title": "Font face fallback list",
-      "description": "Ordered fallback list of font-face values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of font-face values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1703,14 +1877,15 @@
         {
           "items": {
             "$ref": "#/$defs/fontFaceValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "fontFaceTokenValue": {
       "title": "Font face token value",
-      "description": "Font-face literal, alias, or fallback list per Typography \u00a7font-face.",
-      "$comment": "Typography \u00a7font-face: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Font-face literal, alias, or fallback list per Typography §font-face.",
+      "$comment": "Typography §font-face: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/fontFaceValueEntry"
@@ -1795,7 +1970,7 @@
         "fontFamily": {
           "title": "Font family",
           "description": "Family name following CSS <family-name> grammar or platform catalog registrations.",
-          "$comment": "Typography \u00a7font-face requires CSS <family-name> strings or platform catalog identifiers (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
+          "$comment": "Typography §font-face requires CSS <family-name> strings or platform catalog identifiers (css-fonts-4, IOS-FONT-CATALOG, ANDROID-FONT-FAMILY).",
           "allOf": [
             {
               "$ref": "#/$defs/css-family-name"
@@ -1838,8 +2013,8 @@
     },
     "typographyValueEntry": {
       "title": "Typography value entry",
-      "description": "Literal typography payload, alias, or computed expression per Typography \u00a7typography.",
-      "$comment": "Typography \u00a7typography and Token types \u00a7value: typography tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal typography payload, alias, or computed expression per Typography §typography.",
+      "$comment": "Typography §typography and Token types §value: typography tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/typography"
@@ -1854,8 +2029,8 @@
     },
     "typographyValueFallback": {
       "title": "Typography fallback list",
-      "description": "Ordered fallback list of typography values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of typography values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -1863,14 +2038,15 @@
         {
           "items": {
             "$ref": "#/$defs/typographyValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "typographyTokenValue": {
       "title": "Typography token value",
-      "description": "Typography literal, alias, or fallback list per Typography \u00a7typography.",
-      "$comment": "Typography \u00a7typography: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Typography literal, alias, or fallback list per Typography §typography.",
+      "$comment": "Typography §typography: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/typographyValueEntry"
@@ -1892,7 +2068,7 @@
         "fontFamily": {
           "title": "Typography font family",
           "description": "Family name string or reference providing the typography font family.",
-          "$comment": "Typography \u00a7typography: fontFamily strings MUST follow CSS <family-name> grammar or reference an existing font token.",
+          "$comment": "Typography §typography: fontFamily strings MUST follow CSS <family-name> grammar or reference an existing font token.",
           "oneOf": [
             {
               "allOf": [
@@ -1971,8 +2147,8 @@
         },
         "textDecoration": {
           "title": "Text decoration",
-          "description": "CSS text-decoration shorthand including line, style, colour, and thickness components per Typography \u00a7text-decoration.",
-          "$comment": "Typography \u00a7text-decoration: values MUST follow the CSS text-decoration shorthand grammar, including colour keywords and <length-percentage> thickness tokens.",
+          "description": "CSS text-decoration shorthand including line, style, colour, and thickness components per Typography §text-decoration.",
+          "$comment": "Typography §text-decoration: values MUST follow the CSS text-decoration shorthand grammar, including colour keywords and <length-percentage> thickness tokens.",
           "allOf": [
             {
               "$ref": "#/$defs/text-decoration-shorthand"
@@ -1981,8 +2157,8 @@
         },
         "textTransform": {
           "title": "Text transform",
-          "description": "Keyword list matching the CSS text-transform grammar per Typography \u00a7text-transform.",
-          "$comment": "Typography \u00a7text-transform: values MUST follow the <text-transform-list> grammar and remain locale-sensitive.",
+          "description": "Keyword list matching the CSS text-transform grammar per Typography §text-transform.",
+          "$comment": "Typography §text-transform: values MUST follow the <text-transform-list> grammar and remain locale-sensitive.",
           "allOf": [
             {
               "$ref": "#/$defs/text-transform-list"
@@ -2042,8 +2218,8 @@
     },
     "borderValueEntry": {
       "title": "Border value entry",
-      "description": "Literal border payload, alias, or computed expression per Token types \u00a7border tokens.",
-      "$comment": "Token types \u00a7border tokens and \u00a7value: border tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal border payload, alias, or computed expression per Token types §border tokens.",
+      "$comment": "Token types §border tokens and §value: border tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/border"
@@ -2058,8 +2234,8 @@
     },
     "borderValueFallback": {
       "title": "Border fallback list",
-      "description": "Ordered fallback list of border values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of border values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2067,14 +2243,15 @@
         {
           "items": {
             "$ref": "#/$defs/borderValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "borderTokenValue": {
       "title": "Border token value",
-      "description": "Border literal, alias, or fallback list per Token types \u00a7border tokens.",
-      "$comment": "Token types \u00a7border tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Border literal, alias, or fallback list per Token types §border tokens.",
+      "$comment": "Token types §border tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/borderValueEntry"
@@ -2112,8 +2289,8 @@
         },
         "style": {
           "title": "Border line style",
-          "description": "CSS <line-style> keyword such as solid, dashed, or inset per Token types \u00a7border tokens.",
-          "$comment": "Token types \u00a7border tokens: style MUST match CSS <line-style> keywords none, hidden, dotted, dashed, solid, double, groove, ridge, inset, or outset (css-backgrounds-3).",
+          "description": "CSS <line-style> keyword such as solid, dashed, or inset per Token types §border tokens.",
+          "$comment": "Token types §border tokens: style MUST match CSS <line-style> keywords none, hidden, dotted, dashed, solid, double, groove, ridge, inset, or outset (css-backgrounds-3).",
           "type": "string",
           "enum": [
             "none",
@@ -2188,8 +2365,8 @@
     },
     "strokeStyleValueEntry": {
       "title": "Stroke style value entry",
-      "description": "Literal stroke-style payload, alias, or computed expression per Token types \u00a7stroke-style tokens.",
-      "$comment": "Token types \u00a7stroke-style tokens and \u00a7value: strokeStyle tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal stroke-style payload, alias, or computed expression per Token types §stroke-style tokens.",
+      "$comment": "Token types §stroke-style tokens and §value: strokeStyle tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/strokeStyle"
@@ -2204,8 +2381,8 @@
     },
     "strokeStyleValueFallback": {
       "title": "Stroke style fallback list",
-      "description": "Ordered fallback list of stroke-style values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of stroke-style values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2213,14 +2390,15 @@
         {
           "items": {
             "$ref": "#/$defs/strokeStyleValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "strokeStyleTokenValue": {
       "title": "Stroke style token value",
-      "description": "Stroke-style literal, alias, or fallback list per Token types \u00a7stroke-style tokens.",
-      "$comment": "Token types \u00a7stroke-style tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Stroke-style literal, alias, or fallback list per Token types §stroke-style tokens.",
+      "$comment": "Token types §stroke-style tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/strokeStyleValueEntry"
@@ -2284,8 +2462,8 @@
     },
     "shadowValueEntry": {
       "title": "Shadow value entry",
-      "description": "Literal shadow payload, alias, or computed expression per Token types \u00a7shadow tokens.",
-      "$comment": "Token types \u00a7shadow tokens and \u00a7value: shadow tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal shadow payload, alias, or computed expression per Token types §shadow tokens.",
+      "$comment": "Token types §shadow tokens and §value: shadow tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/shadow"
@@ -2300,8 +2478,8 @@
     },
     "shadowValueFallback": {
       "title": "Shadow fallback list",
-      "description": "Ordered fallback list of shadow values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of shadow values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2320,14 +2498,15 @@
               }
             ]
           },
-          "minContains": 1
+          "minContains": 1,
+          "type": "array"
         }
       ]
     },
     "shadowTokenValue": {
       "title": "Shadow token value",
-      "description": "Shadow literal, alias, or fallback list per Token types \u00a7shadow tokens.",
-      "$comment": "Token types \u00a7shadow tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Shadow literal, alias, or fallback list per Token types §shadow tokens.",
+      "$comment": "Token types §shadow tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "allOf": [
         {
           "if": {
@@ -2346,7 +2525,8 @@
                         "$ref": "#/$defs/function"
                       }
                     ]
-                  }
+                  },
+                  "type": "array"
                 },
                 "then": {
                   "$comment": "Arrays containing at least one alias or function are treated as fallback chains evaluated in order.",
@@ -2354,8 +2534,8 @@
                 },
                 "else": {
                   "title": "Shadow layer stack",
-                  "description": "Non-empty array of literal shadow layers following CSS <shadow> ordering per Token types \u00a7shadow tokens.",
-                  "$comment": "Token types \u00a7shadow tokens: arrays without alias or function entries represent literal multi-layer shadows.",
+                  "description": "Non-empty array of literal shadow layers following CSS <shadow> ordering per Token types §shadow tokens.",
+                  "$comment": "Token types §shadow tokens: arrays without alias or function entries represent literal multi-layer shadows.",
                   "type": "array",
                   "minItems": 1,
                   "items": {
@@ -2367,8 +2547,8 @@
           },
           "else": {
             "title": "Shadow literal or computed value",
-            "description": "Single shadow layer, $ref alias, or function expression per Token types \u00a7shadow tokens.",
-            "$comment": "Token types \u00a7shadow tokens and \u00a7value: non-array values MAY be inline layers, $ref aliases, or function objects.",
+            "description": "Single shadow layer, $ref alias, or function expression per Token types §shadow tokens.",
+            "$comment": "Token types §shadow tokens and §value: non-array values MAY be inline layers, $ref aliases, or function objects.",
             "oneOf": [
               {
                 "$ref": "#/$defs/shadow-layer"
@@ -2422,7 +2602,7 @@
         },
         "blur": {
           "title": "Shadow blur radius",
-          "description": "Length measurement describing blur spread per Token types \u00a7shadow tokens.",
+          "description": "Length measurement describing blur spread per Token types §shadow tokens.",
           "$comment": "Blur radius MUST match the <length> position in the CSS <shadow> production or equivalent CALayer.shadowRadius / Paint#setShadowLayer radius semantics.",
           "allOf": [
             {
@@ -2431,7 +2611,10 @@
             {
               "if": {
                 "type": "object",
-                "required": ["dimensionType"]
+                "required": ["dimensionType"],
+                "properties": {
+                  "dimensionType": {}
+                }
               },
               "then": {
                 "properties": {
@@ -2442,7 +2625,8 @@
                     "description": "Shadow blur radii MUST be zero or positive per CSS <shadow> grammar.",
                     "$comment": "CSS <shadow> blur radii are non-negative lengths (css-backgrounds-3)."
                   }
-                }
+                },
+                "type": "object"
               }
             }
           ]
@@ -2460,16 +2644,16 @@
     },
     "gradient-line-angle": {
       "title": "Gradient line orientation",
-      "description": "CSS linear-gradient line syntax accepting an <angle> or to <side-or-corner> keyword per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens: string angles MUST be a CSS <angle> with units or the 'to <side-or-corner>' grammar (css-images-4).",
+      "description": "CSS linear-gradient line syntax accepting an <angle> or to <side-or-corner> keyword per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens: string angles MUST be a CSS <angle> with units or the 'to <side-or-corner>' grammar (css-images-4).",
       "type": "string",
       "pattern": "^(?:[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])|[-+]?(?:0+(?:\\.0+)?|\\.0+)|[Tt][Oo]\\s+(?:(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt])(?:\\s+(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm]))?|(?:[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])(?:\\s+(?:[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]))?))$",
       "examples": ["45deg", "to top right", "0", "-0.25turn"]
     },
     "gradient-position": {
       "title": "Gradient position",
-      "description": "CSS <position> tokens composed of keywords, <length-percentage>, or calc-style functions per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens: centre strings MUST follow the CSS <position> grammar used by radial-gradient() and conic-gradient() (css-images-4).",
+      "description": "CSS <position> tokens composed of keywords, <length-percentage>, or calc-style functions per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens: centre strings MUST follow the CSS <position> grammar used by radial-gradient() and conic-gradient() (css-images-4).",
       "type": "string",
       "pattern": "^(?:(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)|(?:[Cc][Ee][Nn][Tt][Ee][Rr]|[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]|[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])))(?:\\s+(?:(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[Ee][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)|(?:[Cc][Ee][Nn][Tt][Ee][Rr]|[Ll][Ee][Ff][Tt]|[Rr][Ii][Gg][Hh][Tt]|[Tt][Oo][Pp]|[Bb][Oo][Tt][Tt][Oo][Mm])))){0,3}$",
       "examples": [
@@ -2481,32 +2665,32 @@
     },
     "gradient-ending-shape": {
       "title": "Radial gradient ending shape",
-      "description": "CSS radial-gradient() ending shape keyword per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens: shape MUST be the <rg-ending-shape> keyword circle or ellipse (css-images-3).",
+      "description": "CSS radial-gradient() ending shape keyword per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens: shape MUST be the <rg-ending-shape> keyword circle or ellipse (css-images-3).",
       "type": "string",
       "pattern": "^(?:[Cc][Ii][Rr][Cc][Ll][Ee]|[Ee][Ll][Ll][Ii][Pp][Ss][Ee])$",
       "examples": ["circle", "ellipse"]
     },
     "color-stop-length-string": {
       "title": "Color stop length string",
-      "description": "CSS <color-stop-length> token composed of one or two <length-percentage> entries per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens and css-images-4: stop positions expressed as strings MUST be a single <length-percentage> or a pair separated by ASCII whitespace.",
+      "description": "CSS <color-stop-length> token composed of one or two <length-percentage> entries per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens and css-images-4: stop positions expressed as strings MUST be a single <length-percentage> or a pair separated by ASCII whitespace.",
       "type": "string",
       "pattern": "^(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+))(?:\\s+(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+)))?$",
       "examples": ["0%", "calc(50% - 10px)", "var(--stop, 25%)"]
     },
     "color-hint-length-string": {
       "title": "Color hint length string",
-      "description": "CSS <color-hint> token serialized as a single <length-percentage> entry per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens and css-images-4: hint strings MUST be a solitary <length-percentage> expression without an optional second stop.",
+      "description": "CSS <color-hint> token serialized as a single <length-percentage> entry per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens and css-images-4: hint strings MUST be a solitary <length-percentage> expression without an optional second stop.",
       "type": "string",
       "pattern": "^(?:(?:[Cc][Aa][Ll][Cc]|[Mm][Ii][Nn]|[Mm][Aa][Xx]|[Cc][Ll][Aa][Mm][Pp]|[Vv][Aa][Rr]|[Ee][Nn][Vv])\\((?:[^()]|\\((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*\\))*\\)|[-+]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:[eE][+-]?\\d+)?(?:%|[A-Za-z][A-Za-z0-9-]*)|[-+]?(?:0+(?:\\.0+)?|\\.0+))$",
       "examples": ["25%", "calc(10% + 2rem)", "var(--hint)"]
     },
     "gradientValueEntry": {
       "title": "Gradient value entry",
-      "description": "Literal gradient payload, alias, or computed expression per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens and \u00a7value: gradient tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal gradient payload, alias, or computed expression per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens and §value: gradient tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/gradient"
@@ -2521,8 +2705,8 @@
     },
     "gradientValueFallback": {
       "title": "Gradient fallback list",
-      "description": "Ordered fallback list of gradient values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of gradient values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2530,14 +2714,15 @@
         {
           "items": {
             "$ref": "#/$defs/gradientValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "gradientTokenValue": {
       "title": "Gradient token value",
-      "description": "Gradient literal, alias, or fallback list per Token types \u00a7gradient tokens.",
-      "$comment": "Token types \u00a7gradient tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Gradient literal, alias, or fallback list per Token types §gradient tokens.",
+      "$comment": "Token types §gradient tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/gradientValueEntry"
@@ -2553,8 +2738,8 @@
       "properties": {
         "gradientType": {
           "title": "Gradient function",
-          "description": "Gradient function name such as linear, radial, or conic per Token types \u00a7gradient tokens.",
-          "$comment": "Token types \u00a7gradient tokens: gradientType MUST be linear, radial, or conic matching CSS Images Module Level 4 gradient functions and mapping to CAGradientLayer.type or Android gradient shader constructors.",
+          "description": "Gradient function name such as linear, radial, or conic per Token types §gradient tokens.",
+          "$comment": "Token types §gradient tokens: gradientType MUST be linear, radial, or conic matching CSS Images Module Level 4 gradient functions and mapping to CAGradientLayer.type or Android gradient shader constructors.",
           "type": "string",
           "enum": ["linear", "radial", "conic"]
         },
@@ -2602,7 +2787,7 @@
         },
         "angle": {
           "title": "Gradient angle",
-          "description": "Linear gradient line orientation expressed as a CSS <angle> string or numeric degrees per Token types \u00a7gradient tokens.",
+          "description": "Linear gradient line orientation expressed as a CSS <angle> string or numeric degrees per Token types §gradient tokens.",
           "anyOf": [
             {
               "$ref": "#/$defs/gradient-line-angle"
@@ -2640,7 +2825,7 @@
         },
         "shape": {
           "title": "Gradient ending shape",
-          "description": "Radial gradient ending shape keyword such as circle or ellipse per Token types \u00a7gradient tokens.",
+          "description": "Radial gradient ending shape keyword such as circle or ellipse per Token types §gradient tokens.",
           "allOf": [
             {
               "$ref": "#/$defs/gradient-ending-shape"
@@ -2655,7 +2840,8 @@
             "properties": {
               "angle": {}
             },
-            "required": ["angle"]
+            "required": ["angle"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -2665,7 +2851,8 @@
                 },
                 "$comment": "Radial gradients do not accept an initial angle per CSS Images Module Level 4."
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -2673,7 +2860,8 @@
             "properties": {
               "center": {}
             },
-            "required": ["center"]
+            "required": ["center"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -2681,7 +2869,8 @@
                 "enum": ["radial", "conic"],
                 "$comment": "Only radial-gradient() and conic-gradient() accept a centre position in CSS Images Module Level 4."
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -2689,7 +2878,8 @@
             "properties": {
               "shape": {}
             },
-            "required": ["shape"]
+            "required": ["shape"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -2697,15 +2887,16 @@
                 "const": "radial",
                 "$comment": "<rg-ending-shape> keywords are valid exclusively on radial-gradient() per CSS Images Module Level 3."
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "filterValueEntry": {
       "title": "Filter value entry",
-      "description": "Literal filter payload, alias, or computed expression per Token types \u00a7filter tokens.",
-      "$comment": "Token types \u00a7filter tokens and \u00a7value: filter tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal filter payload, alias, or computed expression per Token types §filter tokens.",
+      "$comment": "Token types §filter tokens and §value: filter tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/filter"
@@ -2720,8 +2911,8 @@
     },
     "filterValueFallback": {
       "title": "Filter fallback list",
-      "description": "Ordered fallback list of filter values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of filter values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2729,14 +2920,15 @@
         {
           "items": {
             "$ref": "#/$defs/filterValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "filterTokenValue": {
       "title": "Filter token value",
-      "description": "Filter literal, alias, or fallback list per Token types \u00a7filter tokens.",
-      "$comment": "Token types \u00a7filter tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Filter literal, alias, or fallback list per Token types §filter tokens.",
+      "$comment": "Token types §filter tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/filterValueEntry"
@@ -2795,8 +2987,8 @@
     },
     "opacityValueEntry": {
       "title": "Opacity value entry",
-      "description": "Numeric opacity, alias, or computed expression per Token types \u00a7opacity.",
-      "$comment": "Token types \u00a7opacity and \u00a7value: opacity tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Numeric opacity, alias, or computed expression per Token types §opacity.",
+      "$comment": "Token types §opacity and §value: opacity tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/opacity"
@@ -2811,8 +3003,8 @@
     },
     "opacityValueFallback": {
       "title": "Opacity fallback list",
-      "description": "Ordered fallback list of opacity values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of opacity values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2820,14 +3012,15 @@
         {
           "items": {
             "$ref": "#/$defs/opacityValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "opacityTokenValue": {
       "title": "Opacity token value",
-      "description": "Opacity literal, alias, or fallback list per Token types \u00a7opacity.",
-      "$comment": "Token types \u00a7opacity: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Opacity literal, alias, or fallback list per Token types §opacity.",
+      "$comment": "Token types §opacity: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/opacityValueEntry"
@@ -2886,8 +3079,8 @@
     },
     "durationValueEntry": {
       "title": "Duration value entry",
-      "description": "Duration payload, alias, or computed expression per Token types \u00a7duration.",
-      "$comment": "Token types \u00a7duration and \u00a7value: duration tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Duration payload, alias, or computed expression per Token types §duration.",
+      "$comment": "Token types §duration and §value: duration tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/duration"
@@ -2902,8 +3095,8 @@
     },
     "durationValueFallback": {
       "title": "Duration fallback list",
-      "description": "Ordered fallback list of duration values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of duration values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -2911,14 +3104,15 @@
         {
           "items": {
             "$ref": "#/$defs/durationValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "durationTokenValue": {
       "title": "Duration token value",
-      "description": "Duration literal, alias, or fallback list per Token types \u00a7duration.",
-      "$comment": "Token types \u00a7duration: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Duration literal, alias, or fallback list per Token types §duration.",
+      "$comment": "Token types §duration: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/durationValueEntry"
@@ -2956,10 +3150,12 @@
           "if": {
             "properties": {
               "durationType": {
-                "pattern": "^(?:css\\.(?:transition|animation)-duration|ios\\.caanimation\\.duration|android\\.value-animator\\.duration)$"
+                "pattern": "^(?:css\\.(?:transition|animation)-duration|ios\\.caanimation\\.duration|android\\.value-animator\\.duration)$",
+                "type": "string"
               }
             },
-            "required": ["durationType"]
+            "required": ["durationType"],
+            "type": "object"
           },
           "then": {
             "$comment": "Duration contexts MUST encode non-negative CSS <time> values as defined by CSS Values & Units, Core Animation, and Android animator APIs (css-values-4#time-value, css-transitions-2, css-animations-2, IOS-CAANIMATION, ANDROID-VALUE-ANIMATOR).",
@@ -2972,17 +3168,20 @@
               "unit": {
                 "$ref": "#/$defs/durationTimeUnit"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "durationType": {
-                "pattern": "^(?:ios\\.cadisplaylink\\.frame-count|android\\.choreographer\\.frame-count)$"
+                "pattern": "^(?:ios\\.cadisplaylink\\.frame-count|android\\.choreographer\\.frame-count)$",
+                "type": "string"
               }
             },
-            "required": ["durationType"]
+            "required": ["durationType"],
+            "type": "object"
           },
           "then": {
             "$comment": "Frame-count durations carry platform refresh steps as described by CADisplayLink and Choreographer (IOS-CADISPLAYLINK, ANDROID-CHOREOGRAPHER).",
@@ -2995,17 +3194,20 @@
               "unit": {
                 "$ref": "#/$defs/durationFrameCountUnit"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "durationType": {
-                "pattern": "^(?:css\\.timeline\\.progress|ios\\.uianimation\\.fraction|android\\.animator-set\\.fraction)$"
+                "pattern": "^(?:css\\.timeline\\.progress|ios\\.uianimation\\.fraction|android\\.animator-set\\.fraction)$",
+                "type": "string"
               }
             },
-            "required": ["durationType"]
+            "required": ["durationType"],
+            "type": "object"
           },
           "then": {
             "$comment": "Fraction/progress contexts serialise CSS <percentage> values used by timelines and native animation fractions (css-values-4#percentages, IOS-UIVIEWPROPERTYANIMATOR, ANDROID-OBJECTANIMATOR).",
@@ -3017,15 +3219,16 @@
               "unit": {
                 "$ref": "#/$defs/durationFractionUnit"
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "easingValueEntry": {
       "title": "Easing value entry",
-      "description": "Literal easing payload, alias, or computed expression per Token types \u00a7easing.",
-      "$comment": "Token types \u00a7easing and \u00a7value: easing tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal easing payload, alias, or computed expression per Token types §easing.",
+      "$comment": "Token types §easing and §value: easing tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/easing"
@@ -3040,8 +3243,8 @@
     },
     "easingValueFallback": {
       "title": "Easing fallback list",
-      "description": "Ordered fallback list of easing values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of easing values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -3049,14 +3252,15 @@
         {
           "items": {
             "$ref": "#/$defs/easingValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "easingTokenValue": {
       "title": "Easing token value",
-      "description": "Easing literal, alias, or fallback list per Token types \u00a7easing.",
-      "$comment": "Token types \u00a7easing: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Easing literal, alias, or fallback list per Token types §easing.",
+      "$comment": "Token types §easing: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/easingValueEntry"
@@ -3068,8 +3272,8 @@
     },
     "easing": {
       "title": "Easing payload",
-      "description": "Reusable timing curve identified by easingFunction per Token types \u00a7easing.",
-      "$comment": "Token types \u00a7easing: easingFunction names a CSS <single-easing-function> or native analogue and parameters follow that grammar.",
+      "description": "Reusable timing curve identified by easingFunction per Token types §easing.",
+      "$comment": "Token types §easing: easingFunction names a CSS <single-easing-function> or native analogue and parameters follow that grammar.",
       "type": "object",
       "required": ["easingFunction"],
       "properties": {
@@ -3110,15 +3314,16 @@
                 "const": "cubic-bezier"
               }
             },
-            "required": ["easingFunction"]
+            "required": ["easingFunction"],
+            "type": "object"
           },
           "then": {
             "required": ["parameters"],
             "properties": {
               "parameters": {
                 "title": "cubic-bezier control points",
-                "description": "Four-number array [p1x, p1y, p2x, p2y] per CSS Easing Functions \u00a7cubic-bezier(). p1x and p2x MUST be within [0, 1].",
-                "$comment": "Token types \u00a7easing: cubic-bezier() requires four numeric arguments with domain constraints on the x control points (css-easing-1).",
+                "description": "Four-number array [p1x, p1y, p2x, p2y] per CSS Easing Functions §cubic-bezier(). p1x and p2x MUST be within [0, 1].",
+                "$comment": "Token types §easing: cubic-bezier() requires four numeric arguments with domain constraints on the x control points (css-easing-1).",
                 "type": "array",
                 "minItems": 4,
                 "maxItems": 4,
@@ -3148,7 +3353,8 @@
                   }
                 ]
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -3158,43 +3364,70 @@
                 "const": "steps"
               }
             },
-            "required": ["easingFunction"]
+            "required": ["easingFunction"],
+            "type": "object"
           },
           "then": {
             "required": ["parameters"],
             "properties": {
               "parameters": {
                 "title": "steps() arguments",
-                "description": "Positive integer step count with optional <step-position> keyword per CSS Easing Functions \u00a7steps().",
-                "$comment": "Token types \u00a7easing: steps() requires a positive integer and optional step-position keyword (css-easing-1).",
+                "description": "Positive integer step count with optional <step-position> keyword per CSS Easing Functions §steps().",
+                "$comment": "Token types §easing: steps() requires a positive integer and optional step-position keyword (css-easing-1).",
                 "type": "array",
-                "minItems": 1,
-                "maxItems": 2,
-                "prefixItems": [
+                "oneOf": [
                   {
-                    "type": "integer",
-                    "minimum": 1,
-                    "title": "Step count"
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "prefixItems": [
+                      {
+                        "type": "integer",
+                        "minimum": 1,
+                        "title": "Step count"
+                      }
+                    ],
+                    "items": false
                   },
                   {
-                    "type": "string",
-                    "enum": ["start", "end", "jump-start", "jump-end", "jump-none", "jump-both"],
-                    "title": "Step position"
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "prefixItems": [
+                      {
+                        "type": "integer",
+                        "minimum": 1,
+                        "title": "Step count"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "start",
+                          "end",
+                          "jump-start",
+                          "jump-end",
+                          "jump-none",
+                          "jump-both"
+                        ],
+                        "title": "Step position"
+                      }
+                    ],
+                    "items": false
                   }
-                ],
-                "items": false
+                ]
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "easingFunction": {
-                "pattern": "^(?:spring|(?:ios|android)\\.spring(?:[.-][a-z0-9]+)*)$"
+                "pattern": "^(?:spring|(?:ios|android)\\.spring(?:[.-][a-z0-9]+)*)$",
+                "type": "string"
               }
             },
-            "required": ["easingFunction"]
+            "required": ["easingFunction"],
+            "type": "object"
           },
           "then": {
             "required": ["parameters"],
@@ -3202,7 +3435,7 @@
               "parameters": {
                 "title": "Spring timing parameters",
                 "description": "Four-number array providing positive magnitudes followed by an initial velocity per UISpringTimingParameters and SpringForce.",
-                "$comment": "Token types \u00a7easing: spring-based easings supply positive magnitude arguments and any real initial velocity (UISpringTimingParameters, SpringForce).",
+                "$comment": "Token types §easing: spring-based easings supply positive magnitude arguments and any real initial velocity (UISpringTimingParameters, SpringForce).",
                 "type": "array",
                 "minItems": 4,
                 "maxItems": 4,
@@ -3231,7 +3464,8 @@
                   }
                 ]
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -3249,21 +3483,23 @@
                 ]
               }
             },
-            "required": ["easingFunction"]
+            "required": ["easingFunction"],
+            "type": "object"
           },
           "then": {
-            "$comment": "Token types \u00a7easing: keyword easings MUST NOT declare parameters.",
+            "$comment": "Token types §easing: keyword easings MUST NOT declare parameters.",
             "properties": {
               "parameters": false
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "zIndexValueEntry": {
       "title": "Z-index value entry",
-      "description": "Stacking context magnitude, alias, or computed expression per Token types \u00a7z-index.",
-      "$comment": "Token types \u00a7z-index and \u00a7value: z-index tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Stacking context magnitude, alias, or computed expression per Token types §z-index.",
+      "$comment": "Token types §z-index and §value: z-index tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/z-index"
@@ -3278,8 +3514,8 @@
     },
     "zIndexValueFallback": {
       "title": "Z-index fallback list",
-      "description": "Ordered fallback list of z-index values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of z-index values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -3287,14 +3523,15 @@
         {
           "items": {
             "$ref": "#/$defs/zIndexValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "zIndexTokenValue": {
       "title": "Z-index token value",
-      "description": "Z-index literal, alias, or fallback list per Token types \u00a7z-index.",
-      "$comment": "Token types \u00a7z-index: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Z-index literal, alias, or fallback list per Token types §z-index.",
+      "$comment": "Token types §z-index: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/zIndexValueEntry"
@@ -3329,10 +3566,12 @@
           "if": {
             "properties": {
               "zIndexType": {
-                "pattern": "^css\\."
+                "pattern": "^css\\.",
+                "type": "string"
               }
             },
-            "required": ["zIndexType"]
+            "required": ["zIndexType"],
+            "type": "object"
           },
           "then": {
             "properties": {
@@ -3340,15 +3579,16 @@
                 "type": "integer",
                 "$comment": "CSS z-index values MUST be integers per css-position-3#propdef-z-index."
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
     },
     "motionValueEntry": {
       "title": "Motion value entry",
-      "description": "Literal motion payload, alias, or computed expression per Token types \u00a7motion tokens.",
-      "$comment": "Token types \u00a7motion tokens and \u00a7value: motion tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal motion payload, alias, or computed expression per Token types §motion tokens.",
+      "$comment": "Token types §motion tokens and §value: motion tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/motion"
@@ -3363,8 +3603,8 @@
     },
     "motionValueFallback": {
       "title": "Motion fallback list",
-      "description": "Ordered fallback list of motion values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of motion values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -3372,14 +3612,15 @@
         {
           "items": {
             "$ref": "#/$defs/motionValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "motionTokenValue": {
       "title": "Motion token value",
-      "description": "Motion literal, alias, or fallback list per Token types \u00a7motion tokens.",
-      "$comment": "Token types \u00a7motion tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Motion literal, alias, or fallback list per Token types §motion tokens.",
+      "$comment": "Token types §motion tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/motionValueEntry"
@@ -3414,68 +3655,80 @@
           "if": {
             "properties": {
               "motionType": {
-                "pattern": "\\.(?:translate(?:[-a-z0-9]*)?|translation(?:[-a-z0-9]*)?)$"
+                "pattern": "\\.(?:translate(?:[-a-z0-9]*)?|translation(?:[-a-z0-9]*)?)$",
+                "type": "string"
               }
             },
-            "required": ["motionType"]
+            "required": ["motionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "parameters": {
                 "$ref": "#/$defs/motion-translation"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "motionType": {
-                "pattern": "\\.(?:rotate(?:[-a-z0-9]*)?|rotation(?:[-a-z0-9]*)?)$"
+                "pattern": "\\.(?:rotate(?:[-a-z0-9]*)?|rotation(?:[-a-z0-9]*)?)$",
+                "type": "string"
               }
             },
-            "required": ["motionType"]
+            "required": ["motionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "parameters": {
                 "$ref": "#/$defs/motion-rotation"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "motionType": {
-                "pattern": "\\.(?:scale(?:[-a-z0-9]*)?)$"
+                "pattern": "\\.(?:scale(?:[-a-z0-9]*)?)$",
+                "type": "string"
               }
             },
-            "required": ["motionType"]
+            "required": ["motionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "parameters": {
                 "$ref": "#/$defs/motion-scale"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
             "properties": {
               "motionType": {
-                "pattern": "\\.(?:path|offset-path|motion-path)$"
+                "pattern": "\\.(?:path|offset-path|motion-path)$",
+                "type": "string"
               }
             },
-            "required": ["motionType"]
+            "required": ["motionType"],
+            "type": "object"
           },
           "then": {
             "properties": {
               "parameters": {
                 "$ref": "#/$defs/motion-path"
               }
-            }
+            },
+            "type": "object"
           }
         }
       ]
@@ -3518,13 +3771,25 @@
       "additionalProperties": false,
       "anyOf": [
         {
-          "required": ["x"]
+          "required": ["x"],
+          "type": "object",
+          "properties": {
+            "x": {}
+          }
         },
         {
-          "required": ["y"]
+          "required": ["y"],
+          "type": "object",
+          "properties": {
+            "y": {}
+          }
         },
         {
-          "required": ["z"]
+          "required": ["z"],
+          "type": "object",
+          "properties": {
+            "z": {}
+          }
         }
       ]
     },
@@ -3550,13 +3815,25 @@
       "additionalProperties": false,
       "anyOf": [
         {
-          "required": ["x"]
+          "required": ["x"],
+          "type": "object",
+          "properties": {
+            "x": {}
+          }
         },
         {
-          "required": ["y"]
+          "required": ["y"],
+          "type": "object",
+          "properties": {
+            "y": {}
+          }
         },
         {
-          "required": ["z"]
+          "required": ["z"],
+          "type": "object",
+          "properties": {
+            "z": {}
+          }
         }
       ],
       "$comment": "Normalised fractions (0-1) representing transform-origin percentages, CALayer.anchorPoint, and View#setPivotX/Y."
@@ -3615,16 +3892,32 @@
       "additionalProperties": false,
       "anyOf": [
         {
-          "required": ["uniform"]
+          "required": ["uniform"],
+          "type": "object",
+          "properties": {
+            "uniform": {}
+          }
         },
         {
-          "required": ["x"]
+          "required": ["x"],
+          "type": "object",
+          "properties": {
+            "x": {}
+          }
         },
         {
-          "required": ["y"]
+          "required": ["y"],
+          "type": "object",
+          "properties": {
+            "y": {}
+          }
         },
         {
-          "required": ["z"]
+          "required": ["z"],
+          "type": "object",
+          "properties": {
+            "z": {}
+          }
         }
       ]
     },
@@ -3678,21 +3971,33 @@
       "additionalProperties": false,
       "anyOf": [
         {
-          "required": ["x"]
+          "required": ["x"],
+          "type": "object",
+          "properties": {
+            "x": {}
+          }
         },
         {
-          "required": ["y"]
+          "required": ["y"],
+          "type": "object",
+          "properties": {
+            "y": {}
+          }
         },
         {
-          "required": ["z"]
+          "required": ["z"],
+          "type": "object",
+          "properties": {
+            "z": {}
+          }
         }
       ],
       "$comment": "Each axis resolves to <length-percentage> coordinates evaluated along the referenced path geometry."
     },
     "elevationValueEntry": {
       "title": "Elevation value entry",
-      "description": "Literal elevation payload, alias, or computed expression per Token types \u00a7elevation tokens.",
-      "$comment": "Token types \u00a7elevation tokens and \u00a7value: elevation tokens MAY embed direct values, $ref aliases, or functions.",
+      "description": "Literal elevation payload, alias, or computed expression per Token types §elevation tokens.",
+      "$comment": "Token types §elevation tokens and §value: elevation tokens MAY embed direct values, $ref aliases, or functions.",
       "oneOf": [
         {
           "$ref": "#/$defs/elevation"
@@ -3707,8 +4012,8 @@
     },
     "elevationValueFallback": {
       "title": "Elevation fallback list",
-      "description": "Ordered fallback list of elevation values evaluated per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: fallback sequences evaluate candidates until one resolves.",
+      "description": "Ordered fallback list of elevation values evaluated per Token types §value.",
+      "$comment": "Token types §value: fallback sequences evaluate candidates until one resolves.",
       "allOf": [
         {
           "$ref": "#/$defs/nonEmptyArray"
@@ -3716,14 +4021,15 @@
         {
           "items": {
             "$ref": "#/$defs/elevationValueEntry"
-          }
+          },
+          "type": "array"
         }
       ]
     },
     "elevationTokenValue": {
       "title": "Elevation token value",
-      "description": "Elevation literal, alias, or fallback list per Token types \u00a7elevation tokens.",
-      "$comment": "Token types \u00a7elevation tokens: tokens MAY specify inline values, references, or fallback arrays.",
+      "description": "Elevation literal, alias, or fallback list per Token types §elevation tokens.",
+      "$comment": "Token types §elevation tokens: tokens MAY specify inline values, references, or fallback arrays.",
       "oneOf": [
         {
           "$ref": "#/$defs/elevationValueEntry"
@@ -3753,7 +4059,7 @@
         },
         "blur": {
           "title": "Elevation blur radius",
-          "description": "Length measurement describing the ambient blur per Token types \u00a7elevation tokens.",
+          "description": "Length measurement describing the ambient blur per Token types §elevation tokens.",
           "$comment": "Blur radius MUST match the <length> position in CSS <shadow> and the CALayer.shadowRadius / Paint#setShadowLayer radius semantics.",
           "allOf": [
             {
@@ -3762,7 +4068,10 @@
             {
               "if": {
                 "type": "object",
-                "required": ["dimensionType"]
+                "required": ["dimensionType"],
+                "properties": {
+                  "dimensionType": {}
+                }
               },
               "then": {
                 "properties": {
@@ -3773,7 +4082,8 @@
                     "description": "Elevation blur radii MUST be zero or positive per CSS <shadow> grammar.",
                     "$comment": "CSS <shadow> blur radii are non-negative lengths (css-backgrounds-3)."
                   }
-                }
+                },
+                "type": "object"
               }
             }
           ]
@@ -3787,12 +4097,17 @@
     },
     "lifecycle-metadata": {
       "title": "Lifecycle telemetry requirements",
-      "description": "Ensures $lastUsed timestamps and $usageCount counters follow Metadata \u00a7table requirements.",
+      "description": "Ensures $lastUsed timestamps and $usageCount counters follow Metadata §table requirements.",
       "$comment": "Metadata table: $lastUsed requires $usageCount > 0; $usageCount = 0 forbids $lastUsed.",
       "allOf": [
         {
           "if": {
-            "required": ["$lastModified", "$lastUsed"]
+            "required": ["$lastModified", "$lastUsed"],
+            "type": "object",
+            "properties": {
+              "$lastModified": {},
+              "$lastUsed": {}
+            }
           },
           "then": {
             "$comment": "$lastUsed timestamps MUST NOT precede $lastModified (Metadata table).",
@@ -3806,12 +4121,17 @@
                   "$data": "1/$lastModified"
                 }
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
           "if": {
-            "required": ["$lastUsed"]
+            "required": ["$lastUsed"],
+            "type": "object",
+            "properties": {
+              "$lastUsed": {}
+            }
           },
           "then": {
             "$comment": "$lastUsed requires a recorded usage count greater than zero.",
@@ -3820,9 +4140,11 @@
               "$usageCount": {
                 "minimum": 1,
                 "description": "$usageCount MUST be a positive integer when $lastUsed is present.",
-                "title": "$usageCount for used tokens"
+                "title": "$usageCount for used tokens",
+                "type": "number"
               }
-            }
+            },
+            "type": "object"
           }
         },
         {
@@ -3832,12 +4154,17 @@
                 "const": 0
               }
             },
-            "required": ["$usageCount"]
+            "required": ["$usageCount"],
+            "type": "object"
           },
           "then": {
             "$comment": "$usageCount = 0 indicates no recorded usage, so $lastUsed MUST be omitted.",
             "not": {
-              "required": ["$lastUsed"]
+              "required": ["$lastUsed"],
+              "type": "object",
+              "properties": {
+                "$lastUsed": {}
+              }
             }
           }
         },
@@ -3845,21 +4172,27 @@
           "if": {
             "properties": {
               "$usageCount": {
-                "minimum": 1
+                "minimum": 1,
+                "type": "number"
               }
             },
-            "required": ["$usageCount"]
+            "required": ["$usageCount"],
+            "type": "object"
           },
           "then": {
             "$comment": "Recorded usage counts greater than zero require a companion $lastUsed timestamp.",
-            "required": ["$lastUsed"]
+            "required": ["$lastUsed"],
+            "type": "object",
+            "properties": {
+              "$lastUsed": {}
+            }
           }
         }
       ]
     },
     "trimmedString": {
       "title": "Trimmed string",
-      "description": "Non-empty string without leading or trailing whitespace per Metadata \u00a7metadata.",
+      "description": "Non-empty string without leading or trailing whitespace per Metadata §metadata.",
       "$comment": "Metadata table: strings such as $author MUST be trimmed.",
       "type": "string",
       "minLength": 1,
@@ -3867,7 +4200,7 @@
     },
     "hashString": {
       "title": "Hash string",
-      "description": "Stable identifier with no whitespace per Metadata \u00a7metadata.",
+      "description": "Stable identifier with no whitespace per Metadata §metadata.",
       "$comment": "Metadata table: $hash MUST NOT contain whitespace.",
       "type": "string",
       "minLength": 1,
@@ -3875,7 +4208,7 @@
     },
     "tags": {
       "title": "Tag list",
-      "description": "Array of unique trimmed classification strings per Metadata \u00a7metadata.",
+      "description": "Array of unique trimmed classification strings per Metadata §metadata.",
       "$comment": "Metadata table: $tags MUST contain unique trimmed strings.",
       "type": "array",
       "items": {
@@ -3885,14 +4218,14 @@
     },
     "function": {
       "title": "Function expression",
-      "description": "Computed value wrapper with a function name and optional parameters per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: $value MAY be a function object with fn and optional parameters members.",
+      "description": "Computed value wrapper with a function name and optional parameters per Token types §value.",
+      "$comment": "Token types §value: $value MAY be a function object with fn and optional parameters members.",
       "type": "object",
       "required": ["fn"],
       "properties": {
         "fn": {
           "title": "Function identifier",
-          "description": "Function name such as calc, clamp, or platform-specific identifiers per Token types \u00a7value.",
+          "description": "Function name such as calc, clamp, or platform-specific identifiers per Token types §value.",
           "allOf": [
             {
               "$ref": "#/$defs/namespaced-function-identifier"
@@ -3901,24 +4234,33 @@
         },
         "parameters": {
           "title": "Function parameters",
-          "description": "Ordered list of literals, references, nested functions, or arrays per Token types \u00a7value. When omitted, consumers treat the list as empty per Token types \u00a7value.",
+          "description": "Ordered list of literals, references, nested functions, or arrays per Token types §value. When omitted, consumers treat the list as empty per Token types §value.",
           "type": "array",
           "items": {
             "$ref": "#/$defs/function-parameter"
           },
           "default": [],
-          "$comment": "Token types \u00a7value: parameters MAY be omitted when the referenced grammar takes no arguments; omitted parameters default to an empty array."
+          "$comment": "Token types §value: parameters MAY be omitted when the referenced grammar takes no arguments; omitted parameters default to an empty array."
         }
       },
       "additionalProperties": false
     },
     "function-parameter": {
       "title": "Function parameter",
-      "description": "Literal, reference, nested function, array, or object argument accepted by function expressions per Token types \u00a7value.",
-      "$comment": "Token types \u00a7value: parameters MAY include literals, $ref aliases, nested functions, or arrays.",
+      "description": "Literal, reference, nested function, array, or object argument accepted by function expressions per Token types §value.",
+      "$comment": "Token types §value: parameters MAY include literals, $ref aliases, nested functions, or arrays.",
       "anyOf": [
         {
-          "type": ["string", "number", "boolean", "null"]
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
         },
         {
           "$ref": "#/$defs/function"
@@ -3935,7 +4277,11 @@
         {
           "type": "object",
           "not": {
-            "required": ["$ref"]
+            "required": ["$ref"],
+            "type": "object",
+            "properties": {
+              "$ref": {}
+            }
           },
           "additionalProperties": true
         }
@@ -3943,12 +4289,13 @@
     },
     "extensions": {
       "title": "Extensions map",
-      "description": "Namespaced metadata keyed by reverse-DNS identifiers per Format and serialisation \u00a7$extensions.",
-      "$comment": "Format and serialisation \u00a7$extensions: keys MUST use lower-case reverse-DNS identifiers.",
+      "description": "Namespaced metadata keyed by reverse-DNS identifiers per Format and serialisation §$extensions.",
+      "$comment": "Format and serialisation §$extensions: keys MUST use lower-case reverse-DNS identifiers.",
       "type": "object",
       "propertyNames": {
         "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)+$",
-        "$comment": "Extension identifiers MUST be lower-case reverse-DNS strings."
+        "$comment": "Extension identifiers MUST be lower-case reverse-DNS strings.",
+        "type": "string"
       },
       "additionalProperties": true
     }

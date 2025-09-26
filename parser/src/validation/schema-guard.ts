@@ -38,10 +38,9 @@ const DEFAULT_FORMAT_REGISTRAR = resolveFormatRegistrar(formatsModule);
 const CORE_SCHEMA = loadCoreSchema();
 const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
 
-const DEFAULT_VALIDATOR_OPTIONS = {
+export const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,
-  allowUnionTypes: true,
-  strict: false,
+  strict: true,
   $data: true
 } as const;
 

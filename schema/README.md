@@ -29,7 +29,7 @@ import schema from '@lapidist/dtif-schema/core.json' assert { type: 'json' };
 import Ajv from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 
-const ajv = new Ajv({ allErrors: true, strict: false });
+const ajv = new Ajv({ allErrors: true, strict: true, $data: true });
 addFormats(ajv);
 
 const validate = ajv.compile(schema);
