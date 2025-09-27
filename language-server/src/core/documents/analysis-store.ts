@@ -11,8 +11,12 @@ import {
 } from './queries.js';
 import type { DocumentAnalysis, DocumentReference, PointerMetadata } from './types.js';
 
+export type DocumentAnalysisUpdateStatus = 'updated' | 'retained' | 'cleared' | 'failed';
+
 export interface DocumentAnalysisUpdateResult {
   readonly ok: boolean;
+  readonly status: DocumentAnalysisUpdateStatus;
+  readonly analysis?: DocumentAnalysis;
   readonly error?: unknown;
 }
 
@@ -20,17 +24,44 @@ export class DocumentAnalysisStore {
   #analyses = new Map<string, DocumentAnalysis>();
 
   update(document: TextDocument): DocumentAnalysisUpdateResult {
+    const previous = this.#analyses.get(document.uri);
+    const text = document.getText();
+    const isEffectivelyEmpty = text.trim().length === 0;
+
     try {
-      const analysis = analyzeTextDocument(document);
+      const analysis = analyzeTextDocument(document, text);
       if (analysis) {
         this.#analyses.set(document.uri, analysis);
-      } else {
+        return {
+          ok: true,
+          status: 'updated',
+          analysis
+        } satisfies DocumentAnalysisUpdateResult;
+      }
+
+      if (previous && !isEffectivelyEmpty) {
+        return {
+          ok: true,
+          status: 'retained',
+          analysis: previous
+        } satisfies DocumentAnalysisUpdateResult;
+      }
+
+      this.#analyses.delete(document.uri);
+      return {
+        ok: true,
+        status: 'cleared'
+      } satisfies DocumentAnalysisUpdateResult;
+    } catch (error: unknown) {
+      if (!previous) {
         this.#analyses.delete(document.uri);
       }
-      return { ok: true } satisfies DocumentAnalysisUpdateResult;
-    } catch (error: unknown) {
-      this.#analyses.delete(document.uri);
-      return { ok: false, error } satisfies DocumentAnalysisUpdateResult;
+      return {
+        ok: false,
+        status: 'failed',
+        analysis: previous,
+        error
+      } satisfies DocumentAnalysisUpdateResult;
     }
   }
 
