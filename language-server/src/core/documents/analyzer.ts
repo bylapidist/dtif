@@ -6,8 +6,7 @@ import { rangeFromNode } from './ranges.js';
 
 const POINTER_REFERENCE_KEYS = new Set(['$ref', 'token', 'ref']);
 
-export function analyzeTextDocument(document: TextDocument): DocumentAnalysis | null {
-  const text = document.getText();
+export function analyzeTextDocument(document: TextDocument, text: string): DocumentAnalysis | null {
   const parseErrors: ParseError[] = [];
   const tree = parseTree(text, parseErrors, {
     allowTrailingComma: false,

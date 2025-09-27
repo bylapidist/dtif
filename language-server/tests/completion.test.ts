@@ -3,6 +3,7 @@ import { PassThrough } from 'node:stream';
 import test from 'node:test';
 import {
   CompletionRequest,
+  DidChangeTextDocumentNotification,
   DidOpenTextDocumentNotification,
   ExitNotification,
   InitializeRequest,
@@ -186,6 +187,128 @@ void test('language server returns completions for $type values, units, and $ext
     extensionCompletions.some((item) => item.label === 'org.example.analytics'),
     'expected observed extension key completion'
   );
+
+  await clientConnection.sendRequest(ShutdownRequest.type);
+  void clientConnection.sendNotification(ExitNotification.type);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  clientConnection.dispose();
+});
+
+void test('unit completions retain context when document parsing fails', async () => {
+  const clientToServer = new PassThrough();
+  const serverToClient = new PassThrough();
+
+  const serverConnection = createConnection(
+    new StreamMessageReader(clientToServer),
+    new StreamMessageWriter(serverToClient),
+    undefined,
+    ProposedFeatures.all
+  );
+
+  const documents = new TextDocuments(TextDocument);
+  const server = createServer({ connection: serverConnection, documents });
+
+  const clientConnection = createMessageConnection(
+    new StreamMessageReader(serverToClient),
+    new StreamMessageWriter(clientToServer)
+  );
+  clientConnection.listen();
+
+  const capabilities: ClientCapabilities = {};
+  const initializeParams: InitializeParams = {
+    processId: null,
+    clientInfo: undefined,
+    locale: undefined,
+    rootPath: null,
+    rootUri: null,
+    capabilities,
+    initializationOptions: undefined,
+    trace: 'off',
+    workspaceFolders: null
+  };
+
+  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+
+  server.listen();
+
+  await initializePromise;
+
+  void clientConnection.sendNotification(InitializedNotification.type, {});
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const uri = 'file:///memory/unit-completions.json';
+  const documentText = `{
+  "tokens": {
+    "spacing": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 16,
+        "unit": ""
+      }
+    }
+  }
+}`;
+
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+    textDocument: {
+      uri,
+      languageId: 'json',
+      version: 1,
+      text: documentText
+    }
+  });
+
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const lines = documentText.split('\n');
+  const unitLineIndex = lines.findIndex((line) => line.includes('"unit": ""'));
+  assert.ok(unitLineIndex >= 0, 'expected placeholder unit to exist');
+  const unitCharIndex = lines[unitLineIndex].indexOf('""');
+  assert.ok(unitCharIndex >= 0, 'expected empty unit quotes');
+
+  const initialCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
+    textDocument: { uri },
+    position: { line: unitLineIndex, character: unitCharIndex + 1 }
+  });
+
+  const initialCompletions = ensureArray(initialCompletionsResult);
+  const initialUnitCompletion = initialCompletions.find((item) => item.label === 'px');
+  assert.ok(initialUnitCompletion, 'expected length unit suggestion');
+  assert.equal(initialUnitCompletion.detail, 'Dimension unit');
+
+  const invalidDocumentText = documentText.replace('"unit": ""', '"unit": "');
+
+  void clientConnection.sendNotification(DidChangeTextDocumentNotification.type, {
+    textDocument: {
+      uri,
+      version: 2
+    },
+    contentChanges: [
+      {
+        text: invalidDocumentText
+      }
+    ]
+  });
+
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const invalidLines = invalidDocumentText.split('\n');
+  const invalidUnitLineIndex = invalidLines.findIndex((line) => line.includes('"unit": "'));
+  assert.ok(invalidUnitLineIndex >= 0, 'expected incomplete unit line to exist');
+  const invalidUnitCharIndex = invalidLines[invalidUnitLineIndex].lastIndexOf('"');
+  assert.ok(invalidUnitCharIndex >= 0, 'expected dangling unit quote');
+
+  const invalidCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
+    textDocument: { uri },
+    position: { line: invalidUnitLineIndex, character: invalidUnitCharIndex + 1 }
+  });
+
+  const invalidCompletions = ensureArray(invalidCompletionsResult);
+  const invalidUnitCompletion = invalidCompletions.find((item) => item.label === 'px');
+  assert.ok(invalidUnitCompletion, 'expected length unit suggestion after parse failure');
+  assert.equal(invalidUnitCompletion.detail, 'Dimension unit');
 
   await clientConnection.sendRequest(ShutdownRequest.type);
   void clientConnection.sendNotification(ExitNotification.type);

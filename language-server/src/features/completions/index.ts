@@ -48,6 +48,7 @@ export function buildCompletions(options: BuildCompletionsOptions): CompletionIt
   const offset = document.offsetAt(position);
   const location = getLocation(document.getText(), offset);
   const path = location.path;
+  const pointerFromLocation = path.length > 0 ? pathToPointer(path) : '#';
   const activeSegment = path[path.length - 1];
 
   if (activeSegment === '$type') {
@@ -55,7 +56,11 @@ export function buildCompletions(options: BuildCompletionsOptions): CompletionIt
   }
 
   if (activeSegment === 'unit') {
-    return buildUnitCompletionItems(store, document.uri, pointerMatch?.pointer ?? '#');
+    return buildUnitCompletionItems(
+      store,
+      document.uri,
+      pointerMatch?.pointer ?? pointerFromLocation
+    );
   }
 
   if (location.isAtPropertyKey && path[path.length - 1] === '') {
