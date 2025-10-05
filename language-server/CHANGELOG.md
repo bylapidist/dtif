@@ -1,5 +1,14 @@
 # @lapidist/dtif-language-server
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8), [`3bbe4e6`](https://github.com/bylapidist/dtif/commit/3bbe4e65974380b36a90834e79273c815f1f04e8)]:
+  - @lapidist/dtif-parser@1.0.0
+  - @lapidist/dtif-schema@1.0.0
+  - @lapidist/dtif-validator@1.0.0
+
 ## 0.5.0
 
 ### Minor Changes
