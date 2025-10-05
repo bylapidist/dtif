@@ -401,10 +401,10 @@ void test('application use cases: parse tokens shares document pipeline and toke
   } satisfies domain.TokenSnapshot<TokenCacheSnapshot>;
 
   let flattenCalls = 0;
-  const flatteningService: domain.TokenFlatteningService<TokenCacheSnapshot> = {
+  const flatteningService: domain.TokenFlatteningService<string, string, TokenCacheSnapshot> = {
     flattener: {
       flatten: () => pipelineResult(flattenSnapshot)
-    } satisfies domain.TokenFlatteningPort<TokenCacheSnapshot>,
+    } satisfies domain.TokenFlatteningPort<string, string, TokenCacheSnapshot>,
     flatten: () => {
       flattenCalls++;
       return pipelineResult(flattenSnapshot, { events: [createEvent('flatten/pipeline', 'info')] });
@@ -535,10 +535,10 @@ void test('application use cases: parse tokens synchronously shares cache behavi
     resolve: (graphSnapshot, context) => resolutionPort.resolve(graphSnapshot, context)
   };
 
-  const flatteningPort: domain.TokenFlatteningPort<TokenCacheSnapshot, string> = {
+  const flatteningPort: domain.TokenFlatteningPort<string, string, TokenCacheSnapshot> = {
     flatten: () => pipelineResult(undefined)
   };
-  const flatteningService: domain.TokenFlatteningService<TokenCacheSnapshot, string> = {
+  const flatteningService: domain.TokenFlatteningService<string, string, TokenCacheSnapshot> = {
     flattener: flatteningPort,
     flatten: (request) =>
       pipelineResult({

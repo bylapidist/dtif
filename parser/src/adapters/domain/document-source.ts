@@ -98,18 +98,16 @@ function toContentRecord(request: DocumentRequest): ParseInputRecord {
 }
 
 function normalizeContentType(value: DocumentRequest['contentTypeHint']): ContentType | undefined {
-  if (value === 'application/json' || value === 'application/yaml') {
-    return value;
+  if (typeof value !== 'string') {
+    return undefined;
   }
 
-  if (typeof value === 'string') {
-    const normalized = value.toLowerCase();
-    if (normalized === 'application/json' || normalized === 'application/yaml') {
-      return normalized;
-    }
-  }
+  const normalized = value.toLowerCase();
+  return isContentType(normalized) ? normalized : undefined;
+}
 
-  return undefined;
+function isContentType(value: string): value is ContentType {
+  return value === 'application/json' || value === 'application/yaml';
 }
 
 function assertDesignTokenDocument(

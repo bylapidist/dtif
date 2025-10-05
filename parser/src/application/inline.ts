@@ -23,7 +23,7 @@ export function createInlineDocumentHandle(input: InlineDocumentRequestInput): D
 }
 
 export function decodeInlineDocument(handle: DocumentHandle): DecodedDocument {
-  if (handle.data !== undefined && isDesignTokenDocument(handle.data)) {
+  if (hasProvidedData(handle)) {
     return Object.freeze(createDocumentFromProvidedData(handle));
   }
 
@@ -81,6 +81,10 @@ function createDocumentFromProvidedData(handle: ProvidedDataHandle): DecodedDocu
 }
 
 type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
+
+function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
+  return handle.data !== undefined && isDesignTokenDocument(handle.data);
+}
 
 function isDesignTokenDocument(value: unknown): value is ProvidedDataHandle['data'] {
   if (!value || typeof value !== 'object') {

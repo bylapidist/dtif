@@ -414,8 +414,8 @@ function enrichDocument(document: RawDocument, decoded: DecodedDocument): RawDoc
 }
 
 export interface ParseTokensDependencies<TAst, TGraph, TResult> {
-  readonly documents: ParseDocumentUseCase<TAst, TGraph, TResult>;
-  readonly flattening: TokenFlatteningService<TokenCacheSnapshot, TGraph>;
+  readonly documents: Pick<ParseDocumentUseCase<TAst, TGraph, TResult>, 'execute' | 'executeSync'>;
+  readonly flattening: TokenFlatteningService<TResult, TGraph, TokenCacheSnapshot>;
   readonly tokenCache?: TokenCachePort<TokenCacheSnapshot>;
   readonly diagnostics?: DiagnosticPort;
   readonly hashDocument?: (document: RawDocument) => string;
@@ -436,8 +436,8 @@ export interface ParseTokensExecution<TAst, TGraph, TResult>
 }
 
 export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unknown> {
-  readonly #documents: ParseDocumentUseCase<TAst, TGraph, TResult>;
-  readonly #flattening: TokenFlatteningService<TokenCacheSnapshot, TGraph>;
+  readonly #documents: Pick<ParseDocumentUseCase<TAst, TGraph, TResult>, 'execute' | 'executeSync'>;
+  readonly #flattening: TokenFlatteningService<TResult, TGraph, TokenCacheSnapshot>;
   readonly #tokenCache?: TokenCachePort<TokenCacheSnapshot>;
   readonly #diagnostics?: DiagnosticPort;
   readonly #hashDocument?: (document: RawDocument) => string;

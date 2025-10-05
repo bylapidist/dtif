@@ -64,11 +64,12 @@ export function normalizeInlineInput(input: ParseTokensInput): InlineInput | und
   if (isRecord(input)) {
     if (isParseInputRecord(input)) {
       if (typeof input.content === 'string') {
+        const content = input.content;
         return {
-          uri: resolveInlineUri(input.uri, () => createMemoryUriFromText(input.content)),
-          text: input.content,
+          uri: resolveInlineUri(input.uri, () => createMemoryUriFromText(content)),
+          text: content,
           contentType:
-            input.contentType ?? detectContentTypeFromContent(input.content) ?? 'application/json'
+            input.contentType ?? detectContentTypeFromContent(content) ?? 'application/json'
         } satisfies InlineInput;
       }
 

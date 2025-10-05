@@ -355,9 +355,9 @@ export interface TokenFlatteningAdapterOptions {
 }
 
 export class TokenFlatteningAdapter
-  implements TokenFlatteningService<TokenCacheSnapshot, DocumentGraph>
+  implements TokenFlatteningService<ResolverInstance, DocumentGraph, TokenCacheSnapshot>
 {
-  readonly flattener: TokenFlatteningPort<TokenCacheSnapshot, DocumentGraph>;
+  readonly flattener: TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
   readonly #metadataSnapshot: typeof createMetadataSnapshot;
   readonly #resolutionSnapshot: typeof createResolutionSnapshot;
   readonly #flattenTokens: typeof flattenTokens;
@@ -370,7 +370,7 @@ export class TokenFlatteningAdapter
     this.#clock = options.clock ?? Date.now;
     this.flattener = {
       flatten: (request) => this.flatten(request)
-    } satisfies TokenFlatteningPort<TokenCacheSnapshot, DocumentGraph>;
+    } satisfies TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
   }
 
   flatten(

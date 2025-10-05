@@ -71,11 +71,15 @@ export interface ResolutionService<TGraph = unknown, TResult = unknown, TAst = u
     | PipelineResult<ResolutionOutcome<TResult> | undefined>;
 }
 
-export interface TokenFlatteningService<TResult = unknown, TGraph = unknown> {
-  readonly flattener: TokenFlatteningPort<TResult, TGraph>;
+export interface TokenFlatteningService<
+  TResolution = unknown,
+  TGraph = unknown,
+  TSnapshot = TResolution
+> {
+  readonly flattener: TokenFlatteningPort<TResolution, TGraph, TSnapshot>;
   flatten(
-    request: TokenFlatteningRequest<TGraph, TResult>
+    request: TokenFlatteningRequest<TGraph, TResolution>
   ):
-    | Promise<PipelineResult<TokenSnapshot<TResult> | undefined>>
-    | PipelineResult<TokenSnapshot<TResult> | undefined>;
+    | Promise<PipelineResult<TokenSnapshot<TSnapshot> | undefined>>
+    | PipelineResult<TokenSnapshot<TSnapshot> | undefined>;
 }

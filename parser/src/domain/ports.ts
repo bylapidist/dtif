@@ -94,18 +94,22 @@ export interface ResolutionPort<TGraph = unknown, TResult = unknown, TAst = unkn
     | PipelineResult<ResolutionOutcome<TResult> | undefined>;
 }
 
-export interface TokenFlatteningRequest<TGraph = unknown, TResult = unknown> {
+export interface TokenFlatteningRequest<TGraph = unknown, TResolution = unknown> {
   readonly document: RawDocument;
   readonly graph: GraphSnapshot<TGraph>;
-  readonly resolution: ResolutionOutcome<TResult>;
+  readonly resolution: ResolutionOutcome<TResolution>;
   readonly documentHash?: string;
   readonly flatten: boolean;
 }
 
-export interface TokenFlatteningPort<TResult = unknown, TGraph = unknown> {
+export interface TokenFlatteningPort<
+  TResolution = unknown,
+  TGraph = unknown,
+  TSnapshot = TResolution
+> {
   flatten(
-    request: TokenFlatteningRequest<TGraph, TResult>
+    request: TokenFlatteningRequest<TGraph, TResolution>
   ):
-    | Promise<PipelineResult<TokenSnapshot<TResult> | undefined>>
-    | PipelineResult<TokenSnapshot<TResult> | undefined>;
+    | Promise<PipelineResult<TokenSnapshot<TSnapshot> | undefined>>
+    | PipelineResult<TokenSnapshot<TSnapshot> | undefined>;
 }
