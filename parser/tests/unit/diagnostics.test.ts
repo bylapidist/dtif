@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { DiagnosticDomain, formatDiagnosticCode, isDiagnosticCode } from '../../src/diagnostics/codes.js';
+import {
+  DiagnosticDomain,
+  formatDiagnosticCode,
+  isDiagnosticCode
+} from '../../src/diagnostics/codes.js';
 import {
   DIAGNOSTIC_SEVERITIES,
   compareDiagnosticSeverity,
