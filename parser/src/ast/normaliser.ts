@@ -1,6 +1,6 @@
 import { DiagnosticCodes } from '../diagnostics/codes.js';
 import { JSON_POINTER_ROOT } from '../utils/json-pointer.js';
-import type { RawDocument } from '../types.js';
+import type { DecodedDocument } from '../domain/models.js';
 import { buildDocumentAst } from './normaliser/document.js';
 import {
   createNormaliserContext,
@@ -16,7 +16,7 @@ import type {
 export type { NormaliserOptions, NormaliserResult } from './normaliser/context.js';
 
 export function normalizeDocument(
-  document: RawDocument,
+  document: DecodedDocument,
   options: NormaliserOptions = {}
 ): NormaliserResult {
   const context = createNormaliserContext(document, options);

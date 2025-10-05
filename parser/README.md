@@ -46,7 +46,7 @@ for (const token of flattened) {
 ```
 
 Pass `onDiagnostic` to observe parser diagnostics as they are produced and `warn`
-to intercept non-fatal issues. Both callbacks receive `TokenDiagnostic`
+to intercept non-fatal issues. Both callbacks receive domain `DiagnosticEvent`
 objects, allowing you to format or surface them immediately without waiting for
 the promise to resolve.
 
@@ -61,13 +61,18 @@ await parseTokens('tokens.json', {
 });
 ```
 
-Provide a `ParseCache` implementation, such as the built-in
-`InMemoryParseCache`, to reuse flattening and resolution results across runs or
+Provide a `TokenCache` implementation, such as the built-in
+`InMemoryTokenCache`, to reuse flattening and resolution results across runs or
 for synchronous parsing with `parseTokensSync` when your inputs are already
 available in memory.
 
 Create a session with `createSession` to reuse caches, install custom document
 loaders, register plugins, or parse multiple collections with shared state.
+
+Each pipeline stage emits domain `DiagnosticEvent` objects instead of throwing.
+Results aggregate every diagnostic (including cache hits) so tooling can stream
+warnings via `onDiagnostic`/`warn` hooks, persist them for later inspection, or
+format them with `formatDiagnostic`.
 
 ### Node adapter
 
@@ -90,11 +95,24 @@ try {
 const document = await readTokensFile('tokens/base.tokens.json');
 ```
 
+## Architecture overview
+
+- `createSession` coordinates the loader, schema guard, normaliser, graph
+  builder, and resolver for each request. Sessions keep caches and plugins in
+  sync across parses.
+- Domain caches receive `RawDocumentIdentity` keys and ensure decoded bytes, AST
+  snapshots, and flattened token artefacts can be reused safely between runs.
+- Diagnostic events surface from every stage and persist in token cache entries
+  so warm parses provide the same visibility as cold runs.
+- Helper APIs (`parseTokens`, `parseTokensSync`, `createMetadataSnapshot`, and
+  `createResolutionSnapshot`) layer on snapshot builders without bypassing the
+  session lifecycle.
+
 ## Development
 
-- [Parser package structure](../docs/tooling/dtif-parser-package-structure.md) documents the current
-  module layout, session lifecycle, and testing conventions that future
-  roadmap work will build upon.
+- [Parser guide architecture section](../docs/guides/dtif-parser.md#package-architecture)
+  documents the current module layout, session lifecycle, and testing
+  conventions that future roadmap work will build upon.
 
 ## Command line interface
 

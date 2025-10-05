@@ -4,7 +4,12 @@ import type { CreateDtifValidatorOptions, DtifValidator } from '@lapidist/dtif-v
 
 import { DiagnosticCodes } from '../diagnostics/codes.js';
 import { JSON_POINTER_ROOT, normalizeJsonPointer } from '../utils/json-pointer.js';
-import type { Diagnostic, RawDocument, RelatedInformation, SourceSpan } from '../types.js';
+import type {
+  DecodedDocument,
+  DiagnosticEvent,
+  DiagnosticEventRelatedInformation
+} from '../domain/models.js';
+import type { SourceSpan } from '../domain/primitives.js';
 
 const require = createRequire(import.meta.url);
 
@@ -18,7 +23,7 @@ export interface SchemaGuardOptions extends CreateDtifValidatorOptions {
 
 export interface SchemaGuardResult {
   readonly valid: boolean;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 export class SchemaGuardError extends Error {
@@ -97,7 +102,7 @@ export class SchemaGuard {
     this.validator = validator ?? createSchemaValidator(validatorOptions);
   }
 
-  validate(document: RawDocument): SchemaGuardResult {
+  validate(document: DecodedDocument): SchemaGuardResult {
     let valid: boolean;
 
     try {
@@ -119,7 +124,7 @@ export class SchemaGuard {
     });
   }
 
-  private createDiagnostic(error: ErrorObject, document: RawDocument): Diagnostic {
+  private createDiagnostic(error: ErrorObject, document: DecodedDocument): DiagnosticEvent {
     const pointer = normalizeJsonPointer(`#${error.instancePath}`);
     const span =
       this.resolveSpan(pointer, document) ?? this.resolveSpan(JSON_POINTER_ROOT, document);
@@ -132,12 +137,12 @@ export class SchemaGuard {
       pointer,
       span,
       related: related.length > 0 ? related : undefined
-    } satisfies Diagnostic;
+    } satisfies DiagnosticEvent;
   }
 
-  private resolveSpan(pointer: string, document: RawDocument): SourceSpan | undefined {
+  private resolveSpan(pointer: string, document: DecodedDocument): SourceSpan | undefined {
     const normalized = normalizeJsonPointer(pointer);
-    return document.sourceMap.pointers.get(normalized);
+    return document.sourceMap?.pointers.get(normalized);
   }
 }
 
@@ -161,8 +166,8 @@ function ensureSentence(value: string): string {
   return /[.!?]$/u.test(capitalised) ? capitalised : `${capitalised}.`;
 }
 
-function buildRelatedInformation(error: ErrorObject): RelatedInformation[] {
-  const related: RelatedInformation[] = [];
+function buildRelatedInformation(error: ErrorObject): DiagnosticEventRelatedInformation[] {
+  const related: DiagnosticEventRelatedInformation[] = [];
 
   if (error.schemaPath) {
     related.push({ message: `Schema path: ${error.schemaPath}` });

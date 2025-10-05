@@ -1,4 +1,4 @@
-import type { JsonPointer } from '../../types.js';
+import type { JsonPointer } from '../../domain/primitives.js';
 import type { GraphOverrideNode } from '../../graph/nodes.js';
 import type { ResolvedTokenTransformEntry } from '../../plugins/index.js';
 import { DEFAULT_MAX_DEPTH, EMPTY_TRANSFORM_ENTRIES } from './constants.js';

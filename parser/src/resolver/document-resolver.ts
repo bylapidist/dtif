@@ -1,7 +1,7 @@
 import { DiagnosticCodes } from '../diagnostics/codes.js';
-import { DiagnosticBag } from '../diagnostics/bag.js';
 import { JSON_POINTER_ROOT, normalizeJsonPointer } from '../utils/json-pointer.js';
-import type { Diagnostic, JsonPointer, RawDocument } from '../types.js';
+import type { DiagnosticEvent, DecodedDocument } from '../domain/models.js';
+import type { JsonPointer } from '../domain/primitives.js';
 import type {
   DocumentGraph,
   GraphAliasNode,
@@ -45,6 +45,7 @@ import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
 } from '../plugins/index.js';
+import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
 
 interface ResolutionState {
   readonly pointer: JsonPointer;
@@ -52,14 +53,14 @@ interface ResolutionState {
   readonly value?: unknown;
   readonly source?: ResolutionSource;
   readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly Diagnostic[];
+  readonly warnings: readonly DiagnosticEvent[];
   readonly trace: readonly ResolutionTraceStep[];
 }
 
 interface OverrideEvaluation {
   readonly matched: boolean;
   readonly state?: OverrideState;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 interface OverrideState {
@@ -67,7 +68,7 @@ interface OverrideState {
   readonly value?: unknown;
   readonly source?: ResolutionSource;
   readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly Diagnostic[];
+  readonly warnings: readonly DiagnosticEvent[];
   readonly trace: readonly ResolutionTraceStep[];
 }
 
@@ -76,7 +77,7 @@ export class DocumentResolver {
   private readonly context: ReadonlyMap<string, unknown>;
   private readonly overrides: ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>;
   private readonly maxDepth: number;
-  private readonly document?: RawDocument;
+  private readonly document?: DecodedDocument;
   private readonly transforms: readonly ResolvedTokenTransformEntry[];
   private readonly cache = new Map<JsonPointer, ResolutionState>();
   private readonly pending = new Set<JsonPointer>();
@@ -91,7 +92,7 @@ export class DocumentResolver {
   }
 
   resolve(pointer: JsonPointer): ResolutionResult {
-    const diagnostics = new DiagnosticBag();
+    const diagnostics = createDiagnosticCollector();
 
     try {
       const normalized = normalizeJsonPointer(pointer);
@@ -126,7 +127,7 @@ export class DocumentResolver {
 
   private resolveInternal(
     pointer: JsonPointer,
-    diagnostics: DiagnosticBag,
+    diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState | undefined {
     if (this.cache.has(pointer)) {
@@ -199,7 +200,7 @@ export class DocumentResolver {
 
   private resolveBaseNode(
     node: GraphNode,
-    diagnostics: DiagnosticBag,
+    diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState | undefined {
     switch (node.kind) {
@@ -212,10 +213,13 @@ export class DocumentResolver {
     }
   }
 
-  private resolveTokenNode(node: GraphTokenNode, diagnostics: DiagnosticBag): ResolutionState {
+  private resolveTokenNode(
+    node: GraphTokenNode,
+    diagnostics: DiagnosticCollector
+  ): ResolutionState {
     const trace = Object.freeze([createTraceStep(node.pointer, 'token', node.span)]);
     const valueField = node.value;
-    const warnings: Diagnostic[] = [];
+    const warnings: DiagnosticEvent[] = [];
     let source: ResolutionSource | undefined;
     let value: unknown;
 
@@ -246,7 +250,7 @@ export class DocumentResolver {
 
   private resolveAliasNode(
     node: GraphAliasNode,
-    diagnostics: DiagnosticBag,
+    diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState | undefined {
     const tracePrefix = createTraceStep(node.pointer, 'alias', node.span);
@@ -319,7 +323,7 @@ export class DocumentResolver {
   private applyOverrides(
     pointer: JsonPointer,
     base: ResolutionState,
-    diagnostics: DiagnosticBag,
+    diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState {
     const overrides = this.overrides.get(pointer);
@@ -330,10 +334,8 @@ export class DocumentResolver {
     let matchedState: OverrideState | undefined;
 
     for (const override of overrides) {
-      const evaluation = this.evaluateOverride(override, base, diagnostics, depth);
-      for (const diagnostic of evaluation.diagnostics) {
-        diagnostics.add(diagnostic);
-      }
+      const evaluation = this.evaluateOverride(override, base, depth);
+      diagnostics.addMany(evaluation.diagnostics);
       if (evaluation.matched && evaluation.state) {
         matchedState = evaluation.state;
       }
@@ -362,7 +364,6 @@ export class DocumentResolver {
   private evaluateOverride(
     override: GraphOverrideNode,
     base: ResolutionState,
-    diagnostics: DiagnosticBag,
     depth: number
   ): OverrideEvaluation {
     if (!this.doesOverrideApply(override)) {
@@ -387,7 +388,7 @@ export class DocumentResolver {
     const traceSteps: ResolutionTraceStep[] = [
       createTraceStep(override.pointer, 'override', override.span)
     ];
-    const diagnosticsList: Diagnostic[] = [];
+    const localDiagnostics = createDiagnosticCollector();
     let state: OverrideState | undefined;
 
     if (override.ref) {
@@ -395,7 +396,7 @@ export class DocumentResolver {
         override,
         override.ref,
         base,
-        diagnosticsList,
+        localDiagnostics,
         traceSteps,
         depth
       );
@@ -409,7 +410,7 @@ export class DocumentResolver {
       state = this.resolveFallbackChain(
         override.fallback,
         base,
-        diagnosticsList,
+        localDiagnostics,
         1,
         traceSteps,
         depth + 1
@@ -417,7 +418,7 @@ export class DocumentResolver {
     }
 
     if (!state) {
-      diagnosticsList.push({
+      localDiagnostics.add({
         code: DiagnosticCodes.resolver.OVERRIDE_FAILED,
         message: `Override "${override.pointer}" matched the current context but did not resolve to a value.`,
         severity: 'error',
@@ -429,7 +430,7 @@ export class DocumentResolver {
     return {
       matched: true,
       state,
-      diagnostics: diagnosticsList.length === 0 ? EMPTY_DIAGNOSTICS : Object.freeze(diagnosticsList)
+      diagnostics: localDiagnostics.toArray()
     };
   }
 
@@ -456,14 +457,14 @@ export class DocumentResolver {
     override: GraphOverrideNode,
     ref: GraphReferenceField,
     base: ResolutionState,
-    diagnostics: Diagnostic[],
+    diagnostics: DiagnosticCollector,
     trace: ResolutionTraceStep[],
     depth: number
   ): OverrideState | undefined {
     const target = ref.value;
 
     if (target.external) {
-      diagnostics.push({
+      diagnostics.add({
         code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
         message: `Override "${override.pointer}" references external pointer "${target.uri.href}${target.pointer}" which is not yet supported.`,
         severity: 'error',
@@ -473,14 +474,11 @@ export class DocumentResolver {
       return undefined;
     }
 
-    const targetDiagnostics = new DiagnosticBag();
+    const targetDiagnostics = createDiagnosticCollector();
     const targetState = this.resolveInternal(target.pointer, targetDiagnostics, depth + 1);
-    const targetMessages = targetDiagnostics.toArray();
-    if (targetMessages.length > 0) {
-      diagnostics.push(...targetMessages);
-    }
+    diagnostics.addMany(targetDiagnostics.toArray());
     if (!targetState) {
-      diagnostics.push({
+      diagnostics.add({
         code: DiagnosticCodes.resolver.OVERRIDE_FAILED,
         message: `Override "${override.pointer}" could not resolve target "${target.pointer}".`,
         severity: 'error',
@@ -492,7 +490,7 @@ export class DocumentResolver {
 
     const type = base.type ?? targetState.type;
     if (base.type && targetState.type && base.type !== targetState.type) {
-      diagnostics.push({
+      diagnostics.add({
         code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
         message: `Override "${override.pointer}" expects type "${base.type}" but target "${target.pointer}" resolved to type "${targetState.type}".`,
         severity: 'error',
@@ -564,13 +562,13 @@ export class DocumentResolver {
   private resolveFallbackChain(
     chain: readonly GraphOverrideFallbackNode[],
     base: ResolutionState,
-    diagnostics: Diagnostic[],
+    diagnostics: DiagnosticCollector,
     depth: number,
     trace: ResolutionTraceStep[],
     resolutionDepth: number
   ): OverrideState | undefined {
     if (resolutionDepth > this.maxDepth) {
-      diagnostics.push({
+      diagnostics.add({
         code: DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED,
         message: `Resolution depth exceeded maximum of ${String(
           this.maxDepth
@@ -595,7 +593,7 @@ export class DocumentResolver {
       }
     }
 
-    diagnostics.push({
+    diagnostics.add({
       code: DiagnosticCodes.resolver.FALLBACK_EXHAUSTED,
       message: 'Override fallback chain exhausted without producing a value.',
       severity: 'error',
@@ -608,13 +606,13 @@ export class DocumentResolver {
   private resolveFallbackEntry(
     entry: GraphOverrideFallbackNode,
     base: ResolutionState,
-    diagnostics: Diagnostic[],
+    diagnostics: DiagnosticCollector,
     depth: number,
     trace: ResolutionTraceStep[],
     resolutionDepth: number
   ): OverrideState | undefined {
     if (resolutionDepth > this.maxDepth) {
-      diagnostics.push({
+      diagnostics.add({
         code: DiagnosticCodes.resolver.MAX_DEPTH_EXCEEDED,
         message: `Resolution depth exceeded maximum of ${String(
           this.maxDepth
@@ -631,7 +629,7 @@ export class DocumentResolver {
     if (entry.ref) {
       const target = entry.ref.value;
       if (target.external) {
-        diagnostics.push({
+        diagnostics.add({
           code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
           message: `Fallback entry "${entry.pointer}" references external pointer "${target.uri.href}${target.pointer}" which is not yet supported.`,
           severity: 'error',
@@ -639,20 +637,17 @@ export class DocumentResolver {
           span: entry.ref.span
         });
       } else {
-        const targetDiagnostics = new DiagnosticBag();
+        const targetDiagnostics = createDiagnosticCollector();
         const targetState = this.resolveInternal(
           target.pointer,
           targetDiagnostics,
           resolutionDepth + 1
         );
-        const targetMessages = targetDiagnostics.toArray();
-        if (targetMessages.length > 0) {
-          diagnostics.push(...targetMessages);
-        }
+        diagnostics.addMany(targetDiagnostics.toArray());
         if (targetState) {
           const type = base.type ?? targetState.type;
           if (base.type && targetState.type && base.type !== targetState.type) {
-            diagnostics.push({
+            diagnostics.add({
               code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
               message: `Fallback entry "${entry.pointer}" expects type "${base.type}" but target "${target.pointer}" resolved to type "${targetState.type}".`,
               severity: 'error',
@@ -733,7 +728,7 @@ export class DocumentResolver {
 
   private applyTransforms(
     token: ResolvedTokenImpl,
-    diagnostics: DiagnosticBag
+    diagnostics: DiagnosticCollector
   ): readonly ResolvedTokenTransformEvaluation[] {
     if (this.transforms.length === 0 || !this.document) {
       return EMPTY_TRANSFORM_EVALUATIONS;

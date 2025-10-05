@@ -1,5 +1,5 @@
-import type { Diagnostic } from '../types.js';
-import type { JsonPointer, RawDocument, SourceSpan } from '../types.js';
+import type { DecodedDocument, DiagnosticEvent } from '../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
 import type { ResolvedToken } from '../resolver/index.js';
 
 export interface ExtensionHandlerInput {
@@ -7,12 +7,12 @@ export interface ExtensionHandlerInput {
   readonly pointer: JsonPointer;
   readonly span?: SourceSpan;
   readonly value: unknown;
-  readonly document: RawDocument;
+  readonly document: DecodedDocument;
 }
 
 export interface ExtensionHandlerResult {
   readonly normalized?: unknown;
-  readonly diagnostics?: readonly Diagnostic[];
+  readonly diagnostics?: readonly DiagnosticEvent[];
 }
 
 export type ExtensionHandler = (input: ExtensionHandlerInput) => ExtensionHandlerResult | undefined;
@@ -24,16 +24,16 @@ export interface ExtensionEvaluation {
   readonly span?: SourceSpan;
   readonly value: unknown;
   readonly normalized?: unknown;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 export interface ResolvedTokenTransformContext {
-  readonly document: RawDocument;
+  readonly document: DecodedDocument;
 }
 
 export interface ResolvedTokenTransformResult {
   readonly data?: unknown;
-  readonly diagnostics?: readonly Diagnostic[];
+  readonly diagnostics?: readonly DiagnosticEvent[];
 }
 
 export type ResolvedTokenTransform = (
@@ -45,7 +45,7 @@ export interface ResolvedTokenTransformEvaluation {
   readonly plugin: string;
   readonly pointer: JsonPointer;
   readonly data?: unknown;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 export interface ParserPlugin {

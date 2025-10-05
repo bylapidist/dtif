@@ -1,16 +1,17 @@
 import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import type { AstField } from '../../ast/nodes.js';
-import type { Diagnostic, JsonPointer, SourceSpan } from '../../types.js';
+import type { DiagnosticEvent } from '../../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../../domain/primitives.js';
 import type { GraphReferenceTarget } from '../../graph/nodes.js';
-import type { DiagnosticBag } from '../../diagnostics/bag.js';
 import { EMPTY_DIAGNOSTICS, EMPTY_TRANSFORM_EVALUATIONS } from './constants.js';
 import type { ResolutionResult, ResolvedToken } from '../types.js';
 import type { ResolutionSource, ResolutionTraceStep } from '../types.js';
 import type { ResolvedTokenTransformEvaluation } from '../../plugins/index.js';
+import type { DiagnosticCollector } from './diagnostics.js';
 
 export function finalizeResolution(
   token: ResolvedToken | undefined,
-  diagnostics: DiagnosticBag,
+  diagnostics: DiagnosticCollector,
   transforms: readonly ResolvedTokenTransformEvaluation[] = EMPTY_TRANSFORM_EVALUATIONS
 ): ResolutionResult {
   const diagnosticArray = diagnostics.toArray();
@@ -21,7 +22,9 @@ export function finalizeResolution(
   };
 }
 
-export function freezeResultDiagnostics(list?: readonly Diagnostic[]): readonly Diagnostic[] {
+export function freezeResultDiagnostics(
+  list?: readonly DiagnosticEvent[]
+): readonly DiagnosticEvent[] {
   if (!list || list.length === 0) {
     return EMPTY_DIAGNOSTICS;
   }
@@ -32,14 +35,14 @@ export function createTransformFailureDiagnostic(
   plugin: string,
   pointer: JsonPointer,
   error: unknown
-): Diagnostic {
+): DiagnosticEvent {
   const message = error instanceof Error ? error.message : String(error);
   return {
     code: DiagnosticCodes.plugins.RESOLUTION_FAILED,
     message: `Plugin "${plugin}" failed to transform resolved token: ${message}`,
     severity: 'error',
     pointer
-  };
+  } satisfies DiagnosticEvent;
 }
 
 export function createTraceStep(
@@ -70,9 +73,9 @@ export function createTargetSource(
 }
 
 export function mergeDiagnostics(
-  first: readonly Diagnostic[] | undefined,
-  second: readonly Diagnostic[] | undefined
-): readonly Diagnostic[] {
+  first: readonly DiagnosticEvent[] | undefined,
+  second: readonly DiagnosticEvent[] | undefined
+): readonly DiagnosticEvent[] {
   const merged = [...(first ?? EMPTY_DIAGNOSTICS), ...(second ?? EMPTY_DIAGNOSTICS)];
   return merged.length === 0 ? EMPTY_DIAGNOSTICS : Object.freeze(merged);
 }

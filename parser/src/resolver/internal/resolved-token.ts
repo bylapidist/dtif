@@ -1,4 +1,5 @@
-import type { Diagnostic, JsonPointer } from '../../types.js';
+import type { DiagnosticEvent } from '../../domain/models.js';
+import type { JsonPointer } from '../../domain/primitives.js';
 import type {
   ResolutionSource,
   AppliedOverride,
@@ -14,7 +15,7 @@ export class ResolvedTokenImpl implements ResolvedToken {
   readonly value?: unknown;
   readonly source?: ResolutionSource;
   readonly overridesApplied: readonly AppliedOverride[];
-  readonly warnings: readonly Diagnostic[];
+  readonly warnings: readonly DiagnosticEvent[];
   readonly trace: readonly ResolutionTraceStep[];
 
   constructor(init: {
@@ -24,7 +25,7 @@ export class ResolvedTokenImpl implements ResolvedToken {
     value?: unknown;
     source?: ResolutionSource;
     overrides: readonly AppliedOverride[];
-    warnings: readonly Diagnostic[];
+    warnings: readonly DiagnosticEvent[];
     trace: readonly ResolutionTraceStep[];
   }) {
     this.pointer = init.pointer;

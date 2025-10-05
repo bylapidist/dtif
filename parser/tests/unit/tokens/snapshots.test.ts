@@ -3,7 +3,8 @@ import test from 'node:test';
 
 import { createSession } from '../../../src/session.js';
 import { createMetadataSnapshot, createResolutionSnapshot } from '../../../src/tokens/snapshots.js';
-import type { Diagnostic, ParseResult } from '../../../src/types.js';
+import type { Diagnostic } from '../../../src/types.js';
+import type { ParseDocumentResult } from '../../../src/session.js';
 
 const DOCUMENT = `
 $schema: https://dtif.lapidist.net/schema/core.json
@@ -25,16 +26,16 @@ aliases:
     $ref: "#/colors/primary"
 `;
 
-type ParsedDocumentResult = ParseResult & {
-  readonly document: NonNullable<ParseResult['document']>;
-  readonly graph: NonNullable<ParseResult['graph']>;
-  readonly resolver: NonNullable<ParseResult['resolver']>;
+type ParsedDocumentResult = ParseDocumentResult & {
+  readonly document: NonNullable<ParseDocumentResult['document']>;
+  readonly graph: NonNullable<ParseDocumentResult['graph']>;
+  readonly resolution: NonNullable<ParseDocumentResult['resolution']>;
 };
 
 async function parseDocument(): Promise<ParsedDocumentResult> {
   const session = createSession();
   const result = await session.parseDocument(DOCUMENT);
-  const { document, graph, resolver } = result;
+  const { document, graph, resolution } = result;
 
   if (!document) {
     assert.fail('expected document to be returned');
@@ -44,21 +45,21 @@ async function parseDocument(): Promise<ParsedDocumentResult> {
     assert.fail('expected graph to be returned');
   }
 
-  if (!resolver) {
-    assert.fail('expected resolver to be returned');
+  if (!resolution) {
+    assert.fail('expected resolution outcome to be returned');
   }
 
   return {
     ...result,
     document,
     graph,
-    resolver
+    resolution
   };
 }
 
 void test('createMetadataSnapshot normalises node metadata', async () => {
   const result = await parseDocument();
-  const metadata = createMetadataSnapshot(result.graph);
+  const metadata = createMetadataSnapshot(result.graph.graph);
 
   const primary = metadata.get('#/colors/primary');
   assert.ok(primary, 'expected metadata snapshot for primary token');
@@ -69,8 +70,8 @@ void test('createMetadataSnapshot normalises node metadata', async () => {
   const supersededBy = deprecated.supersededBy;
   assert.ok(supersededBy, 'expected deprecation metadata to include a superseding token');
   assert.equal(supersededBy.pointer, '#/aliases/brand');
-  assert.equal(supersededBy.uri, result.document.uri.href);
-  assert.equal(primary.source.uri, result.document.uri.href);
+  assert.equal(supersededBy.uri, result.document.identity.uri.href);
+  assert.equal(primary.source.uri, result.document.identity.uri.href);
   assert.ok(primary.source.line >= 1, 'expected source line to be recorded');
   assert.ok(primary.source.column >= 1, 'expected source column to be recorded');
 });
@@ -78,7 +79,7 @@ void test('createMetadataSnapshot normalises node metadata', async () => {
 void test('createResolutionSnapshot captures references and alias traces', async () => {
   const result = await parseDocument();
   const diagnostics: Diagnostic[] = [];
-  const snapshot = createResolutionSnapshot(result.graph, result.resolver, {
+  const snapshot = createResolutionSnapshot(result.graph.graph, result.resolution.result, {
     onDiagnostic: (diagnostic) => diagnostics.push(diagnostic)
   });
 

@@ -1,4 +1,4 @@
-import type { DocumentCache } from '../types.js';
+import type { DocumentCachePort } from '../domain/ports.js';
 import type { DocumentLoader } from '../io/document-loader.js';
 import type { SchemaGuard } from '../validation/schema-guard.js';
 import type { ParserPlugin } from '../plugins/index.js';
@@ -8,7 +8,7 @@ export type OverrideContext = ReadonlyMap<string, unknown> | Readonly<Record<str
 
 export interface ParseSessionOptions {
   readonly loader?: DocumentLoader;
-  readonly cache?: DocumentCache;
+  readonly documentCache?: DocumentCachePort;
   readonly allowHttp?: boolean;
   readonly maxDepth?: number;
   readonly overrideContext?: OverrideContext;

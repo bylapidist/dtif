@@ -1,68 +1,74 @@
 import { createHash } from 'node:crypto';
 
-import type { ResolvedParseSessionOptions } from '../session/internal/options.js';
 import type {
   DtifFlattenedToken,
   ResolvedTokenView,
-  TokenDiagnostic,
   TokenId,
   TokenMetadataSnapshot
 } from './types.js';
 import type { RawDocument } from '../types.js';
 import { hashJsonValue } from '../utils/hash-json.js';
+import type { TokenCachePort, TokenCacheKey as DomainTokenCacheKey } from '../domain/ports.js';
+import type { RawDocumentIdentity } from '../domain/models.js';
+import type { DiagnosticEvent } from '../domain/models.js';
 
-export interface ParseCacheKey {
-  readonly uri: string;
-  readonly variant: string;
-}
+export type TokenCacheKey = DomainTokenCacheKey;
 
-export interface CacheVariantOptions {
+export interface TokenCacheVariantOptions {
   readonly flatten: boolean;
   readonly includeGraphs: boolean;
 }
 
-export type CacheVariantOverrides = Partial<CacheVariantOptions>;
+export type TokenCacheVariantOverrides = Partial<TokenCacheVariantOptions>;
 
-export interface ParseCacheEntry {
+export interface TokenCacheSnapshot {
   readonly documentHash: string;
   readonly flattened?: readonly DtifFlattenedToken[];
   readonly metadataIndex?: ReadonlyMap<TokenId, TokenMetadataSnapshot>;
   readonly resolutionIndex?: ReadonlyMap<TokenId, ResolvedTokenView>;
-  readonly diagnostics?: readonly TokenDiagnostic[];
+  readonly diagnostics?: readonly DiagnosticEvent[];
   readonly timestamp: number;
 }
 
-export interface ParseCache {
-  get(key: ParseCacheKey): ParseCacheEntry | undefined | Promise<ParseCacheEntry | undefined>;
-  set(key: ParseCacheKey, value: ParseCacheEntry): void | Promise<void>;
+export interface TokenCacheConfiguration {
+  readonly resolutionDepth: number;
+  readonly overrideContext?: ReadonlyMap<string, unknown>;
+  readonly transformSignature?: string;
+  readonly variantSignature?: string;
 }
 
-export interface InMemoryParseCacheOptions {
+export type TokenCache = TokenCachePort<TokenCacheSnapshot>;
+
+export interface InMemoryTokenCacheOptions {
   readonly maxEntries?: number;
   readonly ttlMs?: number;
+  readonly defaultVariant?: string;
 }
 
 const DEFAULT_MAX_ENTRIES = 100;
-const DEFAULT_CACHE_VARIANT_OPTIONS: CacheVariantOptions = Object.freeze({
+const DEFAULT_CACHE_VARIANT_OPTIONS: TokenCacheVariantOptions = Object.freeze({
   flatten: true,
   includeGraphs: true
 });
+const DEFAULT_VARIANT = 'default';
 
-export class InMemoryParseCache implements ParseCache {
+export class InMemoryTokenCache implements TokenCache {
   readonly #maxEntries: number;
   readonly #ttlMs?: number;
   readonly #store = new Map<
     string,
-    { readonly entry: ParseCacheEntry; readonly createdAt: number }
+    { readonly entry: TokenCacheSnapshot; readonly createdAt: number }
   >();
+  readonly #defaultVariant: string;
 
-  constructor(options: InMemoryParseCacheOptions = {}) {
+  constructor(options: InMemoryTokenCacheOptions = {}) {
     this.#maxEntries = options.maxEntries ?? DEFAULT_MAX_ENTRIES;
     this.#ttlMs = options.ttlMs;
+    this.#defaultVariant = options.defaultVariant ?? DEFAULT_VARIANT;
   }
 
-  get(key: ParseCacheKey): ParseCacheEntry | undefined {
-    const id = serializeKey(key);
+  get(key: TokenCacheKey): TokenCacheSnapshot | undefined {
+    const id = serializeKey(key, this.#defaultVariant);
     const stored = this.#store.get(id);
     if (!stored) {
       return undefined;
@@ -79,8 +85,8 @@ export class InMemoryParseCache implements ParseCache {
     return stored.entry;
   }
 
-  set(key: ParseCacheKey, value: ParseCacheEntry): void {
-    const id = serializeKey(key);
+  set(key: TokenCacheKey, value: TokenCacheSnapshot): void {
+    const id = serializeKey(key, this.#defaultVariant);
     this.#store.delete(id);
     this.#store.set(id, { entry: value, createdAt: Date.now() });
     this.#evict();
@@ -102,8 +108,8 @@ export class InMemoryParseCache implements ParseCache {
   }
 }
 
-export function createParseCache(options?: InMemoryParseCacheOptions): InMemoryParseCache {
-  return new InMemoryParseCache(options);
+export function createTokenCache(options?: InMemoryTokenCacheOptions): InMemoryTokenCache {
+  return new InMemoryTokenCache(options);
 }
 
 export function computeDocumentHash(input: Uint8Array | RawDocument): string {
@@ -118,26 +124,23 @@ export function computeDocumentHash(input: Uint8Array | RawDocument): string {
   return createHash('sha256').update(input.bytes).digest('hex');
 }
 
-export function createCacheKey(
-  uri: string,
-  options: ResolvedParseSessionOptions,
-  variantOptions?: CacheVariantOverrides
-): ParseCacheKey {
+export function createTokenCacheVariant(
+  configuration: TokenCacheConfiguration,
+  variantOptions?: TokenCacheVariantOverrides
+): string {
   const resolvedVariantOptions = resolveVariantOptions(variantOptions);
-  return {
-    uri,
-    variant: createOptionsVariant(options, resolvedVariantOptions)
-  } satisfies ParseCacheKey;
+  return createOptionsVariant(configuration, resolvedVariantOptions);
 }
 
 function createOptionsVariant(
-  options: ResolvedParseSessionOptions,
-  variantOptions: CacheVariantOptions
+  configuration: TokenCacheConfiguration,
+  variantOptions: TokenCacheVariantOptions
 ): string {
   const payload = {
-    maxDepth: options.maxDepth,
-    context: normalizeContext(options.overrideContext),
-    plugins: normalizePlugins(options.plugins),
+    depth: configuration.resolutionDepth,
+    context: normalizeContext(configuration.overrideContext),
+    transforms: configuration.transformSignature,
+    variant: configuration.variantSignature,
     flatten: variantOptions.flatten,
     includeGraphs: variantOptions.includeGraphs
   } satisfies Record<string, unknown>;
@@ -145,10 +148,21 @@ function createOptionsVariant(
   return createHash('sha1').update(JSON.stringify(payload)).digest('hex');
 }
 
+export function createTokenCacheKey(
+  identity: RawDocumentIdentity,
+  configuration: TokenCacheConfiguration,
+  variantOptions?: TokenCacheVariantOverrides
+): TokenCacheKey {
+  return {
+    document: identity,
+    variant: createTokenCacheVariant(configuration, variantOptions)
+  } satisfies TokenCacheKey;
+}
+
 function normalizeContext(
-  context: ResolvedParseSessionOptions['overrideContext']
+  context: TokenCacheConfiguration['overrideContext']
 ): Record<string, unknown> | undefined {
-  if (context.size === 0) {
+  if (!context || context.size === 0) {
     return undefined;
   }
 
@@ -160,24 +174,16 @@ function normalizeContext(
   return normalized;
 }
 
-function normalizePlugins(
-  plugins: ResolvedParseSessionOptions['plugins']
-): readonly string[] | undefined {
-  if (!plugins) {
-    return undefined;
-  }
-
-  const transformCount = String(plugins.transforms.length);
-  return [`transforms:${transformCount}`];
-}
-
-function resolveVariantOptions(variantOptions?: CacheVariantOverrides): CacheVariantOptions {
+function resolveVariantOptions(
+  variantOptions?: TokenCacheVariantOverrides
+): TokenCacheVariantOptions {
   return {
     flatten: variantOptions?.flatten ?? DEFAULT_CACHE_VARIANT_OPTIONS.flatten,
     includeGraphs: variantOptions?.includeGraphs ?? DEFAULT_CACHE_VARIANT_OPTIONS.includeGraphs
   };
 }
 
-function serializeKey(key: ParseCacheKey): string {
-  return `${key.uri}::${key.variant}`;
+function serializeKey(key: TokenCacheKey, defaultVariant: string): string {
+  const variant = key.variant ?? defaultVariant;
+  return `${key.document.uri.href}::${variant}`;
 }

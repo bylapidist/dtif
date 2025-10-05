@@ -1,4 +1,5 @@
-import type { Diagnostic, JsonPointer, SourcePosition, SourceSpan } from '../types.js';
+import type { JsonPointer, SourcePosition, SourceSpan } from '../types.js';
+import type { DiagnosticEvent as Diagnostic } from '../domain/models.js';
 import type { ResolutionResult, ResolvedToken } from '../resolver/index.js';
 import type {
   DiagnosticsSummary,
@@ -48,13 +49,27 @@ export function serializeDiagnostic(diagnostic: Diagnostic): SerializableDiagnos
   };
 }
 
-export function createDiagnosticSummary(
-  bag: Iterable<Diagnostic> & { count(severity?: Diagnostic['severity']): number }
-): DiagnosticsSummary {
-  const error = bag.count('error');
-  const warning = bag.count('warning');
-  const info = bag.count('info');
-  const total = bag.count();
+export function createDiagnosticSummary(diagnostics: Iterable<Diagnostic>): DiagnosticsSummary {
+  let error = 0;
+  let warning = 0;
+  let info = 0;
+  let total = 0;
+
+  for (const diagnostic of diagnostics) {
+    total += 1;
+    switch (diagnostic.severity) {
+      case 'error':
+        error += 1;
+        break;
+      case 'warning':
+        warning += 1;
+        break;
+      case 'info':
+        info += 1;
+        break;
+    }
+  }
+
   return { total, error, warning, info };
 }
 

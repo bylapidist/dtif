@@ -2,12 +2,16 @@
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
-import { createSession } from '../session.js';
+import { createParseDocumentUseCase } from '../application/factory.js';
+import { createDocumentRequest } from '../application/requests.js';
+import { resolveOptions } from '../session/internal/options.js';
 import { parseArguments } from './args.js';
 import { gatherInputs } from './io.js';
 import { printPrettyOutput } from './output.js';
 import { createDiagnosticSummary, serializeDiagnostic, serializeResolution } from './serialize.js';
 import type { CliIo, CliOutput, CliRunOptions, ResolutionSummary } from './types.js';
+import type { ParseDocumentResult } from '../session.js';
+import type { DiagnosticEvent } from '../domain/models.js';
 
 const require = createRequire(import.meta.url);
 const PACKAGE_VERSION = getPackageVersion(require('../../package.json'));
@@ -79,21 +83,33 @@ export async function runCli(
     return 1;
   }
 
-  const session = createSession({
+  const resolvedOptions = resolveOptions({
     allowHttp: cliOptions.allowHttp,
     maxDepth: cliOptions.maxDepth,
     overrideContext: cliOptions.context
   });
 
-  const collection = await session.parseCollection(gatherResult.inputs);
+  const documentsUseCase = createParseDocumentUseCase(resolvedOptions);
+  const aggregatedDiagnostics: DiagnosticEvent[] = [];
+  const executions: DocumentExecution[] = [];
+  let exitCode = 0;
 
-  let exitCode = collection.diagnostics.hasErrors() ? 1 : 0;
+  for (const input of gatherResult.inputs) {
+    const request = createDocumentRequest(input);
+    const execution = await documentsUseCase.execute({ request });
+    const diagnostics = [...execution.diagnostics];
+    if (diagnostics.some((diagnostic) => diagnostic.severity === 'error')) {
+      exitCode = 1;
+    }
+    aggregatedDiagnostics.push(...diagnostics);
+    executions.push({ execution, diagnostics });
+  }
 
-  const documents: CliOutput['documents'] = collection.results.map((result) => {
-    const uri = result.document?.uri.href ?? null;
-    const diagnostics = result.diagnostics.toArray().map(serializeDiagnostic);
-    const diagnosticCounts = createDiagnosticSummary(result.diagnostics);
-    const resolver = result.resolver;
+  const documents: CliOutput['documents'] = executions.map(({ execution, diagnostics }) => {
+    const uri = execution.document?.identity.uri.href ?? null;
+    const diagnosticList = diagnostics.map(serializeDiagnostic);
+    const diagnosticCounts = createDiagnosticSummary(diagnostics);
+    const resolver = execution.resolution?.result;
     const resolverAvailable = Boolean(resolver);
     let resolutions: Record<string, ResolutionSummary> | undefined;
 
@@ -114,15 +130,18 @@ export async function runCli(
 
     return {
       uri,
-      diagnostics,
+      diagnostics: diagnosticList,
       diagnosticCounts,
       resolverAvailable,
       resolutions
     };
   });
 
-  const diagnostics = collection.diagnostics.toArray().map(serializeDiagnostic);
-  const summary = createDiagnosticSummary(collection.diagnostics);
+  const diagnostics = aggregatedDiagnostics.map(serializeDiagnostic);
+  const summary = createDiagnosticSummary(aggregatedDiagnostics);
+  if (summary.error > 0) {
+    exitCode = 1;
+  }
 
   const output: CliOutput = {
     documents,
@@ -137,6 +156,11 @@ export async function runCli(
   }
 
   return exitCode;
+}
+
+interface DocumentExecution {
+  readonly execution: ParseDocumentResult;
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 function formatUsage(): string {

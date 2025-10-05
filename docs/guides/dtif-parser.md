@@ -42,7 +42,8 @@ const session = createSession({
 
 const result = await session.parseDocument('/path/to/tokens.json');
 
-if (result.diagnostics.hasErrors()) {
+const hasErrors = result.diagnostics.some((diagnostic) => diagnostic.severity === 'error');
+if (hasErrors) {
   // Format diagnostics for display or CI output
 }
 
@@ -54,12 +55,13 @@ if (resolution?.token) {
 
 Parse sessions expose:
 
-- `document`: the decoded `RawDocument` including original text and source map.
-- `ast`: the normalised AST when schema validation succeeds.
+- `document`: the decoded `RawDocument` when ingestion succeeds.
+- `decoded`: the parsed `DecodedDocument` including JSON/YAML data and source map.
+- `normalized`: the normalised AST, available after schema validation succeeds.
 - `graph`: the constructed document graph for pointer lookups.
-- `resolver`: a `DocumentResolver` that evaluates aliases, overrides, and fallbacks.
-- `extensions`: plugin evaluation results.
-- `diagnostics`: a `DiagnosticBag` populated by all pipeline stages.
+- `resolution`: the `ResolutionOutcome` containing a `DocumentResolver` when the graph is available.
+- `diagnostics`: an ordered array of `DiagnosticEvent` values emitted by every pipeline stage.
+- `fromCache`: whether the document was served entirely from the configured cache.
 
 ### Token helpers {#quick-start-helpers}
 
@@ -97,6 +99,67 @@ const { flattened } = parseTokensSync({
 
 console.log(flattened[0]);
 ```
+
+### Example DTIF document {#example-dtif-document}
+
+The helpers above accept inline DTIF objects in addition to file paths. The following document is valid against the
+[core schema](https://dtif.lapidist.net/schema/core.json) and demonstrates a small hierarchy, metadata, and an alias:
+
+```json
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "color": {
+    "$description": "Brand palette",
+    "primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0.333, 1],
+        "hex": "#0055ff"
+      },
+      "$extensions": {
+        "com.acme.tokens": {
+          "usage": "surface"
+        }
+      }
+    },
+    "onPrimary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 1, 1],
+        "hex": "#ffffff"
+      }
+    },
+    "onPrimaryText": {
+      "$type": "color",
+      "$value": { "$ref": "#/color/onPrimary" }
+    }
+  },
+  "typography": {
+    "$description": "Body copy",
+    "base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
+```
+
+Supply this object directly to `parseTokensSync` or serialise it to disk and feed it through `parseTokens` to reuse caching and loader configuration.
 
 ## CLI usage {#cli}
 
@@ -141,13 +204,13 @@ The synchronous helper only accepts inline text or DTIF objects. It raises an er
   `metadataIndex`, and `resolutionIndex`.
 - `includeGraphs` (`boolean`, default `true`) – include `document`, `graph`, and `resolver` on the result. Disable when you
   only care about the flattened outputs.
-- `cache` (`ParseCache`) – stores flattened tokens, metadata, resolution snapshots, and diagnostics keyed by the document hash.
-  The bundled `InMemoryParseCache` offers an LRU eviction policy.
-- `documentCache` (`DocumentCache`) – shares decoded documents across sessions. Async-only: `parseTokensSync` throws if this is
-  provided.
-- `onDiagnostic` (`(diagnostic: TokenDiagnostic) => void`) – invoked for every diagnostic in severity order as soon as it is
+- `tokenCache` (`TokenCache`) – stores flattened tokens, metadata, resolution snapshots, and diagnostics keyed by the document
+  identity and variant signature. The bundled `InMemoryTokenCache` offers an LRU eviction policy.
+- `documentCache` (`DocumentCache`) – implementation of the domain cache port. It receives `RawDocumentIdentity` keys and
+  returns previously decoded documents. Async-only: `parseTokensSync` throws if this is provided.
+- `onDiagnostic` (`(diagnostic: domain.DiagnosticEvent) => void`) – invoked for every diagnostic in severity order as soon as it is
   produced, including cache hits.
-- `warn` (`(diagnostic: TokenDiagnostic) => void`) – called for non-fatal warnings. Use this to surface soft failures
+- `warn` (`(diagnostic: domain.DiagnosticEvent) => void`) – called for non-fatal warnings. Use this to surface soft failures
   immediately while still receiving a complete result.
 - `...ParseSessionOptions` – any session option (`loader`, `schemaGuard`, `plugins`, etc.) is forwarded to `createSession`.
 
@@ -157,17 +220,18 @@ Both helpers return the same structure:
 
 ```ts
 interface ParseTokensResult {
-  document?: RawDocument;
+  document?: domain.RawDocument;
   graph?: DocumentGraph;
   resolver?: DocumentResolver;
   flattened: readonly DtifFlattenedToken[];
   metadataIndex: ReadonlyMap<TokenId, TokenMetadataSnapshot>;
   resolutionIndex: ReadonlyMap<TokenId, ResolvedTokenView>;
-  diagnostics: readonly TokenDiagnostic[];
+  diagnostics: readonly domain.DiagnosticEvent[];
 }
 ```
 
-- `document`, `graph`, and `resolver` are only present when `includeGraphs` is `true` and the document parsed successfully.
+- `document`, `graph`, and `resolver` are only present when `includeGraphs` is `true` and the document parsed successfully. The
+  document is the domain-level raw document (`domain.RawDocument`) with identity metadata, decoded text, and JSON data.
 - `flattened` provides ready-to-render values, aliases, and references.
 - `metadataIndex` exposes per-token metadata for descriptions, extensions, and deprecation details.
 - `resolutionIndex` mirrors the resolver cache so you can inspect resolution paths, applied overrides, and reference chains.
@@ -207,21 +271,20 @@ are cloned to plain JSON and contain:
 
 ## Diagnostics {#diagnostics}
 
-The parser never throws for document issues. Instead, each stage records diagnostics in a `DiagnosticBag`. Use `result.diagnostics.toArray()`
-for raw access or the helper methods `hasErrors()`, `count()`, and `filter()` to categorise messages. CLI output mirrors this
+The parser never throws for document issues. Instead, each stage records diagnostics as structured events. The token helpers return
+an array of domain `DiagnosticEvent` objects ordered by severity, allowing you to iterate and surface messages immediately. CLI output mirrors this
 information.
 
-All diagnostics emitted by the loader, schema guard, normaliser, and resolver are normalised via `toTokenDiagnostic`. The
-`TokenDiagnostic` interface is compatible with Language Server Protocol conventions and includes related information with
-URI-anchored ranges. Format diagnostics for terminal output or logging with `formatTokenDiagnostic`:
+All diagnostics emitted by the loader, schema guard, normaliser, and resolver surface as domain events with stable codes, optional pointers, and spans.
+Format diagnostics for terminal output or logging with `formatDiagnostic`:
 
 ```ts
-import { parseTokens, formatTokenDiagnostic } from '@lapidist/dtif-parser';
+import { parseTokens, formatDiagnostic } from '@lapidist/dtif-parser';
 
 const { diagnostics } = await parseTokens('tokens/base.tokens.json');
 
 for (const diagnostic of diagnostics) {
-  console.log(formatTokenDiagnostic(diagnostic, { color: process.stdout.isTTY }));
+  console.log(formatDiagnostic(diagnostic, { color: process.stdout.isTTY }));
 }
 ```
 
@@ -230,29 +293,30 @@ Cached results re-emit the saved warnings before returning.
 
 ## Working with caches {#caching}
 
-The default behaviour performs no caching. Provide a cache to speed up repeated parses:
+The default behaviour performs no caching. Provide a document cache to speed up repeated parses:
 
 ```ts
 import { createSession, InMemoryDocumentCache } from '@lapidist/dtif-parser';
 
 const cache = new InMemoryDocumentCache({ maxAgeMs: 60_000, maxEntries: 100 });
-const session = createSession({ cache });
+const session = createSession({ documentCache: cache });
 ```
 
 Caches receive decoded documents and are responsible for TTL (`maxAgeMs`) and eviction policies. The parser validates cached
-bytes before reuse to avoid stale results.
+bytes before reuse to avoid stale results. Implementations receive the full `RawDocumentIdentity`, so `get`, `set`, and
+`delete` should use the identity rather than bare URLs.
 
 The token helpers separate document caching from flattened artefact caching:
 
 ```ts
-import { parseTokens, InMemoryParseCache } from '@lapidist/dtif-parser';
+import { parseTokens, InMemoryTokenCache } from '@lapidist/dtif-parser';
 
-const cache = new InMemoryParseCache({ maxEntries: 50 });
-await parseTokens('tokens/base.tokens.json', { cache }); // parses and caches
-await parseTokens('tokens/base.tokens.json', { cache }); // served from cache
+const cache = new InMemoryTokenCache({ maxEntries: 50 });
+await parseTokens('tokens/base.tokens.json', { tokenCache: cache }); // parses and caches
+await parseTokens('tokens/base.tokens.json', { tokenCache: cache }); // served from cache
 ```
 
-`createParseCache` exports the same implementation with configuration defaults. Provide your own cache by implementing `get`
+`createTokenCache` exports the same implementation with configuration defaults. Provide your own cache by implementing `get`
 and `set` if you need persistence or shared storage.
 
 ## Loader configuration {#loader}
@@ -329,6 +393,7 @@ session result.
 The Node adapter wraps the helper in filesystem-friendly ergonomics:
 
 ```ts
+import { formatDiagnostic } from '@lapidist/dtif-parser';
 import { parseTokensFromFile } from '@lapidist/dtif-parser/adapters/node';
 
 try {
@@ -340,14 +405,14 @@ try {
 } catch (error) {
   if (error instanceof DtifTokenParseError) {
     for (const diagnostic of error.diagnostics) {
-      console.error(formatTokenDiagnostic(diagnostic));
+      console.error(formatDiagnostic(diagnostic));
     }
   }
 }
 ```
 
 - Validates file extensions against the `.tokens.json` convention.
-- Normalises diagnostics to `TokenDiagnostic` values and exposes them on `DtifTokenParseError`.
+- Normalises diagnostics to domain `DiagnosticEvent` values and exposes them on `DtifTokenParseError`.
 - Populates the same flattened token and snapshot structures returned by `parseTokens`.
 - Provides `readTokensFile` when you only need the decoded DTIF document.
 
@@ -373,7 +438,7 @@ The package exposes all user-facing APIs from the main index module:
 1. Use the configured document loader to convert caller input into a `DocumentHandle`, surfacing loader diagnostics on failure.
 2. Resolve cached `RawDocument` instances before decoding handles via `decodeDocument`, again collecting diagnostics when decoding fails.
 3. Validate the JSON schema through `SchemaGuard`, returning early when the document is invalid while still exposing decoded bytes to the caller.
-4. Normalise the AST and build the directed token graph, feeding diagnostics back into the shared `DiagnosticBag`.
+4. Normalise the AST and build the directed token graph, appending diagnostics to the aggregated `DiagnosticEvent` list that the session returns.
 5. Instantiate a `DocumentResolver` that supports alias resolution, overrides, and plugin transforms whenever a graph is available.
 
 The `parseTokens` helper reuses these seams so it can share infrastructure with existing session workflows while layering flattened
@@ -393,13 +458,15 @@ Supporting modules wire the AST into usable graph and resolver structures:
 
 Diagnostic primitives keep feedback consistent across the loader, normaliser, and resolver:
 
-- [`src/diagnostics/bag.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/diagnostics/bag.ts) collects parser, loader, and resolver
-  diagnostics in a stable insertion order while offering convenience helpers such as `hasErrors` and severity counters.
+- [`src/diagnostics/format.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/diagnostics/format.ts) formats `DiagnosticEvent`
+  instances for terminal output while respecting working-directory-relative spans and optional colourisation.
+- [`src/cli/serialize.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/cli/serialize.ts) converts aggregated diagnostics into
+  JSON-friendly structures and severity summaries for the CLI entry points.
 - [`src/diagnostics/codes.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/diagnostics/codes.ts) and
   [`src/diagnostics/severity.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/diagnostics/severity.ts) define the severity taxonomy
-  and stable diagnostic codes that map onto the `TokenDiagnostic` shape.
+  and stable diagnostic codes that map onto the domain `DiagnosticEvent` shape.
 - [`src/types.ts`](https://github.com/bylapidist/dtif/blob/main/parser/src/types.ts) centralises shared type definitions including `ParseInput`,
-  `ParseResult`, `DocumentGraph`, and the diagnostic model.
+  `DocumentGraph`, and the diagnostic model.
 
 ### Testing conventions {#testing-conventions}
 

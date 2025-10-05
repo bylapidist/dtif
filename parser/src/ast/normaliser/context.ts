@@ -1,36 +1,37 @@
 import type { ExtensionCollector, ExtensionEvaluation } from '../../plugins/index.js';
-import type { Diagnostic, JsonPointer, RawDocument, SourceSpan } from '../../types.js';
+import type { DecodedDocument, DiagnosticEvent } from '../../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../../domain/primitives.js';
 import type { DocumentAst } from '../nodes.js';
 
 export interface NormaliserOptions {
   readonly extensions?: {
     createExtensionCollector(
-      document: RawDocument,
-      diagnostics: Diagnostic[]
+      document: DecodedDocument,
+      diagnostics: DiagnosticEvent[]
     ): ExtensionCollector | undefined;
   };
 }
 
 export interface NormaliserContext {
-  readonly document: RawDocument;
-  readonly diagnostics: Diagnostic[];
+  readonly document: DecodedDocument;
+  readonly diagnostics: DiagnosticEvent[];
   readonly extensions?: ExtensionCollector;
 }
 
 export interface NormaliserResult {
   readonly ast?: DocumentAst;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
   readonly extensions: readonly ExtensionEvaluation[];
 }
 
-const EMPTY_DIAGNOSTICS: readonly Diagnostic[] = Object.freeze([]);
+const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
 const EMPTY_EXTENSION_RESULTS: readonly ExtensionEvaluation[] = Object.freeze([]);
 
 export function createNormaliserContext(
-  document: RawDocument,
+  document: DecodedDocument,
   options: NormaliserOptions
 ): NormaliserContext {
-  const diagnostics: Diagnostic[] = [];
+  const diagnostics: DiagnosticEvent[] = [];
   const extensions = options.extensions?.createExtensionCollector(document, diagnostics);
 
   return {
@@ -61,5 +62,5 @@ export function getSourceSpan(
   context: NormaliserContext,
   pointer: JsonPointer
 ): SourceSpan | undefined {
-  return context.document.sourceMap.pointers.get(pointer);
+  return context.document.sourceMap?.pointers.get(pointer);
 }

@@ -2,12 +2,12 @@ import { DefaultDocumentLoader } from '../../io/document-loader.js';
 import { SchemaGuard } from '../../validation/schema-guard.js';
 import { PluginRegistry } from '../../plugins/index.js';
 import type { DocumentLoader } from '../../io/document-loader.js';
-import type { DocumentCache } from '../../types.js';
+import type { DocumentCachePort } from '../../domain/ports.js';
 import type { OverrideContext, ParseSessionOptions } from '../types.js';
 
 export interface ResolvedParseSessionOptions {
   readonly loader: DocumentLoader;
-  readonly cache?: DocumentCache;
+  readonly documentCache?: DocumentCachePort;
   readonly allowHttp: boolean;
   readonly maxDepth: number;
   readonly overrideContext: ReadonlyMap<string, unknown>;
@@ -27,7 +27,7 @@ export function resolveOptions(options: ParseSessionOptions = {}): ResolvedParse
 
   return {
     loader: options.loader ?? new DefaultDocumentLoader({ allowHttp }),
-    cache: options.cache,
+    documentCache: options.documentCache,
     allowHttp,
     maxDepth: options.maxDepth ?? DEFAULT_MAX_DEPTH,
     overrideContext: normalizeOverrideContext(options.overrideContext),

@@ -1,6 +1,6 @@
 import type { DocumentGraph } from '../graph/nodes.js';
 import type { DocumentResolver } from '../resolver/index.js';
-import type { Diagnostic } from '../types.js';
+import type { DiagnosticEvent } from '../domain/models.js';
 import { dedupePointers, toPlainJson } from './internal/utils.js';
 import { getBaseType, getBaseValue, getTokenId, iterateTokenNodes } from './internal/graph.js';
 import { normalizeJsonPointer } from '../utils/json-pointer.js';
@@ -33,7 +33,7 @@ export function createMetadataSnapshot(graph: DocumentGraph): Map<TokenId, Token
 export function createResolutionSnapshot(
   graph: DocumentGraph,
   resolver: DocumentResolver,
-  options: { onDiagnostic?: (diagnostic: Diagnostic) => void } = {}
+  options: { onDiagnostic?: (diagnostic: DiagnosticEvent) => void } = {}
 ): Map<TokenId, ResolvedTokenView> {
   const entries = new Map<TokenId, ResolvedTokenView>();
   const documentUri = graph.uri.href;

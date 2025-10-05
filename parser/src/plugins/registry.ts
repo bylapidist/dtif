@@ -1,5 +1,6 @@
 import { DiagnosticCodes } from '../diagnostics/codes.js';
-import type { Diagnostic, JsonPointer, RawDocument, SourceSpan } from '../types.js';
+import type { DecodedDocument, DiagnosticEvent } from '../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
 import type {
   ExtensionEvaluation,
   ExtensionHandler,
@@ -8,7 +9,7 @@ import type {
   ResolvedTokenTransformEntry
 } from './types.js';
 
-const EMPTY_DIAGNOSTICS: readonly Diagnostic[] = Object.freeze([]);
+const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
 const EMPTY_EXTENSION_EVALUATIONS: readonly ExtensionEvaluation[] = Object.freeze([]);
 const EMPTY_TRANSFORM_ENTRIES: readonly ResolvedTokenTransformEntry[] = Object.freeze([]);
 
@@ -37,8 +38,8 @@ class ExtensionCollectorImpl implements ExtensionCollector {
 
   constructor(
     private readonly handlers: ExtensionHandlerMap,
-    private readonly document: RawDocument,
-    private readonly diagnostics: Diagnostic[]
+    private readonly document: DecodedDocument,
+    private readonly diagnostics: DiagnosticEvent[]
   ) {}
 
   handle(invocation: ExtensionInvocation): void {
@@ -88,7 +89,7 @@ class ExtensionCollectorImpl implements ExtensionCollector {
 
 function createExtensionHandlerInput(
   invocation: ExtensionInvocation,
-  document: RawDocument
+  document: DecodedDocument
 ): ExtensionHandlerInput {
   return {
     namespace: invocation.namespace,
@@ -103,7 +104,7 @@ function createExtensionFailureDiagnostic(
   invocation: ExtensionInvocation,
   plugin: string,
   error: unknown
-): Diagnostic {
+): DiagnosticEvent {
   const message = error instanceof Error ? error.message : String(error);
   return {
     code: DiagnosticCodes.plugins.EXTENSION_FAILED,
@@ -111,10 +112,10 @@ function createExtensionFailureDiagnostic(
     severity: 'error',
     pointer: invocation.pointer,
     span: invocation.span
-  };
+  } satisfies DiagnosticEvent;
 }
 
-function freezeDiagnostics(list?: readonly Diagnostic[]): readonly Diagnostic[] {
+function freezeDiagnostics(list?: readonly DiagnosticEvent[]): readonly DiagnosticEvent[] {
   if (!list || list.length === 0) {
     return EMPTY_DIAGNOSTICS;
   }
@@ -177,8 +178,8 @@ export class PluginRegistry {
   }
 
   createExtensionCollector(
-    document: RawDocument,
-    diagnostics: Diagnostic[]
+    document: DecodedDocument,
+    diagnostics: DiagnosticEvent[]
   ): ExtensionCollector | undefined {
     if (this.#handlers.size === 0) {
       return undefined;

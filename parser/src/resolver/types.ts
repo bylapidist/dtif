@@ -1,4 +1,5 @@
-import type { Diagnostic, JsonPointer, RawDocument, SourceSpan } from '../types.js';
+import type { DecodedDocument, DiagnosticEvent } from '../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
 import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
@@ -8,7 +9,7 @@ import type { GraphOverrideNode } from '../graph/nodes.js';
 export interface DocumentResolverOptions {
   readonly context?: ReadonlyMap<string, unknown> | Readonly<Record<string, unknown>>;
   readonly maxDepth?: number;
-  readonly document?: RawDocument;
+  readonly document?: DecodedDocument;
   readonly transforms?: readonly ResolvedTokenTransformEntry[];
 }
 
@@ -47,20 +48,20 @@ export interface ResolvedToken {
   readonly value?: unknown;
   readonly source?: ResolutionSource;
   readonly overridesApplied: readonly AppliedOverride[];
-  readonly warnings: readonly Diagnostic[];
+  readonly warnings: readonly DiagnosticEvent[];
   readonly trace: readonly ResolutionTraceStep[];
   toJSON(): unknown;
 }
 
 export interface ResolutionResult {
   readonly token?: ResolvedToken;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
   readonly transforms: readonly ResolvedTokenTransformEvaluation[];
 }
 
 export interface ResolverContextOptions {
   readonly overrides: ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>;
   readonly maxDepth: number;
-  readonly document?: RawDocument;
+  readonly document?: DecodedDocument;
   readonly transforms: readonly ResolvedTokenTransformEntry[];
 }

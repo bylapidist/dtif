@@ -2,25 +2,26 @@ import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
 import { parseTokens } from '../../tokens/parse-tokens.js';
 import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/parse-tokens.js';
-import { formatTokenDiagnostic } from '../../tokens/diagnostics.js';
-import type { FormatTokenDiagnosticOptions, TokenDiagnostic } from '../../tokens/types.js';
+import { formatDiagnostic } from '../../diagnostics/format.js';
+import type { FormatDiagnosticOptions } from '../../diagnostics/format.js';
+import type { DiagnosticEvent } from '../../domain/models.js';
 
 const SUPPORTED_EXTENSIONS = ['.tokens', '.tokens.json', '.tokens.yaml', '.tokens.yml'];
 
 export interface NodeParseTokensOptions extends ParseTokensOptions {
   readonly onWarn?: (message: string) => void;
-  readonly diagnosticFormat?: FormatTokenDiagnosticOptions;
+  readonly diagnosticFormat?: FormatDiagnosticOptions;
 }
 
 export class DtifTokenParseError extends Error {
-  readonly diagnostics: readonly TokenDiagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
   readonly source: string;
-  readonly formatOptions?: FormatTokenDiagnosticOptions;
+  readonly formatOptions?: FormatDiagnosticOptions;
 
   constructor(
     source: string | URL,
-    diagnostics: readonly TokenDiagnostic[],
-    formatOptions?: FormatTokenDiagnosticOptions
+    diagnostics: readonly DiagnosticEvent[],
+    formatOptions?: FormatDiagnosticOptions
   ) {
     const sourceText = toSourceString(source);
     super(createDtifErrorMessage(sourceText, diagnostics, formatOptions));
@@ -30,7 +31,7 @@ export class DtifTokenParseError extends Error {
     this.formatOptions = formatOptions;
   }
 
-  format(options?: FormatTokenDiagnosticOptions): string {
+  format(options?: FormatDiagnosticOptions): string {
     return createDtifErrorMessage(this.source, this.diagnostics, options ?? this.formatOptions);
   }
 }
@@ -59,7 +60,7 @@ export async function readTokensFile(
     throw new Error(`DTIF parser did not return a document for ${toSourceString(filePath)}`);
   }
   const data = document.data;
-  assertIsDesignTokenDocument(data, document.uri.href);
+  assertIsDesignTokenDocument(data, document.identity.uri.href);
   return data;
 }
 
@@ -75,7 +76,7 @@ function toParseTokensOptions(options: NodeParseTokensOptions): ParseTokensOptio
       if (diagnostic.severity === 'error') {
         return;
       }
-      onWarn(formatTokenDiagnostic(diagnostic, diagnosticFormat));
+      onWarn(formatDiagnostic(diagnostic, diagnosticFormat));
       originalWarn?.(diagnostic);
     }
   } satisfies ParseTokensOptions;
@@ -90,13 +91,11 @@ function assertSupportedFile(filePath: string | URL): void {
 
 function createDtifErrorMessage(
   source: string,
-  diagnostics: readonly TokenDiagnostic[],
-  formatOptions?: FormatTokenDiagnosticOptions
+  diagnostics: readonly DiagnosticEvent[],
+  formatOptions?: FormatDiagnosticOptions
 ): string {
   const header = `Failed to parse DTIF document: ${source}`;
-  const formatted = diagnostics.map((diagnostic) =>
-    formatTokenDiagnostic(diagnostic, formatOptions)
-  );
+  const formatted = diagnostics.map((diagnostic) => formatDiagnostic(diagnostic, formatOptions));
   return [header, ...formatted.map((line) => `  - ${line}`)].join('\n');
 }
 

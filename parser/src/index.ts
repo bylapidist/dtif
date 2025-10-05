@@ -1,3 +1,7 @@
+export * as domain from './domain/index.js';
+export * as domainAdapters from './adapters/domain/index.js';
+export * as application from './application/index.js';
+
 export { normalizeDocument } from './ast/normaliser.js';
 export type { NormaliserResult, NormaliserOptions } from './ast/normaliser.js';
 export type {
@@ -41,7 +45,6 @@ export type {
   GraphOverrideFallbackNode
 } from './graph/nodes.js';
 
-export { DiagnosticBag } from './diagnostics/bag.js';
 export {
   DiagnosticCodes,
   DiagnosticDomain,
@@ -80,11 +83,9 @@ export type {
   DocumentGraph,
   DocumentHandle,
   JsonPointer,
-  ParseCollectionResult,
   ParseInput,
   ParseInputRecord,
   ParseDataInputRecord,
-  ParseResult,
   RawDocument,
   RelatedInformation,
   SourceMap,
@@ -92,6 +93,8 @@ export type {
   SourceSpan
 } from './types.js';
 export type { DiagnosticSeverity, DiagnosticCode } from './types.js';
+
+export type { ParseDocumentResult, ParseCollectionResult } from './session.js';
 
 export {
   JSON_POINTER_ROOT,
@@ -138,11 +141,8 @@ export type {
   ResolvedTokenTransformEvaluation
 } from './plugins/index.js';
 
-export { toTokenDiagnostic, formatTokenDiagnostic } from './tokens/diagnostics.js';
+export { formatDiagnostic } from './diagnostics/format.js';
 export type {
-  FormatTokenDiagnosticOptions,
-  TokenDiagnostic,
-  TokenDiagnosticContext,
   TokenId,
   TokenPointer,
   TokenMetadataSnapshot,
@@ -151,6 +151,7 @@ export type {
   JsonValue,
   DtifFlattenedToken
 } from './tokens/types.js';
+export type { FormatDiagnosticOptions } from './diagnostics/format.js';
 export { parseTokens, parseTokensSync } from './tokens/parse-tokens.js';
 export type {
   ParseTokensInput,
@@ -159,12 +160,14 @@ export type {
 } from './tokens/parse-tokens.js';
 export { createMetadataSnapshot, createResolutionSnapshot } from './tokens/snapshots.js';
 export { flattenTokens } from './tokens/flatten.js';
-export { InMemoryParseCache, createParseCache } from './tokens/cache.js';
+export { InMemoryTokenCache, createTokenCache } from './tokens/cache.js';
 export type {
-  ParseCache,
-  ParseCacheEntry,
-  ParseCacheKey,
-  InMemoryParseCacheOptions
+  TokenCache,
+  TokenCacheSnapshot,
+  TokenCacheKey,
+  TokenCacheConfiguration,
+  TokenCacheVariantOverrides,
+  InMemoryTokenCacheOptions
 } from './tokens/cache.js';
 export {
   parseTokensFromFile,
