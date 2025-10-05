@@ -100,6 +100,59 @@ const { flattened } = parseTokensSync({
 console.log(flattened[0]);
 ```
 
+### Example DTIF document {#example-dtif-document}
+
+The helpers above accept inline DTIF objects in addition to file paths. The following document is valid against the
+[core schema](https://dtif.lapidist.net/schema/core.json) and demonstrates a small hierarchy, metadata, and an alias:
+
+```json
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.1.0",
+  "color": {
+    "$description": "Brand palette",
+    "primary": {
+      "$type": "color",
+      "$value": "#0055ff",
+      "$extensions": {
+        "com.acme.tokens": {
+          "usage": "surface"
+        }
+      }
+    },
+    "onPrimary": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "onPrimaryText": {
+      "$type": "color",
+      "$value": { "$ref": "#/color/onPrimary" }
+    }
+  },
+  "typography": {
+    "$description": "Body copy",
+    "base": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": {
+          "dimensionType": "length",
+          "value": 16,
+          "unit": "px"
+        },
+        "lineHeight": {
+          "dimensionType": "length",
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
+```
+
+Supply this object directly to `parseTokensSync` or serialise it to disk and feed it through `parseTokens` to reuse caching and loader configuration.
+
 ## CLI usage {#cli}
 
 The CLI wraps the same session pipeline and is useful for quick inspections:
