@@ -11,8 +11,9 @@ See [`elevation.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
 
 ## Sample tokens {#elevation-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "elevation": {
     "surface-android": {
       "$type": "elevation",

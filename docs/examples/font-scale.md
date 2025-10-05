@@ -11,8 +11,9 @@ See [`font-scale.tokens.json`](https://github.com/bylapidist/dtif/blob/main/exam
 
 ## Sample tokens {#font-scale-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "spacing": {
     "fixed": {
       "$type": "dimension",

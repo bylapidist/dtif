@@ -11,8 +11,9 @@ See [`typography-grammars.tokens.json`](https://github.com/bylapidist/dtif/blob/
 
 ## Sample tokens {#typography-grammars-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "cssGrammar": {
       "$type": "typography",

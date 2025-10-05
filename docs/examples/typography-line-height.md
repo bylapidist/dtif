@@ -11,8 +11,9 @@ See [`typography-line-height.tokens.json`](https://github.com/bylapidist/dtif/bl
 
 ## Sample tokens {#typography-line-height-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "absolutePx": {
       "$type": "typography",

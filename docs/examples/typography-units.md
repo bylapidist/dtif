@@ -11,8 +11,9 @@ See [`typography-units.tokens.json`](https://github.com/bylapidist/dtif/blob/mai
 
 ## Sample tokens {#typography-units-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "ch": {
       "$type": "typography",

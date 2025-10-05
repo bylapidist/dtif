@@ -11,8 +11,9 @@ See [`motion.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
 
 ## Sample tokens {#motion-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "android-elevation": {
     "$type": "motion",
     "$value": {

@@ -15,6 +15,7 @@
     "lint": "markdownlint \"**/*.md\" --ignore \"**/node_modules/**\"",
     "lint:fix": "markdownlint --fix \"**/*.md\" --ignore \"**/node_modules/**\"",
     "lint:ts": "eslint .",
+    "validate:dtif": "node scripts/validate-markdown-dtif.mjs",
     "build": "npm run build:packages",
     "build:packages": "node scripts/build-packages.mjs",
     "docs:dev": "vitepress dev docs",

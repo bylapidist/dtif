@@ -38,21 +38,26 @@ ratios or user preference qualifiers (for example `prefers-reduced-motion`).
 Tools _SHOULD_ use these hints to enforce inclusive design while
 continuing to honour the underlying token semantics.
 
-```json
+```json dtif
 {
-  "link-color": {
-    "$type": "color",
-    "$value": { "colorSpace": "srgb", "components": [0, 0, 1] },
-    "$extensions": { "org.example.a11y": { "wcagContrast": 4.5 } }
+  "$version": "1.0.0",
+  "color": {
+    "link": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0, 0, 1] },
+      "$extensions": { "org.example.a11y": { "wcagContrast": 4.5 } }
+    }
   },
-  "fade-duration": {
-    "$type": "duration",
-    "$value": {
-      "durationType": "css.transition-duration",
-      "value": 200,
-      "unit": "ms"
-    },
-    "$extensions": { "org.example.a11y": { "prefers-reduced-motion": true } }
+  "duration": {
+    "fade": {
+      "$type": "duration",
+      "$value": {
+        "durationType": "css.transition-duration",
+        "value": 200,
+        "unit": "ms"
+      },
+      "$extensions": { "org.example.a11y": { "prefers-reduced-motion": true } }
+    }
   }
 }
 ```
@@ -63,11 +68,16 @@ Extensions _MAY_ attach intent descriptors to tokens (for example
 `primary action` or `neutral surface`) so that automation and
 machine-learning systems can reason about design intent.
 
-```json
+```json dtif
 {
-  "$type": "color",
-  "$value": { "colorSpace": "srgb", "components": [0, 0.5, 1] },
-  "$extensions": { "org.example.ai": { "intent": "primary action" } }
+  "$version": "1.0.0",
+  "color": {
+    "action": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0, 0.5, 1] },
+      "$extensions": { "org.example.ai": { "intent": "primary action" } }
+    }
+  }
 }
 ```
 

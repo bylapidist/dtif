@@ -11,8 +11,9 @@ See [`typography-base.tokens.json`](https://github.com/bylapidist/dtif/blob/main
 
 ## Sample tokens {#typography-base-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "body": {
       "$type": "typography",

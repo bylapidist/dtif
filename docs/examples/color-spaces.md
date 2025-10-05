@@ -11,8 +11,9 @@ See [`color-spaces.tokens.json`](https://github.com/bylapidist/dtif/blob/main/ex
 
 ## Sample tokens {#color-spaces-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "color": {
     "accent": {
       "$type": "color",

@@ -11,8 +11,9 @@ See [`filter.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
 
 ## Sample tokens {#filter-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "filter": {
     "focus-css": {
       "$type": "filter",

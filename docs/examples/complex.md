@@ -11,10 +11,10 @@ See [`complex.tokens.json`](https://github.com/bylapidist/dtif/blob/main/example
 
 ## Sample tokens {#complex-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "button": {
-    "$type": "color",
     "$extensions": {
       "com.example": {
         "platform": "ios"

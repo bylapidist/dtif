@@ -37,7 +37,7 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 
 ## Quick example
 
-```jsonc
+```json dtif
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "$version": "1.0.0",

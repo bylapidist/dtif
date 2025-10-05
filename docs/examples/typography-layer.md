@@ -11,8 +11,9 @@ See [`typography-layer.tokens.json`](https://github.com/bylapidist/dtif/blob/mai
 
 ## Sample tokens {#typography-layer-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "body": {
       "$value": {

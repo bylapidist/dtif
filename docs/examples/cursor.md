@@ -11,8 +11,9 @@ See [`cursor.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
 
 ## Sample tokens {#cursor-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "cursor": {
     "link": {
       "$type": "cursor",
