@@ -108,12 +108,16 @@ The helpers above accept inline DTIF objects in addition to file paths. The foll
 ```json
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
-  "$version": "1.1.0",
+  "$version": "1.0.0",
   "color": {
     "$description": "Brand palette",
     "primary": {
       "$type": "color",
-      "$value": "#0055ff",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0.333, 1],
+        "hex": "#0055ff"
+      },
       "$extensions": {
         "com.acme.tokens": {
           "usage": "surface"
@@ -122,7 +126,11 @@ The helpers above accept inline DTIF objects in addition to file paths. The foll
     },
     "onPrimary": {
       "$type": "color",
-      "$value": "#ffffff"
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [1, 1, 1],
+        "hex": "#ffffff"
+      }
     },
     "onPrimaryText": {
       "$type": "color",
