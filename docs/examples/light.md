@@ -11,12 +11,12 @@ See [`light.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples/
 
 ## Sample tokens {#light-sample}
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
-    "$type": "color",
     "brand": {
+      "$type": "color",
       "$value": {
         "colorSpace": "srgb",
         "components": [1, 0.2, 0.2]

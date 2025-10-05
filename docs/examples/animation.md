@@ -11,8 +11,9 @@ See [`animation.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
 
 ## Sample tokens {#animation-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "duration": {
     "entry": {
       "$type": "duration",

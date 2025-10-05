@@ -36,6 +36,9 @@ jobs:
       - name: Lint TypeScript
         run: npm run lint:ts
 
+      - name: Validate DTIF markdown examples
+        run: npm run validate:dtif
+
       - name: Run tests
         run: npm test
 

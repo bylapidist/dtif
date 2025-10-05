@@ -11,8 +11,9 @@ See [`gradients.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
 
 ## Sample tokens {#gradients-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "gradient": {
     "heroBackground": {
       "$type": "gradient",
@@ -24,7 +25,7 @@ See [`gradients.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
             "position": "0%",
             "color": {
               "colorSpace": "srgb",
-              "components": [0.996, 0.416, 0.0, 1.0]
+              "components": [0.996, 0.416, 0, 1]
             }
           },
           {
@@ -32,14 +33,14 @@ See [`gradients.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
             "hint": "50%",
             "color": {
               "colorSpace": "srgb",
-              "components": [1.0, 0.824, 0.0, 1.0]
+              "components": [1, 0.824, 0, 1]
             }
           },
           {
             "position": "calc(100% - 8px)",
             "color": {
               "colorSpace": "srgb",
-              "components": [1.0, 0.0, 0.4, 1.0]
+              "components": [1, 0, 0.4, 1]
             }
           }
         ]
@@ -59,7 +60,7 @@ See [`gradients.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
             "position": 0,
             "color": {
               "colorSpace": "srgb",
-              "components": [1.0, 0.973, 0.925, 1.0]
+              "components": [1, 0.973, 0.925, 1]
             }
           },
           {
@@ -67,14 +68,14 @@ See [`gradients.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
             "hint": 0.7,
             "color": {
               "colorSpace": "srgb",
-              "components": [1.0, 0.733, 0.565, 0.7]
+              "components": [1, 0.733, 0.565, 0.7]
             }
           },
           {
             "position": 1,
             "color": {
               "colorSpace": "srgb",
-              "components": [0.965, 0.525, 0.29, 0.0]
+              "components": [0.965, 0.525, 0.29, 0]
             }
           }
         ]

@@ -8,11 +8,18 @@ outline: [2, 3]
 
 Token documents are UTF-8 encoded JSON files. The following example is valid:
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "spacing": {
-    "small": { "$type": "dimension", "$value": { "value": 2, "unit": "px" } }
+    "small": {
+      "$type": "dimension",
+      "$value": {
+        "dimensionType": "length",
+        "value": 2,
+        "unit": "px"
+      }
+    }
   }
 }
 ```

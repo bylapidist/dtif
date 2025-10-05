@@ -11,8 +11,9 @@ See [`typography-optional-properties.tokens.json`](https://github.com/bylapidist
 
 ## Sample tokens {#typography-optional-properties-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "typography": {
     "body": {
       "$type": "typography",

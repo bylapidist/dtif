@@ -11,8 +11,9 @@ See [`extensions.tokens.json`](https://github.com/bylapidist/dtif/blob/main/exam
 
 ## Sample tokens {#extensions-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "color": {
     "cta": {
       "$type": "color",

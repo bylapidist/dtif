@@ -40,7 +40,7 @@ See [Token types](./token-types.md#value) for shared `$value` requirements that 
 Minimal typography tokens define only `fontFamily` and `fontSize`.
 Additional properties _MAY_ be layered to build complete styles.
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "typography": {
@@ -55,7 +55,7 @@ Additional properties _MAY_ be layered to build complete styles.
 }
 ```
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "typography": {
@@ -66,7 +66,7 @@ Additional properties _MAY_ be layered to build complete styles.
 }
 ```
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "typography": {
@@ -129,7 +129,7 @@ tokens whose `$value.dimensionType` is `"length"`, while `color` references _MUS
 `color` tokens. Consumers _MUST_ reject `$ref` targets that do not meet these
 requirements so typography tokens remain well-typed composites.
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "dimension": {
@@ -182,19 +182,24 @@ _Table: Normative references for typography members._
 | `textTransform`   | `text-transform`, NSStringTransform, Java String case conversion                                                                                       |
 | `fontFeatures`    | `font-feature-settings`, OpenType feature registry                                                                                                     |
 
-```json
+```json dtif
 {
-  "$type": "typography",
-  "$value": {
-    "fontFamily": "Inter",
-    "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
-    "lineHeight": 1.5,
-    "letterSpacing": { "dimensionType": "length", "value": 0.5, "unit": "px" },
-    "wordSpacing": { "dimensionType": "length", "value": 2, "unit": "px" },
-    "color": { "colorSpace": "srgb", "components": [0.2, 0.25, 0.3, 1] },
-    "textDecoration": "underline",
-    "textTransform": "uppercase",
-    "fontFeatures": ["smcp", "liga"]
+  "$version": "1.0.0",
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "lineHeight": 1.5,
+        "letterSpacing": { "dimensionType": "length", "value": 0.5, "unit": "px" },
+        "wordSpacing": { "dimensionType": "length", "value": 2, "unit": "px" },
+        "color": { "colorSpace": "srgb", "components": [0.2, 0.25, 0.3, 1] },
+        "textDecoration": "underline",
+        "textTransform": "uppercase",
+        "fontFeatures": ["smcp", "liga"]
+      }
+    }
   }
 }
 ```
@@ -288,12 +293,18 @@ The `lineHeight` value _MUST_ represent the
 baseline-to-baseline distance between lines of text. Additional leading above or below
 this region is not part of the measurement.
 
-```json
+```json dtif
 {
-  "$type": "typography",
-  "$value": {
-    "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
-    "lineHeight": 1.5
+  "$version": "1.0.0",
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "lineHeight": 1.5
+      }
+    }
   }
 }
 ```
@@ -414,13 +425,18 @@ platform's `1`-`1000` range when necessary. Web consumers
 _MUST_ apply the CSS weight resolution algorithm when cascading
 values through the DOM.
 
-```json
+```json dtif
 {
-  "$type": "typography",
-  "$value": {
-    "fontFamily": "Inter",
-    "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
-    "fontWeight": 700
+  "$version": "1.0.0",
+  "typography": {
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "fontWeight": 700
+      }
+    }
   }
 }
 ```
@@ -448,13 +464,18 @@ Typeface.Builder#setFontVariationSettings. Fonts
 that omit a `slnt` axis _MAY_ fall back to italic traits
 while preserving the authored angle for downstream consumers.
 
-```json
+```json dtif
 {
-  "$type": "typography",
-  "$value": {
-    "fontFamily": "Inter",
-    "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
-    "fontStyle": "oblique -12deg"
+  "$version": "1.0.0",
+  "typography": {
+    "italic": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "fontStyle": "oblique -12deg"
+      }
+    }
   }
 }
 ```
@@ -584,8 +605,9 @@ registration metadata stay aligned across CSS, iOS, and Android implementations.
 | `fontFace.$value.unicodeRange` | `unicode-range`                                                                                                                                        |
 | `fontFace.$value.fontDisplay`  | `font-display`                                                                                                                                         |
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "fontFace": {
     "brand": {
       "$type": "fontFace",

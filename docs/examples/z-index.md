@@ -11,8 +11,9 @@ See [`z-index.tokens.json`](https://github.com/bylapidist/dtif/blob/main/example
 
 ## Sample tokens {#z-index-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "z-index": {
     "android-fab": {
       "$type": "z-index",

@@ -11,8 +11,9 @@ See [`complete.tokens.json`](https://github.com/bylapidist/dtif/blob/main/exampl
 
 ## Sample tokens {#complete-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "component": {
     "button": {
       "$type": "component",

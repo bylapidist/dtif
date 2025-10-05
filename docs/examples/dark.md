@@ -11,12 +11,12 @@ See [`dark.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples/d
 
 ## Sample tokens {#dark-sample}
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
-    "$type": "color",
     "brand": {
+      "$type": "color",
       "$value": {
         "colorSpace": "srgb",
         "components": [0.8, 0, 0]

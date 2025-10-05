@@ -11,8 +11,9 @@ See [`font-face.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
 
 ## Sample tokens {#font-face-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "fontFace": {
     "brand": {
       "$type": "fontFace",

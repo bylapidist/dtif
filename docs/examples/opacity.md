@@ -11,8 +11,9 @@ See [`opacity.tokens.json`](https://github.com/bylapidist/dtif/blob/main/example
 
 ## Sample tokens {#opacity-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "opacity": {
     "layer": {
       "$type": "opacity",

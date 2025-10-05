@@ -102,7 +102,7 @@ emit members such as `$category` to use `$extensions` before converting them to 
 
 #### DTIF structure (`examples/dtcg-migration/data-model.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "button": {
@@ -322,7 +322,7 @@ DTIF conversion:
 
 #### DTIF merged document (`examples/dtcg-migration/document-shell.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "$description": "Marketing theme converted from split DTCG files.",
@@ -411,7 +411,7 @@ DTIF reuses familiar fields and introduces additional lifecycle tracking:
 
 #### DTIF metadata (`examples/dtcg-migration/metadata.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "status": {
@@ -476,7 +476,7 @@ The table below summarises how the DTCG primitive types map to DTIF.
 
 #### DTIF color token (`examples/dtcg-migration/color.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
@@ -516,7 +516,7 @@ to preserve CSS-oriented serialisations without `$extensions`.
 
 #### DTIF dimensions (`examples/dtcg-migration/dimension.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "dimension": {
@@ -570,7 +570,7 @@ keeping the numeric payloads intact.
 
 #### DTIF temporal tokens (`examples/dtcg-migration/duration-easing.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "duration": {
@@ -669,7 +669,7 @@ before importing them into DTIF.
 
 #### DTIF typography (`examples/dtcg-migration/typography.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "font": {
@@ -685,7 +685,7 @@ before importing them into DTIF.
     }
   },
   "dimension": {
-    "shared": {
+    "typography": {
       "body-size": {
         "$type": "dimension",
         "$value": {
@@ -709,20 +709,6 @@ before importing them into DTIF.
           "value": 24,
           "unit": "px"
         }
-      }
-    },
-    "typography": {
-      "body-size": {
-        "$type": "dimension",
-        "$ref": "#/dimension/shared/body-size"
-      },
-      "body-letter-spacing": {
-        "$type": "dimension",
-        "$ref": "#/dimension/shared/body-letter-spacing"
-      },
-      "body-line-height": {
-        "$type": "dimension",
-        "$ref": "#/dimension/shared/body-line-height"
       }
     }
   },
@@ -962,7 +948,7 @@ richer schemas for these structures.
 
 #### DTIF border (`examples/dtcg-migration/border.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
@@ -984,6 +970,18 @@ richer schemas for these structures.
       }
     }
   },
+  "border": {
+    "focus-outline": {
+      "$type": "border",
+      "$value": {
+        "borderType": "css.border",
+        "color": { "$ref": "#/color/focus-outline" },
+        "style": "solid",
+        "strokeStyle": { "$ref": "#/strokeStyle/focus" },
+        "width": { "$ref": "#/dimension/focus-outline-width" }
+      }
+    }
+  },
   "strokeStyle": {
     "focus": {
       "$type": "strokeStyle",
@@ -1001,18 +999,6 @@ richer schemas for these structures.
           }
         ],
         "lineCap": "round"
-      }
-    }
-  },
-  "border": {
-    "focus-outline": {
-      "$type": "border",
-      "$value": {
-        "borderType": "css.border",
-        "color": { "$ref": "#/color/focus-outline" },
-        "style": "solid",
-        "strokeStyle": { "$ref": "#/strokeStyle/focus" },
-        "width": { "$ref": "#/dimension/focus-outline-width" }
       }
     }
   }
@@ -1111,7 +1097,7 @@ validation noise-free.
 
 #### DTIF shadow (`examples/dtcg-migration/shadow.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
@@ -1250,7 +1236,7 @@ matches the original DTCG payload.
 
 #### DTIF gradient (`examples/dtcg-migration/gradient.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {
@@ -1405,7 +1391,7 @@ DTIF conversion with CSS-compliant strings:
 
 #### DTIF transition (`examples/dtcg-migration/transition.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "duration": {
@@ -1497,7 +1483,7 @@ Migrating is an opportunity to adopt DTIF-only capabilities:
 
 #### DTIF component token (`examples/dtcg-migration/component.tokens.json`)
 
-```json
+```json dtif
 {
   "$version": "1.0.0",
   "color": {

@@ -11,8 +11,9 @@ See [`border.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
 
 ## Sample tokens {#border-sample}
 
-```json
+```json dtif
 {
+  "$version": "1.0.0",
   "border": {
     "cardOutlineAndroid": {
       "$type": "border",
@@ -88,7 +89,9 @@ See [`border.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examples
           }
         },
         "style": "dashed",
-        "strokeStyle": { "$ref": "#/strokeStyle/cardDashed" },
+        "strokeStyle": {
+          "$ref": "#/strokeStyle/cardDashed"
+        },
         "width": {
           "dimensionType": "length",
           "value": 1.5,

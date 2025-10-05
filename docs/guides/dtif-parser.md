@@ -89,10 +89,13 @@ The synchronous variant consumes inline content without touching the filesystem.
 import { parseTokensSync } from '@lapidist/dtif-parser';
 
 const { flattened } = parseTokensSync({
-  $schema: 'https://dtif.lapidist.net/schema.json',
-  values: {
-    color: {
-      brand: { primary: { $type: 'color', $value: '#0055ff' } }
+  $schema: 'https://dtif.lapidist.net/schema/core.json',
+  color: {
+    brand: {
+      primary: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0, 0.3333, 1] }
+      }
     }
   }
 });
@@ -105,7 +108,7 @@ console.log(flattened[0]);
 The helpers above accept inline DTIF objects in addition to file paths. The following document is valid against the
 [core schema](https://dtif.lapidist.net/schema/core.json) and demonstrates a small hierarchy, metadata, and an alias:
 
-```json
+```json dtif
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "$version": "1.0.0",
