@@ -30,7 +30,7 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 
 - [Specification](https://dtif.lapidist.net/spec/) – normative chapters covering the format, token types, and conformance rules.
 - [Guides](https://dtif.lapidist.net/guides/) – implementation playbooks and tooling workflows.
-- [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser/) – configure the canonical parser, CLI, and plugin system.
+- [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser) – configure the canonical parser, CLI, and plugin system.
 - [Examples](https://dtif.lapidist.net/examples/) – schema-valid token documents you can reuse in tests.
 - [Governance](https://dtif.lapidist.net/governance/) – processes for proposing changes and managing the registry.
 - [Roadmap](https://dtif.lapidist.net/roadmap/) – current focus areas and forward-looking drafts.
