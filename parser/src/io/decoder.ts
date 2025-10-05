@@ -1,4 +1,5 @@
-import type { DocumentHandle, RawDocument } from '../types.js';
+import type { DocumentHandle } from '../types.js';
+import type { DecodedDocument } from '../domain/models.js';
 import { decodeBytes } from './decoder/encoding.js';
 import { buildSourceMap } from './decoder/source-map.js';
 import { normalizeInlineYamlText } from './decoder/inline-yaml.js';
@@ -16,10 +17,10 @@ function ensureError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
 
-export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
+export function decodeDocument(handle: DocumentHandle): Promise<DecodedDocument> {
   if (hasProvidedData(handle)) {
     try {
-      return Promise.resolve(Object.freeze(createRawDocumentFromProvidedData(handle)));
+      return Promise.resolve(Object.freeze(createDocumentFromProvidedData(handle)));
     } catch (error) {
       return Promise.reject(ensureError(error));
     }
@@ -34,8 +35,10 @@ export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
 
     return Promise.resolve(
       Object.freeze({
-        uri: handle.uri,
-        contentType: handle.contentType,
+        identity: Object.freeze({
+          uri: handle.uri,
+          contentType: handle.contentType
+        }),
         bytes: handle.bytes,
         text,
         data,
@@ -49,7 +52,7 @@ export function decodeDocument(handle: DocumentHandle): Promise<RawDocument> {
 
 type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
 
-function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocument {
+function createDocumentFromProvidedData(handle: ProvidedDataHandle): DecodedDocument {
   const data = cloneJsonValue(handle.data);
 
   if (typeof handle.text === 'string' && handle.text.length > 0) {
@@ -58,24 +61,28 @@ function createRawDocumentFromProvidedData(handle: ProvidedDataHandle): RawDocum
     const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
 
     return {
-      uri: handle.uri,
-      contentType: handle.contentType,
+      identity: Object.freeze({
+        uri: handle.uri,
+        contentType: handle.contentType
+      }),
       bytes: handle.bytes,
       text,
       data,
       sourceMap
-    } satisfies RawDocument;
+    } satisfies DecodedDocument;
   }
 
   const text = normalizeInlineYamlText(handle.text ?? '');
   const sourceMap = createSyntheticSourceMap(handle.uri, data);
 
   return {
-    uri: handle.uri,
-    contentType: handle.contentType,
+    identity: Object.freeze({
+      uri: handle.uri,
+      contentType: handle.contentType
+    }),
     bytes: handle.bytes,
     text,
     data,
     sourceMap
-  } satisfies RawDocument;
+  } satisfies DecodedDocument;
 }

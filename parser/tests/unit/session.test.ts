@@ -9,6 +9,8 @@ import { decodeDocument } from '../../src/io/decoder.js';
 import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { DocumentCache, DocumentHandle, RawDocument } from '../../src/types.js';
 import type { DocumentLoader } from '../../src/io/document-loader.js';
+import type { DiagnosticEvent } from '../../src/domain/models.js';
+import { areByteArraysEqual } from '../../src/utils/bytes.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -57,25 +59,28 @@ void test('parseDocument surfaces schema guard diagnostics alongside decoded doc
   const result = await session.parseDocument(INVALID_DOCUMENT);
 
   assert.ok(result.document, 'expected decoded document to be returned even when invalid');
-  assert.equal(result.ast, undefined, 'expected AST to be omitted when schema validation fails');
+  assert.equal(
+    result.normalized,
+    undefined,
+    'expected AST to be omitted when schema validation fails'
+  );
   assert.equal(
     result.graph,
     undefined,
     'expected graph to be omitted when schema validation fails'
   );
   assert.equal(
-    result.resolver,
+    result.resolution,
     undefined,
     'expected resolver to be omitted when schema validation fails'
   );
 
-  const diagnostics = Array.from(result.diagnostics);
-  const schemaDiagnostic = diagnostics.find(
-    (diagnostic) => diagnostic.code === DiagnosticCodes.schemaGuard.INVALID_DOCUMENT
+  const schemaDiagnostic = findDiagnostic(
+    result.diagnostics,
+    DiagnosticCodes.schemaGuard.INVALID_DOCUMENT
   );
-
   assert.ok(schemaDiagnostic, 'expected schema guard diagnostic for invalid input');
-  assert.equal(result.diagnostics.hasErrors(), true);
+  assert.equal(hasErrors(result.diagnostics), true);
 });
 
 class RecordingSchemaGuard extends SchemaGuard {
@@ -93,22 +98,29 @@ void test('ParseSession honours a provided SchemaGuard instance', async () => {
 
   const result = await session.parseDocument(VALID_DOCUMENT);
 
-  assert.ok(result.document);
-  assert.ok(result.ast);
-  assert.equal(result.diagnostics.hasErrors(), false);
-  assert.equal(guard.lastDocument, result.document);
+  const document = result.document;
+  assert.ok(document);
+  assert.ok(result.normalized?.ast);
+  assert.equal(hasErrors(result.diagnostics), false);
+  const lastDocument = guard.lastDocument;
+  assert.ok(lastDocument);
+  assert.equal(lastDocument.identity.uri.href, document.identity.uri.href);
+  assert.ok(areByteArraysEqual(lastDocument.bytes, document.bytes));
 });
 
 void test('parseDocument returns a normalised AST when schema validation succeeds', async () => {
   const session = createSession();
   const result = await session.parseDocument(VALID_DOCUMENT);
 
-  assert.ok(result.ast, 'expected AST to be returned for valid documents');
-  assert.ok(result.graph, 'expected document graph to be returned for valid documents');
-  assert.ok(result.resolver, 'expected document resolver to be returned for valid documents');
-  const { ast, resolver } = result;
-  assert.ok(ast);
-  assert.ok(resolver);
+  const { normalized, graph, resolution: outcome } = result;
+  assert.ok(normalized?.ast, 'expected AST to be returned for valid documents');
+  assert.ok(graph?.graph, 'expected document graph to be returned for valid documents');
+  assert.ok(outcome?.result, 'expected document resolver to be returned for valid documents');
+  assert.ok(normalized);
+  assert.ok(graph);
+  assert.ok(outcome);
+  const { ast } = normalized;
+  const resolver = outcome.result;
   const collections = ast.children;
   assert.ok(collections.length > 0);
   assert.equal(collections[0].kind, 'collection');
@@ -118,6 +130,9 @@ void test('parseDocument returns a normalised AST when schema validation succeed
   assert.equal(resolution.diagnostics.length, 0);
   const { token } = resolution;
   assert.ok(token);
+  if (!isRecord(token) || !('value' in token)) {
+    assert.fail('expected resolved token to expose a value');
+  }
   assert.deepEqual(token.value, {
     colorSpace: 'srgb',
     components: [0, 0, 0]
@@ -129,15 +144,21 @@ void test('ParseSession reuses cached documents when bytes match', async () => {
   const cachedDocument = await decodeDocument(createMemoryHandle(uri, VALID_DOCUMENT));
   const loader = new StaticLoader(uri, VALID_DOCUMENT);
   const cache = new RecordingCache(cachedDocument);
-  const session = new ParseSession({ loader, cache });
+  const session = new ParseSession({ loader, documentCache: cache });
 
   const result = await session.parseDocument('ignored');
 
   assert.equal(cache.getCalls, 1);
   assert.equal(cache.setCalls, 0);
-  assert.equal(result.document, cachedDocument);
-  assert.ok(result.ast, 'expected AST to be returned for cached documents');
-  assert.equal(result.diagnostics.hasErrors(), false);
+  const document = result.document;
+  assert.ok(document);
+  assert.ok(
+    areByteArraysEqual(document.bytes, cachedDocument.bytes),
+    'expected cached document bytes to be reused'
+  );
+  assert.equal(document.text, cachedDocument.text);
+  assert.ok(result.normalized?.ast, 'expected AST to be returned for cached documents');
+  assert.equal(hasErrors(result.diagnostics), false);
 });
 
 void test('parseDocument surfaces loader diagnostics when documents exceed the byte limit', async () => {
@@ -148,17 +169,14 @@ void test('parseDocument surfaces loader diagnostics when documents exceed the b
   const result = await session.parseDocument(oversized);
 
   assert.equal(result.document, undefined);
-  assert.equal(result.ast, undefined);
+  assert.equal(result.normalized, undefined);
   assert.equal(result.graph, undefined);
-  assert.equal(result.resolver, undefined);
+  assert.equal(result.resolution, undefined);
 
-  const diagnostics = result.diagnostics.toArray();
-  const loaderDiagnostic = diagnostics.find(
-    (entry) => entry.code === DiagnosticCodes.loader.TOO_LARGE
-  );
+  const loaderDiagnostic = findDiagnostic(result.diagnostics, DiagnosticCodes.loader.TOO_LARGE);
 
   assert.ok(loaderDiagnostic, 'expected loader diagnostic when document exceeds byte limit');
-  assert.equal(result.diagnostics.hasErrors(), true);
+  assert.equal(hasErrors(result.diagnostics), true);
 });
 
 void test('ParseSession refreshes the cache when document bytes change', async () => {
@@ -202,36 +220,45 @@ void test('ParseSession refreshes the cache when document bytes change', async (
 
   const loader = new StaticLoader(uri, updatedText);
   const cache = new RecordingCache(staleDocument);
-  const session = new ParseSession({ loader, cache });
+  const session = new ParseSession({ loader, documentCache: cache });
 
   const result = await session.parseDocument('ignored');
 
   assert.equal(cache.getCalls, 1);
   assert.equal(cache.setCalls, 1, 'expected cache to store updated document');
-  assert.notEqual(result.document, staleDocument, 'expected new document when bytes change');
-  assert.equal(cache.lastSet, result.document);
-  assert.ok(result.ast);
-  assert.equal(result.diagnostics.hasErrors(), false);
+  const document = result.document;
+  assert.ok(document);
+  assert.ok(
+    !areByteArraysEqual(document.bytes, staleDocument.bytes),
+    'expected updated document bytes when cache content changes'
+  );
+  assert.equal(document.text, updatedText);
+  const updatedCacheEntry = cache.lastSet;
+  assert.ok(updatedCacheEntry);
+  assert.equal(updatedCacheEntry.text, updatedText);
+  assert.ok(
+    areByteArraysEqual(updatedCacheEntry.bytes, document.bytes),
+    'expected cache to store the updated document bytes'
+  );
+  assert.ok(result.normalized?.ast);
+  assert.equal(hasErrors(result.diagnostics), false);
 });
 
 void test('ParseSession surfaces diagnostics when cache writes fail', async () => {
   const uri = new URL('memory://cache/failure');
   const loader = new StaticLoader(uri, VALID_DOCUMENT);
   const cache = new FailingCache();
-  const session = new ParseSession({ loader, cache });
+  const session = new ParseSession({ loader, documentCache: cache });
 
   const result = await session.parseDocument('ignored');
 
-  const diagnostics = result.diagnostics.toArray();
-  const cacheDiagnostic = diagnostics.find(
-    (entry) => entry.code === DiagnosticCodes.core.CACHE_FAILED
-  );
+  const cacheDiagnostic = findDiagnostic(result.diagnostics, DiagnosticCodes.core.CACHE_FAILED);
 
   assert.ok(cacheDiagnostic, 'expected cache failure diagnostic');
   assert.equal(cacheDiagnostic.severity, 'warning');
   assert.equal(cache.setCalls, 1, 'expected cache set to be attempted');
   assert.ok(result.document);
-  assert.equal(result.diagnostics.hasErrors(), false);
+  assert.equal(hasErrors(result.diagnostics), false);
 });
 
 void test('ParseSession invokes extension plugins and records results', async () => {
@@ -270,8 +297,10 @@ void test('ParseSession invokes extension plugins and records results', async ()
     )
   );
 
-  assert.ok(result.ast);
-  const extensionResults = result.extensions ?? [];
+  const { normalized } = result;
+  assert.ok(normalized?.ast);
+  assert.ok(normalized);
+  const extensionResults = normalized.extensions ?? [];
   assert.equal(extensionResults.length, 1);
   const [evaluation] = extensionResults;
   assert.ok(evaluation);
@@ -282,9 +311,7 @@ void test('ParseSession invokes extension plugins and records results', async ()
   assert.deepEqual(evaluation.normalized, { role: 'PRIMARY' });
   assert.equal(evaluation.diagnostics.length, 1);
 
-  const pluginDiagnostic = result.diagnostics
-    .toArray()
-    .find((entry) => entry.code === DiagnosticCodes.core.NOT_IMPLEMENTED);
+  const pluginDiagnostic = findDiagnostic(result.diagnostics, DiagnosticCodes.core.NOT_IMPLEMENTED);
   assert.ok(pluginDiagnostic, 'expected plugin diagnostic from extension handler');
 });
 
@@ -316,16 +343,25 @@ void test('ParseSession surfaces diagnostics when extension plugins throw', asyn
     )
   );
 
-  const diagnostic = result.diagnostics
-    .toArray()
-    .find((entry) => entry.code === DiagnosticCodes.plugins.EXTENSION_FAILED);
+  const diagnostic = findDiagnostic(result.diagnostics, DiagnosticCodes.plugins.EXTENSION_FAILED);
 
   assert.ok(diagnostic, 'expected extension failure diagnostic');
   assert.equal(diagnostic.pointer, '#/color/brand/$extensions/com.example');
   assert.equal(diagnostic.severity, 'error');
-  const extensions = result.extensions ?? [];
+  const extensions = result.normalized?.extensions ?? [];
   assert.equal(extensions.length, 0);
 });
+
+function hasErrors(events: readonly DiagnosticEvent[]): boolean {
+  return events.some((event) => event.severity === 'error');
+}
+
+function findDiagnostic(
+  events: readonly DiagnosticEvent[],
+  code: string
+): DiagnosticEvent | undefined {
+  return events.find((event) => event.code === code);
+}
 
 class StaticLoader implements DocumentLoader {
   constructor(
@@ -348,9 +384,9 @@ class RecordingCache implements DocumentCache {
     this.document = document;
   }
 
-  get(uri: URL): Promise<RawDocument | undefined> {
+  get(identity: RawDocument['identity']): Promise<RawDocument | undefined> {
     this.getCalls++;
-    if (this.document && this.document.uri.href !== uri.href) {
+    if (this.document && this.document.identity.uri.href !== identity.uri.href) {
       return Promise.resolve(undefined);
     }
     return Promise.resolve(this.document);
@@ -368,13 +404,15 @@ class FailingCache implements DocumentCache {
   getCalls = 0;
   setCalls = 0;
 
-  get(): Promise<RawDocument | undefined> {
+  get(identity: RawDocument['identity']): Promise<RawDocument | undefined> {
     this.getCalls++;
+    void identity;
     return Promise.resolve(undefined);
   }
 
-  set(): Promise<void> {
+  set(document: RawDocument): Promise<void> {
     this.setCalls++;
+    void document;
     return Promise.reject(new Error('cache write failed'));
   }
 }

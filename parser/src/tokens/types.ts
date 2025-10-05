@@ -1,20 +1,10 @@
-import type { JsonPointer, SourceSpan } from '../types.js';
+import type { JsonPointer } from '../domain/primitives.js';
 
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { readonly [key: string]: JsonValue };
 
 export type TokenId = string;
 export type TokenType = string;
-
-export interface Position {
-  readonly line: number;
-  readonly character: number;
-}
-
-export interface Range {
-  readonly start: Position;
-  readonly end: Position;
-}
 
 export interface TokenPointer {
   readonly uri: string;
@@ -54,32 +44,4 @@ export interface ResolvedTokenView {
   readonly references: readonly TokenPointer[];
   readonly resolutionPath: readonly TokenPointer[];
   readonly appliedAliases: readonly TokenPointer[];
-}
-
-export interface TokenDiagnostic {
-  readonly severity: 'error' | 'warning' | 'info';
-  readonly code: string;
-  readonly message: string;
-  readonly source: 'dtif-parser';
-  readonly target: {
-    readonly uri: string;
-    readonly range: Range;
-  };
-  readonly related?: readonly {
-    readonly message: string;
-    readonly target: {
-      readonly uri: string;
-      readonly range: Range;
-    };
-  }[];
-}
-
-export interface TokenDiagnosticContext {
-  readonly documentUri?: string;
-  readonly pointerSpans?: ReadonlyMap<JsonPointer, SourceSpan>;
-}
-
-export interface FormatTokenDiagnosticOptions {
-  readonly color?: boolean;
-  readonly cwd?: string;
 }

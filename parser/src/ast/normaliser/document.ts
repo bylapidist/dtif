@@ -44,7 +44,7 @@ export function buildDocumentAst(context: NormaliserContext): DocumentAst | unde
 
   return freezeDocumentAst({
     kind: 'document',
-    uri: document.uri,
+    uri: document.identity.uri,
     pointer: JSON_POINTER_ROOT,
     span: getSourceSpan(context, JSON_POINTER_ROOT),
     schema: schemaField,

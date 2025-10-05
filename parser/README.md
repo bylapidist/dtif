@@ -46,7 +46,7 @@ for (const token of flattened) {
 ```
 
 Pass `onDiagnostic` to observe parser diagnostics as they are produced and `warn`
-to intercept non-fatal issues. Both callbacks receive `TokenDiagnostic`
+to intercept non-fatal issues. Both callbacks receive domain `DiagnosticEvent`
 objects, allowing you to format or surface them immediately without waiting for
 the promise to resolve.
 
@@ -61,8 +61,8 @@ await parseTokens('tokens.json', {
 });
 ```
 
-Provide a `ParseCache` implementation, such as the built-in
-`InMemoryParseCache`, to reuse flattening and resolution results across runs or
+Provide a `TokenCache` implementation, such as the built-in
+`InMemoryTokenCache`, to reuse flattening and resolution results across runs or
 for synchronous parsing with `parseTokensSync` when your inputs are already
 available in memory.
 

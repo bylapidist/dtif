@@ -5,7 +5,7 @@ import { buildDocumentGraph } from '../../src/graph/builder.js';
 import { normalizeDocument } from '../../src/ast/normaliser.js';
 import { createDocumentResolver, type DocumentResolverOptions } from '../../src/resolver/index.js';
 import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
-import type { RawDocument } from '../../src/types.js';
+import type { DecodedDocument } from '../../src/types.js';
 import type { ResolvedTokenTransformEntry } from '../../src/plugins/index.js';
 
 void test('DocumentResolver resolves inline token values', () => {
@@ -275,7 +275,7 @@ function buildResolver(
   data: unknown,
   options?: Readonly<Record<string, unknown>> | DocumentResolverOptions
 ): { resolver: ReturnType<typeof createDocumentResolver> } {
-  const document = createRawDocument(data);
+  const document = createDecodedDocument(data);
   const normalised = normalizeDocument(document);
   const { ast } = normalised;
   assert.ok(ast, 'expected document to normalise successfully');
@@ -318,12 +318,11 @@ function normalizeResolverOptions(
   return resolverOptions;
 }
 
-function createRawDocument(data: unknown): RawDocument {
+function createDecodedDocument(data: unknown): DecodedDocument {
   const text = JSON.stringify(data, null, 2);
   const uri = new URL('file:///document.json');
   return {
-    uri,
-    contentType: 'application/json',
+    identity: Object.freeze({ uri, contentType: 'application/json' as const }),
     bytes: new TextEncoder().encode(text),
     text,
     data,

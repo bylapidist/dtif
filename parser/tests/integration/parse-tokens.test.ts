@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { parseTokens, parseTokensSync } from '../../src/tokens/parse-tokens.js';
-import type { ParseCache, ParseCacheEntry, ParseCacheKey } from '../../src/tokens/cache.js';
+import type { TokenCache, TokenCacheSnapshot, TokenCacheKey } from '../../src/tokens/cache.js';
 import { computeDocumentHash } from '../../src/tokens/cache.js';
-import type { TokenDiagnostic } from '../../src/tokens/types.js';
+import type { DiagnosticEvent } from '../../src/domain/models.js';
 
 const INLINE_DOCUMENT = `
 $schema: https://dtif.lapidist.net/schema/core.json
@@ -99,14 +99,14 @@ void test('parseTokens accepts in-memory design token objects', async () => {
   assert.deepEqual(document.data, tokens);
 });
 
-void test('parseTokens reuses cached artifacts when ParseCache entries are fresh', async () => {
-  const cache = new RecordingParseCache();
+void test('parseTokens reuses cached artifacts when TokenCache entries are fresh', async () => {
+  const cache = new RecordingTokenCache();
 
-  const first = await parseTokens(INLINE_DOCUMENT, { cache });
+  const first = await parseTokens(INLINE_DOCUMENT, { tokenCache: cache });
   assert.equal(cache.setCalls, 1, 'expected cache to be populated on first parse');
   assert.equal(first.flattened.length, 2, 'expected flattened tokens from first parse');
 
-  const second = await parseTokens(INLINE_DOCUMENT, { cache });
+  const second = await parseTokens(INLINE_DOCUMENT, { tokenCache: cache });
   assert.equal(cache.getCalls >= 2, true, 'expected cache to be consulted on reuse');
   assert.equal(cache.setCalls, 1, 'expected cache entry to be reused without re-writing');
   assert.equal(second.flattened.length, 2, 'expected flattened tokens from cached parse');
@@ -120,7 +120,7 @@ colors:
     $type: color
 `;
 
-  const seenDiagnostics: TokenDiagnostic[] = [];
+  const seenDiagnostics: DiagnosticEvent[] = [];
   let warnCalled = false;
 
   const result = await parseTokens(invalidDocument, {
@@ -146,21 +146,18 @@ void test('parseTokens invokes warn callbacks for cached non-error diagnostics',
   const { document } = initial;
   assert.ok(document, 'expected document in initial parse');
 
-  const warning: TokenDiagnostic = {
+  const warning: DiagnosticEvent = {
     severity: 'warning',
     code: 'cache.warning',
     message: 'cached warning',
-    source: 'dtif-parser',
-    target: {
-      uri: document.uri.href,
-      range: {
-        start: { line: 0, character: 0 },
-        end: { line: 0, character: 0 }
-      }
+    span: {
+      uri: document.identity.uri,
+      start: { offset: 0, line: 1, column: 1 },
+      end: { offset: 0, line: 1, column: 1 }
     }
   };
 
-  const cacheEntry: ParseCacheEntry = {
+  const cacheEntry: TokenCacheSnapshot = {
     documentHash: computeDocumentHash(document),
     flattened: initial.flattened,
     metadataIndex: initial.metadataIndex,
@@ -169,7 +166,7 @@ void test('parseTokens invokes warn callbacks for cached non-error diagnostics',
     timestamp: Date.now()
   };
 
-  const cache: ParseCache = {
+  const cache: TokenCache = {
     get() {
       return cacheEntry;
     },
@@ -179,11 +176,11 @@ void test('parseTokens invokes warn callbacks for cached non-error diagnostics',
     }
   };
 
-  const warnings: TokenDiagnostic[] = [];
-  const diagnostics: TokenDiagnostic[] = [];
+  const warnings: DiagnosticEvent[] = [];
+  const diagnostics: DiagnosticEvent[] = [];
 
   const cached = await parseTokens(INLINE_DOCUMENT, {
-    cache,
+    tokenCache: cache,
     onDiagnostic: (diagnostic) => diagnostics.push(diagnostic),
     warn: (diagnostic) => warnings.push(diagnostic)
   });
@@ -233,7 +230,7 @@ void test('parseTokensSync infers YAML content types for inline records', () => 
   const { document } = result;
   assert.ok(document, 'expected synchronous parse to return document');
   assert.equal(
-    document.contentType,
+    document.identity.contentType,
     'application/yaml',
     'expected YAML content type to be inferred from inline content'
   );
@@ -248,40 +245,43 @@ void test('parseTokensSync does not treat URLs as inline YAML content', () => {
 });
 
 void test('parseTokensSync throws when provided an asynchronous cache implementation', () => {
-  const asyncCache = new AsyncParseCache();
+  const asyncCache = new AsyncTokenCache();
   assert.throws(
-    () => parseTokensSync(INLINE_DOCUMENT, { cache: asyncCache }),
+    () => parseTokensSync(INLINE_DOCUMENT, { tokenCache: asyncCache }),
     /synchronous get\/set semantics/,
     'expected synchronous parsing to reject asynchronous caches'
   );
 });
 
-class RecordingParseCache implements ParseCache {
-  readonly store = new Map<string, ParseCacheEntry>();
+class RecordingTokenCache implements TokenCache {
+  readonly store = new Map<string, TokenCacheSnapshot>();
   getCalls = 0;
   setCalls = 0;
 
-  get(key: ParseCacheKey): ParseCacheEntry | undefined {
+  get(key: TokenCacheKey): TokenCacheSnapshot | undefined {
     this.getCalls += 1;
     return this.store.get(serializeKey(key));
   }
 
-  set(key: ParseCacheKey, value: ParseCacheEntry): void {
+  set(key: TokenCacheKey, value: TokenCacheSnapshot): void {
     this.setCalls += 1;
     this.store.set(serializeKey(key), value);
   }
 }
 
-class AsyncParseCache implements ParseCache {
-  get(): ParseCacheEntry | undefined {
+class AsyncTokenCache implements TokenCache {
+  get(key: TokenCacheKey): TokenCacheSnapshot | undefined {
+    void key;
     return undefined;
   }
 
-  set(): Promise<void> {
+  set(key: TokenCacheKey, value: TokenCacheSnapshot): Promise<void> {
+    void key;
+    void value;
     return Promise.resolve();
   }
 }
 
-function serializeKey(key: ParseCacheKey): string {
-  return `${key.uri}::${key.variant}`;
+function serializeKey(key: TokenCacheKey): string {
+  return `${key.document.uri.href}::${key.variant ?? ''}`;
 }

@@ -1,20 +1,25 @@
-import { normalizeDocument } from './ast/normaliser.js';
-import { DiagnosticBag } from './diagnostics/bag.js';
-import { DiagnosticCodes } from './diagnostics/codes.js';
-import { buildDocumentGraph } from './graph/builder.js';
-import { DocumentLoaderError } from './io/document-loader.js';
-import { decodeDocument } from './io/decoder.js';
-import { createDocumentResolver } from './resolver/index.js';
-import type {
-  DocumentHandle,
-  ParseCollectionResult,
-  ParseInput,
-  ParseResult,
-  RawDocument
-} from './types.js';
+import { ParseDocumentUseCase, type ParseDocumentExecution } from './application/use-cases.js';
+import type { ParseInput, DocumentAst, DocumentGraph } from './types.js';
 import { resolveOptions, type ResolvedParseSessionOptions } from './session/internal/options.js';
 import type { ParseSessionOptions } from './session/types.js';
+import type { DocumentResolver } from './resolver/document-resolver.js';
+import { createParseDocumentUseCase } from './application/factory.js';
+import { createDocumentRequest } from './application/requests.js';
+import type { DiagnosticEvent } from './domain/models.js';
 export type { OverrideContext, ParseSessionOptions } from './session/types.js';
+
+type ResolverResult = DocumentResolver;
+
+export type ParseDocumentResult = ParseDocumentExecution<
+  DocumentAst,
+  DocumentGraph,
+  ResolverResult
+>;
+
+export interface ParseCollectionResult {
+  readonly results: readonly ParseDocumentResult[];
+  readonly diagnostics: readonly DiagnosticEvent[];
+}
 
 function isAsyncIterable<T>(value: Iterable<T> | AsyncIterable<T>): value is AsyncIterable<T> {
   const root: object = value;
@@ -63,222 +68,38 @@ async function* toAsyncIterable(
 
 export class ParseSession {
   readonly options: ResolvedParseSessionOptions;
+  readonly #documents: ParseDocumentUseCase<DocumentAst, DocumentGraph, ResolverResult>;
 
   constructor(options: ParseSessionOptions = {}) {
     this.options = resolveOptions(options);
+    this.#documents = createParseDocumentUseCase(this.options);
   }
 
-  async parseDocument(input: ParseInput): Promise<ParseResult> {
-    const diagnostics = new DiagnosticBag();
-    const handle = await this.loadDocumentHandle(input, diagnostics);
-
-    if (!handle) {
-      return { diagnostics };
-    }
-
-    const cachedDocument = await this.getCachedDocument(handle, diagnostics);
-    const document = cachedDocument ?? (await this.decodeDocumentHandle(handle, diagnostics));
-
-    if (!document) {
-      return { diagnostics };
-    }
-
-    if (!cachedDocument) {
-      await this.storeDocumentInCache(document, diagnostics);
-    }
-
-    const schemaValid = this.validateDocumentSchema(document, diagnostics);
-
-    if (!schemaValid) {
-      return {
-        document,
-        diagnostics
-      };
-    }
-
-    const normalised = normalizeDocument(document, {
-      extensions: this.options.plugins
-    });
-    diagnostics.addMany(normalised.diagnostics);
-
-    if (!normalised.ast) {
-      return {
-        document,
-        extensions: normalised.extensions,
-        diagnostics
-      };
-    }
-
-    const graphResult = buildDocumentGraph(normalised.ast);
-    diagnostics.addMany(graphResult.diagnostics);
-
-    const graph = graphResult.graph;
-    const resolver =
-      graph &&
-      createDocumentResolver(graph, {
-        context: this.options.overrideContext,
-        maxDepth: this.options.maxDepth,
-        document,
-        transforms: this.options.plugins?.transforms
-      });
-
-    return {
-      document,
-      ast: normalised.ast,
-      graph,
-      resolver,
-      extensions: normalised.extensions,
-      diagnostics
-    };
+  async parseDocument(input: ParseInput): Promise<ParseDocumentResult> {
+    const request = createDocumentRequest(input);
+    const execution = await this.#documents.execute({ request });
+    return execution;
   }
 
   async parseCollection(
     inputs: Iterable<ParseInput> | AsyncIterable<ParseInput>
   ): Promise<ParseCollectionResult> {
-    const results: ParseResult[] = [];
-    const diagnostics = new DiagnosticBag();
+    const results: ParseDocumentResult[] = [];
+    const diagnostics: DiagnosticEvent[] = [];
 
     for await (const input of toAsyncIterable(inputs)) {
       const result = await this.parseDocument(input);
       results.push(result);
-      diagnostics.extend(result.diagnostics);
+      if (result.diagnostics.length > 0) {
+        diagnostics.push(...result.diagnostics);
+      }
     }
 
     return {
       results,
       diagnostics
-    };
+    } satisfies ParseCollectionResult;
   }
-
-  private async loadDocumentHandle(
-    input: ParseInput,
-    diagnostics: DiagnosticBag
-  ): Promise<DocumentHandle | undefined> {
-    try {
-      return await this.options.loader.load(input);
-    } catch (error) {
-      if (error instanceof DocumentLoaderError) {
-        diagnostics.add({
-          code: DiagnosticCodes.loader.TOO_LARGE,
-          message: error.message,
-          severity: 'error'
-        });
-      } else {
-        diagnostics.add({
-          code: DiagnosticCodes.loader.FAILED,
-          message: error instanceof Error ? error.message : 'Failed to load DTIF document.',
-          severity: 'error'
-        });
-      }
-      return undefined;
-    }
-  }
-
-  private async decodeDocumentHandle(
-    handle: DocumentHandle,
-    diagnostics: DiagnosticBag
-  ): Promise<RawDocument | undefined> {
-    try {
-      return await decodeDocument(handle);
-    } catch (error) {
-      diagnostics.add({
-        code: DiagnosticCodes.decoder.FAILED,
-        message: error instanceof Error ? error.message : 'Failed to decode DTIF document.',
-        severity: 'error'
-      });
-      return undefined;
-    }
-  }
-
-  private validateDocumentSchema(document: RawDocument, diagnostics: DiagnosticBag): boolean {
-    try {
-      const result = this.options.schemaGuard.validate(document);
-      if (!result.valid) {
-        diagnostics.addMany(result.diagnostics);
-      }
-      return result.valid;
-    } catch (error) {
-      diagnostics.add({
-        code: DiagnosticCodes.schemaGuard.FAILED,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to validate DTIF document against the schema.',
-        severity: 'error'
-      });
-      return false;
-    }
-  }
-
-  private async getCachedDocument(
-    handle: DocumentHandle,
-    diagnostics: DiagnosticBag
-  ): Promise<RawDocument | undefined> {
-    const cache = this.options.cache;
-    if (!cache) {
-      return undefined;
-    }
-
-    try {
-      const cached = await cache.get(handle.uri);
-      if (!cached) {
-        return undefined;
-      }
-
-      return areByteArraysEqual(cached.bytes, handle.bytes) ? cached : undefined;
-    } catch (error) {
-      diagnostics.add({
-        code: DiagnosticCodes.core.CACHE_FAILED,
-        message:
-          error instanceof Error
-            ? `Failed to read DTIF document from cache: ${error.message}`
-            : 'Failed to read DTIF document from cache.',
-        severity: 'warning'
-      });
-      return undefined;
-    }
-  }
-
-  private async storeDocumentInCache(
-    document: RawDocument,
-    diagnostics: DiagnosticBag
-  ): Promise<void> {
-    const cache = this.options.cache;
-    if (!cache) {
-      return;
-    }
-
-    try {
-      await cache.set(document);
-    } catch (error) {
-      diagnostics.add({
-        code: DiagnosticCodes.core.CACHE_FAILED,
-        message:
-          error instanceof Error
-            ? `Failed to update DTIF document cache: ${error.message}`
-            : 'Failed to update DTIF document cache.',
-        severity: 'warning'
-      });
-    }
-  }
-}
-
-function areByteArraysEqual(left: Uint8Array, right: Uint8Array): boolean {
-  if (left === right) {
-    return true;
-  }
-
-  if (left.byteLength !== right.byteLength) {
-    return false;
-  }
-
-  for (let index = 0; index < left.byteLength; index++) {
-    if (left[index] !== right[index]) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 export function createSession(options: ParseSessionOptions = {}): ParseSession {
@@ -288,7 +109,7 @@ export function createSession(options: ParseSessionOptions = {}): ParseSession {
 export async function parseDocument(
   input: ParseInput,
   options?: ParseSessionOptions
-): Promise<ParseResult> {
+): Promise<ParseDocumentResult> {
   const session = createSession(options);
   return session.parseDocument(input);
 }

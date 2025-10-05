@@ -1,4 +1,5 @@
 import type { DocumentCache, RawDocument } from '../types.js';
+import type { RawDocumentIdentity } from '../domain/models.js';
 
 export interface InMemoryDocumentCacheOptions {
   readonly maxEntries?: number;
@@ -26,8 +27,8 @@ export class InMemoryDocumentCache implements DocumentCache {
     this.#clock = options.clock ?? Date.now;
   }
 
-  get(uri: URL): RawDocument | undefined {
-    const key = uri.href;
+  get(identity: RawDocumentIdentity): RawDocument | undefined {
+    const key = toCacheKey(identity);
     const entry = this.#entries.get(key);
     if (!entry) {
       return undefined;
@@ -48,7 +49,7 @@ export class InMemoryDocumentCache implements DocumentCache {
     }
 
     this.#pruneExpired();
-    const key = document.uri.href;
+    const key = toCacheKey(document.identity);
     const entry: CacheEntry = {
       document,
       timestamp: this.#clock()
@@ -58,8 +59,8 @@ export class InMemoryDocumentCache implements DocumentCache {
     this.#enforceSize();
   }
 
-  delete(uri: URL): void {
-    this.#entries.delete(uri.href);
+  delete(identity: RawDocumentIdentity): void {
+    this.#entries.delete(toCacheKey(identity));
   }
 
   clear(): void {
@@ -105,6 +106,10 @@ export class InMemoryDocumentCache implements DocumentCache {
     this.#entries.delete(key);
     this.#entries.set(key, entry);
   }
+}
+
+function toCacheKey(identity: RawDocumentIdentity): string {
+  return identity.uri.href;
 }
 
 function normalizeMaxAge(input: number | undefined): number | undefined {

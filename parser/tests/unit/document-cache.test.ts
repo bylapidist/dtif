@@ -13,7 +13,7 @@ void test('stores and retrieves documents', async () => {
 
   cache.set(document);
 
-  assert.equal(cache.get(document.uri), document);
+  assert.equal(cache.get(document.identity), document);
 });
 
 void test('evicts the least recently used document when capacity is exceeded', async () => {
@@ -26,17 +26,17 @@ void test('evicts the least recently used document when capacity is exceeded', a
   cache.set(second);
 
   // Touch the first entry so the second becomes the oldest.
-  assert.equal(cache.get(first.uri), first);
+  assert.equal(cache.get(first.identity), first);
 
   cache.set(third);
 
-  assert.equal(cache.get(first.uri), first, 'expected recently accessed entry to remain');
+  assert.equal(cache.get(first.identity), first, 'expected recently accessed entry to remain');
   assert.equal(
-    cache.get(second.uri),
+    cache.get(second.identity),
     undefined,
     'expected least recently used entry to be evicted'
   );
-  assert.equal(cache.get(third.uri), third);
+  assert.equal(cache.get(third.identity), third);
 });
 
 void test('supports unbounded capacity when maxEntries is non-finite', async () => {
@@ -49,9 +49,9 @@ void test('supports unbounded capacity when maxEntries is non-finite', async () 
   cache.set(second);
   cache.set(third);
 
-  assert.equal(cache.get(first.uri), first);
-  assert.equal(cache.get(second.uri), second);
-  assert.equal(cache.get(third.uri), third);
+  assert.equal(cache.get(first.identity), first);
+  assert.equal(cache.get(second.identity), second);
+  assert.equal(cache.get(third.identity), third);
 });
 
 void test('expires documents after the configured max age', async () => {
@@ -61,13 +61,13 @@ void test('expires documents after the configured max age', async () => {
 
   cache.set(document);
 
-  assert.equal(cache.get(document.uri), document, 'expected fresh entry to be returned');
+  assert.equal(cache.get(document.identity), document, 'expected fresh entry to be returned');
 
   now = 1001;
 
-  assert.equal(cache.get(document.uri), undefined, 'expected expired entry to be evicted');
+  assert.equal(cache.get(document.identity), undefined, 'expected expired entry to be evicted');
   assert.equal(
-    cache.get(document.uri),
+    cache.get(document.identity),
     undefined,
     'expected expired entry to be removed on access'
   );
@@ -80,12 +80,12 @@ void test('applies a default expiration when maxAgeMs is omitted', async () => {
 
   cache.set(document);
 
-  assert.equal(cache.get(document.uri), document);
+  assert.equal(cache.get(document.identity), document);
 
   now = 5 * 60 * 1000 + 1;
 
   assert.equal(
-    cache.get(document.uri),
+    cache.get(document.identity),
     undefined,
     'expected default max age to expire entries after five minutes'
   );
@@ -100,7 +100,7 @@ void test('treats non-finite maxAgeMs as unbounded', async () => {
 
   now = Number.MAX_SAFE_INTEGER;
 
-  assert.equal(cache.get(document.uri), document);
+  assert.equal(cache.get(document.identity), document);
 });
 
 void test('delete removes cached documents', async () => {
@@ -108,9 +108,9 @@ void test('delete removes cached documents', async () => {
   const document = await createDocument('memory://cache/delete', 1);
 
   cache.set(document);
-  cache.delete(document.uri);
+  cache.delete(document.identity);
 
-  assert.equal(cache.get(document.uri), undefined);
+  assert.equal(cache.get(document.identity), undefined);
 });
 
 void test('clear removes all cached documents', async () => {
@@ -122,8 +122,8 @@ void test('clear removes all cached documents', async () => {
   cache.set(second);
   cache.clear();
 
-  assert.equal(cache.get(first.uri), undefined);
-  assert.equal(cache.get(second.uri), undefined);
+  assert.equal(cache.get(first.identity), undefined);
+  assert.equal(cache.get(second.identity), undefined);
 });
 
 void test('maxEntries equal to zero disables caching entirely', async () => {
@@ -132,7 +132,7 @@ void test('maxEntries equal to zero disables caching entirely', async () => {
 
   cache.set(document);
 
-  assert.equal(cache.get(document.uri), undefined);
+  assert.equal(cache.get(document.identity), undefined);
 });
 
 async function createDocument(uri: string, value: unknown): Promise<RawDocument> {
