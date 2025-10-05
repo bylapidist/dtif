@@ -485,7 +485,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
             input.flatten ?? true
           );
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = ensureDocumentHash(snapshot.token, documentHash);
+            const entry = normalizeTokenCacheEntryDiagnostics(
+              ensureDocumentHash(snapshot.token, documentHash),
+              snapshot.diagnostics
+            );
             await this.#tokenCache.set(key, entry);
           }
         }
@@ -543,7 +546,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
             input.flatten ?? true
           );
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = ensureDocumentHash(snapshot.token, documentHash);
+            const entry = normalizeTokenCacheEntryDiagnostics(
+              ensureDocumentHash(snapshot.token, documentHash),
+              snapshot.diagnostics
+            );
             ensureSynchronous(this.#tokenCache.set(key, entry), 'write token cache');
           }
         }
@@ -705,6 +711,18 @@ function ensureDocumentHash(
   }
 
   return { ...entry, documentHash } satisfies TokenCacheSnapshot;
+}
+
+function normalizeTokenCacheEntryDiagnostics(
+  entry: TokenCacheSnapshot,
+  diagnostics: readonly DiagnosticEvent[] | undefined
+): TokenCacheSnapshot {
+  if (diagnostics && diagnostics.length > 0) {
+    return { ...entry, diagnostics } satisfies TokenCacheSnapshot;
+  }
+
+  const { diagnostics: _ignored, ...withoutDiagnostics } = entry;
+  return withoutDiagnostics as TokenCacheSnapshot;
 }
 
 function toDiagnosticEvents(

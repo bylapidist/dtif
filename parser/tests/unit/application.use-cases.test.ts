@@ -461,6 +461,7 @@ void test('application use cases: parse tokens shares document pipeline and toke
   assert.equal(first.tokensFromCache, false);
   assert.equal(flattenCalls, 1);
   assert.equal(first.diagnostics.length, 2);
+  assert.equal(first.tokens?.diagnostics?.length, 1);
   assert.equal(reportedDiagnostics.length, 1);
   assert.equal(reportedDiagnostics[0]?.events, first.diagnostics);
 
@@ -473,7 +474,8 @@ void test('application use cases: parse tokens shares document pipeline and toke
   assert.equal(second.tokensFromCache, true);
   assert.equal(flattenCalls, 1);
   assert.equal(second.tokens?.token.documentHash, 'hash');
-  assert.equal(second.diagnostics.length, 3);
+  assert.equal(second.tokens?.diagnostics?.length, 1);
+  assert.equal(second.diagnostics.length, 2);
 });
 
 void test('application use cases: parse tokens synchronously shares cache behaviour', () => {
