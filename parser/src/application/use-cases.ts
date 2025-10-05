@@ -717,12 +717,17 @@ function normalizeTokenCacheEntryDiagnostics(
   entry: TokenCacheSnapshot,
   diagnostics: readonly DiagnosticEvent[] | undefined
 ): TokenCacheSnapshot {
+  const { diagnostics: existingDiagnostics, ...entryWithoutDiagnostics } = entry;
+
   if (diagnostics && diagnostics.length > 0) {
-    return { ...entry, diagnostics } satisfies TokenCacheSnapshot;
+    return { ...entryWithoutDiagnostics, diagnostics } satisfies TokenCacheSnapshot;
   }
 
-  const { diagnostics: _ignored, ...withoutDiagnostics } = entry;
-  return withoutDiagnostics as TokenCacheSnapshot;
+  if (!existingDiagnostics || existingDiagnostics.length === 0) {
+    return entry;
+  }
+
+  return entryWithoutDiagnostics satisfies TokenCacheSnapshot;
 }
 
 function toDiagnosticEvents(

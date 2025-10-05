@@ -457,13 +457,14 @@ void test('application use cases: parse tokens shares document pipeline and toke
     includeGraphs: true
   });
 
-  assert.equal(first.tokens?.token.documentHash, 'hash');
+  assert.ok(first.tokens);
+  assert.equal(first.tokens.token.documentHash, 'hash');
   assert.equal(first.tokensFromCache, false);
   assert.equal(flattenCalls, 1);
   assert.equal(first.diagnostics.length, 2);
-  assert.equal(first.tokens?.diagnostics?.length, 1);
+  assert.equal(first.tokens.diagnostics.length, 1);
   assert.equal(reportedDiagnostics.length, 1);
-  assert.equal(reportedDiagnostics[0]?.events, first.diagnostics);
+  assert.equal(reportedDiagnostics[0].events, first.diagnostics);
 
   const second = await tokensUseCase.execute({
     request: { uri: identity.uri },
@@ -473,8 +474,9 @@ void test('application use cases: parse tokens shares document pipeline and toke
 
   assert.equal(second.tokensFromCache, true);
   assert.equal(flattenCalls, 1);
-  assert.equal(second.tokens?.token.documentHash, 'hash');
-  assert.equal(second.tokens?.diagnostics?.length, 1);
+  assert.ok(second.tokens);
+  assert.equal(second.tokens.token.documentHash, 'hash');
+  assert.equal(second.tokens.diagnostics.length, 1);
   assert.equal(second.diagnostics.length, 2);
 });
 
@@ -591,7 +593,8 @@ void test('application use cases: parse tokens synchronously shares cache behavi
 
   assert.equal(first.tokensFromCache, false);
   assert.equal(cacheWrites, 1);
-  assert.equal(first.tokens?.token.documentHash, 'hash');
+  assert.ok(first.tokens);
+  assert.equal(first.tokens.token.documentHash, 'hash');
 
   const second = tokensUseCase.executeSync({
     request: { uri: identity.uri },
