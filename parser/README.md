@@ -5,7 +5,7 @@ package provides the reference pipeline for loading, validating, normalising,
 and resolving DTIF documents while emitting structured diagnostics for tooling
 and automation workflows.
 
-> Documentation: [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser/)
+> Documentation: [Using the DTIF parser](https://dtif.lapidist.net/guides/dtif-parser)
 
 ## Installation
 
