@@ -41,6 +41,14 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 {
   "$schema": "https://dtif.lapidist.net/schema/core.json",
   "$version": "1.0.0",
+  "button": {
+    "background": {
+      "$type": "color",
+      "$value": {
+        "$ref": "#/color/brand/primary"
+      }
+    }
+  },
   "color": {
     "brand": {
       "primary": {
@@ -60,12 +68,6 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
         "value": 8,
         "unit": "px"
       }
-    }
-  },
-  "button": {
-    "background": {
-      "$type": "color",
-      "$ref": "#/color/brand/primary"
     }
   }
 }
