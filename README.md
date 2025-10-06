@@ -159,7 +159,7 @@ Use the canonical parser package to cache decoded documents, resolve pointers, a
    npx dtif-parse tokens/base.tokens.json --resolve "#/color/brand/primary" --format json
    ```
 
-   Run `dtif-parse --help` to view all CLI switches. The [parser guide](https://dtif.lapidist.net/guides/dtif-parser/) covers cache configuration, loader overrides, and plugin registration in more detail.
+   Run `dtif-parse --help` to view all CLI switches. The [parser guide](https://dtif.lapidist.net/guides/dtif-parser) covers cache configuration, loader overrides, and plugin registration in more detail.
 
 ## Packages at a glance
 
