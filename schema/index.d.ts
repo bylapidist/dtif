@@ -5,97 +5,17 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-/**
- * Optional JSON Schema identifier that helps tooling discover compatible vocabularies.
- */
-export type SchemaDeclaration = string;
-/**
- * Human-readable explanation preserved for design intent per Metadata §metadata.
- */
-export type Description = string;
-/**
- * Semantic Versioning identifier for the token document per Architecture and model §versioning.
- */
-export type DocumentVersion = string;
-/**
- * Namespaced metadata that applies to the entire document per Format and serialisation §$extensions.
- */
-export type DocumentExtensions = ExtensionsMap;
-/**
- * Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.
- */
-export type OverrideRule = OverrideRuleMembers &
-  OverrideResolutionRequirement & {
-    [k: string]: unknown;
-  };
-/**
- * Pointer to the token being overridden per Theming and overrides §$overrides.
- */
-export type TargetToken = DTIFPointerReference;
-/**
- * JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation §$ref.
- */
-export type DTIFPointerReference = string & {
-  [k: string]: unknown;
-} & Pointer;
-export type Pointer = string;
-/**
- * Pointer to the replacement token per Theming and overrides §$overrides.
- */
-export type OverrideReference = DTIFPointerReference;
-/**
- * Single fallback object or array evaluated when primary override resolution fails per Theming and overrides §$overrides.
- */
-export type FallbackChain = FallbackChain1;
-/**
- * Single fallback entry or ordered array evaluated when primary overrides fail per Theming and overrides §$overrides.
- */
-export type FallbackChain1 = FallbackEntry | [FallbackEntry, ...FallbackEntry[]];
-/**
- * Single fallback candidate containing a $ref or inline $value per Theming and overrides §$overrides.
- */
-export type FallbackEntry = FallbackEntryMembers &
-  FallbackResolutionRequirement & {
-    [k: string]: unknown;
-  };
-/**
- * Pointer to an alternate token per Theming and overrides §$overrides.
- */
-export type FallbackReference = DTIFPointerReference;
-/**
- * Optional nested fallback chain evaluated when this entry fails per Theming and overrides §$overrides.
- */
-export type NestedFallback = FallbackChain1;
-export type FallbackResolutionRequirement =
-  | {
-      $ref: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $value: unknown;
-      [k: string]: unknown;
-    };
-export type OverrideResolutionRequirement =
-  | {
-      $ref: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $value: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $fallback: unknown;
-      [k: string]: unknown;
-    };
-/**
- * Conditional overrides evaluated in order per Theming and overrides §$overrides.
- */
-export type Overrides = OverrideRule[];
+export type DesignTokenInterchangeFormat = TokenMemberMap & {
+  $schema?: SchemaDeclaration;
+  $description?: Description;
+  $version?: DocumentVersion;
+  $extensions?: DocumentExtensions;
+  $overrides?: Overrides;
+};
 /**
  * Tree node that is either a token or a collection per Architecture and model §tokens-and-collections.
  *
- * This interface was referenced by `DesignTokenInterchangeFormat`'s JSON-Schema definition
+ * This interface was referenced by `TokenMemberMap`'s JSON-Schema definition
  * via the `patternProperty` "^(?!\$)".
  */
 export type TokenOrCollectionNode = DesignToken | TokenCollection;
@@ -103,6 +23,10 @@ export type TokenOrCollectionNode = DesignToken | TokenCollection;
  * Object declaring either $value or $ref along with optional metadata per Terminology §token and Format and serialisation §$ref.
  */
 export type DesignToken = MetadataMembers & TokenCore & LifecycleTelemetryRequirements;
+/**
+ * Human-readable explanation preserved for design intent per Metadata §metadata.
+ */
+export type Description = string;
 /**
  * Namespaced metadata preserved by consumers per Format and serialisation §$extensions.
  */
@@ -119,6 +43,13 @@ export type DeprecationMetadata =
  * Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.
  */
 export type ReplacementTokenPointer = DTIFPointerReference;
+/**
+ * JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation §$ref.
+ */
+export type DTIFPointerReference = string & {
+  [k: string]: unknown;
+} & Pointer;
+export type Pointer = string;
 /**
  * RFC 3339 date-time recording governance actions per Metadata §metadata.
  */
@@ -197,19 +128,114 @@ export type LifecycleTelemetryRequirements = {
 export type TokenCollection = MetadataMembers & {
   [k: string]: unknown;
 } & LifecycleTelemetryRequirements;
+/**
+ * Optional JSON Schema identifier that helps tooling discover compatible vocabularies.
+ */
+export type SchemaDeclaration = string;
+/**
+ * Semantic Versioning identifier for the token document per Architecture and model §versioning.
+ */
+export type DocumentVersion = string;
+/**
+ * Namespaced metadata that applies to the entire document per Format and serialisation §$extensions.
+ */
+export type DocumentExtensions = ExtensionsMap;
+/**
+ * Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.
+ */
+export type OverrideRule = OverrideRuleMembers &
+  OverrideResolutionRequirement & {
+    [k: string]: unknown;
+  };
+/**
+ * Pointer to the token being overridden per Theming and overrides §$overrides.
+ */
+export type TargetToken = DTIFPointerReference;
+/**
+ * Pointer to the replacement token per Theming and overrides §$overrides.
+ */
+export type OverrideReference = DTIFPointerReference;
+/**
+ * Single fallback object or array evaluated when primary override resolution fails per Theming and overrides §$overrides.
+ */
+export type FallbackChain = FallbackChain1;
+/**
+ * Single fallback entry or ordered array evaluated when primary overrides fail per Theming and overrides §$overrides.
+ */
+export type FallbackChain1 = FallbackEntry | [FallbackEntry, ...FallbackEntry[]];
+/**
+ * Single fallback candidate containing a $ref or inline $value per Theming and overrides §$overrides.
+ */
+export type FallbackEntry = FallbackEntryMembers &
+  FallbackResolutionRequirement & {
+    [k: string]: unknown;
+  };
+/**
+ * Pointer to an alternate token per Theming and overrides §$overrides.
+ */
+export type FallbackReference = DTIFPointerReference;
+/**
+ * Optional nested fallback chain evaluated when this entry fails per Theming and overrides §$overrides.
+ */
+export type NestedFallback = FallbackChain1;
+export type FallbackResolutionRequirement =
+  | {
+      $ref: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $value: unknown;
+      [k: string]: unknown;
+    };
+export type OverrideResolutionRequirement =
+  | {
+      $ref: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $value: unknown;
+      [k: string]: unknown;
+    }
+  | {
+      $fallback: unknown;
+      [k: string]: unknown;
+    };
+/**
+ * Conditional overrides evaluated in order per Theming and overrides §$overrides.
+ */
+export type Overrides = OverrideRule[];
 
-export interface DesignTokenInterchangeFormat {
-  $schema?: SchemaDeclaration;
+/**
+ * Tree of design token or collection entries keyed by names that do not begin with $.
+ */
+export type TokenMemberMap = {
+  [K in string as K extends `$${string}` ? never : K]?: TokenOrCollectionNode;
+};
+/**
+ * Optional metadata fields defined in Metadata §metadata applied to tokens and collections.
+ */
+export interface MetadataMembers {
   $description?: Description;
-  $version?: DocumentVersion;
-  $extensions?: DocumentExtensions;
-  $overrides?: Overrides;
-  [k: string]: TokenOrCollectionNode;
+  $extensions?: Extensions;
+  $deprecated?: DeprecationMetadata;
+  $lastModified?: LastModifiedTimestamp;
+  $lastUsed?: LastUsedTimestamp;
+  $usageCount?: UsageCount;
+  $author?: Author;
+  $tags?: Tags;
+  $hash?: Hash;
+  [k: string]: unknown;
 }
 /**
  * Namespaced metadata keyed by reverse-DNS identifiers per Format and serialisation §$extensions.
  */
 export interface ExtensionsMap {
+  [k: string]: unknown;
+}
+/**
+ * Design decision payload whose shape depends on $type per Token types §value.
+ */
+export interface TokenValue {
   [k: string]: unknown;
 }
 /**
@@ -246,26 +272,5 @@ export interface FallbackEntryMembers {
  * Inline fallback that MUST conform to the overridden token's $type per Theming and overrides §$overrides.
  */
 export interface InlineFallbackValue {
-  [k: string]: unknown;
-}
-/**
- * Optional metadata fields defined in Metadata §metadata applied to tokens and collections.
- */
-export interface MetadataMembers {
-  $description?: Description;
-  $extensions?: Extensions;
-  $deprecated?: DeprecationMetadata;
-  $lastModified?: LastModifiedTimestamp;
-  $lastUsed?: LastUsedTimestamp;
-  $usageCount?: UsageCount;
-  $author?: Author;
-  $tags?: Tags;
-  $hash?: Hash;
-  [k: string]: unknown;
-}
-/**
- * Design decision payload whose shape depends on $type per Token types §value.
- */
-export interface TokenValue {
   [k: string]: unknown;
 }
