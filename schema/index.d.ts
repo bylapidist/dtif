@@ -4,7 +4,6 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source JSONSchema file,
  * and run json-schema-to-typescript to regenerate this file.
  */
-
 export type DesignTokenInterchangeFormat = TokenMemberMap & {
   $schema?: SchemaDeclaration;
   $description?: Description;
@@ -34,11 +33,9 @@ export type Extensions = ExtensionsMap;
 /**
  * Boolean indicator or replacement pointer per Metadata §metadata.
  */
-export type DeprecationMetadata =
-  | boolean
-  | {
-      $replacement: ReplacementTokenPointer;
-    };
+export type DeprecationMetadata = boolean | {
+  $replacement: ReplacementTokenPointer;
+};
 /**
  * Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.
  */
@@ -86,16 +83,13 @@ export type Hash = HashString;
  * Stable identifier with no whitespace per Metadata §metadata.
  */
 export type HashString = string;
-export type TokenCore = (
-  | {
-      $value: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $ref: unknown;
-      [k: string]: unknown;
-    }
-) & {
+export type TokenCore = ({
+  $value: unknown;
+  [k: string]: unknown;
+} | {
+  $ref: unknown;
+  [k: string]: unknown;
+}) & {
   [k: string]: unknown;
 } & {
   $type?: TokenTypeIdentifier;
@@ -143,10 +137,9 @@ export type DocumentExtensions = ExtensionsMap;
 /**
  * Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.
  */
-export type OverrideRule = OverrideRuleMembers &
-  OverrideResolutionRequirement & {
-    [k: string]: unknown;
-  };
+export type OverrideRule = OverrideRuleMembers & OverrideResolutionRequirement & {
+  [k: string]: unknown;
+};
 /**
  * Pointer to the token being overridden per Theming and overrides §$overrides.
  */
@@ -162,14 +155,16 @@ export type FallbackChain = FallbackChain1;
 /**
  * Single fallback entry or ordered array evaluated when primary overrides fail per Theming and overrides §$overrides.
  */
-export type FallbackChain1 = FallbackEntry | [FallbackEntry, ...FallbackEntry[]];
+export type FallbackChain1 = FallbackEntry | [
+  FallbackEntry,
+  ...FallbackEntry[]
+];
 /**
  * Single fallback candidate containing a $ref or inline $value per Theming and overrides §$overrides.
  */
-export type FallbackEntry = FallbackEntryMembers &
-  FallbackResolutionRequirement & {
-    [k: string]: unknown;
-  };
+export type FallbackEntry = FallbackEntryMembers & FallbackResolutionRequirement & {
+  [k: string]: unknown;
+};
 /**
  * Pointer to an alternate token per Theming and overrides §$overrides.
  */
@@ -178,33 +173,27 @@ export type FallbackReference = DTIFPointerReference;
  * Optional nested fallback chain evaluated when this entry fails per Theming and overrides §$overrides.
  */
 export type NestedFallback = FallbackChain1;
-export type FallbackResolutionRequirement =
-  | {
-      $ref: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $value: unknown;
-      [k: string]: unknown;
-    };
-export type OverrideResolutionRequirement =
-  | {
-      $ref: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $value: unknown;
-      [k: string]: unknown;
-    }
-  | {
-      $fallback: unknown;
-      [k: string]: unknown;
-    };
+export type FallbackResolutionRequirement = {
+  $ref: unknown;
+  [k: string]: unknown;
+} | {
+  $value: unknown;
+  [k: string]: unknown;
+};
+export type OverrideResolutionRequirement = {
+  $ref: unknown;
+  [k: string]: unknown;
+} | {
+  $value: unknown;
+  [k: string]: unknown;
+} | {
+  $fallback: unknown;
+  [k: string]: unknown;
+};
 /**
  * Conditional overrides evaluated in order per Theming and overrides §$overrides.
  */
 export type Overrides = OverrideRule[];
-
 /**
  * Tree of design token or collection entries keyed by names that do not begin with $.
  */
