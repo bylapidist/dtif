@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- [#98](https://github.com/bylapidist/dtif/pull/98) [`632f48e`](https://github.com/bylapidist/dtif/commit/632f48ed3fa2683e3d4e4808c52d9deaabd38af3) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Fix the DesignTokenInterchangeFormat declarations so $-prefixed metadata fields no longer conflict with token map entries under strict TypeScript.
+
 ## 1.0.0
 
 ## 0.5.0
