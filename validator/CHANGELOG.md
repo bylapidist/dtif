@@ -1,5 +1,12 @@
 # @lapidist/dtif-validator changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`632f48e`](https://github.com/bylapidist/dtif/commit/632f48ed3fa2683e3d4e4808c52d9deaabd38af3)]:
+  - @lapidist/dtif-schema@1.0.1
+
 ## 1.0.0
 
 ### Patch Changes
