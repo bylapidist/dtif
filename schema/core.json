@@ -40,13 +40,24 @@
       }
     }
   },
-  "patternProperties": {
-    "^(?!\\$)": {
-      "$ref": "#/$defs/node"
+  "allOf": [
+    {
+      "$ref": "#/$defs/token-members"
     }
-  },
+  ],
   "unevaluatedProperties": false,
   "$defs": {
+    "token-members": {
+      "title": "Token member map",
+      "description": "Tree of design token or collection entries keyed by names that do not begin with $.",
+      "$comment": "Architecture and model §tokens-and-collections: document members other than $-prefixed metadata are tokens or nested collections.",
+      "type": "object",
+      "patternProperties": {
+        "^(?!\\$)": {
+          "$ref": "#/$defs/node"
+        }
+      }
+    },
     "pointer": {
       "title": "DTIF pointer reference",
       "description": "JSON Pointer string optionally prefixed by a relative path or HTTP(S) URI with a fragment per Format and serialisation §$ref.",
