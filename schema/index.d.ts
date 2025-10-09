@@ -1945,12 +1945,25 @@ export namespace CoreJson {
          * Design token
          * Object declaring either $value or $ref along with optional metadata per Terminology §token and Format and serialisation §$ref.
          */
-        export type Token = /**
-         * Terminology §token and Format and serialisation §$ref.
-         * Design token
-         * Object declaring either $value or $ref along with optional metadata per Terminology §token and Format and serialisation §$ref.
-         */ void | void;
-        export type TokenCore = void | void;
+        export type Token = MetadataMembers & TokenCore;
+        export type TokenCore = (({
+            "$value": unknown;
+        } & Record<string, unknown>) | ({
+            "$ref": string;
+        } & Record<string, unknown>)) & ({
+            "$type"?: TypeIdentifier;
+            "$value"?: Record<string, unknown>;
+            "$ref"?: string;
+            "$description"?: MetadataMembers["$description"];
+            "$extensions"?: MetadataMembers["$extensions"];
+            "$deprecated"?: MetadataMembers["$deprecated"];
+            "$lastModified"?: MetadataMembers["$lastModified"];
+            "$lastUsed"?: MetadataMembers["$lastUsed"];
+            "$usageCount"?: MetadataMembers["$usageCount"];
+            "$author"?: MetadataMembers["$author"];
+            "$tags"?: MetadataMembers["$tags"];
+            "$hash"?: MetadataMembers["$hash"];
+        } & Record<string, unknown>);
         /**
          * Architecture and model §tokens-and-collections: document members other than $-prefixed metadata are tokens or nested collections.
          * Token member map
@@ -2299,7 +2312,7 @@ export interface ZIndex extends CoreJson.Definitions.ZIndex {
 export type ZIndexValueEntry = CoreJson.Definitions.ZIndexValueEntry;
 export type ZIndexValueFallback = CoreJson.Definitions.ZIndexValueFallback;
 export type TokenMemberMap = {
-    [K in string as K extends `$${string}` ? never : K]?: CoreJson.Definitions.Node;
+    [K in PropertyKey as K extends string ? K extends `$${string}` ? never : K : never]: CoreJson.Definitions.Node;
 };
 export type TokenOrCollectionNode = CoreJson.Definitions.Node;
 export type DesignTokenInterchangeFormat = TokenMemberMap & {

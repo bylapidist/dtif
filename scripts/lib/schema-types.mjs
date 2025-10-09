@@ -154,7 +154,52 @@ function transformModule(statement, factory, context) {
   return factory.updateModuleDeclaration(statement, modifiers, statement.name, updatedBody);
 }
 
+function transformTypeAlias(statement, factory, context) {
+  let modifiers = statement.modifiers;
+  if (hasDeclareModifier(statement)) {
+    modifiers = replaceDeclareWithExport(statement, factory);
+  }
+
+  if (context.length === 2 && context[0] === 'CoreJson' && context[1] === 'Definitions') {
+    if (statement.name.text === 'TokenCore') {
+      const alias = factory.createTypeAliasDeclaration(
+        modifiers,
+        statement.name,
+        statement.typeParameters,
+        createTokenCoreType(factory)
+      );
+      alias.jsDoc = statement.jsDoc;
+      return alias;
+    }
+
+    if (statement.name.text === 'Token') {
+      const alias = factory.createTypeAliasDeclaration(
+        modifiers,
+        statement.name,
+        statement.typeParameters,
+        factory.createIntersectionTypeNode([
+          factory.createTypeReferenceNode(factory.createIdentifier('MetadataMembers'), undefined),
+          factory.createTypeReferenceNode(factory.createIdentifier('TokenCore'), undefined)
+        ])
+      );
+      alias.jsDoc = statement.jsDoc;
+      return alias;
+    }
+  }
+
+  return factory.updateTypeAliasDeclaration(
+    statement,
+    modifiers,
+    statement.name,
+    statement.typeParameters,
+    statement.type
+  );
+}
+
 function transformStatement(statement, factory, context = []) {
+  if (ts.isTypeAliasDeclaration(statement)) {
+    return transformTypeAlias(statement, factory, context);
+  }
   if (ts.isInterfaceDeclaration(statement)) {
     return transformInterface(statement, factory, context);
   }
@@ -205,6 +250,84 @@ function createDefinitionAlias(factory, definition) {
   );
 }
 
+function createMetadataIndexedAccess(factory, propertyName) {
+  return factory.createIndexedAccessTypeNode(
+    factory.createTypeReferenceNode(factory.createIdentifier('MetadataMembers'), undefined),
+    factory.createLiteralTypeNode(factory.createStringLiteral(propertyName))
+  );
+}
+
+function createTokenCoreType(factory) {
+  const keyword = (kind) => factory.createKeywordTypeNode(kind);
+  const createRecordUnknown = () =>
+    factory.createTypeReferenceNode(factory.createIdentifier('Record'), [
+      keyword(ts.SyntaxKind.StringKeyword),
+      keyword(ts.SyntaxKind.UnknownKeyword)
+    ]);
+
+  const valueVariant = factory.createIntersectionTypeNode([
+    factory.createTypeLiteralNode([
+      factory.createPropertySignature(
+        undefined,
+        factory.createStringLiteral('$value'),
+        undefined,
+        keyword(ts.SyntaxKind.UnknownKeyword)
+      )
+    ]),
+    createRecordUnknown()
+  ]);
+
+  const refVariant = factory.createIntersectionTypeNode([
+    factory.createTypeLiteralNode([
+      factory.createPropertySignature(
+        undefined,
+        factory.createStringLiteral('$ref'),
+        undefined,
+        keyword(ts.SyntaxKind.StringKeyword)
+      )
+    ]),
+    createRecordUnknown()
+  ]);
+
+  const baseUnion = factory.createParenthesizedType(
+    factory.createUnionTypeNode([valueVariant, refVariant])
+  );
+
+  const metadataProperties = [
+    [
+      '$type',
+      factory.createTypeReferenceNode(factory.createIdentifier('TypeIdentifier'), undefined)
+    ],
+    ['$value', createRecordUnknown()],
+    ['$ref', keyword(ts.SyntaxKind.StringKeyword)],
+    ['$description', createMetadataIndexedAccess(factory, '$description')],
+    ['$extensions', createMetadataIndexedAccess(factory, '$extensions')],
+    ['$deprecated', createMetadataIndexedAccess(factory, '$deprecated')],
+    ['$lastModified', createMetadataIndexedAccess(factory, '$lastModified')],
+    ['$lastUsed', createMetadataIndexedAccess(factory, '$lastUsed')],
+    ['$usageCount', createMetadataIndexedAccess(factory, '$usageCount')],
+    ['$author', createMetadataIndexedAccess(factory, '$author')],
+    ['$tags', createMetadataIndexedAccess(factory, '$tags')],
+    ['$hash', createMetadataIndexedAccess(factory, '$hash')]
+  ];
+
+  const metadataType = factory.createIntersectionTypeNode([
+    factory.createTypeLiteralNode(
+      metadataProperties.map(([name, type]) =>
+        factory.createPropertySignature(
+          undefined,
+          factory.createStringLiteral(name),
+          factory.createToken(ts.SyntaxKind.QuestionToken),
+          type
+        )
+      )
+    ),
+    createRecordUnknown()
+  ]);
+
+  return factory.createIntersectionTypeNode([baseUnion, metadataType]);
+}
+
 function createTemplateLiteral(factory, prefix) {
   return factory.createTemplateLiteralType(factory.createTemplateHead(prefix), [
     factory.createTemplateLiteralTypeSpan(
@@ -219,14 +342,19 @@ function createTokenMemberMapAlias(factory, prefix) {
   const typeParam = factory.createTypeParameterDeclaration(
     undefined,
     factory.createIdentifier('K'),
-    factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+    factory.createTypeReferenceNode(factory.createIdentifier('PropertyKey'), undefined),
     undefined
   );
   const filteredKey = factory.createConditionalTypeNode(
     factory.createTypeReferenceNode(factory.createIdentifier('K'), undefined),
-    template,
-    factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword),
-    factory.createTypeReferenceNode(factory.createIdentifier('K'), undefined)
+    factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+    factory.createConditionalTypeNode(
+      factory.createTypeReferenceNode(factory.createIdentifier('K'), undefined),
+      template,
+      factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword),
+      factory.createTypeReferenceNode(factory.createIdentifier('K'), undefined)
+    ),
+    factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword)
   );
   return factory.createTypeAliasDeclaration(
     [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
@@ -236,7 +364,7 @@ function createTokenMemberMapAlias(factory, prefix) {
       undefined,
       typeParam,
       filteredKey,
-      factory.createToken(ts.SyntaxKind.QuestionToken),
+      undefined,
       factory.createTypeReferenceNode(
         toQualifiedName(factory, ['CoreJson', 'Definitions', 'Node']),
         undefined
