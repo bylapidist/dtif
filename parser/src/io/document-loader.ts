@@ -306,7 +306,7 @@ function resolveFilePath(reference: string, baseUri: URL | undefined, cwd: strin
     return reference;
   }
 
-  if (baseUri && baseUri.protocol === 'file:') {
+  if (baseUri?.protocol === 'file:') {
     const basePath = fileURLToPath(baseUri.href.endsWith('/') ? baseUri : new URL('.', baseUri));
     return path.resolve(basePath, reference);
   }

@@ -1,11 +1,16 @@
 import type { Node as JsonNode } from 'jsonc-parser';
 
 export function getStringProperty(node: JsonNode | undefined, name: string): string | undefined {
-  if (!node || node.type !== 'object' || !node.children) {
+  if (node?.type !== 'object') {
     return undefined;
   }
 
-  for (const property of node.children) {
+  const { children } = node;
+  if (!children) {
+    return undefined;
+  }
+
+  for (const property of children) {
     const keyNode = property.children?.[0];
     const valueNode = property.children?.[1];
 
