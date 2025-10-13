@@ -85,7 +85,7 @@ export function buildQuickFixes(context: QuickFixContext): CodeAction[] {
 
 function buildInsertPropertyAction(options: InsertPropertyOptions): CodeAction | undefined {
   const node = options.store.getPointerNode(options.uri, options.pointer);
-  if (!node || node.type !== 'object') {
+  if (node?.type !== 'object') {
     return undefined;
   }
 

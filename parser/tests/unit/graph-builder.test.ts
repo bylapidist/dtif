@@ -64,7 +64,8 @@ void test('buildDocumentGraph indexes collections, tokens, aliases, and override
   ]);
 
   const alias = graph.nodes.get('#/color/brand/accent');
-  assert.ok(alias && alias.kind === 'alias');
+  assert.ok(alias);
+  assert.equal(alias.kind, 'alias');
   assert.equal(alias.ref.value.pointer, '#/color/brand/primary');
   assert.equal(alias.ref.value.external, false);
 
@@ -124,6 +125,7 @@ void test('buildDocumentGraph reports missing targets and invalid target kinds',
   const { graph: missingGraph } = graphResult;
   assert.ok(missingGraph);
   const alias = missingGraph.nodes.get('#/color/alias');
-  assert.ok(alias && alias.kind === 'alias');
+  assert.ok(alias);
+  assert.equal(alias.kind, 'alias');
   assert.equal(alias.ref.value.pointer, '#/color/missing');
 });
