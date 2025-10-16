@@ -6,6 +6,7 @@ import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import { decodeDocument } from '../../src/io/decoder.js';
 import { JSON_POINTER_ROOT } from '../../src/utils/json-pointer.js';
 import type { DocumentHandle } from '../../src/types.js';
+import type { DocumentAst, TokenNode } from '../../src/ast/nodes.js';
 
 const encoder = new TextEncoder();
 
@@ -20,6 +21,19 @@ function createHandle(content: string): DocumentHandle {
 async function normalise(content: string) {
   const raw = await decodeDocument(createHandle(content));
   return normalizeDocument(raw);
+}
+
+const BASE_TOKEN = {
+  $type: 'color',
+  $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+} as const;
+
+function getToken(ast: DocumentAst, name: string): TokenNode {
+  const node = ast.children.find(
+    (child): child is TokenNode => child.kind === 'token' && child.name === name
+  );
+  assert.ok(node, `expected token ${name} to be normalised`);
+  return node;
 }
 
 void test('normalises collections, tokens, aliases, and metadata', async () => {
@@ -74,6 +88,137 @@ void test('normalises collections, tokens, aliases, and metadata', async () => {
   assert.equal(accentAlias.name, 'accent');
   assert.equal(accentAlias.type.value, 'color');
   assert.equal(accentAlias.ref.value, '#/color/brand');
+});
+
+void test('metadata rejects invalid lifecycle timestamps', async () => {
+  const json = JSON.stringify(
+    {
+      invalidModified: {
+        ...BASE_TOKEN,
+        $lastModified: 'yesterday'
+      },
+      invalidUsed: {
+        ...BASE_TOKEN,
+        $lastUsed: 'not-a-date',
+        $usageCount: 0
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { ast, diagnostics } = result;
+  assert.ok(ast);
+  assert.equal(diagnostics.length, 2);
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) => diagnostic.message === '$lastModified must be an RFC 3339 date-time string.'
+    )
+  );
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) => diagnostic.message === '$lastUsed must be an RFC 3339 date-time string.'
+    )
+  );
+
+  const invalidModified = getToken(ast, 'invalidModified');
+  assert.equal(invalidModified.metadata.lastModified, undefined);
+
+  const invalidUsed = getToken(ast, 'invalidUsed');
+  assert.equal(invalidUsed.metadata.lastUsed, undefined);
+  assert.equal(invalidUsed.metadata.usageCount?.value, 0);
+});
+
+void test('$lastUsed timestamps must not precede $lastModified', async () => {
+  const json = JSON.stringify(
+    {
+      token: {
+        ...BASE_TOKEN,
+        $lastModified: '2024-05-01T10:00:00Z',
+        $lastUsed: '2024-04-30T12:00:00Z',
+        $usageCount: 3
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { ast, diagnostics } = result;
+  assert.ok(ast);
+  assert.equal(diagnostics.length, 2);
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) => diagnostic.message === '$lastUsed must not precede $lastModified.'
+    )
+  );
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) =>
+        diagnostic.message === '$usageCount greater than zero must be accompanied by $lastUsed.'
+    )
+  );
+
+  const token = getToken(ast, 'token');
+  assert.ok(token.metadata.lastModified);
+  assert.equal(token.metadata.lastUsed, undefined);
+  assert.equal(token.metadata.usageCount, undefined);
+});
+
+void test('metadata enforces $lastUsed and $usageCount pairing rules', async () => {
+  const json = JSON.stringify(
+    {
+      missingCount: {
+        ...BASE_TOKEN,
+        $lastUsed: '2024-03-01T00:00:00Z'
+      },
+      zeroCount: {
+        ...BASE_TOKEN,
+        $lastUsed: '2024-03-01T00:00:00Z',
+        $usageCount: 0
+      },
+      positiveWithoutUsed: {
+        ...BASE_TOKEN,
+        $usageCount: 5
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { ast, diagnostics } = result;
+  assert.ok(ast);
+  assert.equal(diagnostics.length, 3);
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) => diagnostic.message === '$lastUsed must be accompanied by $usageCount.'
+    )
+  );
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) => diagnostic.message === '$lastUsed requires a positive $usageCount.'
+    )
+  );
+  assert.ok(
+    diagnostics.some(
+      (diagnostic) =>
+        diagnostic.message === '$usageCount greater than zero must be accompanied by $lastUsed.'
+    )
+  );
+
+  const missingCount = getToken(ast, 'missingCount');
+  assert.equal(missingCount.metadata.lastUsed, undefined);
+  assert.equal(missingCount.metadata.usageCount, undefined);
+
+  const zeroCount = getToken(ast, 'zeroCount');
+  assert.equal(zeroCount.metadata.lastUsed, undefined);
+  assert.equal(zeroCount.metadata.usageCount?.value, 0);
+
+  const positiveWithoutUsed = getToken(ast, 'positiveWithoutUsed');
+  assert.equal(positiveWithoutUsed.metadata.lastUsed, undefined);
+  assert.equal(positiveWithoutUsed.metadata.usageCount, undefined);
 });
 
 void test('normalises overrides with fallback chains', async () => {

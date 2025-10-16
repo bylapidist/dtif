@@ -20,6 +20,39 @@ interface MutableNodeMetadata {
 }
 
 const EXTENSION_KEY_PATTERN = /^[a-z0-9]+(?:\.[a-z0-9]+)+$/u;
+const RFC3339_TIMESTAMP_PATTERN =
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/u;
+
+function parseTimestampField(
+  context: NormaliserContext,
+  field: AstField<string>,
+  key: '$lastModified' | '$lastUsed'
+): number | undefined {
+  if (!RFC3339_TIMESTAMP_PATTERN.test(field.value)) {
+    context.diagnostics.push({
+      code: DiagnosticCodes.normaliser.INVALID_MEMBER_TYPE,
+      message: `${key} must be an RFC 3339 date-time string.`,
+      severity: 'error',
+      pointer: field.pointer,
+      span: field.span
+    });
+    return undefined;
+  }
+
+  const timestamp = Date.parse(field.value);
+  if (Number.isNaN(timestamp)) {
+    context.diagnostics.push({
+      code: DiagnosticCodes.normaliser.INVALID_MEMBER_TYPE,
+      message: `${key} must be an RFC 3339 date-time string.`,
+      severity: 'error',
+      pointer: field.pointer,
+      span: field.span
+    });
+    return undefined;
+  }
+
+  return timestamp;
+}
 
 export function extractMetadata(
   context: NormaliserContext,
@@ -27,6 +60,8 @@ export function extractMetadata(
   pointer: JsonPointer
 ): NodeMetadata {
   const metadata: MutableNodeMetadata = {};
+  let lastModifiedTimestamp: number | undefined;
+  let lastUsedTimestamp: number | undefined;
 
   if ('$description' in value) {
     const description = readOptionalStringField(context, value, '$description', pointer);
@@ -102,14 +137,22 @@ export function extractMetadata(
   if ('$lastModified' in value) {
     const lastModified = readOptionalStringField(context, value, '$lastModified', pointer);
     if (lastModified) {
-      metadata.lastModified = lastModified;
+      const parsed = parseTimestampField(context, lastModified, '$lastModified');
+      if (parsed !== undefined) {
+        metadata.lastModified = lastModified;
+        lastModifiedTimestamp = parsed;
+      }
     }
   }
 
   if ('$lastUsed' in value) {
     const lastUsed = readOptionalStringField(context, value, '$lastUsed', pointer);
     if (lastUsed) {
-      metadata.lastUsed = lastUsed;
+      const parsed = parseTimestampField(context, lastUsed, '$lastUsed');
+      if (parsed !== undefined) {
+        metadata.lastUsed = lastUsed;
+        lastUsedTimestamp = parsed;
+      }
     }
   }
 
@@ -200,6 +243,24 @@ export function extractMetadata(
     }
   }
 
+  if (
+    metadata.lastModified &&
+    metadata.lastUsed &&
+    lastModifiedTimestamp !== undefined &&
+    lastUsedTimestamp !== undefined &&
+    lastUsedTimestamp < lastModifiedTimestamp
+  ) {
+    context.diagnostics.push({
+      code: DiagnosticCodes.normaliser.INVALID_METADATA_COMBINATION,
+      message: '$lastUsed must not precede $lastModified.',
+      severity: 'error',
+      pointer: metadata.lastUsed.pointer,
+      span: metadata.lastUsed.span
+    });
+    delete metadata.lastUsed;
+    lastUsedTimestamp = undefined;
+  }
+
   if (metadata.lastUsed && metadata.usageCount && metadata.usageCount.value <= 0) {
     context.diagnostics.push({
       code: DiagnosticCodes.normaliser.INVALID_METADATA_COMBINATION,
@@ -208,6 +269,8 @@ export function extractMetadata(
       pointer: metadata.lastUsed.pointer,
       span: metadata.lastUsed.span
     });
+    delete metadata.lastUsed;
+    lastUsedTimestamp = undefined;
   }
 
   if (metadata.lastUsed && !metadata.usageCount) {
@@ -218,6 +281,8 @@ export function extractMetadata(
       pointer: metadata.lastUsed.pointer,
       span: metadata.lastUsed.span
     });
+    delete metadata.lastUsed;
+    lastUsedTimestamp = undefined;
   }
 
   if (metadata.usageCount && metadata.usageCount.value > 0 && !metadata.lastUsed) {
@@ -228,6 +293,7 @@ export function extractMetadata(
       pointer: metadata.usageCount.pointer,
       span: metadata.usageCount.span
     });
+    delete metadata.usageCount;
   }
 
   const hasMetadata = Object.keys(metadata).length > 0;
