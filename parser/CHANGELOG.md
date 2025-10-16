@@ -1,5 +1,15 @@
 # @lapidist/dtif-parser changelog
 
+## 1.0.2
+
+### Patch Changes
+
+- [#105](https://github.com/bylapidist/dtif/pull/105) [`fdc1005`](https://github.com/bylapidist/dtif/commit/fdc10058dd584e89c389c325b91fc0e30b454b58) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Ensure lifecycle metadata timestamps are validated and pruned when inconsistent.
+
+- Updated dependencies []:
+  - @lapidist/dtif-schema@1.0.2
+  - @lapidist/dtif-validator@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
