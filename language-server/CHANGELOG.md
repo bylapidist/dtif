@@ -1,5 +1,14 @@
 # @lapidist/dtif-language-server
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`fdc1005`](https://github.com/bylapidist/dtif/commit/fdc10058dd584e89c389c325b91fc0e30b454b58)]:
+  - @lapidist/dtif-parser@1.0.2
+  - @lapidist/dtif-schema@1.0.2
+  - @lapidist/dtif-validator@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
