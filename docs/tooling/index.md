@@ -14,6 +14,9 @@ aligned across platforms.
 - [DTIF Language Server](./language-server.md#dtif-language-server) – power diagnostics, navigation, and completions in editors that speak the Language Server Protocol.
 - [Design Lint](./design-lint.md#design-lint) – lint component libraries and build
   pipelines with a DTIF-native command-line interface.
+- [DTIFx Toolkit](https://dtifx.lapidist.net/) – orchestrate pipelines with the hosted
+  workflow hub or extend the [open-source suite](https://github.com/bylapidist/dtifx)
+  to compose bespoke automations.
 
 ## Parser internals {#parser-internals}
 
