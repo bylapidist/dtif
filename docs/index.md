@@ -80,6 +80,7 @@ sync with the standard:
   [compatibility](https://github.com/bylapidist/dtif/tree/main/tests).
 - **Design Lint** – a [DTIF-native CLI](https://design-lint.lapidist.net) for linting
   component codebases and build pipelines.
+- **DTIFx Toolkit** – a [workflow hub](https://dtifx.lapidist.net/) and [open-source suite](https://github.com/bylapidist/dtifx) for orchestrating DTIF tooling.
 
 Each resource is maintained alongside the specification so updates ship together and
 are easy to adopt.
