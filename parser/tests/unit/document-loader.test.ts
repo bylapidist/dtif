@@ -8,6 +8,8 @@ import { DefaultDocumentLoader, DocumentLoaderError } from '../../src/io/documen
 import type { ParseInputRecord, ParseDataInputRecord } from '../../src/types.js';
 
 const textDecoder = new TextDecoder();
+const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
+const OVERSIZED_JSON_DOCUMENT = JSON.stringify({ value: 'x'.repeat(DEFAULT_MAX_BYTES + 1) });
 
 function decodeBytes(bytes: Uint8Array): string {
   return textDecoder.decode(bytes);
@@ -185,6 +187,49 @@ void test('enforces the configured maximum byte length for inline content', asyn
         error.message.includes('exceeding the configured maximum'),
         'expected error message to mention configured maximum'
       );
+      return true;
+    }
+  );
+});
+
+void test('clamps zero maxBytes to the default document size limit', async () => {
+  const loader = new DefaultDocumentLoader({ maxBytes: 0 });
+
+  await assert.rejects(
+    () => loader.load(OVERSIZED_JSON_DOCUMENT),
+    (error) => {
+      assert.ok(error instanceof DocumentLoaderError);
+      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
+      assert.equal(error.limit, DEFAULT_MAX_BYTES);
+      assert.ok(Number.isFinite(error.limit));
+      return true;
+    }
+  );
+});
+
+void test('clamps negative maxBytes to the default document size limit', async () => {
+  const loader = new DefaultDocumentLoader({ maxBytes: -128 });
+
+  await assert.rejects(
+    () => loader.load(OVERSIZED_JSON_DOCUMENT),
+    (error) => {
+      assert.ok(error instanceof DocumentLoaderError);
+      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
+      assert.equal(error.limit, DEFAULT_MAX_BYTES);
+      return true;
+    }
+  );
+});
+
+void test('clamps NaN maxBytes to the default document size limit', async () => {
+  const loader = new DefaultDocumentLoader({ maxBytes: Number.NaN });
+
+  await assert.rejects(
+    () => loader.load(OVERSIZED_JSON_DOCUMENT),
+    (error) => {
+      assert.ok(error instanceof DocumentLoaderError);
+      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
+      assert.equal(error.limit, DEFAULT_MAX_BYTES);
       return true;
     }
   );

@@ -69,6 +69,27 @@ available in memory.
 Create a session with `createSession` to reuse caches, install custom document
 loaders, register plugins, or parse multiple collections with shared state.
 
+### Document loader limits
+
+The built-in `DefaultDocumentLoader` enforces a maximum document size to
+protect tooling from accidentally loading unbounded payloads. The default limit
+is **5 MiB**. Provide the `maxBytes` option when constructing a loader or
+session to apply a stricter, positive byte threshold:
+
+```ts
+import { createSession, DefaultDocumentLoader } from '@lapidist/dtif-parser';
+
+const session = createSession({
+  loader: new DefaultDocumentLoader({ maxBytes: 256 * 1024 })
+});
+```
+
+Only finite, positive numbers are accepted. Any non-positive value (such as
+`0`, negative numbers, `NaN`, or `Infinity`) is ignored and the loader falls
+back to the default 5 MiB threshold. When a payload exceeds the active limit,
+loading fails with a `DocumentLoaderError` whose `reason` is
+`MAX_BYTES_EXCEEDED` and whose `limit` property reflects the enforced cap.
+
 Each pipeline stage emits domain `DiagnosticEvent` objects instead of throwing.
 Results aggregate every diagnostic (including cache hits) so tooling can stream
 warnings via `onDiagnostic`/`warn` hooks, persist them for later inspection, or

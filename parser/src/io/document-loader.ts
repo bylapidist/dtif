@@ -295,7 +295,7 @@ function resolveMaxBytes(input: number | undefined): number {
   }
 
   if (!Number.isFinite(input) || input <= 0) {
-    return Number.POSITIVE_INFINITY;
+    return DEFAULT_MAX_BYTES;
   }
 
   return input;
