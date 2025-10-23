@@ -1,5 +1,19 @@
 # @lapidist/dtif-parser changelog
 
+## 1.0.3
+
+### Patch Changes
+
+- [#116](https://github.com/bylapidist/dtif/pull/116) [`6a4d767`](https://github.com/bylapidist/dtif/commit/6a4d767c010ef93efa84ad993d4921a45185c50f) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Harden DTIF design token memory URIs and add regression coverage for inline document caching.
+
+- [#115](https://github.com/bylapidist/dtif/pull/115) [`c111ccb`](https://github.com/bylapidist/dtif/commit/c111ccb32dc0168d260c6b8d26babfdb864b4947) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Clamp invalid `maxBytes` overrides to the default document size limit and document the option's behaviour.
+
+- [#117](https://github.com/bylapidist/dtif/pull/117) [`5694b07`](https://github.com/bylapidist/dtif/commit/5694b07bb49527f8d6c5371d42bc291e083267ef) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Ensure JSON cloning uses prototype-less objects and cover magic key handling to prevent prototype pollution.
+
+- Updated dependencies []:
+  - @lapidist/dtif-schema@1.0.3
+  - @lapidist/dtif-validator@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes

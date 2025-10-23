@@ -1,6 +1,6 @@
 {
   "name": "@lapidist/dtif-validator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AJV helper utilities for validating DTIF documents against the official schema.",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "validation"
   ],
   "dependencies": {
-    "@lapidist/dtif-schema": "^1.0.2",
+    "@lapidist/dtif-schema": "^1.0.3",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1"
   },
