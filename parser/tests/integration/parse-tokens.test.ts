@@ -5,6 +5,7 @@ import { parseTokens, parseTokensSync } from '../../src/tokens/parse-tokens.js';
 import type { TokenCache, TokenCacheSnapshot, TokenCacheKey } from '../../src/tokens/cache.js';
 import { computeDocumentHash } from '../../src/tokens/cache.js';
 import type { DiagnosticEvent } from '../../src/domain/models.js';
+import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 const INLINE_DOCUMENT = `
 $schema: https://dtif.lapidist.net/schema/core.json
@@ -96,7 +97,8 @@ void test('parseTokens accepts in-memory design token objects', async () => {
   const { document } = result;
   assert.ok(document, 'expected document to be returned');
   assert.notEqual(document.data, tokens);
-  assert.deepEqual(document.data, tokens);
+  assert.deepEqual(toSerializable(document.data), tokens);
+  assertNullPrototypeDeep(document.data);
 });
 
 void test('parseTokens reuses cached artifacts when TokenCache entries are fresh', async () => {
@@ -210,7 +212,8 @@ void test('parseTokensSync supports inline strings and design token objects', ()
   const { document: objectDocument } = objectResult;
   assert.ok(objectDocument, 'expected synchronous parse to return document');
   assert.notEqual(objectDocument.data, tokens);
-  assert.deepEqual(objectDocument.data, tokens);
+  assert.deepEqual(toSerializable(objectDocument.data), tokens);
+  assertNullPrototypeDeep(objectDocument.data);
 });
 
 void test('parseTokensSync accepts single-line inline YAML content', () => {
