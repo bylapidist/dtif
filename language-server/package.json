@@ -1,6 +1,6 @@
 {
   "name": "@lapidist/dtif-language-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Language Server Protocol implementation for the Design Token Interchange Format (DTIF).",
   "type": "module",
   "license": "MIT",
@@ -25,9 +25,9 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@lapidist/dtif-parser": "1.0.2",
-    "@lapidist/dtif-schema": "1.0.2",
-    "@lapidist/dtif-validator": "1.0.2",
+    "@lapidist/dtif-parser": "1.0.3",
+    "@lapidist/dtif-schema": "1.0.3",
+    "@lapidist/dtif-validator": "1.0.3",
     "jsonc-parser": "^3.3.1",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.11"
