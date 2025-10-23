@@ -4,6 +4,7 @@ import { Buffer } from 'node:buffer';
 
 import { createInlineDocumentHandle, decodeInlineDocument } from '../../src/application/inline.js';
 import type { InlineDocumentRequestInput } from '../../src/application/requests.js';
+import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 void test('createInlineDocumentHandle encodes inline text content', () => {
   const input: InlineDocumentRequestInput = {
@@ -49,6 +50,7 @@ void test('decodeInlineDocument reuses provided design token data', () => {
 
   assert.strictEqual(document.identity.uri.href, 'memory://inline/document');
   assert.strictEqual(document.identity.contentType, 'application/json');
-  assert.deepStrictEqual(document.data, input.data);
+  assert.deepStrictEqual(toSerializable(document.data), input.data);
+  assertNullPrototypeDeep(document.data);
   assert.strictEqual(typeof document.text, 'string');
 });

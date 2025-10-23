@@ -6,6 +6,7 @@ import test from 'node:test';
 
 import { DefaultDocumentLoader, DocumentLoaderError } from '../../src/io/document-loader.js';
 import type { ParseInputRecord, ParseDataInputRecord } from '../../src/types.js';
+import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 const textDecoder = new TextDecoder();
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
@@ -74,7 +75,8 @@ void test('loads design token objects into deterministic in-memory handles', asy
   assert.equal(firstHandle.bytes.byteLength, 0);
   assert.equal(firstHandle.text, undefined);
   assert.notEqual(firstHandle.data, tokens);
-  assert.deepEqual(firstHandle.data, tokens);
+  assert.deepEqual(toSerializable(firstHandle.data), tokens);
+  assertNullPrototypeDeep(firstHandle.data);
   assert.notEqual(firstHandle.data, secondHandle.data);
 });
 
@@ -95,7 +97,8 @@ void test('supports explicit data records containing design token objects', asyn
   assert.equal(handle.bytes.byteLength, 0);
   assert.equal(handle.text, undefined);
   assert.notEqual(handle.data, record.data);
-  assert.deepEqual(handle.data, record.data);
+  assert.deepEqual(toSerializable(handle.data), record.data);
+  assertNullPrototypeDeep(handle.data);
 });
 
 void test('rejects HTTP(S) requests when not allowed', async () => {

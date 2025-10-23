@@ -2,9 +2,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function createRecordWithPrototype(prototype: object | null): Record<string, unknown> {
+function createRecord(): Record<string, unknown> {
   const record: Record<string, unknown> = {};
-  Reflect.setPrototypeOf(record, prototype);
+  Object.setPrototypeOf(record, null);
+
   return record;
 }
 
@@ -14,11 +15,15 @@ export function cloneJsonValue(value: unknown): unknown {
   }
 
   if (isRecord(value)) {
-    const prototype = Reflect.getPrototypeOf(value);
-    const clone = createRecordWithPrototype(prototype);
+    const clone = createRecord();
 
     for (const [key, entry] of Object.entries(value)) {
-      clone[key] = cloneJsonValue(entry);
+      Reflect.defineProperty(clone, key, {
+        value: cloneJsonValue(entry),
+        configurable: true,
+        enumerable: true,
+        writable: true
+      });
     }
 
     return clone;
