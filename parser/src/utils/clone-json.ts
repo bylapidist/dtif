@@ -3,7 +3,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function createRecord(): Record<string, unknown> {
-  return Object.create(null) as Record<string, unknown>;
+  const record: Record<string, unknown> = {};
+  Object.setPrototypeOf(record, null);
+
+  return record;
 }
 
 export function cloneJsonValue(value: unknown): unknown {
