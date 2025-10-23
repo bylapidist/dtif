@@ -67,6 +67,7 @@ void test('loads design token objects into deterministic in-memory handles', asy
   const secondHandle = await loader.load(tokens);
 
   assert.equal(firstHandle.uri.href, secondHandle.uri.href);
+  assert.match(firstHandle.uri.href, /^memory:\/\/dtif-document\/[a-f0-9]{64}\.json$/);
   assert.equal(firstHandle.contentType, 'application/json');
   assert.equal(firstHandle.bytes.byteLength, 0);
   assert.equal(firstHandle.text, undefined);

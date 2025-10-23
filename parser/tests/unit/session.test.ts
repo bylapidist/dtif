@@ -244,6 +244,35 @@ void test('ParseSession refreshes the cache when document bytes change', async (
   assert.equal(hasErrors(result.diagnostics), false);
 });
 
+void test('ParseSession assigns unique URIs to inline documents for caching', async () => {
+  const cache = new TrackingCache();
+  const session = new ParseSession({ documentCache: cache });
+
+  const firstResult = await session.parseDocument(
+    JSON.stringify({
+      $schema: 'https://dtif.lapidist.net/schema/core.json',
+      value: 1
+    })
+  );
+  const secondResult = await session.parseDocument(
+    JSON.stringify({
+      $schema: 'https://dtif.lapidist.net/schema/core.json',
+      value: 2
+    })
+  );
+
+  assert.equal(cache.getIdentities.length, 2);
+  assert.equal(cache.setIdentities.length, 2);
+  assert.notEqual(cache.getIdentities[0], cache.getIdentities[1]);
+  assert.notEqual(cache.setIdentities[0], cache.setIdentities[1]);
+
+  const firstDocument = firstResult.document;
+  const secondDocument = secondResult.document;
+  assert.ok(firstDocument);
+  assert.ok(secondDocument);
+  assert.notEqual(firstDocument.identity.uri.href, secondDocument.identity.uri.href);
+});
+
 void test('ParseSession surfaces diagnostics when cache writes fail', async () => {
   const uri = new URL('memory://cache/failure');
   const loader = new StaticLoader(uri, VALID_DOCUMENT);
@@ -396,6 +425,21 @@ class RecordingCache implements DocumentCache {
     this.setCalls++;
     this.lastSet = document;
     this.document = document;
+    return Promise.resolve();
+  }
+}
+
+class TrackingCache implements DocumentCache {
+  readonly getIdentities: string[] = [];
+  readonly setIdentities: string[] = [];
+
+  get(identity: RawDocument['identity']): Promise<RawDocument | undefined> {
+    this.getIdentities.push(identity.uri.href);
+    return Promise.resolve(undefined);
+  }
+
+  set(document: RawDocument): Promise<void> {
+    this.setIdentities.push(document.identity.uri.href);
     return Promise.resolve();
   }
 }
