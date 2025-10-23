@@ -14,7 +14,6 @@ function decodeBytes(bytes: Uint8Array): string {
   return textDecoder.decode(bytes);
 }
 
-
 void test('loads inline JSON content into a memory-backed handle', async () => {
   const loader = new DefaultDocumentLoader();
   const json = '{\n  "foo": "bar"\n}';

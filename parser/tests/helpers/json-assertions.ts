@@ -7,7 +7,10 @@ export function toSerializable(value: unknown): unknown {
 
   if (value && typeof value === 'object') {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, toSerializable(entry)])
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        toSerializable(entry)
+      ])
     );
   }
 
