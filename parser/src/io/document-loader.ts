@@ -215,7 +215,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
   }
 
   #createMemoryUriFromDesignTokens(value: DesignTokenInterchangeFormat): URL {
-    const hash = hashJsonValue(value, { algorithm: 'sha1' });
+    const hash = hashJsonValue(value, { algorithm: 'sha256' });
     return new URL(`${MEMORY_SCHEME}${hash}.json`);
   }
 
