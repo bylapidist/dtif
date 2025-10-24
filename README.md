@@ -11,6 +11,7 @@
 # Design Token Interchange Format (DTIF)
 
 [![CI](https://img.shields.io/github/actions/workflow/status/bylapidist/dtif/ci.yml?branch=main&label=CI)](https://github.com/bylapidist/dtif/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@lapidist/dtif-schema.svg)](https://www.npmjs.com/package/@lapidist/dtif-schema)
 [![Schema Tests](https://img.shields.io/badge/schema%20tests-passing-brightgreen)](tests/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
