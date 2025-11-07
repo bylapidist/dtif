@@ -1,6 +1,6 @@
 # AGENTS
 
-This repository targets **Node.js 22** (with npm 10 or newer). Match the tooling version locally to avoid drift from CI.
+This repository targets **Node.js 22 or newer** (with npm 10 or newer). Match the tooling version locally to avoid drift from CI.
 
 All published workspaces adhere to strict [Semantic Versioning](https://semver.org/). Pick the appropriate bump size whenever you
 prepare a release.

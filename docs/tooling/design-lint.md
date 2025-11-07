@@ -29,7 +29,7 @@ The linter focuses on aligning source tokens with product code:
 
 ## Get started quickly {#getting-started}
 
-Design Lint ships as an npm package that targets Node.js 22 and above. To try it
+Design Lint ships as an npm package that targets Node.js 22 or newer. To try it
 immediately, run:
 
 ```bash
