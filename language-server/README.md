@@ -2,7 +2,7 @@
 
 `@lapidist/dtif-language-server` delivers Language Server Protocol (LSP) services for the Design Token Interchange Format (DTIF). It brings schema-backed diagnostics, pointer-aware navigation, and assisted authoring into any editor that can host a Node.js language server.
 
-> **Runtime** · Node.js 22<br>
+> **Runtime** · Node.js 22 or newer<br>
 > **Transports** · stdio (default), custom message readers/writers
 
 ## Capabilities

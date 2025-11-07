@@ -4,3 +4,4 @@ LICENSE
 tests/fixtures/snapshots
 docs/.vitepress/cache
 schema/index.d.ts
+.claude

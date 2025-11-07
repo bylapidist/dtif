@@ -5,7 +5,7 @@ environment, running project tasks, and preparing contributions.
 
 ## Prerequisites
 
-- **Node.js 22** - the CI pipeline runs on Node 22; use the same major version locally to avoid incompatibilities. Tools like
+- **Node.js 22 or newer** - the CI pipeline runs on Node 22; use Node 22 or any newer major version locally to avoid incompatibilities. Tools like
   [`nvm`](https://github.com/nvm-sh/nvm) or [`fnm`](https://github.com/Schniz/fnm) make switching versions easy.
 - **npm 10** or newer - bundled with recent Node releases.
 - **Git** - for cloning the repository and managing branches.
