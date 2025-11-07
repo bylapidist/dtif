@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 1.0.4
+
+### Patch Changes
+
+- [#128](https://github.com/bylapidist/dtif/pull/128) [`9e317da`](https://github.com/bylapidist/dtif/commit/9e317dab8aebf0cdb1f2fc17af151e671e4cb702) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Document support for Node.js 22 or newer across the DTIF packages.
+
 ## 1.0.3
 
 ## 1.0.2
