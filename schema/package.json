@@ -1,6 +1,6 @@
 {
   "name": "@lapidist/dtif-schema",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JSON Schema for the Design Token Interchange Format (DTIF).",
   "type": "module",
   "license": "MIT",
