@@ -8,6 +8,10 @@
     "parser",
     "language-server"
   ],
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
     "format": "prettier -w .",
@@ -15,9 +19,16 @@
     "lint": "markdownlint \"**/*.md\" --ignore \"**/node_modules/**\"",
     "lint:fix": "markdownlint --fix \"**/*.md\" --ignore \"**/node_modules/**\"",
     "lint:ts": "eslint .",
+    "lint:parser": "eslint parser",
+    "lint:language-server": "eslint language-server",
+    "typecheck": "npm --workspaces --if-present run typecheck",
     "validate:dtif": "node scripts/validate-markdown-dtif.mjs",
     "build": "npm run build:packages",
+    "build:parser": "npm run build --workspace=@lapidist/dtif-parser",
+    "build:language-server": "npm run build --workspace=@lapidist/dtif-language-server",
     "build:packages": "node scripts/build-packages.mjs",
+    "test:parser": "npm test --workspace=@lapidist/dtif-parser",
+    "test:language-server": "npm test --workspace=@lapidist/dtif-language-server",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",

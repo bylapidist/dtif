@@ -37,6 +37,15 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 - [Governance](https://dtif.lapidist.net/governance/) – processes for proposing changes and managing the registry.
 - [Roadmap](https://dtif.lapidist.net/roadmap/) – current focus areas and forward-looking drafts.
 
+## Runtime & support policy
+
+- **Node.js:** 22 or newer (aligns with CI and published workspace `engines` fields)
+- **npm:** 10 or newer
+
+The repository follows semantic versioning across workspaces. When contributing, run the workspace-specific scripts referenced
+in [CONTRIBUTING.md](CONTRIBUTING.md) to match CI: `npm run lint`, `npm run lint:ts`, `npm test`, and the workspace build/test
+commands noted in `AGENTS.md`.
+
 ## Quick example
 
 ```json dtif
@@ -226,7 +235,7 @@ workspace:
 
 ## Contributing & community
 
-Contributions follow the guidance in [CONTRIBUTING.md](CONTRIBUTING.md) and the [W3C Code of Conduct](https://www.w3.org/Consortium/cepc/). Discuss proposals in [GitHub Issues](https://github.com/bylapidist/dtif/issues) or [Discussions](https://github.com/bylapidist/dtif/discussions). Suggested changes to the registry or specification should reference the [governance processes](https://dtif.lapidist.net/governance/processes/).
+Contributions follow the guidance in [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md), which is based on the [W3C Code of Ethics and Professional Conduct](https://www.w3.org/Consortium/cepc/). Discuss proposals in [GitHub Issues](https://github.com/bylapidist/dtif/issues) or [Discussions](https://github.com/bylapidist/dtif/discussions). Suggested changes to the registry or specification should reference the [governance processes](https://dtif.lapidist.net/governance/processes/).
 
 ## License
 

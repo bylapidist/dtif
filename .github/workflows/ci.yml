@@ -8,17 +8,27 @@ on:
 
 jobs:
   build:
-    name: Build and test
+    name: Build and test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -36,8 +46,14 @@ jobs:
       - name: Lint TypeScript
         run: npm run lint:ts
 
+      - name: Typecheck workspaces
+        run: npm run typecheck
+
       - name: Validate DTIF markdown examples
         run: npm run validate:dtif
+
+      - name: Build docs
+        run: npm run docs:build
 
       - name: Run tests
         run: npm test

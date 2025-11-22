@@ -6,6 +6,10 @@
   "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
   "exports": {
     ".": "./index.js"
   },

@@ -42,11 +42,18 @@ export class SettingsController {
   async refresh(): Promise<SettingsChange> {
     const previous = this.#current;
     let next: DtifLanguageServerSettings;
+    let warnings: readonly string[] = [];
 
     try {
-      next = await this.read();
+      const result = await this.read();
+      next = result.settings;
+      warnings = result.warnings;
     } catch (error: unknown) {
       throw new SettingsReadError(error);
+    }
+
+    for (const warning of warnings) {
+      this.#connection.console.warn(`DTIF language server settings warning: ${warning}`);
     }
 
     if (settingsEqual(previous, next)) {
@@ -57,10 +64,12 @@ export class SettingsController {
     return { previous, current: next, changed: true } satisfies SettingsChange;
   }
 
-  private async read(): Promise<DtifLanguageServerSettings> {
+  private async read(): Promise<ReturnType<typeof parseSettings>> {
     const workspace: unknown = this.#connection.workspace;
     if (!hasConfiguration(workspace)) {
-      return DEFAULT_SETTINGS;
+      return { settings: DEFAULT_SETTINGS, warnings: [] } satisfies ReturnType<
+        typeof parseSettings
+      >;
     }
 
     const configuration: unknown = await workspace.getConfiguration({ section: SETTINGS_SECTION });

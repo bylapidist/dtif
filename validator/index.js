@@ -5,11 +5,13 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const schema = require('@lapidist/dtif-schema/core.json');
 
-const DEFAULT_OPTIONS = {
+export const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,
   strict: true,
   $data: true
 };
+
+export const DEFAULT_FORMAT_REGISTRAR = addFormats;
 
 const DEFAULT_SCHEMA_ID = schema.$id ?? 'https://dtif.lapidist.net/schema/core.json';
 
@@ -33,12 +35,12 @@ export function createDtifValidator(options = {}) {
   const ajv =
     existingAjv ??
     new Ajv2020({
-      ...DEFAULT_OPTIONS,
+      ...DEFAULT_VALIDATOR_OPTIONS,
       ...ajvOptions
     });
 
   if (formats) {
-    const register = typeof formats === 'function' ? formats : addFormats;
+    const register = typeof formats === 'function' ? formats : DEFAULT_FORMAT_REGISTRAR;
     register(ajv);
   }
 

@@ -13,7 +13,7 @@ and automation workflows.
 npm install @lapidist/dtif-parser
 ```
 
-The package targets modern Node runtimes (v18+) and is published as a native ESM
+The package targets modern Node runtimes (v22+) and is published as a native ESM
 module.
 
 ## Usage
@@ -85,10 +85,16 @@ const session = createSession({
 ```
 
 Only finite, positive numbers are accepted. Any non-positive value (such as
-`0`, negative numbers, `NaN`, or `Infinity`) is ignored and the loader falls
-back to the default 5 MiB threshold. When a payload exceeds the active limit,
-loading fails with a `DocumentLoaderError` whose `reason` is
-`MAX_BYTES_EXCEEDED` and whose `limit` property reflects the enforced cap.
+`0`, negative numbers, `NaN`, or `Infinity`) is rejected with a `RangeError` at
+loader construction. When a payload exceeds the active limit, loading fails with
+a `DocumentLoaderError` whose `reason` is `MAX_BYTES_EXCEEDED` and whose
+`limit` property reflects the enforced cap.
+
+When enabling HTTP(S) loading, configure `httpAllowedHosts` to restrict which
+hosts may be fetched and `httpTimeoutMs` to bound remote requests. Requests to
+non-allow-listed hosts fail with a `DocumentLoaderError` whose `reason` is
+`HTTP_HOST_NOT_ALLOWED`, and hung requests are aborted with a `TimeoutError`
+driven by the loader's timeout.
 
 Each pipeline stage emits domain `DiagnosticEvent` objects instead of throwing.
 Results aggregate every diagnostic (including cache hits) so tooling can stream

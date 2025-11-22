@@ -12,6 +12,11 @@ import type {
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 import { cloneJsonValue } from '../utils/clone-json.js';
 import { hashJsonValue } from '../utils/hash-json.js';
+import {
+  DEFAULT_CONTENT_TYPE,
+  DEFAULT_HTTP_TIMEOUT_MS,
+  DEFAULT_MAX_BYTES
+} from '../config/defaults.js';
 
 const MEMORY_SCHEME = 'memory://dtif-document/';
 
@@ -24,6 +29,8 @@ export interface DefaultDocumentLoaderOptions {
   readonly cwd?: string | URL;
   readonly defaultContentType?: ContentType;
   readonly maxBytes?: number;
+  readonly httpAllowedHosts?: readonly string[];
+  readonly httpTimeoutMs?: number;
 }
 
 export interface DocumentLoaderContext {
@@ -35,7 +42,7 @@ export interface DocumentLoader {
   load(input: ParseInput, context?: DocumentLoaderContext): Promise<DocumentHandle>;
 }
 
-export type DocumentLoaderErrorReason = 'MAX_BYTES_EXCEEDED';
+export type DocumentLoaderErrorReason = 'MAX_BYTES_EXCEEDED' | 'HTTP_HOST_NOT_ALLOWED';
 
 export class DocumentLoaderError extends Error {
   readonly reason: DocumentLoaderErrorReason;
@@ -59,6 +66,8 @@ export class DocumentLoaderError extends Error {
 
 export class DefaultDocumentLoader implements DocumentLoader {
   readonly #allowHttp: boolean;
+  readonly #httpAllowedHosts?: ReadonlySet<string>;
+  readonly #httpTimeoutMs?: number;
   readonly #fetch?: typeof fetch;
   readonly #readFile: ReadFileFn;
   readonly #cwd: string;
@@ -68,10 +77,12 @@ export class DefaultDocumentLoader implements DocumentLoader {
 
   constructor(options: DefaultDocumentLoaderOptions = {}) {
     this.#allowHttp = options.allowHttp ?? false;
+    this.#httpAllowedHosts = resolveHttpAllowedHosts(options.httpAllowedHosts);
+    this.#httpTimeoutMs = resolveHttpTimeout(options.httpTimeoutMs);
     this.#fetch = options.fetch ?? globalThis.fetch;
     this.#readFile = options.readFile ?? defaultReadFile;
     this.#cwd = normalizeWorkingDirectory(options.cwd);
-    this.#defaultContentType = options.defaultContentType ?? 'application/json';
+    this.#defaultContentType = options.defaultContentType ?? DEFAULT_CONTENT_TYPE;
     this.#maxBytes = resolveMaxBytes(options.maxBytes);
   }
 
@@ -157,19 +168,27 @@ export class DefaultDocumentLoader implements DocumentLoader {
         if (!this.#fetch) {
           throw new Error('No fetch implementation available for HTTP(S) loading.');
         }
-        const response = await this.#fetch(uri, { signal: context.signal });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch DTIF document. HTTP status: ${String(response.status)}`);
+        this.#assertHttpAllowed(uri);
+        const { signal, cleanup } = this.#createFetchContext(context);
+        try {
+          const response = await this.#fetch(uri, signal ? { signal } : undefined);
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch DTIF document. HTTP status: ${String(response.status)}`
+            );
+          }
+          const arrayBuffer = await response.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuffer);
+          this.#assertSizeWithinLimit(uri, bytes.byteLength);
+          const contentType = detectContentType({
+            uri,
+            header: response.headers.get('content-type') ?? undefined,
+            fallback: this.#defaultContentType
+          });
+          return this.#createHandle(uri, bytes, contentType);
+        } finally {
+          cleanup();
         }
-        const arrayBuffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(arrayBuffer);
-        this.#assertSizeWithinLimit(uri, bytes.byteLength);
-        const contentType = detectContentType({
-          uri,
-          header: response.headers.get('content-type') ?? undefined,
-          fallback: this.#defaultContentType
-        });
-        return this.#createHandle(uri, bytes, contentType);
       }
       default:
         throw new Error(`Unsupported URI scheme for DTIF documents: ${uri.protocol}`);
@@ -234,6 +253,61 @@ export class DefaultDocumentLoader implements DocumentLoader {
     );
   }
 
+  #assertHttpAllowed(uri: URL): void {
+    if (!this.#httpAllowedHosts) {
+      return;
+    }
+
+    const host = uri.hostname.toLowerCase();
+
+    if (this.#httpAllowedHosts.has(host)) {
+      return;
+    }
+
+    throw new DocumentLoaderError(
+      'HTTP_HOST_NOT_ALLOWED',
+      `Host "${host}" is not allowed for DTIF HTTP(S) loading.`,
+      { uri, size: 0 }
+    );
+  }
+
+  #createFetchContext(context: DocumentLoaderContext): {
+    signal?: AbortSignal;
+    cleanup: () => void;
+  } {
+    if (this.#httpTimeoutMs === undefined && !context.signal) {
+      return { cleanup: noop };
+    }
+
+    if (this.#httpTimeoutMs === undefined) {
+      return { signal: context.signal, cleanup: noop };
+    }
+
+    const controller = new AbortController();
+    const timeoutReason = new DOMException('Fetch timed out for DTIF document', 'TimeoutError');
+    const timeoutId = setTimeout(() => {
+      controller.abort(timeoutReason);
+    }, this.#httpTimeoutMs);
+
+    if (context.signal?.aborted) {
+      controller.abort(context.signal.reason);
+    }
+
+    const abortFromContext = (): void => {
+      controller.abort(context.signal?.reason);
+    };
+    context.signal?.addEventListener('abort', abortFromContext);
+
+    const cleanup = (): void => {
+      clearTimeout(timeoutId);
+      if (context.signal) {
+        context.signal.removeEventListener('abort', abortFromContext);
+      }
+    };
+
+    return { signal: controller.signal, cleanup };
+  }
+
   #normalizeUri(value: string | URL, baseUri?: URL): URL {
     if (value instanceof URL) {
       return value;
@@ -287,15 +361,46 @@ function normalizeWorkingDirectory(input?: string | URL): string {
   return path.resolve(input);
 }
 
-const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
-
 function resolveMaxBytes(input: number | undefined): number {
   if (input === undefined) {
     return DEFAULT_MAX_BYTES;
   }
 
   if (!Number.isFinite(input) || input <= 0) {
-    return DEFAULT_MAX_BYTES;
+    throw new RangeError('DefaultDocumentLoader maxBytes must be a finite, positive number.');
+  }
+
+  return input;
+}
+
+function resolveHttpAllowedHosts(
+  input: readonly string[] | undefined
+): ReadonlySet<string> | undefined {
+  if (!input) {
+    return undefined;
+  }
+
+  const normalized = input
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0)
+    .map((value) => value.toLowerCase());
+
+  if (normalized.length === 0) {
+    throw new TypeError(
+      'httpAllowedHosts must include at least one non-empty hostname when provided.'
+    );
+  }
+
+  return new Set(normalized);
+}
+
+function resolveHttpTimeout(input: number | undefined): number | undefined {
+  if (input === undefined) {
+    return DEFAULT_HTTP_TIMEOUT_MS;
+  }
+
+  if (!Number.isFinite(input) || input <= 0) {
+    throw new RangeError('httpTimeoutMs must be a finite, positive number when provided.');
   }
 
   return input;
@@ -455,4 +560,8 @@ function looksLikeInlineDocument(value: string): boolean {
     return true;
   }
   return false;
+}
+
+function noop(): void {
+  return undefined;
 }

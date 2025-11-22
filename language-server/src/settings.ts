@@ -6,14 +6,23 @@ export interface DtifLanguageServerSettings {
   };
 }
 
+export interface ParsedSettings {
+  readonly settings: DtifLanguageServerSettings;
+  readonly warnings: readonly string[];
+}
+
 export const SETTINGS_SECTION = 'dtifLanguageServer';
 
 export const DEFAULT_SETTINGS: DtifLanguageServerSettings = {
   validation: { mode: 'on' }
 };
 
-function parseValidationSettings(value: unknown): DtifLanguageServerSettings['validation'] {
+function parseValidationSettings(
+  value: unknown,
+  warnings: string[]
+): DtifLanguageServerSettings['validation'] {
   if (!isRecord(value)) {
+    warnings.push('Expected an object for validation settings; using defaults.');
     return DEFAULT_SETTINGS.validation;
   }
 
@@ -22,17 +31,27 @@ function parseValidationSettings(value: unknown): DtifLanguageServerSettings['va
     return { mode: 'off' };
   }
 
+  if (mode === 'on') {
+    return { mode: 'on' };
+  }
+
+  warnings.push(
+    `validation.mode must be "on" or "off" (received ${JSON.stringify(mode)}); using "on".`
+  );
   return { mode: 'on' };
 }
 
-export function parseSettings(value: unknown): DtifLanguageServerSettings {
+export function parseSettings(value: unknown): ParsedSettings {
+  const warnings: string[] = [];
+
   if (!isRecord(value)) {
-    return DEFAULT_SETTINGS;
+    warnings.push('Expected dtifLanguageServer settings to be an object; using defaults.');
+    return { settings: DEFAULT_SETTINGS, warnings } satisfies ParsedSettings;
   }
 
-  const validation = parseValidationSettings(value.validation);
+  const validation = parseValidationSettings(value.validation, warnings);
 
-  return { validation } satisfies DtifLanguageServerSettings;
+  return { settings: { validation }, warnings } satisfies ParsedSettings;
 }
 
 export function settingsEqual(

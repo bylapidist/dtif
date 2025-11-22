@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import test from 'node:test';
 
 import { DefaultDocumentLoader, DocumentLoaderError } from '../../src/io/document-loader.js';
@@ -9,8 +9,6 @@ import type { ParseInputRecord, ParseDataInputRecord } from '../../src/types.js'
 import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 const textDecoder = new TextDecoder();
-const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
-const OVERSIZED_JSON_DOCUMENT = JSON.stringify({ value: 'x'.repeat(DEFAULT_MAX_BYTES + 1) });
 
 function decodeBytes(bytes: Uint8Array): string {
   return textDecoder.decode(bytes);
@@ -27,9 +25,11 @@ void test('loads inline JSON content into a memory-backed handle', async () => {
   assert.equal(decodeBytes(handle.bytes), json);
 });
 
+const FIXTURES_DIRECTORY = fileURLToPath(new URL('../fixtures/', import.meta.url));
+
 void test('loads filesystem documents using relative paths', async () => {
   const loader = new DefaultDocumentLoader();
-  const fixturePath = path.join('tests', 'fixtures', 'sample.json');
+  const fixturePath = path.join(FIXTURES_DIRECTORY, 'sample.json');
   const handle = await loader.load(fixturePath);
 
   assert.equal(handle.uri.protocol, 'file:');
@@ -144,7 +144,11 @@ void test('fetches HTTP resources when allowed', async () => {
     return Promise.resolve(response);
   };
 
-  const loader = new DefaultDocumentLoader({ allowHttp: true, fetch: fetchStub });
+  const loader = new DefaultDocumentLoader({
+    allowHttp: true,
+    fetch: fetchStub,
+    httpAllowedHosts: ['example.com']
+  });
   const handle = await loader.load(new URL('https://example.com/tokens.json'));
 
   assert.equal(requestedUrl?.href, 'https://example.com/tokens.json');
@@ -152,9 +156,52 @@ void test('fetches HTTP resources when allowed', async () => {
   assert.equal(decodeBytes(handle.bytes), decodeBytes(body));
 });
 
+void test('rejects HTTP hosts that are not allow-listed', async () => {
+  const loader = new DefaultDocumentLoader({
+    allowHttp: true,
+    fetch: () => Promise.resolve(Response.json({ ok: true })),
+    httpAllowedHosts: ['example.com']
+  });
+
+  await assert.rejects(
+    () => loader.load(new URL('https://malicious.example.net/tokens.json')),
+    (error) => {
+      assert.ok(error instanceof DocumentLoaderError);
+      assert.equal(error.reason, 'HTTP_HOST_NOT_ALLOWED');
+      return true;
+    }
+  );
+});
+
+void test('aborts HTTP requests that exceed the configured timeout', async () => {
+  const loader = new DefaultDocumentLoader({
+    allowHttp: true,
+    fetch: (_input, init) =>
+      new Promise((_, reject) => {
+        const signal = init?.signal;
+        assert.ok(signal instanceof AbortSignal);
+        signal.addEventListener('abort', () => {
+          const reason: unknown = signal.reason;
+          reject(reason instanceof Error ? reason : new Error(String(reason)));
+        });
+      }),
+    httpAllowedHosts: ['example.com'],
+    httpTimeoutMs: 10
+  });
+
+  await assert.rejects(
+    () => loader.load(new URL('https://example.com/tokens.json')),
+    (error) => {
+      assert.ok(error instanceof DOMException);
+      assert.equal(error.name, 'TimeoutError');
+      return true;
+    }
+  );
+});
+
 void test('resolves relative paths against a base URI', async () => {
   const loader = new DefaultDocumentLoader();
-  const baseDirectory = path.resolve('tests/fixtures');
+  const baseDirectory = FIXTURES_DIRECTORY;
   const baseWithSlash = baseDirectory.endsWith(path.sep)
     ? baseDirectory
     : `${baseDirectory}${path.sep}`;
@@ -196,47 +243,10 @@ void test('enforces the configured maximum byte length for inline content', asyn
   );
 });
 
-void test('clamps zero maxBytes to the default document size limit', async () => {
-  const loader = new DefaultDocumentLoader({ maxBytes: 0 });
-
-  await assert.rejects(
-    () => loader.load(OVERSIZED_JSON_DOCUMENT),
-    (error) => {
-      assert.ok(error instanceof DocumentLoaderError);
-      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
-      assert.equal(error.limit, DEFAULT_MAX_BYTES);
-      assert.ok(Number.isFinite(error.limit));
-      return true;
-    }
-  );
-});
-
-void test('clamps negative maxBytes to the default document size limit', async () => {
-  const loader = new DefaultDocumentLoader({ maxBytes: -128 });
-
-  await assert.rejects(
-    () => loader.load(OVERSIZED_JSON_DOCUMENT),
-    (error) => {
-      assert.ok(error instanceof DocumentLoaderError);
-      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
-      assert.equal(error.limit, DEFAULT_MAX_BYTES);
-      return true;
-    }
-  );
-});
-
-void test('clamps NaN maxBytes to the default document size limit', async () => {
-  const loader = new DefaultDocumentLoader({ maxBytes: Number.NaN });
-
-  await assert.rejects(
-    () => loader.load(OVERSIZED_JSON_DOCUMENT),
-    (error) => {
-      assert.ok(error instanceof DocumentLoaderError);
-      assert.equal(error.reason, 'MAX_BYTES_EXCEEDED');
-      assert.equal(error.limit, DEFAULT_MAX_BYTES);
-      return true;
-    }
-  );
+void test('rejects non-positive maxBytes values during configuration', () => {
+  assert.throws(() => new DefaultDocumentLoader({ maxBytes: 0 }), RangeError);
+  assert.throws(() => new DefaultDocumentLoader({ maxBytes: -128 }), RangeError);
+  assert.throws(() => new DefaultDocumentLoader({ maxBytes: Number.NaN }), RangeError);
 });
 
 void test('allows larger documents when raising the byte limit', async () => {
