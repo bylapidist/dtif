@@ -1,5 +1,11 @@
 # @lapidist/dtif-schema changelog
 
+## 1.0.5
+
+### Patch Changes
+
+- [#136](https://github.com/bylapidist/dtif/pull/136) [`896d74d`](https://github.com/bylapidist/dtif/commit/896d74d7630c2c02718954f6fee06438039dbdc5) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Declare Node.js 22+/npm 10+ support in workspace manifests and update docs to match the repository support policy.
+
 ## 1.0.4
 
 ### Patch Changes
