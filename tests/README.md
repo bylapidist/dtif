@@ -9,6 +9,11 @@ Run all fixtures with:
 node tests/tooling/run.mjs
 ```
 
+Before traversing fixtures, the harness runs two preflight checks:
+
+- `assert-packages` verifies that the `schema`, `validator`, and `parser` packages contain required metadata, exports, version alignment, dependencies, changelogs/READMEs, and that generated typings stay in sync with `schema/core.json`.
+- `assert-validator-defaults` ensures `createDtifValidator` ships Ajv with strict mode and `$data` references enabled, union types disallowed, and still validates the minimal example tokens bundle.
+
 The harness validates fixtures against `schema/core.json`, resolves `$ref` pointers (blocking remote fetches unless a fixture opts in), and performs basic type compatibility checks for `FunctionValue` expressions such as `calc()` unit mixing and `clamp()` range ordering before comparing normalised output with the expected snapshot.
 It also verifies that every built-in `$type` defined by the schema has a fully populated entry in `registry/types.json`, that the registry metadata is well-formed, and that entries remain sorted for reproducible diffs.
 
