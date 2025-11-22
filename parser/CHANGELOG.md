@@ -1,5 +1,15 @@
 # @lapidist/dtif-parser changelog
 
+## 1.0.6
+
+### Patch Changes
+
+- [#140](https://github.com/bylapidist/dtif/pull/140) [`157464e`](https://github.com/bylapidist/dtif/commit/157464ebcebce4096d9869b504f79d719a74e223) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Handle malformed JSON pointers gracefully in validation helper.
+
+- Updated dependencies []:
+  - @lapidist/dtif-schema@1.0.6
+  - @lapidist/dtif-validator@1.0.6
+
 ## 1.0.5
 
 ### Patch Changes
