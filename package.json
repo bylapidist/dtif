@@ -34,7 +34,6 @@
     "docs:preview": "vitepress preview docs",
     "lint:docs": "markdownlint \"docs/**/*.md\"",
     "changeset": "changeset",
-    "check:changeset": "node scripts/check-changesets.mjs",
     "release": "changeset publish",
     "version-packages": "changeset version"
   },

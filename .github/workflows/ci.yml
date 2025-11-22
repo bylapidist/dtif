@@ -34,10 +34,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check for required changesets
-        if: github.event_name == 'pull_request'
-        run: npm run check:changeset
-
       - name: Check formatting
         run: npm run format:check
 
