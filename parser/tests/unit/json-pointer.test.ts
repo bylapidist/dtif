@@ -69,3 +69,8 @@ void test('isJsonPointer validates pointer syntax', () => {
   assert.equal(isJsonPointer('#foo/bar~2'), false);
   assert.equal(isJsonPointer(null), false);
 });
+
+void test('isJsonPointer returns false for malformed pointers', () => {
+  assert.equal(isJsonPointer('#foo~'), false);
+  assert.equal(isJsonPointer('#/a~2b'), false);
+});

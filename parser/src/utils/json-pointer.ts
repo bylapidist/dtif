@@ -38,8 +38,12 @@ export function isJsonPointer(value: unknown): value is JsonPointer {
     return false;
   }
 
-  const normalized = normalizeJsonPointer(value);
-  return ABSOLUTE_POINTER_PATTERN.test(normalized);
+  try {
+    const normalized = normalizeJsonPointer(value);
+    return ABSOLUTE_POINTER_PATTERN.test(normalized);
+  } catch {
+    return false;
+  }
 }
 
 export function encodeJsonPointerSegment(segment: string): string {
