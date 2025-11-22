@@ -7,6 +7,10 @@ import { createDtifValidator } from '../../validator/index.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const minimalExamplePath = path.resolve(__dirname, '../../examples/minimal.tokens.json');
 const minimalExample = JSON.parse(fs.readFileSync(minimalExamplePath, 'utf8'));
+const invalidMinimalExample = JSON.parse(JSON.stringify(minimalExample));
+if (invalidMinimalExample.spacing?.small) {
+  invalidMinimalExample.spacing.small = { foo: 'bar' };
+}
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -42,6 +46,21 @@ export default function assertValidatorDefaults() {
       code: 'E_VALIDATOR_MINIMAL_EXAMPLE_INVALID',
       path: '',
       message: `minimal example should validate: ${JSON.stringify(validate.errors ?? [], null, 2)}`
+    });
+  }
+
+  const invalidExampleIsValid = validate(invalidMinimalExample);
+  if (invalidExampleIsValid) {
+    errors.push({
+      code: 'E_VALIDATOR_INVALID_EXAMPLE_VALIDATES',
+      path: '',
+      message: 'invalid minimal example missing $type should not validate'
+    });
+  } else if (!validate.errors || validate.errors.length === 0) {
+    errors.push({
+      code: 'E_VALIDATOR_INVALID_EXAMPLE_MISSING_ERRORS',
+      path: '',
+      message: 'invalid minimal example should provide validation errors'
     });
   }
 
