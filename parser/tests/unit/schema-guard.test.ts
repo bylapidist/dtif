@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { SchemaGuard, DEFAULT_VALIDATOR_OPTIONS } from '../../src/validation/schema-guard.js';
+import {
+  DEFAULT_FORMAT_REGISTRAR as VALIDATOR_DEFAULT_FORMAT_REGISTRAR,
+  DEFAULT_VALIDATOR_OPTIONS as VALIDATOR_DEFAULT_OPTIONS
+} from '@lapidist/dtif-validator';
+import {
+  SchemaGuard,
+  DEFAULT_FORMAT_REGISTRAR,
+  DEFAULT_VALIDATOR_OPTIONS
+} from '../../src/validation/schema-guard.js';
 import { decodeDocument } from '../../src/io/decoder.js';
 import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import type { DocumentHandle, RawDocument } from '../../src/types.js';
@@ -98,4 +106,9 @@ void test('SchemaGuard configures Ajv with strict mode by default', () => {
   // Ensure guard instantiation succeeds with strict defaults.
   const guard = new SchemaGuard();
   assert.ok(guard);
+});
+
+void test('SchemaGuard shares Ajv defaults and format registrar with validator', () => {
+  assert.equal(DEFAULT_VALIDATOR_OPTIONS, VALIDATOR_DEFAULT_OPTIONS);
+  assert.equal(DEFAULT_FORMAT_REGISTRAR, VALIDATOR_DEFAULT_FORMAT_REGISTRAR);
 });

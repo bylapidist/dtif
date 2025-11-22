@@ -1,5 +1,9 @@
 import { createRequire } from 'node:module';
 import type { ErrorObject } from 'ajv';
+import {
+  DEFAULT_FORMAT_REGISTRAR,
+  DEFAULT_VALIDATOR_OPTIONS as VALIDATOR_DEFAULT_OPTIONS
+} from '@lapidist/dtif-validator';
 import type { CreateDtifValidatorOptions, DtifValidator } from '@lapidist/dtif-validator';
 
 import { DiagnosticCodes } from '../diagnostics/codes.js';
@@ -33,21 +37,15 @@ export class SchemaGuardError extends Error {
   }
 }
 
+export { DEFAULT_FORMAT_REGISTRAR };
+
 const ajvModule: unknown = require('ajv/dist/2020.js');
-const formatsModule: unknown = require('ajv-formats');
-
 const AJV_CONSTRUCTOR = resolveAjvConstructor(ajvModule);
-
-const DEFAULT_FORMAT_REGISTRAR = resolveFormatRegistrar(formatsModule);
 
 const CORE_SCHEMA = loadCoreSchema();
 const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
 
-export const DEFAULT_VALIDATOR_OPTIONS = {
-  allErrors: true,
-  strict: true,
-  $data: true
-} as const;
+export const DEFAULT_VALIDATOR_OPTIONS = VALIDATOR_DEFAULT_OPTIONS;
 
 function createAjvInstance(options: object): AjvInstance {
   const instance: unknown = new AJV_CONSTRUCTOR(options);
@@ -295,19 +293,6 @@ function resolveAjvConstructor(exports: unknown): AjvConstructor {
   throw new SchemaGuardError('Failed to load the AJV 2020 module.');
 }
 
-function resolveFormatRegistrar(module: unknown): FormatRegistrar {
-  if (isFormatRegistrar(module)) {
-    return (instance) => module(instance);
-  }
-
-  if (isJsonObject(module) && isFormatRegistrar(module.default)) {
-    const registrar = module.default;
-    return (instance) => registrar(instance);
-  }
-
-  throw new SchemaGuardError('Failed to load the AJV formats registrar.');
-}
-
 function isAjvConstructor(value: unknown): value is AjvConstructor {
   if (typeof value !== 'function') {
     return false;
@@ -315,10 +300,6 @@ function isAjvConstructor(value: unknown): value is AjvConstructor {
 
   const prototype: unknown = Reflect.get(value, 'prototype');
   return typeof prototype === 'object' && prototype !== null;
-}
-
-function isFormatRegistrar(value: unknown): value is FormatRegistrar {
-  return typeof value === 'function';
 }
 
 function loadCoreSchema(): DtifValidator['schema'] {

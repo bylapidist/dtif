@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: DTIF documentation
+    url: https://dtif.lapidist.net/
+    about: Review guides, examples, and registry references before filing a request.
+  - name: Security disclosure
+    url: https://github.com/bylapidist/dtif/security/advisories/new
+    about: Please use the private advisory process for security reports.
