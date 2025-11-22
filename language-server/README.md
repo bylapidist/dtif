@@ -65,8 +65,8 @@ start({ connection });
 
 The language server reads optional workspace configuration under the `dtifLanguageServer` section.
 
-| Setting           | Type            | Default | Description                                                                     |
-| ----------------- | --------------- | ------- | ------------------------------------------------------------------------------- |
+| Setting           | Type            | Default | Description                                                                  |
+| ----------------- | --------------- | ------- | --------------------------------------------------------------------------- |
 | `validation.mode` | `'on' \| 'off'` | `'on'`  | Enables or suppresses schema diagnostics while keeping navigation indexes warm. |
 
 Settings can be supplied by clients that implement [`workspace/configuration`](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#workspace_configuration) or via editor-specific configuration files.
@@ -97,11 +97,11 @@ Integration tests in `language-server/tests/` spin up the LSP over JSON-RPC stre
 
 ## Troubleshooting
 
-| Symptom                                               | Suggested action                                                                                                                  |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Diagnostics do not appear                             | Confirm `validation.mode` is set to `'on'` and the client calls `textDocument/didOpen` for DTIF files.                            |
+| Symptom                                               | Suggested action                                                                 |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Diagnostics do not appear                             | Confirm `validation.mode` is set to `'on'` and the client calls `textDocument/didOpen` for DTIF files. |
 | Rename edits miss some files                          | Only documents opened by the client are available to the server. Ensure the editor loads relevant files before triggering rename. |
-| Diagnostics do not reappear after toggling validation | Ensure the client re-requests configuration after edits. Some editors only refetch settings on save or focus changes.             |
+| Diagnostics do not reappear after toggling validation | Ensure the client re-requests configuration after edits. Some editors only refetch settings on save or focus changes. |
 
 ## License
 
