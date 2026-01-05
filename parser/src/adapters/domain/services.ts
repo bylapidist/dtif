@@ -266,9 +266,10 @@ export class DocumentNormalizationAdapter implements DocumentNormalizationServic
   }
 }
 
-export class GraphConstructionAdapter
-  implements GraphConstructionService<DocumentGraph, DocumentAst>
-{
+export class GraphConstructionAdapter implements GraphConstructionService<
+  DocumentGraph,
+  DocumentAst
+> {
   readonly builder: GraphBuilderPort<DocumentGraph, DocumentAst>;
 
   constructor(builder?: GraphBuilderPort<DocumentGraph, DocumentAst>) {
@@ -296,9 +297,11 @@ export interface ResolutionAdapterOptions {
 
 type ResolverInstance = ReturnType<typeof createDocumentResolver>;
 
-export class ResolutionAdapter
-  implements ResolutionService<DocumentGraph, ResolverInstance, DocumentAst>
-{
+export class ResolutionAdapter implements ResolutionService<
+  DocumentGraph,
+  ResolverInstance,
+  DocumentAst
+> {
   readonly resolver: ResolutionPort<DocumentGraph, ResolverInstance, DocumentAst>;
   readonly #overrideContext: ReadonlyMap<string, unknown>;
   readonly #maxDepth: number;
@@ -354,9 +357,11 @@ export interface TokenFlatteningAdapterOptions {
   readonly clock?: () => number;
 }
 
-export class TokenFlatteningAdapter
-  implements TokenFlatteningService<ResolverInstance, DocumentGraph, TokenCacheSnapshot>
-{
+export class TokenFlatteningAdapter implements TokenFlatteningService<
+  ResolverInstance,
+  DocumentGraph,
+  TokenCacheSnapshot
+> {
   readonly flattener: TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
   readonly #metadataSnapshot: typeof createMetadataSnapshot;
   readonly #resolutionSnapshot: typeof createResolutionSnapshot;
