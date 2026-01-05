@@ -429,8 +429,11 @@ export interface ParseTokensInput extends ParseDocumentInput {
   readonly includeGraphs?: boolean;
 }
 
-export interface ParseTokensExecution<TAst, TGraph, TResult>
-  extends ParseDocumentExecution<TAst, TGraph, TResult> {
+export interface ParseTokensExecution<TAst, TGraph, TResult> extends ParseDocumentExecution<
+  TAst,
+  TGraph,
+  TResult
+> {
   readonly tokens?: TokenSnapshot<TokenCacheSnapshot>;
   readonly tokensFromCache: boolean;
 }

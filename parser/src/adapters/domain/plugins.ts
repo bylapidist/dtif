@@ -33,9 +33,10 @@ export type PluginTransformExecutionResult = PipelineResult<
 const EMPTY_EXTENSION_RESULTS: readonly ExtensionEvaluationSnapshot[] = Object.freeze([]);
 const EMPTY_TRANSFORM_RESULTS: readonly TokenTransformEvaluationSnapshot[] = Object.freeze([]);
 
-export class PluginExtensionCollectorAdapter
-  implements ExtensionCollectorPort<PluginExtensionCollectorContext, PluginExtensionCollectorResult>
-{
+export class PluginExtensionCollectorAdapter implements ExtensionCollectorPort<
+  PluginExtensionCollectorContext,
+  PluginExtensionCollectorResult
+> {
   readonly #registry: PluginRegistry;
 
   constructor(registry: PluginRegistry) {
@@ -106,9 +107,10 @@ export class PluginExtensionCollectorAdapter
   }
 }
 
-export class PluginTransformExecutorAdapter
-  implements TransformExecutorPort<PluginTransformExecutionContext, PluginTransformExecutionResult>
-{
+export class PluginTransformExecutorAdapter implements TransformExecutorPort<
+  PluginTransformExecutionContext,
+  PluginTransformExecutionResult
+> {
   readonly #transforms: readonly ResolvedTokenTransformEntry[];
 
   constructor(transforms: readonly ResolvedTokenTransformEntry[]) {
