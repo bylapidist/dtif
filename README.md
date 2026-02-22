@@ -40,10 +40,10 @@ Browse the deployed documentation at **[dtif.lapidist.net](https://dtif.lapidist
 ## Runtime & support policy
 
 - **Node.js:** 22 or newer (aligns with CI and published workspace `engines` fields)
-- **npm:** 10 or newer
+- **pnpm:** 10 or newer
 
 The repository follows semantic versioning across workspaces. When contributing, run the workspace-specific scripts referenced
-in [CONTRIBUTING.md](CONTRIBUTING.md) to match CI: `npm run lint`, `npm run lint:ts`, `npm test`, and the workspace build/test
+in [CONTRIBUTING.md](CONTRIBUTING.md) to match CI: `pnpm run lint`, `pnpm run lint:ts`, `pnpm test`, and the workspace build/test
 commands noted in `AGENTS.md`.
 
 ## Quick example
@@ -91,7 +91,7 @@ commands noted in `AGENTS.md`.
    ```bash
    git clone https://github.com/bylapidist/dtif.git
    cd dtif
-   npm install
+   pnpm install
    ```
 
 2. **Run the JSON Schema**
@@ -129,9 +129,9 @@ commands noted in `AGENTS.md`.
 3. **Exercise the project checks**
 
    ```bash
-   npm run lint
-   npm test
-   npm run docs:dev   # optional: preview the docs locally
+   pnpm run lint
+   pnpm test
+   pnpm run docs:dev   # optional: preview the docs locally
    ```
 
 ## Parse DTIF documents
@@ -217,14 +217,14 @@ declare const tokens: DesignTokenInterchangeFormat;
 
 ## Release & versioning
 
-DTIF is published as an npm workspace that groups the schema (with bundled TypeScript declarations) and validator packages under a shared version. The
+DTIF is published as a pnpm workspace that groups the schema (with bundled TypeScript declarations) and validator packages under a shared version. The
 [Changesets](https://github.com/changesets/changesets) workflow powers automated changelog generation and release pull
 requests:
 
-- Run `npm run changeset` to document changes. The command prompts for the release type and writes a markdown entry under
+- Run `pnpm run changeset` to document changes. The command prompts for the release type and writes a markdown entry under
   `.changeset/`.
-- Run `npm run version-packages` locally to update package versions and regenerate changelog entries before publishing.
-- CI uses [`changesets/action`](https://github.com/changesets/action) to open release pull requests and run `npm run release`
+- Run `pnpm run version-packages` locally to update package versions and regenerate changelog entries before publishing.
+- CI uses [`changesets/action`](https://github.com/changesets/action) to open release pull requests and run `pnpm run release`
   once they land on `main`.
 
 Repository-wide changes are documented in [`CHANGELOG.md`](CHANGELOG.md). Package-specific history lives alongside each

@@ -56,7 +56,7 @@ import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 declare const tokens: DesignTokenInterchangeFormat;
 ```
 
-Run `npm run build:packages` to regenerate the declaration file after
+Run `pnpm run build:packages` to regenerate the declaration file after
 editing `core.json`.
 
 ## Changelog

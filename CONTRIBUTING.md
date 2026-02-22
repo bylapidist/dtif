@@ -7,7 +7,7 @@ environment, running project tasks, and preparing contributions.
 
 - **Node.js 22 or newer** - the CI pipeline runs on Node 22; use Node 22 or any newer major version locally to avoid incompatibilities. Tools like
   [`nvm`](https://github.com/nvm-sh/nvm) or [`fnm`](https://github.com/Schniz/fnm) make switching versions easy.
-- **npm 10** or newer - bundled with recent Node releases.
+- **pnpm 10** or newer - install with `corepack enable` and `corepack prepare pnpm@10.17.1 --activate`.
 - **Git** - for cloning the repository and managing branches.
 
 ## Initial setup
@@ -22,10 +22,10 @@ environment, running project tasks, and preparing contributions.
 2. **Install JavaScript dependencies**
 
    ```bash
-   npm install
+   pnpm install
    ```
 
-   Use `npm ci` in place of `npm install` when you want a clean, lockfile-driven install (for example, in CI or scripted
+   Use `pnpm install --frozen-lockfile` when you want a clean, lockfile-driven install (for example, in CI or scripted
    environments).
 
 3. **Verify the installation**
@@ -33,19 +33,19 @@ environment, running project tasks, and preparing contributions.
    Run the automated checks once to ensure your environment is working end-to-end:
 
    ```bash
-   npm run format:check
-   npm run lint
-   npm test
+   pnpm run format:check
+   pnpm run lint
+   pnpm test
    ```
 
-   - `npm run format:check` confirms Prettier settings are honoured.
-   - `npm run lint` runs `markdownlint` across Markdown sources.
-   - `npm test` exercises the schema tooling and validates example token files.
+   - `pnpm run format:check` confirms Prettier settings are honoured.
+   - `pnpm run lint` runs `markdownlint` across Markdown sources.
+   - `pnpm test` exercises the schema tooling and validates example token files.
 
 ## Project layout highlights
 
 - `registry/` - namespaced type registry definitions.
-- `tests/` - tooling tests, fixtures, and scripts executed via `npm test`.
+- `tests/` - tooling tests, fixtures, and scripts executed via `pnpm test`.
 
 ## Development workflow
 
@@ -55,17 +55,17 @@ Use the following loop while working on changes:
 2. **Format and lint** modified files before committing:
 
    ```bash
-   npm run format
-   npm run lint
+   pnpm run format
+   pnpm run lint
    ```
 
-   `npm run format` applies Prettier across JSON and Markdown files. Commit the formatted results rather than editing generated
+   `pnpm run format` applies Prettier across JSON and Markdown files. Commit the formatted results rather than editing generated
    output manually.
 
 3. **Run the tests**:
 
    ```bash
-   npm test
+   pnpm test
    ```
 
 4. **Review git status** to confirm only intentional files are staged:
@@ -78,13 +78,13 @@ Use the following loop while working on changes:
 
 ## Release process
 
-The repository is managed as an npm workspace. The schema package (which
+The repository is managed as a pnpm workspace. The schema package (which
 bundles TypeScript declarations) and the validator package share a version
 through [Changesets](https://github.com/changesets/changesets).
 
-1. Run `npm run changeset` to record every user-visible change. Choose the bump type requested by the CLI and describe the
+1. Run `pnpm run changeset` to record every user-visible change. Choose the bump type requested by the CLI and describe the
    change. This writes a markdown file under `.changeset/`.
-2. When preparing a release, run `npm run version-packages` locally to apply pending changesets. This updates package versions
+2. When preparing a release, run `pnpm run version-packages` locally to apply pending changesets. This updates package versions
    and changelog entries in `schema/` and `validator/`.
 3. Merge the resulting pull request. The [`Release`](.github/workflows/release.yml) workflow promotes the changes by creating a
    release PR or publishing to npm once `NPM_TOKEN` is configured.
@@ -95,7 +95,7 @@ the shipped changes.
 ## Style guidelines
 
 - Use Prettier for JSON and Markdown formatting.
-- Run `npm run format` before each commit to apply the project formatting rules.
+- Run `pnpm run format` before each commit to apply the project formatting rules.
 - `markdownlint` enforces prose conventions.
 - Normative language SHOULD use [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) keywords.
 

@@ -11,7 +11,7 @@ labels: [bug]
 ## Environment
 
 - Node.js version:
-- npm version:
+- pnpm version:
 - Workspace(s) impacted: <!-- parser, validator, schema, language-server -->
 - Operating system:
 

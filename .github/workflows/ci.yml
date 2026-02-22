@@ -29,43 +29,50 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Check formatting
-        run: npm run format:check
+        run: pnpm run format:check
 
       - name: Lint markdown
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Lint docs
-        run: npm run lint:docs
+        run: pnpm run lint:docs
 
       - name: Lint TypeScript
-        run: npm run lint:ts
+        run: pnpm run lint:ts
 
       - name: Typecheck workspaces
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: Validate DTIF markdown examples
-        run: npm run validate:dtif
+        run: pnpm run validate:dtif
 
       - name: Build docs
-        run: npm run docs:build
+        run: pnpm run docs:build
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
       - name: Build parser package
-        run: npm run build --workspace=@lapidist/dtif-parser
+        run: pnpm --filter @lapidist/dtif-parser run build
 
       - name: Test parser package
-        run: npm test --workspace=@lapidist/dtif-parser
+        run: pnpm --filter @lapidist/dtif-parser test
 
       - name: Build language server package
-        run: npm run build --workspace=@lapidist/dtif-language-server
+        run: pnpm --filter @lapidist/dtif-language-server run build
 
       - name: Test language server package
-        run: npm test --workspace=@lapidist/dtif-language-server
+        run: pnpm --filter @lapidist/dtif-language-server test

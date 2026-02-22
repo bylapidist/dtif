@@ -4,12 +4,12 @@
 
 ## Testing
 
-- [ ] `npm run format:check`
-- [ ] `npm run lint`
-- [ ] `npm run lint:ts`
-- [ ] `npm test`
+- [ ] `pnpm run format:check`
+- [ ] `pnpm run lint`
+- [ ] `pnpm run lint:ts`
+- [ ] `pnpm test`
 - [ ] Workspace-specific checks (list):
 
 ## Additional notes
 
-<!-- Runtime support (Node.js + npm) confirmed? Any docs/registry impacts? -->
+<!-- Runtime support (Node.js + pnpm) confirmed? Any docs/registry impacts? -->
