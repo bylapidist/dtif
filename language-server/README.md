@@ -9,7 +9,7 @@
 
 ### Diagnostics and validation
 
-- Parses DTIF documents with tolerant JSONC support and precise error ranges.
+- Parses DTIF documents as strict JSON (no comments or trailing commas) with precise error ranges.
 - Validates against the canonical DTIF schema via `@lapidist/dtif-validator`.
 - Publishes diagnostics on open and change events, clearing them automatically when documents close.
 
