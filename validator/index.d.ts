@@ -5,18 +5,23 @@ export interface CreateDtifValidatorOptions {
   ajvOptions?: AjvOptions;
   formats?: false | ((ajv: import('ajv').default) => unknown);
   schemaId?: string;
+  allowRemoteReferences?: boolean;
+  enforceSemanticRules?: boolean;
 }
 
 export interface DtifValidator {
   ajv: import('ajv').default;
   schema: typeof schema;
   schemaId: string;
-  validate: ValidateFunction;
+  validate: ValidateFunction & {
+    warnings?: ErrorObject[] | null;
+  };
 }
 
 export interface DtifValidationResult {
   valid: boolean;
   errors: ErrorObject[] | null | undefined;
+  warnings?: ErrorObject[] | null;
 }
 
 export declare const schema: typeof import('@lapidist/dtif-schema/core.json');

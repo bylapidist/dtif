@@ -11,6 +11,20 @@ const invalidMinimalExample = JSON.parse(JSON.stringify(minimalExample));
 if (invalidMinimalExample.spacing?.small) {
   invalidMinimalExample.spacing.small = { foo: 'bar' };
 }
+const orderingViolation = {
+  $version: '1.0.0',
+  custom: {
+    $value: 4,
+    $type: 'vendor.custom'
+  }
+};
+const warningOnly = {
+  $version: '2.0.0',
+  custom: {
+    $type: 'vendor.custom',
+    $value: 4
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -62,6 +76,33 @@ export default function assertValidatorDefaults() {
       path: '',
       message: 'invalid minimal example should provide validation errors'
     });
+  }
+
+  const orderingValid = validate(orderingViolation);
+  if (orderingValid) {
+    errors.push({
+      code: 'E_VALIDATOR_ORDERING_ENFORCEMENT_MISSING',
+      path: '',
+      message: 'validator should reject canonical ordering violations'
+    });
+  }
+
+  const warningValid = validate(warningOnly);
+  if (!warningValid) {
+    errors.push({
+      code: 'E_VALIDATOR_WARNING_ONLY_REJECTED',
+      path: '',
+      message: 'future version and unknown type warnings should not fail validation'
+    });
+  } else {
+    const warnings = validate.warnings ?? [];
+    if (warnings.length < 2) {
+      errors.push({
+        code: 'E_VALIDATOR_WARNINGS_MISSING',
+        path: '',
+        message: 'validator should surface warnings for unknown type and future major version'
+      });
+    }
   }
 
   return { valid: errors.length === 0, errors: errors.length > 0 ? errors : null };

@@ -1,0 +1,368 @@
+import registryTypes from '../registry/types.json' with { type: 'json' };
+
+const KNOWN_TYPES = new Set(Object.keys(registryTypes));
+const SUPPORTED_VERSION_MAJOR = 1;
+
+function createSemanticIssue(instancePath, message, code) {
+  return {
+    instancePath,
+    schemaPath: `#/dtif-semantic/${code}`,
+    keyword: 'dtifSemantic',
+    params: { code },
+    message
+  };
+}
+
+function isObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function checkOrder(keys, expected, path, errors) {
+  let last = -1;
+  for (const key of expected) {
+    const idx = keys.indexOf(key);
+    if (idx === -1) return;
+    if (idx < last) {
+      errors.push(createSemanticIssue(path, 'canonical key order violated', 'E_ORDERING'));
+      return;
+    }
+    last = idx;
+  }
+}
+
+function checkCollectionOrder(node, path, errors) {
+  const entries = Object.entries(node).filter(([key]) => !key.startsWith('$'));
+  if (entries.length < 2) {
+    return;
+  }
+  const objectEntries = entries.filter(([, value]) => isObject(value));
+  if (objectEntries.length < 2) {
+    return;
+  }
+  const keys = objectEntries.map(([key]) => key);
+  const sorted = [...keys].sort((a, b) => a.localeCompare(b));
+  for (let i = 0; i < keys.length; i += 1) {
+    if (keys[i] !== sorted[i]) {
+      errors.push(
+        createSemanticIssue(
+          path,
+          'collection members must be sorted lexicographically',
+          'E_COLLECTION_ORDER'
+        )
+      );
+      break;
+    }
+  }
+}
+
+function hasPathTraversal(pointer) {
+  const hashIndex = pointer.indexOf('#');
+  const beforeFragment = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+  const [pathBeforeQuery] = beforeFragment.split('?');
+  const normalisedPath = pathBeforeQuery.replace(/%2f/gi, '/').replace(/%2e/gi, '.');
+  return normalisedPath
+    .split('/')
+    .filter((segment) => segment.length > 0)
+    .some((segment) => segment === '..');
+}
+
+function resolvePointer(root, pointer, errors, refPath, chain = []) {
+  if (typeof pointer !== 'string') {
+    errors.push(createSemanticIssue(refPath, 'ref pointer must be a string', 'E_REF_INVALID_TYPE'));
+    return null;
+  }
+
+  if (!pointer.startsWith('#')) {
+    return null;
+  }
+
+  if (chain.includes(pointer)) {
+    errors.push(
+      createSemanticIssue(
+        refPath,
+        `circular reference ${[...chain, pointer].join(' -> ')}`,
+        'E_REF_CIRCULAR'
+      )
+    );
+    return null;
+  }
+
+  const parts = pointer
+    .slice(1)
+    .split('/')
+    .filter(Boolean)
+    .map((p) => p.replace(/~1/g, '/').replace(/~0/g, '~'));
+
+  let current = root;
+  for (const part of parts) {
+    if (isObject(current) && Object.prototype.hasOwnProperty.call(current, part)) {
+      current = current[part];
+    } else {
+      errors.push(
+        createSemanticIssue(refPath, `unresolved pointer ${pointer}`, 'E_REF_UNRESOLVED')
+      );
+      return null;
+    }
+  }
+
+  if (isObject(current) && typeof current.$ref === 'string' && current.$ref.startsWith('#')) {
+    return resolvePointer(root, current.$ref, errors, refPath, [...chain, pointer]);
+  }
+
+  return current;
+}
+
+function collectOverrideGraph(root) {
+  const graph = new Map();
+  const tokenIndex = new Map();
+
+  if (!Array.isArray(root?.$overrides)) {
+    return { graph, tokenIndex };
+  }
+
+  root.$overrides.forEach((override, idx) => {
+    if (!isObject(override)) {
+      return;
+    }
+    const token = override.$token;
+    if (typeof token !== 'string') {
+      return;
+    }
+
+    if (!tokenIndex.has(token)) {
+      tokenIndex.set(token, idx);
+    }
+
+    const addEdge = (ref) => {
+      if (typeof ref !== 'string' || !ref.startsWith('#')) {
+        return;
+      }
+      if (!graph.has(token)) {
+        graph.set(token, new Set());
+      }
+      graph.get(token).add(ref);
+    };
+
+    const walkFallback = (entry) => {
+      if (Array.isArray(entry)) {
+        entry.forEach((value) => walkFallback(value));
+        return;
+      }
+      if (!isObject(entry)) {
+        return;
+      }
+      if (typeof entry.$ref === 'string') {
+        addEdge(entry.$ref);
+      }
+      if (Object.prototype.hasOwnProperty.call(entry, '$fallback')) {
+        walkFallback(entry.$fallback);
+      }
+    };
+
+    if (typeof override.$ref === 'string') {
+      addEdge(override.$ref);
+    }
+    if (Object.prototype.hasOwnProperty.call(override, '$fallback')) {
+      walkFallback(override.$fallback);
+    }
+  });
+
+  return { graph, tokenIndex };
+}
+
+function detectOverrideCycles(root, errors) {
+  const { graph, tokenIndex } = collectOverrideGraph(root);
+  if (graph.size === 0) {
+    return;
+  }
+
+  const visited = new Set();
+  const stack = [];
+  const inStack = new Set();
+  const reported = new Set();
+
+  const dfs = (node) => {
+    stack.push(node);
+    inStack.add(node);
+
+    const targets = graph.get(node);
+    if (targets) {
+      for (const ref of targets) {
+        if (!graph.has(ref)) {
+          continue;
+        }
+        if (inStack.has(ref)) {
+          const startIndex = stack.indexOf(ref);
+          const cycle = stack.slice(startIndex);
+          cycle.push(ref);
+          const signature = cycle.join('->');
+          if (!reported.has(signature)) {
+            reported.add(signature);
+            const first = cycle[0];
+            const overrideIndex = tokenIndex.get(first);
+            const instancePath =
+              typeof overrideIndex === 'number'
+                ? `/$overrides/${overrideIndex}/$token`
+                : '/$overrides';
+            errors.push(
+              createSemanticIssue(
+                instancePath,
+                `override cycle ${cycle.join(' -> ')}`,
+                'E_OVERRIDE_CIRCULAR'
+              )
+            );
+          }
+        } else if (!visited.has(ref)) {
+          dfs(ref);
+        }
+      }
+    }
+
+    stack.pop();
+    inStack.delete(node);
+    visited.add(node);
+  };
+
+  for (const node of graph.keys()) {
+    if (!visited.has(node)) {
+      dfs(node);
+    }
+  }
+}
+
+export function runSemanticValidation(document, options = {}) {
+  const { allowRemoteReferences = false } = options;
+  const errors = [];
+  const warnings = [];
+
+  if (!isObject(document)) {
+    return { errors, warnings };
+  }
+
+  const version = document.$version;
+  if (typeof version === 'string') {
+    const match = /^([0-9]+)\./.exec(version);
+    if (match) {
+      const major = Number.parseInt(match[1], 10);
+      if (Number.isSafeInteger(major) && major > SUPPORTED_VERSION_MAJOR) {
+        warnings.push(
+          createSemanticIssue(
+            '/$version',
+            `major version ${String(major)} is newer than supported major ${String(
+              SUPPORTED_VERSION_MAJOR
+            )}`,
+            'W_FUTURE_VERSION'
+          )
+        );
+      }
+    }
+  }
+
+  const walk = (node, path = '') => {
+    if (Array.isArray(node)) {
+      node.forEach((value, index) => walk(value, `${path}/${String(index)}`));
+      return;
+    }
+    if (!isObject(node)) {
+      return;
+    }
+
+    const keys = Object.keys(node);
+    if ('$type' in node && '$value' in node) {
+      checkOrder(keys, ['$type', '$value'], path, errors);
+    }
+    if ('dimensionType' in node && 'value' in node && 'unit' in node) {
+      checkOrder(keys, ['dimensionType', 'value', 'unit'], path, errors);
+    }
+    if ('fn' in node && 'parameters' in node) {
+      checkOrder(keys, ['fn', 'parameters'], path, errors);
+    }
+    if ('colorSpace' in node && 'components' in node) {
+      checkOrder(keys, ['colorSpace', 'components'], path, errors);
+    }
+    checkCollectionOrder(node, path, errors);
+
+    if (typeof node.$type === 'string' && !KNOWN_TYPES.has(node.$type)) {
+      warnings.push(
+        createSemanticIssue(`${path}/$type`, `unknown $type "${node.$type}"`, 'W_UNKNOWN_TYPE')
+      );
+    }
+
+    const validateReference = (pointer, refPath) => {
+      if (typeof pointer !== 'string') {
+        errors.push(
+          createSemanticIssue(refPath, 'ref pointer must be a string', 'E_REF_INVALID_TYPE')
+        );
+        return;
+      }
+      if (hasPathTraversal(pointer)) {
+        errors.push(
+          createSemanticIssue(
+            refPath,
+            `path traversal not allowed: ${pointer}`,
+            'E_REF_PATH_TRAVERSAL'
+          )
+        );
+        return;
+      }
+      if (!pointer.includes('#')) {
+        errors.push(
+          createSemanticIssue(
+            refPath,
+            `ref must include fragment: ${pointer}`,
+            'E_REF_MISSING_FRAGMENT'
+          )
+        );
+        return;
+      }
+      if (!pointer.startsWith('#')) {
+        if (!allowRemoteReferences) {
+          errors.push(
+            createSemanticIssue(
+              refPath,
+              `remote refs not allowed: ${pointer}`,
+              'E_REF_REMOTE_DISABLED'
+            )
+          );
+          return;
+        }
+        const hashIndex = pointer.indexOf('#');
+        const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+        const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+        if (schemeMatch) {
+          const scheme = schemeMatch[1].toLowerCase();
+          if (!['http', 'https'].includes(scheme)) {
+            errors.push(
+              createSemanticIssue(
+                refPath,
+                `unsupported remote scheme ${pointer}`,
+                'E_REF_UNSUPPORTED_SCHEME'
+              )
+            );
+          }
+        }
+        return;
+      }
+      resolvePointer(document, pointer, errors, refPath);
+    };
+
+    if ('$ref' in node) {
+      validateReference(node.$ref, `${path}/$ref`);
+    }
+    if ('$token' in node) {
+      validateReference(node.$token, `${path}/$token`);
+    }
+    if (isObject(node.$deprecated) && '$replacement' in node.$deprecated) {
+      validateReference(node.$deprecated.$replacement, `${path}/$deprecated/$replacement`);
+    }
+
+    for (const [key, value] of Object.entries(node)) {
+      walk(value, `${path}/${key}`);
+    }
+  };
+
+  walk(document);
+  detectOverrideCycles(document, errors);
+
+  return { errors, warnings };
+}

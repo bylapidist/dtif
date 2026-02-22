@@ -1,6 +1,7 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { createRequire } from 'node:module';
+import { runSemanticValidation } from './semantic.js';
 
 const require = createRequire(import.meta.url);
 const schema = require('@lapidist/dtif-schema/core.json');
@@ -29,7 +30,9 @@ export function createDtifValidator(options = {}) {
     ajv: existingAjv,
     ajvOptions = {},
     formats = addFormats,
-    schemaId = DEFAULT_SCHEMA_ID
+    schemaId = DEFAULT_SCHEMA_ID,
+    allowRemoteReferences = false,
+    enforceSemanticRules = true
   } = options;
 
   const ajv =
@@ -44,7 +47,27 @@ export function createDtifValidator(options = {}) {
     register(ajv);
   }
 
-  const validate = ensureSchema(ajv, schemaId);
+  const schemaValidate = ensureSchema(ajv, schemaId);
+  const validate = (document) => {
+    const schemaValid = schemaValidate(document);
+    const schemaErrors = schemaValid ? [] : (schemaValidate.errors ?? []);
+    const semantic =
+      schemaValid && enforceSemanticRules
+        ? runSemanticValidation(document, { allowRemoteReferences })
+        : { errors: [], warnings: [] };
+
+    const mergedErrors = [...schemaErrors, ...semantic.errors];
+    validate.errors = mergedErrors.length === 0 ? null : mergedErrors;
+    validate.warnings = semantic.warnings.length === 0 ? null : semantic.warnings;
+
+    return mergedErrors.length === 0;
+  };
+
+  validate.errors = null;
+  validate.warnings = null;
+  validate.schema = schemaValidate.schema;
+  validate.schemaEnv = schemaValidate.schemaEnv;
+  validate.source = schemaValidate.source;
 
   return {
     ajv,
@@ -59,7 +82,8 @@ export function validateDtif(document, options = {}) {
   const valid = validate(document);
   return {
     valid,
-    errors: valid ? null : (validate.errors ?? [])
+    errors: valid ? null : (validate.errors ?? []),
+    warnings: validate.warnings ?? null
   };
 }
 
