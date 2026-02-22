@@ -90,9 +90,9 @@ The language server depends on `@lapidist/dtif-parser`, `@lapidist/dtif-validato
 
 ## Development
 
-- `npm run build --workspace=@lapidist/dtif-language-server` – compile to `dist/`.
-- `npm test --workspace=@lapidist/dtif-language-server` – run the Node.js test suite.
-- `npm run lint` / `npm run lint:ts` – enforce repository lint rules.
+- `pnpm --filter @lapidist/dtif-language-server run build` – compile to `dist/`.
+- `pnpm --filter @lapidist/dtif-language-server test` – run the Node.js test suite.
+- `pnpm run lint` / `pnpm run lint:ts` – enforce repository lint rules.
 
 Integration tests in `language-server/tests/` spin up the LSP over JSON-RPC streams to verify diagnostics, navigation, refactors, and configuration handling end to end.
 
