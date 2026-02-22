@@ -18,6 +18,7 @@ import {
   validateTokenMemberOrder
 } from './ordering.js';
 import { createField, EMPTY_CHILDREN, isPlainObject } from './utils.js';
+import { isKnownTokenType } from './known-types.js';
 
 export function normalizeNode(
   context: NormaliserContext,
@@ -110,6 +111,8 @@ function normalizeTokenNode(
     validateCanonicalValueOrdering(context, valueField.value, valueField.pointer);
   }
 
+  emitUnknownTypeWarning(context, typeField?.value, pointer);
+
   return Object.freeze({
     kind: 'token',
     name,
@@ -153,6 +156,8 @@ function normalizeAliasNode(
     return undefined;
   }
 
+  emitUnknownTypeWarning(context, typeField.value, typeField.pointer);
+
   return Object.freeze({
     kind: 'alias',
     name,
@@ -161,6 +166,24 @@ function normalizeAliasNode(
     metadata,
     type: typeField,
     ref: refField
+  });
+}
+
+function emitUnknownTypeWarning(
+  context: NormaliserContext,
+  type: string | undefined,
+  pointer: JsonPointer
+): void {
+  if (!type || isKnownTokenType(type)) {
+    return;
+  }
+
+  context.diagnostics.push({
+    code: DiagnosticCodes.normaliser.UNKNOWN_TYPE,
+    message: `Token type "${type}" is not currently recognised by the DTIF registry.`,
+    severity: 'warning',
+    pointer,
+    span: getSourceSpan(context, pointer)
   });
 }
 

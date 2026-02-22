@@ -114,6 +114,31 @@ void test('warns when document major version is newer than supported', async () 
   assert.equal(diagnostics[0]?.pointer, '#/$version');
 });
 
+void test('warns when token type is not recognised', async () => {
+  const json = JSON.stringify(
+    {
+      $version: '1.0.0',
+      color: {
+        brand: {
+          $type: 'vendor.custom',
+          $value: 12
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { diagnostics } = result;
+  const warning = diagnostics.find(
+    (diagnostic) => diagnostic.code === DiagnosticCodes.normaliser.UNKNOWN_TYPE
+  );
+  assert.ok(warning, 'expected unknown type warning');
+  assert.equal(warning.severity, 'warning');
+  assert.equal(warning.pointer, '#/color/brand');
+});
+
 void test('metadata rejects invalid lifecycle timestamps', async () => {
   const json = JSON.stringify(
     {
