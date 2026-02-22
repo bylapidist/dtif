@@ -96,6 +96,10 @@ non-allow-listed hosts fail with a `DocumentLoaderError` whose `reason` is
 `HTTP_HOST_NOT_ALLOWED`, and hung requests are aborted with a `TimeoutError`
 driven by the loader's timeout.
 
+The current resolver only resolves local (`#...`) aliases inside the loaded
+document graph. External alias targets currently emit diagnostics and remain
+unresolved.
+
 Each pipeline stage emits domain `DiagnosticEvent` objects instead of throwing.
 Results aggregate every diagnostic (including cache hits) so tooling can stream
 warnings via `onDiagnostic`/`warn` hooks, persist them for later inspection, or
