@@ -90,7 +90,7 @@ identifiers to arbitrary JSON values. Keys _MUST_ use lower-case
 reverse domain name notation with at least two labels, such as `com.example`,
 to avoid collisions. A registry of well-known namespaces is maintained by the
 specification editor. Consumers encountering a non-object `$extensions` member
-_MUST_ treat it as absent.
+_MUST_ treat the token as invalid.
 
 Consumers _MUST_ preserve unrecognised extensions.
 
