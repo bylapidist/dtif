@@ -62,11 +62,11 @@ void test('DocumentResolver applies overrides when context matches', () => {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.1, 0.1, 0.1] } },
         light: {
           $type: 'color',
           $value: { colorSpace: 'srgb', components: [0.95, 0.95, 0.95] }
-        },
-        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.1, 0.1, 0.1] } }
+        }
       }
     },
     { theme: 'dark' }
@@ -93,8 +93,8 @@ void test('DocumentResolver ignores overrides when context does not match', () =
       bg: { $type: 'color', $ref: '#/color/light' }
     },
     color: {
-      light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
-      dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
+      dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } },
+      light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } }
     }
   });
 
@@ -125,8 +125,8 @@ void test('DocumentResolver prefers the last matching override', () => {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
-        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
-        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } },
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } }
       }
     },
     { theme: 'dark' }
@@ -157,8 +157,8 @@ void test('DocumentResolver uses fallback chains to resolve values', () => {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
-        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
-        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } },
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } }
       }
     },
     { theme: 'dark' }

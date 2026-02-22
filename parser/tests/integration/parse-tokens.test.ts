@@ -9,6 +9,10 @@ import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-asserti
 
 const INLINE_DOCUMENT = `
 $schema: https://dtif.lapidist.net/schema/core.json
+aliases:
+  brand:
+    $type: color
+    $ref: "#/colors/primary"
 colors:
   primary:
     $type: color
@@ -21,10 +25,6 @@ colors:
         note: keep
     $deprecated:
       $replacement: "#/aliases/brand"
-aliases:
-  brand:
-    $type: color
-    $ref: "#/colors/primary"
 `;
 
 const SINGLE_LINE_INLINE_DOCUMENT =

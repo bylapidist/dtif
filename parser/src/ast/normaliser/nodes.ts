@@ -12,6 +12,11 @@ import type { NormaliserContext } from './context.js';
 import { getSourceSpan } from './context.js';
 import { readOptionalStringField } from './fields.js';
 import { extractMetadata } from './metadata.js';
+import {
+  validateCanonicalValueOrdering,
+  validateCollectionMemberOrder,
+  validateTokenMemberOrder
+} from './ordering.js';
 import { createField, EMPTY_CHILDREN, isPlainObject } from './utils.js';
 
 export function normalizeNode(
@@ -50,6 +55,8 @@ function normalizeCollectionNode(
   pointer: JsonPointer,
   metadata: NodeMetadata
 ): CollectionNode {
+  validateCollectionMemberOrder(context, value, pointer);
+
   const children: DocumentChildNode[] = [];
 
   for (const [childName, childValue] of Object.entries(value)) {
@@ -81,6 +88,8 @@ function normalizeTokenNode(
   pointer: JsonPointer,
   metadata: NodeMetadata
 ): TokenNode {
+  validateTokenMemberOrder(context, value, pointer);
+
   const typeField = readOptionalStringField(context, value, '$type', pointer);
   const valueField =
     '$value' in value
@@ -95,6 +104,10 @@ function normalizeTokenNode(
       pointer,
       span: getSourceSpan(context, pointer)
     });
+  }
+
+  if (valueField) {
+    validateCanonicalValueOrdering(context, valueField.value, valueField.pointer);
   }
 
   return Object.freeze({
