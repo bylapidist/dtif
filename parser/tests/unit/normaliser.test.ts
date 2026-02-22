@@ -90,6 +90,30 @@ void test('normalises collections, tokens, aliases, and metadata', async () => {
   assert.equal(brandToken.metadata.extensions?.value['com.example'].role, 'primary');
 });
 
+void test('warns when document major version is newer than supported', async () => {
+  const json = JSON.stringify(
+    {
+      $version: '2.0.0',
+      color: {
+        primary: {
+          $type: 'color',
+          $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { ast, diagnostics } = result;
+  assert.ok(ast, 'expected document AST to be created');
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0]?.code, DiagnosticCodes.normaliser.FUTURE_VERSION);
+  assert.equal(diagnostics[0]?.severity, 'warning');
+  assert.equal(diagnostics[0]?.pointer, '#/$version');
+});
+
 void test('metadata rejects invalid lifecycle timestamps', async () => {
   const json = JSON.stringify(
     {
