@@ -46,6 +46,7 @@ import type {
   ResolvedTokenTransformEvaluation
 } from '../plugins/index.js';
 import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
+import { isOverrideValueCompatible } from './internal/type-compatibility.js';
 
 interface ResolutionState {
   readonly pointer: JsonPointer;
@@ -403,7 +404,13 @@ export class DocumentResolver {
     }
 
     if (!state && override.value) {
-      state = this.resolveOverrideValue(override, override.value, traceSteps);
+      state = this.resolveOverrideValue(
+        override,
+        override.value,
+        base,
+        localDiagnostics,
+        traceSteps
+      );
     }
 
     if (!state && override.fallback) {
@@ -534,8 +541,21 @@ export class DocumentResolver {
   private resolveOverrideValue(
     override: GraphOverrideNode,
     valueField: NonNullable<GraphOverrideNode['value']>,
+    base: ResolutionState,
+    diagnostics: DiagnosticCollector,
     trace: ResolutionTraceStep[]
-  ): OverrideState {
+  ): OverrideState | undefined {
+    if (!isOverrideValueCompatible(base.type, valueField.value)) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Override "${override.pointer}" expects type "${base.type ?? '(unknown)'}" but inline $value is incompatible.`,
+        severity: 'error',
+        pointer: valueField.pointer,
+        span: valueField.span
+      });
+      return undefined;
+    }
+
     const source = createFieldSource(valueField, this.graph.uri);
 
     const overrides = Object.freeze([
@@ -551,6 +571,7 @@ export class DocumentResolver {
     const traceSteps = Object.freeze([...trace]);
 
     return {
+      type: base.type,
       value: valueField.value,
       source,
       overrides,
@@ -691,6 +712,17 @@ export class DocumentResolver {
     }
 
     if (entry.value) {
+      if (!isOverrideValueCompatible(base.type, entry.value.value)) {
+        diagnostics.add({
+          code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+          message: `Fallback entry "${entry.pointer}" expects type "${base.type ?? '(unknown)'}" but inline $value is incompatible.`,
+          severity: 'error',
+          pointer: entry.value.pointer,
+          span: entry.value.span
+        });
+        return undefined;
+      }
+
       const source = createFieldSource(entry.value, this.graph.uri);
       const overrides = Object.freeze([
         Object.freeze({
@@ -704,6 +736,7 @@ export class DocumentResolver {
       const traceSteps = Object.freeze([...fallbackTrace]);
 
       return {
+        type: base.type,
         value: entry.value.value,
         source,
         overrides,

@@ -62,8 +62,11 @@ void test('DocumentResolver applies overrides when context matches', () => {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
-        light: { $type: 'color', $value: 'light' },
-        dark: { $type: 'color', $value: 'dark' }
+        light: {
+          $type: 'color',
+          $value: { colorSpace: 'srgb', components: [0.95, 0.95, 0.95] }
+        },
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.1, 0.1, 0.1] } }
       }
     },
     { theme: 'dark' }
@@ -73,7 +76,7 @@ void test('DocumentResolver applies overrides when context matches', () => {
 
   const { token } = result;
   assert.ok(token, 'expected override to produce a token');
-  assert.equal(token.value, 'dark');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.1, 0.1, 0.1] });
   assert.equal(result.diagnostics.length, 0);
 });
 
@@ -90,8 +93,8 @@ void test('DocumentResolver ignores overrides when context does not match', () =
       bg: { $type: 'color', $ref: '#/color/light' }
     },
     color: {
-      light: { $type: 'color', $value: 'light' },
-      dark: { $type: 'color', $value: 'dark' }
+      light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
+      dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
     }
   });
 
@@ -99,7 +102,7 @@ void test('DocumentResolver ignores overrides when context does not match', () =
 
   const { token } = result;
   assert.ok(token);
-  assert.equal(token.value, 'light');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] });
   assert.equal(result.diagnostics.length, 0);
 });
 
@@ -115,15 +118,15 @@ void test('DocumentResolver prefers the last matching override', () => {
         {
           $token: '#/button/bg',
           $when: { theme: 'dark' },
-          $value: 'custom'
+          $value: { colorSpace: 'srgb', components: [0.4, 0.4, 0.4] }
         }
       ],
       button: {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
-        light: { $type: 'color', $value: 'light' },
-        dark: { $type: 'color', $value: 'dark' }
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
       }
     },
     { theme: 'dark' }
@@ -133,7 +136,7 @@ void test('DocumentResolver prefers the last matching override', () => {
 
   const { token } = result;
   assert.ok(token);
-  assert.equal(token.value, 'custom');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.4, 0.4, 0.4] });
   assert.equal(result.diagnostics.length, 0);
 });
 
@@ -144,15 +147,18 @@ void test('DocumentResolver uses fallback chains to resolve values', () => {
         {
           $token: '#/button/bg',
           $when: { theme: 'dark' },
-          $fallback: [{ $ref: '#/color/dark' }, { $value: 'inline' }]
+          $fallback: [
+            { $ref: '#/color/dark' },
+            { $value: { colorSpace: 'srgb', components: [0.5, 0.5, 0.5] } }
+          ]
         }
       ],
       button: {
         bg: { $type: 'color', $ref: '#/color/light' }
       },
       color: {
-        light: { $type: 'color', $value: 'light' },
-        dark: { $type: 'color', $value: 'dark' }
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } },
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } }
       }
     },
     { theme: 'dark' }
@@ -162,8 +168,38 @@ void test('DocumentResolver uses fallback chains to resolve values', () => {
 
   const { token } = result;
   assert.ok(token);
-  assert.equal(token.value, 'dark');
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] });
   assert.equal(result.diagnostics.length, 0);
+});
+
+void test('DocumentResolver rejects inline override values that violate the target type', () => {
+  const { resolver } = buildResolver(
+    {
+      $overrides: [
+        {
+          $token: '#/button/bg',
+          $when: { theme: 'dark' },
+          $value: { dimensionType: 'length', value: 8, unit: 'px' }
+        }
+      ],
+      button: {
+        bg: { $type: 'color', $ref: '#/color/light' }
+      },
+      color: {
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } }
+      }
+    },
+    { theme: 'dark' }
+  );
+
+  const result = resolver.resolve('#/button/bg');
+  const mismatch = result.diagnostics.find(
+    (entry) => entry.code === DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH
+  );
+
+  assert.ok(mismatch, 'expected type mismatch diagnostic');
+  assert.equal(mismatch.pointer, '#/$overrides/0/$value');
+  assert.deepEqual(result.token?.value, { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] });
 });
 
 void test('DocumentResolver reports cycles for recursive aliases', () => {
