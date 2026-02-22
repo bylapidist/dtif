@@ -191,7 +191,7 @@ Embed the [`@lapidist/dtif-language-server`](language-server/README.md) package 
 - Jump-to-definition, hover documentation, and pointer-aware navigation for `$ref` targets.
 - Rename refactors that update pointer declarations alongside every in-memory reference.
 - Quick fixes for common schema violations such as missing `$type` or `$ref` members.
-- Contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the registry.
+- Contextual completions for `$type` identifiers sourced from the registry, plus measurement units and `$extensions` namespace suggestions from reverse-DNS snippets and workspace context.
 
 See the [language server guide](docs/tooling/language-server.md) for client configuration, workspace settings, and transport options.
 

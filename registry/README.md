@@ -1,6 +1,6 @@
 # DTIF Registry
 
-This directory documents registered `$type` identifiers and `$extensions` namespaces.
+This directory documents registered `$type` identifiers.
 
 The `types.json` file lists all built‑in `$type` values provided by the `net.lapidist.dtif` vendor, including every token type defined by the core specification.
 

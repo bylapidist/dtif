@@ -26,7 +26,7 @@
 
 ### Authoring assistance
 
-- Supplies contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the DTIF registry.
+- Supplies contextual completions for `$type` identifiers (registry-backed), measurement units, and `$extensions` namespaces based on reverse-DNS snippets and observed workspace keys.
 - Orders completion results by relevance to the active pointer scope.
 
 ## Installation
