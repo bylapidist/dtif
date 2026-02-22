@@ -2,8 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
-import type { Plugin, ViteDevServer } from 'vite';
-import type { PluginContext } from 'rollup';
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 type MiddlewareNext = (error?: unknown) => void;
@@ -17,8 +16,17 @@ function readSchema() {
   return fs.readFileSync(schemaPath, 'utf8');
 }
 
+function writeSchemaAsset(outDir: string) {
+  const filePath = path.resolve(outDir, schemaRequestPath.slice(1));
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, readSchema(), 'utf8');
+}
+
 const schemaStaticPlugin: Plugin = {
   name: 'dtif-schema-static',
+  configResolved(config: ResolvedConfig) {
+    writeSchemaAsset(path.resolve(config.root, config.build.outDir));
+  },
   configureServer(server: ViteDevServer) {
     server.watcher.add(schemaPath);
     server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: MiddlewareNext) => {
@@ -50,13 +58,6 @@ const schemaStaticPlugin: Plugin = {
         res.statusCode = 500;
         res.end('');
       }
-    });
-  },
-  generateBundle(this: PluginContext) {
-    this.emitFile({
-      type: 'asset',
-      fileName: schemaRequestPath.slice(1),
-      source: readSchema()
     });
   }
 } satisfies Plugin;
