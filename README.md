@@ -227,11 +227,12 @@ requests:
 - CI uses [`changesets/action`](https://github.com/changesets/action) to open release pull requests and run `pnpm run release`
   once they land on `main`.
 
-Repository-wide changes are documented in [`CHANGELOG.md`](CHANGELOG.md). Package-specific history lives alongside each
-workspace:
+Release history lives alongside each published workspace:
 
 - [`schema/CHANGELOG.md`](schema/CHANGELOG.md)
 - [`validator/CHANGELOG.md`](validator/CHANGELOG.md)
+- [`parser/CHANGELOG.md`](parser/CHANGELOG.md)
+- [`language-server/CHANGELOG.md`](language-server/CHANGELOG.md)
 
 ## Contributing & community
 
