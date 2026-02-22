@@ -55,7 +55,7 @@ colour, typography, spacing, motion, and more without loss of fidelity.
 
 - Core token types cover practical scenarios from typography to animation.
 - Namespaced extensions allow experimentation while maintaining interoperability.
-- The [registry](https://github.com/bylapidist/dtif/tree/main/registry) records approved `$type` identifiers and extensions to
+- The [registry](https://github.com/bylapidist/dtif/tree/main/registry) records canonical `$type` metadata and references to
   keep adoption aligned.
 
 ### Verified quality
@@ -75,7 +75,7 @@ sync with the standard:
 
 - **Core schema** – the canonical [JSON Schema](https://dtif.lapidist.net/schema/core.json) for validators and toolchains.
 - **Reference examples** – schema-valid [token documents](https://github.com/bylapidist/dtif/tree/main/examples) designed for testing and education.
-- **Registry** – approved [`$type` identifiers, extensions, and namespaces](https://github.com/bylapidist/dtif/tree/main/registry).
+- **Registry** – curated [`$type` identifiers and metadata](https://github.com/bylapidist/dtif/tree/main/registry).
 - **Conformance tests** – fixtures for verifying implementations and ensuring
   [compatibility](https://github.com/bylapidist/dtif/tree/main/tests).
 - **Design Lint** – a [DTIF-native CLI](https://design-lint.lapidist.net) for linting

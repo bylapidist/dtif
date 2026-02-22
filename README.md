@@ -23,7 +23,7 @@ Use DTIF when you need:
 
 - a single, versioned definition of design tokens that designers and engineers can share;
 - predictable token payloads validated by an official JSON Schema; and
-- a registry-backed naming system that keeps custom extensions interoperable.
+- a registry-documented naming catalogue that helps teams coordinate custom extensions.
 
 ## Documentation
 
@@ -210,7 +210,7 @@ declare const tokens: DesignTokenInterchangeFormat;
 
 - [`schema/`](schema/) – JSON Schema definitions used by validators.
 - [`examples/`](examples/) – schema-valid token sets shared across docs and tests.
-- [`registry/`](registry/) – the canonical list of `$type` identifiers and extension namespaces.
+- [`registry/`](registry/) – canonical metadata for registered `$type` identifiers used by docs and tooling.
 - [`tests/`](tests/) – conformance fixtures and the test harness invoked by CI.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) – contribution workflow, coding standards, and release process expectations.
 - [`.changeset/`](.changeset/) – Changesets configuration for tracking package releases.
