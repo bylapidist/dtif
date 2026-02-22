@@ -29,8 +29,8 @@ for metadata that applies to the entire document.
 
 ## Tokens and collections {#tokens-and-collections}
 
-A [token](./terminology.md#token) is an object with a `$value` member. A [collection](./terminology.md#collection) is an object without
-a `$value` member whose properties are tokens or collections.
+A [token](./terminology.md#token) is an object with exactly one of `$value` or `$ref`. A [collection](./terminology.md#collection) is an object without
+either `$value` or `$ref` whose properties are tokens or collections.
 
 Collections and tokens _MAY_ be nested arbitrarily.
 
