@@ -130,27 +130,6 @@ void test('metadata rejects invalid lifecycle timestamps', async () => {
   assert.equal(invalidUsed.metadata.usageCount?.value, 0);
 });
 
-void test('emits a warning for future major document versions', async () => {
-  const json = JSON.stringify(
-    {
-      $version: '2.1.0',
-      token: BASE_TOKEN
-    },
-    null,
-    2
-  );
-
-  const result = await normalise(json);
-  assert.ok(
-    result.diagnostics.some(
-      (diagnostic) =>
-        diagnostic.code === DiagnosticCodes.normaliser.FUTURE_MAJOR_VERSION &&
-        diagnostic.severity === 'warning' &&
-        diagnostic.pointer === '#/$version'
-    )
-  );
-});
-
 void test('$lastUsed timestamps must not precede $lastModified', async () => {
   const json = JSON.stringify(
     {

@@ -10,8 +10,6 @@ import { validateCollectionMemberOrder } from './ordering.js';
 import { normalizeOverrides } from './overrides.js';
 import { freezeDocumentAst, isPlainObject } from './utils.js';
 
-const SUPPORTED_DTIF_MAJOR_VERSION = 1;
-
 export function buildDocumentAst(context: NormaliserContext): DocumentAst | undefined {
   const { document } = context;
   const data = document.data;
@@ -31,7 +29,6 @@ export function buildDocumentAst(context: NormaliserContext): DocumentAst | unde
   validateCollectionMemberOrder(context, data, JSON_POINTER_ROOT);
   const schemaField = readOptionalStringField(context, data, '$schema', JSON_POINTER_ROOT);
   const versionField = readOptionalStringField(context, data, '$version', JSON_POINTER_ROOT);
-  warnOnFutureMajorVersion(context, versionField?.value);
   const overrides = normalizeOverrides(context, data, JSON_POINTER_ROOT);
 
   const children: DocumentChildNode[] = [];
@@ -58,40 +55,4 @@ export function buildDocumentAst(context: NormaliserContext): DocumentAst | unde
     children,
     overrides
   });
-}
-
-function warnOnFutureMajorVersion(context: NormaliserContext, value: string | undefined): void {
-  if (!value) {
-    return;
-  }
-
-  const major = extractMajorVersion(value);
-  if (major === undefined || major <= SUPPORTED_DTIF_MAJOR_VERSION) {
-    return;
-  }
-
-  const pointer = appendJsonPointer(JSON_POINTER_ROOT, '$version');
-  context.diagnostics.push({
-    code: DiagnosticCodes.normaliser.FUTURE_MAJOR_VERSION,
-    message: `Document $version "${value}" uses major ${String(
-      major
-    )}, which is newer than supported major ${String(SUPPORTED_DTIF_MAJOR_VERSION)}.`,
-    severity: 'warning',
-    pointer,
-    span: getSourceSpan(context, pointer)
-  });
-}
-
-function extractMajorVersion(value: string): number | undefined {
-  const [core] = value.split('-', 1);
-  if (!core) {
-    return undefined;
-  }
-
-  const [majorPart] = core.split('.', 1);
-  if (!majorPart || !/^\d+$/u.test(majorPart)) {
-    return undefined;
-  }
-
-  return Number.parseInt(majorPart, 10);
 }
