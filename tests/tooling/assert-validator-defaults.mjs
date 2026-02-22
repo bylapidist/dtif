@@ -25,6 +25,13 @@ const warningOnly = {
     $value: 4
   }
 };
+const unresolvedRemote = {
+  $version: '1.0.0',
+  custom: {
+    $type: 'vendor.custom',
+    $ref: 'https://example.com/remote.tokens.json#/custom/token'
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -103,6 +110,15 @@ export default function assertValidatorDefaults() {
         message: 'validator should surface warnings for unknown type and future major version'
       });
     }
+  }
+
+  const unresolvedRemoteValid = validate(unresolvedRemote);
+  if (unresolvedRemoteValid) {
+    errors.push({
+      code: 'E_VALIDATOR_REMOTE_RESOLUTION_MISSING',
+      path: '',
+      message: 'validator should reject unresolved remote references even when semantic checks run'
+    });
   }
 
   return { valid: errors.length === 0, errors: errors.length > 0 ? errors : null };

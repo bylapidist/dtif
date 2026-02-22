@@ -1,6 +1,3 @@
-import registryTypes from '../registry/types.json' with { type: 'json' };
-
-const KNOWN_TYPES = new Set(Object.keys(registryTypes));
 const SUPPORTED_VERSION_MAJOR = 1;
 
 function createSemanticIssue(instancePath, message, code) {
@@ -231,7 +228,7 @@ function detectOverrideCycles(root, errors) {
 }
 
 export function runSemanticValidation(document, options = {}) {
-  const { allowRemoteReferences = false } = options;
+  const { allowRemoteReferences = false, knownTypes = new Set() } = options;
   const errors = [];
   const warnings = [];
 
@@ -282,7 +279,7 @@ export function runSemanticValidation(document, options = {}) {
     }
     checkCollectionOrder(node, path, errors);
 
-    if (typeof node.$type === 'string' && !KNOWN_TYPES.has(node.$type)) {
+    if (typeof node.$type === 'string' && !knownTypes.has(node.$type)) {
       warnings.push(
         createSemanticIssue(`${path}/$type`, `unknown $type "${node.$type}"`, 'W_UNKNOWN_TYPE')
       );
@@ -339,8 +336,16 @@ export function runSemanticValidation(document, options = {}) {
                 'E_REF_UNSUPPORTED_SCHEME'
               )
             );
+            return;
           }
         }
+        errors.push(
+          createSemanticIssue(
+            refPath,
+            `remote reference could not be resolved: ${pointer}`,
+            'E_REF_UNRESOLVED'
+          )
+        );
         return;
       }
       resolvePointer(document, pointer, errors, refPath);

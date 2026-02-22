@@ -15,6 +15,7 @@ export const DEFAULT_VALIDATOR_OPTIONS = {
 export const DEFAULT_FORMAT_REGISTRAR = addFormats;
 
 const DEFAULT_SCHEMA_ID = schema.$id ?? 'https://dtif.lapidist.net/schema/core.json';
+const KNOWN_TYPES = collectKnownTypes(schema);
 
 function ensureSchema(ajv, schemaId = DEFAULT_SCHEMA_ID) {
   let validate = ajv.getSchema(schemaId);
@@ -53,7 +54,7 @@ export function createDtifValidator(options = {}) {
     const schemaErrors = schemaValid ? [] : (schemaValidate.errors ?? []);
     const semantic =
       schemaValid && enforceSemanticRules
-        ? runSemanticValidation(document, { allowRemoteReferences })
+        ? runSemanticValidation(document, { allowRemoteReferences, knownTypes: KNOWN_TYPES })
         : { errors: [], warnings: [] };
 
     const mergedErrors = [...schemaErrors, ...semantic.errors];
@@ -88,3 +89,21 @@ export function validateDtif(document, options = {}) {
 }
 
 export { schema };
+
+function collectKnownTypes(value) {
+  const known = new Set();
+  const tokenSchema = value?.$defs?.token;
+  const clauses = tokenSchema?.allOf;
+  if (!Array.isArray(clauses)) {
+    return known;
+  }
+
+  for (const clause of clauses) {
+    const typeConst = clause?.if?.properties?.$type?.const;
+    if (typeof typeConst === 'string' && typeConst.length > 0) {
+      known.add(typeConst);
+    }
+  }
+
+  return known;
+}
