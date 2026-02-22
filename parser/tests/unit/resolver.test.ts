@@ -220,12 +220,55 @@ void test('DocumentResolver reports cycles for recursive aliases', () => {
   assert.ok(diagnostic, 'expected cycle diagnostic');
 });
 
-void test('DocumentResolver reports unsupported external references', () => {
-  const { resolver } = buildResolver({
-    color: {
-      external: { $type: 'color', $ref: 'https://example.com/tokens.json#/color/primary' }
+void test('DocumentResolver resolves external references when graph is provided', () => {
+  const external = buildGraph(
+    {
+      color: {
+        primary: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.4, 0.6, 1] } }
+      }
+    },
+    'https://example.com/tokens.json'
+  );
+  const { resolver } = buildResolver(
+    {
+      color: {
+        external: { $type: 'color', $ref: 'https://example.com/tokens.json#/color/primary' }
+      }
+    },
+    {
+      allowNetworkReferences: true,
+      externalGraphs: new Map([[external.uri.href, external]])
     }
-  });
+  );
+
+  const result = resolver.resolve('#/color/external');
+
+  const { token } = result;
+  assert.ok(token);
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.2, 0.4, 0.6, 1] });
+  assert.equal(result.diagnostics.length, 0);
+});
+
+void test('DocumentResolver rejects network references without explicit opt-in', () => {
+  const external = buildGraph(
+    {
+      color: {
+        primary: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.4, 0.6, 1] } }
+      }
+    },
+    'https://example.com/tokens.json'
+  );
+  const { resolver } = buildResolver(
+    {
+      color: {
+        external: { $type: 'color', $ref: 'https://example.com/tokens.json#/color/primary' }
+      }
+    },
+    {
+      allowNetworkReferences: false,
+      externalGraphs: new Map([[external.uri.href, external]])
+    }
+  );
 
   const result = resolver.resolve('#/color/external');
 
@@ -335,7 +378,9 @@ function isDocumentResolverOptions(options: unknown): options is DocumentResolve
     ('context' in options ||
       'maxDepth' in options ||
       'document' in options ||
-      'transforms' in options)
+      'transforms' in options ||
+      'externalGraphs' in options ||
+      'allowNetworkReferences' in options)
   );
 }
 
@@ -354,9 +399,9 @@ function normalizeResolverOptions(
   return resolverOptions;
 }
 
-function createDecodedDocument(data: unknown): DecodedDocument {
+function createDecodedDocument(data: unknown, uriText = 'file:///document.json'): DecodedDocument {
   const text = JSON.stringify(data, null, 2);
-  const uri = new URL('file:///document.json');
+  const uri = new URL(uriText);
   return {
     identity: Object.freeze({ uri, contentType: 'application/json' as const }),
     bytes: new TextEncoder().encode(text),
@@ -364,4 +409,17 @@ function createDecodedDocument(data: unknown): DecodedDocument {
     data,
     sourceMap: { uri, pointers: new Map() }
   };
+}
+
+function buildGraph(data: unknown, uri: string): ReturnType<typeof buildDocumentGraph>['graph'] {
+  const decoded = createDecodedDocument(data, uri);
+  const normalized = normalizeDocument(decoded);
+  const { ast } = normalized;
+  assert.ok(ast, 'expected external document to normalise successfully');
+  assert.equal(normalized.diagnostics.length, 0, 'expected normaliser diagnostics to be empty');
+  const graphResult = buildDocumentGraph(ast);
+  const { graph } = graphResult;
+  assert.ok(graph, 'expected external graph to be created');
+  assert.equal(graphResult.diagnostics.length, 0, 'expected graph diagnostics to be empty');
+  return graph;
 }

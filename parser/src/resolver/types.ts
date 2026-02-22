@@ -5,12 +5,19 @@ import type {
   ResolvedTokenTransformEvaluation
 } from '../plugins/index.js';
 import type { GraphOverrideNode } from '../graph/nodes.js';
+import type { DocumentGraph } from '../graph/nodes.js';
+
+export type ExternalGraphInput =
+  | ReadonlyMap<string | URL, DocumentGraph>
+  | Readonly<Record<string, DocumentGraph>>;
 
 export interface DocumentResolverOptions {
   readonly context?: ReadonlyMap<string, unknown> | Readonly<Record<string, unknown>>;
   readonly maxDepth?: number;
   readonly document?: DecodedDocument;
   readonly transforms?: readonly ResolvedTokenTransformEntry[];
+  readonly externalGraphs?: ExternalGraphInput;
+  readonly allowNetworkReferences?: boolean;
 }
 
 export interface ResolutionSource {

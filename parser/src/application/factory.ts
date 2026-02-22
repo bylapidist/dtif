@@ -49,7 +49,11 @@ export function createParseDocumentUseCase(
   const resolution = new ResolutionAdapter({
     overrideContext: options.overrideContext,
     maxDepth: options.maxDepth,
-    transforms: options.plugins?.transforms ?? []
+    transforms: options.plugins?.transforms ?? [],
+    loader: options.loader,
+    schemaGuard: options.schemaGuard,
+    extensions: options.plugins,
+    allowNetworkReferences: options.allowHttp
   });
   return new DocumentUseCase({
     ingestion,
@@ -76,7 +80,9 @@ export function createInlineParseDocumentUseCase(
   const resolution = new ResolutionAdapter({
     overrideContext: options.overrideContext,
     maxDepth: options.maxDepth,
-    transforms: options.plugins?.transforms ?? []
+    transforms: options.plugins?.transforms ?? [],
+    extensions: options.plugins,
+    allowNetworkReferences: options.allowHttp
   });
 
   return new DocumentUseCase({
