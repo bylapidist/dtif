@@ -101,7 +101,8 @@ export const DiagnosticCodes = {
     MISSING_REQUIRED_MEMBER: formatDiagnosticCode('Normaliser', 3, 1),
     INVALID_EXTENSIONS: formatDiagnosticCode('Normaliser', 4, 0),
     INVALID_METADATA_COMBINATION: formatDiagnosticCode('Normaliser', 4, 1),
-    INVALID_MEMBER_ORDER: formatDiagnosticCode('Normaliser', 4, 2)
+    INVALID_MEMBER_ORDER: formatDiagnosticCode('Normaliser', 4, 2),
+    FUTURE_MAJOR_VERSION: formatDiagnosticCode('Normaliser', 4, 3)
   },
   graph: {
     FAILED: formatDiagnosticCode('Graph', 0, 0),
