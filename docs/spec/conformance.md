@@ -27,8 +27,8 @@ _MAY_ as described in
   _MAY_ include `$schema`.
 - **Consumer:** reads token documents. Consumers
   _MUST_ parse JSON, _MUST_ resolve
-  `$ref` values, _MUST_ ignore unrecognised members
-  beginning with `$`, and _SHOULD_ warn on unknown
+  `$ref` values, _MUST_ reject unrecognised reserved members
+  beginning with `$` (outside schema-defined extension payloads), and _SHOULD_ warn on unknown
   `$type` values.
 - **Validator:** evaluates token documents. Validators
   _MUST_ enforce this specification and
@@ -38,7 +38,7 @@ _MAY_ as described in
 
 - Invalid JSON: Consumers _MUST_ reject the document.
 - Unknown extension identifiers: Consumers _MAY_ ignore but
-  _MUST_ preserve.
+  _MUST_ preserve the associated extension payload when it appears under a valid `$extensions` namespace key.
 - Unknown `$type`: Consumers _MAY_ ignore but
   _SHOULD_ warn.
 - Invalid `$ref`: Consumers _MUST_ treat the token as
