@@ -28,6 +28,24 @@ export default function assertRefs(doc, opts = {}) {
       return null;
     }
     if (!pointer.startsWith('#')) {
+      const hashIndex = pointer.indexOf('#');
+      const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+      const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+
+      if (!schemeMatch) {
+        return null;
+      }
+
+      const scheme = schemeMatch[1].toLowerCase();
+      if (!['http', 'https'].includes(scheme)) {
+        errors.push({
+          code: 'E_REF_UNSUPPORTED_SCHEME',
+          path: refPath,
+          message: `unsupported remote scheme ${pointer}`
+        });
+        return null;
+      }
+
       if (!allowRemote) {
         errors.push({
           code: 'E_REF_REMOTE_DISABLED',
@@ -36,37 +54,21 @@ export default function assertRefs(doc, opts = {}) {
         });
         return null;
       }
-
-      const hashIndex = pointer.indexOf('#');
-      const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
-      const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-
-      if (schemeMatch) {
-        const scheme = schemeMatch[1].toLowerCase();
-        if (!['http', 'https'].includes(scheme)) {
+      try {
+        const url = new URL(pointer);
+        if (!['http:', 'https:'].includes(url.protocol)) {
           errors.push({
             code: 'E_REF_UNSUPPORTED_SCHEME',
             path: refPath,
             message: `unsupported remote scheme ${pointer}`
           });
-          return null;
         }
-        try {
-          const url = new URL(pointer);
-          if (!['http:', 'https:'].includes(url.protocol)) {
-            errors.push({
-              code: 'E_REF_UNSUPPORTED_SCHEME',
-              path: refPath,
-              message: `unsupported remote scheme ${pointer}`
-            });
-          }
-        } catch {
-          errors.push({
-            code: 'E_REF_INVALID_REMOTE',
-            path: refPath,
-            message: `invalid remote ref ${pointer}`
-          });
-        }
+      } catch {
+        errors.push({
+          code: 'E_REF_INVALID_REMOTE',
+          path: refPath,
+          message: `invalid remote ref ${pointer}`
+        });
       }
 
       return null;

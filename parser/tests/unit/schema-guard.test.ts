@@ -99,6 +99,33 @@ void test('SchemaGuard reports diagnostics with pointers and spans for schema vi
   );
 });
 
+void test('SchemaGuard reports unresolved $ref pointers as validation errors', async () => {
+  const json = JSON.stringify(
+    {
+      color: {
+        alias: {
+          $type: 'color',
+          $ref: '#/color/missing'
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const raw = await decodeJsonDocument(json);
+  const guard = new SchemaGuard();
+
+  const result = guard.validate(raw);
+
+  assert.equal(result.valid, false);
+  const diagnostic = result.diagnostics.find((entry) => entry.pointer === '#/color/alias/$ref');
+  assert.ok(diagnostic, 'expected unresolved pointer diagnostic');
+  assert.equal(diagnostic.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
+  assert.equal(diagnostic.severity, 'error');
+  assert.ok(/unresolved pointer/i.test(diagnostic.message));
+});
+
 void test('SchemaGuard configures Ajv with strict mode by default', () => {
   assert.equal(DEFAULT_VALIDATOR_OPTIONS.strict, true);
   assert.equal(DEFAULT_VALIDATOR_OPTIONS.$data, true);

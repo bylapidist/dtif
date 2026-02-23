@@ -1,6 +1,6 @@
-import { createRequire } from 'node:module';
 import type { ErrorObject } from 'ajv';
 import {
+  createDtifValidator,
   DEFAULT_FORMAT_REGISTRAR,
   DEFAULT_VALIDATOR_OPTIONS as VALIDATOR_DEFAULT_OPTIONS
 } from '@lapidist/dtif-validator';
@@ -14,12 +14,6 @@ import type {
   DiagnosticEventRelatedInformation
 } from '../domain/models.js';
 import type { SourceSpan } from '../domain/primitives.js';
-
-const require = createRequire(import.meta.url);
-
-type AjvInstance = import('ajv').default;
-type FormatRegistrar = (instance: AjvInstance) => unknown;
-type AjvConstructor = new (options?: object) => AjvInstance;
 
 export interface SchemaGuardOptions extends CreateDtifValidatorOptions {
   readonly validator?: DtifValidator;
@@ -39,57 +33,10 @@ export class SchemaGuardError extends Error {
 
 export { DEFAULT_FORMAT_REGISTRAR };
 
-const ajvModule: unknown = require('ajv/dist/2020.js');
-const AJV_CONSTRUCTOR = resolveAjvConstructor(ajvModule);
-
-const CORE_SCHEMA = loadCoreSchema();
-const DEFAULT_SCHEMA_ID = readSchemaId(CORE_SCHEMA) ?? 'https://dtif.lapidist.net/schema/core.json';
-
 export const DEFAULT_VALIDATOR_OPTIONS = VALIDATOR_DEFAULT_OPTIONS;
 
-function createAjvInstance(options: object): AjvInstance {
-  const instance: unknown = new AJV_CONSTRUCTOR(options);
-  if (!isAjvInstance(instance)) {
-    throw new SchemaGuardError('Failed to create an AJV validator instance.');
-  }
-  return instance;
-}
-
 function createSchemaValidator(options: CreateDtifValidatorOptions = {}): DtifValidator {
-  const {
-    ajv: existingAjv,
-    ajvOptions = {},
-    formats = DEFAULT_FORMAT_REGISTRAR,
-    schemaId = DEFAULT_SCHEMA_ID
-  } = options;
-
-  const ajv: AjvInstance =
-    existingAjv ??
-    createAjvInstance({
-      ...DEFAULT_VALIDATOR_OPTIONS,
-      ...ajvOptions
-    });
-
-  if (formats) {
-    const register: FormatRegistrar =
-      typeof formats === 'function' ? formats : DEFAULT_FORMAT_REGISTRAR;
-    register(ajv);
-  }
-
-  let validate = ajv.getSchema(schemaId);
-  if (!validate) {
-    ajv.addSchema(CORE_SCHEMA, schemaId);
-    validate = ajv.getSchema(schemaId);
-  }
-
-  const compiled = validate ?? ajv.compile(CORE_SCHEMA);
-
-  return {
-    ajv,
-    schema: CORE_SCHEMA,
-    schemaId,
-    validate: compiled
-  };
+  return createDtifValidator(options);
 }
 
 export class SchemaGuard {
@@ -278,61 +225,6 @@ function pluralise(noun: string, quantity: number): string {
   return quantity === 1 ? noun : `${noun}s`;
 }
 
-function resolveAjvConstructor(exports: unknown): AjvConstructor {
-  if (isAjvConstructor(exports)) {
-    return exports;
-  }
-
-  if (isJsonObject(exports)) {
-    const candidate = exports.default;
-    if (isAjvConstructor(candidate)) {
-      return candidate;
-    }
-  }
-
-  throw new SchemaGuardError('Failed to load the AJV 2020 module.');
-}
-
-function isAjvConstructor(value: unknown): value is AjvConstructor {
-  if (typeof value !== 'function') {
-    return false;
-  }
-
-  const prototype: unknown = Reflect.get(value, 'prototype');
-  return typeof prototype === 'object' && prototype !== null;
-}
-
-function loadCoreSchema(): DtifValidator['schema'] {
-  const schema: unknown = require('@lapidist/dtif-schema/core.json');
-  assertIsDtifSchema(schema);
-  return schema;
-}
-
-function readSchemaId(schema: DtifValidator['schema']): string | undefined {
-  if (isJsonObject(schema) && '$id' in schema) {
-    const value = schema.$id;
-    if (typeof value === 'string' && value.length > 0) {
-      return value;
-    }
-  }
-  return undefined;
-}
-
-function assertIsDtifSchema(value: unknown): asserts value is DtifValidator['schema'] {
-  if (!isJsonObject(value)) {
-    throw new SchemaGuardError('Failed to load the DTIF core schema.');
-  }
-}
-
 function isJsonObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isAjvInstance(value: unknown): value is AjvInstance {
-  return (
-    isJsonObject(value) &&
-    typeof value.compile === 'function' &&
-    typeof value.getSchema === 'function' &&
-    typeof value.addSchema === 'function'
-  );
 }

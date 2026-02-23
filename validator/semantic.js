@@ -401,6 +401,28 @@ export function runSemanticValidation(document, options = {}) {
         return;
       }
       if (!pointer.startsWith('#')) {
+        const hashIndex = pointer.indexOf('#');
+        const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+        const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+
+        // Relative document references are allowed and resolved by consumers
+        // against the referencing document location.
+        if (!schemeMatch) {
+          return;
+        }
+
+        const scheme = schemeMatch[1].toLowerCase();
+        if (!['http', 'https'].includes(scheme)) {
+          errors.push(
+            createSemanticIssue(
+              refPath,
+              `unsupported remote scheme ${pointer}`,
+              'E_REF_UNSUPPORTED_SCHEME'
+            )
+          );
+          return;
+        }
+
         if (!allowRemoteReferences) {
           errors.push(
             createSemanticIssue(
@@ -410,22 +432,6 @@ export function runSemanticValidation(document, options = {}) {
             )
           );
           return;
-        }
-        const hashIndex = pointer.indexOf('#');
-        const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
-        const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-        if (schemeMatch) {
-          const scheme = schemeMatch[1].toLowerCase();
-          if (!['http', 'https'].includes(scheme)) {
-            errors.push(
-              createSemanticIssue(
-                refPath,
-                `unsupported remote scheme ${pointer}`,
-                'E_REF_UNSUPPORTED_SCHEME'
-              )
-            );
-            return;
-          }
         }
         errors.push(
           createSemanticIssue(

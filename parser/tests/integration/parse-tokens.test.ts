@@ -122,12 +122,10 @@ void test('parseTokens rejects deprecated replacements that resolve to a mismatc
   assert.ok(
     result.diagnostics.some(
       (diagnostic) =>
-        diagnostic.code === 'DTIF1021' &&
-        /Deprecated replacement .* resolved to type "dimension" but expected "color"\./u.test(
-          diagnostic.message
-        )
+        diagnostic.code === 'DTIF4010' &&
+        /deprecated replacement .* has type dimension, expected color/i.test(diagnostic.message)
     ),
-    'expected resolver diagnostic for deprecated replacement type mismatch'
+    'expected schema-guard diagnostic for deprecated replacement type mismatch'
   );
 });
 
