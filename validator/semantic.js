@@ -448,6 +448,31 @@ export function runSemanticValidation(document, options = {}) {
     if ('$ref' in node) {
       validateReference(node.$ref, `${path}/$ref`);
     }
+    if (
+      typeof node.$type === 'string' &&
+      typeof node.$ref === 'string' &&
+      node.$ref.startsWith('#')
+    ) {
+      const refPath = `${path}/$ref`;
+      const referenceType = resolveTokenType(document, node.$ref, errors, refPath);
+      if (!referenceType) {
+        errors.push(
+          createSemanticIssue(
+            refPath,
+            `reference ${node.$ref} must resolve to a token declaring $type ${node.$type}`,
+            'E_REF_TYPE_MISMATCH'
+          )
+        );
+      } else if (referenceType !== node.$type) {
+        errors.push(
+          createSemanticIssue(
+            refPath,
+            `reference ${node.$ref} has type ${referenceType}, expected ${node.$type}`,
+            'E_REF_TYPE_MISMATCH'
+          )
+        );
+      }
+    }
     if ('$token' in node) {
       validateReference(node.$token, `${path}/$token`);
     }

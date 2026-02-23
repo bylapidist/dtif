@@ -76,6 +76,34 @@ const overrideReferenceTypeMismatch = {
     }
   ]
 };
+const aliasTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  spacing: {
+    token: {
+      $type: 'dimension',
+      $ref: '#/color/base'
+    }
+  }
+};
+const typographyReservedMember = {
+  $version: '1.0.0',
+  typography: {
+    body: {
+      $type: 'typography',
+      $value: {
+        fontFamily: 'Inter',
+        fontSize: { dimensionType: 'length', value: 16, unit: 'px' },
+        $illegal: true
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -196,6 +224,25 @@ export default function assertValidatorDefaults() {
       path: '',
       message:
         'validator should reject overrides whose $ref resolves to a different $type than $token'
+    });
+  }
+
+  const aliasTypeMismatchValid = validate(aliasTypeMismatch);
+  if (aliasTypeMismatchValid) {
+    errors.push({
+      code: 'E_VALIDATOR_ALIAS_TYPE_MISMATCH',
+      path: '',
+      message: 'validator should reject token aliases whose $ref resolves to a different $type'
+    });
+  }
+
+  const typographyReservedMemberValid = validate(typographyReservedMember);
+  if (typographyReservedMemberValid) {
+    errors.push({
+      code: 'E_VALIDATOR_RESERVED_MEMBER_ALLOWED',
+      path: '',
+      message:
+        'validator should reject unrecognised reserved members beginning with $ in typography values'
     });
   }
 

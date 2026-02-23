@@ -1,10 +1,16 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { runSemanticValidation } from './semantic.js';
 
 const require = createRequire(import.meta.url);
-const schema = require('@lapidist/dtif-schema/core.json');
+let schema;
+try {
+  schema = require(fileURLToPath(new URL('../schema/core.json', import.meta.url)));
+} catch {
+  schema = require('@lapidist/dtif-schema/core.json');
+}
 
 export const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,

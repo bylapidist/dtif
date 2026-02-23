@@ -2070,6 +2070,11 @@
     "typography": {
       "type": "object",
       "required": ["fontFamily", "fontSize"],
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^(?!\\$)",
+        "$comment": "Conformance §conformance-classes and Extensibility §extensibility: reserved members beginning with $ are invalid outside schema-defined extension payloads."
+      },
       "properties": {
         "typographyType": {
           "type": "string",
