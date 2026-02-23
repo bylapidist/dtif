@@ -1,0 +1,5 @@
+{
+  "code": "E_FUNCTION_REF_DIMENSION_TYPE",
+  "message": "function parameter ref #/sizing/base has dimensionType length, expected angle",
+  "path": "/problem/$value/parameters/angle/$ref"
+}

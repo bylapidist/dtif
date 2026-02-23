@@ -1,0 +1,4 @@
+name: motion-rotation-angle-dimension-type
+description: motion rotation angles must reference angle dimensions
+tags:
+  - motion

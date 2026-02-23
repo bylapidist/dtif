@@ -187,11 +187,11 @@ function getMotionCategory(motionType) {
 export default function assertTypeCompat(doc) {
   const errors = [];
 
-  function validateFunctionRef(ref, targetType, path) {
+  function validateFunctionRef(ref, targetType, path, expectedDimensionType) {
     if (!targetType || typeof ref !== 'string' || !ref.startsWith('#')) {
       return;
     }
-    const { type: refType } = getTokenTypeInfo(doc, ref, new Set());
+    const { node: refNode, type: refType } = getTokenTypeInfo(doc, ref, new Set());
     if (!refType) {
       errors.push({
         code: 'E_FUNCTION_REF_TYPE_MISMATCH',
@@ -206,42 +206,61 @@ export default function assertTypeCompat(doc) {
         path,
         message: `function parameter ref ${ref} has type ${refType}, expected ${targetType}`
       });
+      return;
+    }
+    if (targetType === 'dimension' && typeof expectedDimensionType === 'string') {
+      const dimensionType = refNode?.$value?.dimensionType;
+      if (dimensionType !== expectedDimensionType) {
+        errors.push({
+          code: 'E_FUNCTION_REF_DIMENSION_TYPE',
+          path,
+          message: `function parameter ref ${ref} has dimensionType ${dimensionType}, expected ${expectedDimensionType}`
+        });
+      }
     }
   }
 
-  function validateFunctionParameter(param, targetType, path) {
+  function validateFunctionParameter(param, targetType, path, expectedDimensionType) {
     if (!targetType) {
       return;
     }
     if (Array.isArray(param)) {
       param.forEach((entry, idx) => {
-        validateFunctionParameter(entry, targetType, `${path}/${idx}`);
+        validateFunctionParameter(entry, targetType, `${path}/${idx}`, expectedDimensionType);
       });
       return;
     }
     if (param && typeof param === 'object') {
       if (typeof param.$ref === 'string') {
-        validateFunctionRef(param.$ref, targetType, `${path}/$ref`);
+        validateFunctionRef(param.$ref, targetType, `${path}/$ref`, expectedDimensionType);
       }
       if (param.fn && Array.isArray(param.parameters)) {
-        validateFunctionValueNode(param, targetType, path);
+        validateFunctionValueNode(param, targetType, path, expectedDimensionType);
         return;
       }
       for (const [key, value] of Object.entries(param)) {
         if (key !== '$ref') {
-          validateFunctionParameter(value, targetType, `${path}/${key}`);
+          validateFunctionParameter(value, targetType, `${path}/${key}`, expectedDimensionType);
         }
       }
     }
   }
 
-  function validateFunctionValueNode(value, targetType, path) {
+  function validateFunctionValueNode(value, targetType, path, expectedDimensionType) {
     if (!value || typeof value !== 'object' || !targetType) {
       return;
     }
+    if (typeof value.$ref === 'string') {
+      validateFunctionRef(value.$ref, targetType, `${path}/$ref`, expectedDimensionType);
+    }
     if (value.fn && Array.isArray(value.parameters)) {
       value.parameters.forEach((param, idx) => {
-        validateFunctionParameter(param, targetType, `${path}/parameters/${idx}`);
+        validateFunctionParameter(
+          param,
+          targetType,
+          `${path}/parameters/${idx}`,
+          expectedDimensionType
+        );
       });
     }
   }
@@ -601,12 +620,22 @@ export default function assertTypeCompat(doc) {
           if (motionCategory === 'translation') {
             for (const axis of ['x', 'y', 'z']) {
               if (Object.prototype.hasOwnProperty.call(parameters, axis)) {
-                validateFunctionValueNode(parameters[axis], 'dimension', `${basePath}/${axis}`);
+                validateFunctionValueNode(
+                  parameters[axis],
+                  'dimension',
+                  `${basePath}/${axis}`,
+                  'length'
+                );
               }
             }
           } else if (motionCategory === 'rotation') {
             if (Object.prototype.hasOwnProperty.call(parameters, 'angle')) {
-              validateFunctionValueNode(parameters.angle, 'dimension', `${basePath}/angle`);
+              validateFunctionValueNode(
+                parameters.angle,
+                'dimension',
+                `${basePath}/angle`,
+                'angle'
+              );
             }
             if (parameters.origin && typeof parameters.origin === 'object') {
               for (const [axis, value] of Object.entries(parameters.origin)) {
@@ -667,7 +696,8 @@ export default function assertTypeCompat(doc) {
                       validateFunctionValueNode(
                         point.position[axis],
                         'dimension',
-                        `${basePath}/points/${idx}/position/${axis}`
+                        `${basePath}/points/${idx}/position/${axis}`,
+                        'length'
                       );
                     }
                   }

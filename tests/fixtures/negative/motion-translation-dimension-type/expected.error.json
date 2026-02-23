@@ -1,0 +1,5 @@
+{
+  "code": "E_FUNCTION_REF_DIMENSION_TYPE",
+  "message": "function parameter ref #/angles/quarterTurn has dimensionType angle, expected length",
+  "path": "/problem/$value/parameters/x/$ref"
+}
