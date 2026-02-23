@@ -1,21 +1,16 @@
-import type { DocumentGraph } from '../graph/nodes.js';
-import type { DocumentResolver } from '../resolver/index.js';
 import {
   createInlineParseDocumentUseCase,
   createParseTokensUseCase
 } from '../application/factory.js';
-import type { ParseTokensExecution } from '../application/use-cases.js';
 import { isRecord } from '../input/contracts.js';
 import { resolveOptions } from '../session/options.js';
 import { createRuntime } from '../session/runtime.js';
 import { createDocumentRequest, createInlineDocumentRequest } from '../application/requests.js';
 import { type ParseTokensInput, normalizeInput, normalizeInlineInput } from './inputs.js';
-import type { DiagnosticEvent } from '../domain/models.js';
 import type { ParseTokensOptions, ParseTokensResult, ParseTokensSyncOptions } from './contracts.js';
-import type { TokenId, TokenMetadataSnapshot, ResolvedTokenView } from './types.js';
+import { toParseTokensResult } from './internal/parse-result.js';
 export type { ParseTokensInput } from './inputs.js';
 export type { ParseTokensOptions, ParseTokensResult, ParseTokensSyncOptions } from './contracts.js';
-import type { DocumentAst } from '../ast/nodes.js';
 
 export async function parseTokens(
   input: ParseTokensInput,
@@ -40,7 +35,7 @@ export async function parseTokens(
     includeGraphs
   });
 
-  return assembleParseTokensResult(execution, {
+  return toParseTokensResult(execution, {
     flatten,
     includeGraphs,
     onDiagnostic,
@@ -78,7 +73,7 @@ export function parseTokensSync(
     includeGraphs
   });
 
-  return assembleParseTokensResult(execution, {
+  return toParseTokensResult(execution, {
     flatten,
     includeGraphs,
     onDiagnostic,
@@ -106,68 +101,4 @@ function assertSyncCompatibleOptions(options: unknown): void {
 
 function hasDefinedOption(options: Record<string, unknown>, key: string): boolean {
   return key in options && options[key] !== undefined;
-}
-
-function assembleParseTokensResult(
-  execution: ParseTokensExecution<DocumentAst, DocumentGraph, DocumentResolver>,
-  options: {
-    readonly flatten: boolean;
-    readonly includeGraphs: boolean;
-    readonly onDiagnostic?: (diagnostic: DiagnosticEvent) => void;
-    readonly warn?: (diagnostic: DiagnosticEvent) => void;
-  }
-): ParseTokensResult {
-  const diagnostics = execution.diagnostics;
-  notifyDiagnostics(diagnostics, options);
-
-  const document = options.includeGraphs ? execution.document : undefined;
-  const graph = options.includeGraphs ? execution.graph?.graph : undefined;
-  const resolver = options.includeGraphs ? execution.resolution?.result : undefined;
-
-  const metadataIndex = execution.tokens?.token.metadataIndex
-    ? new Map(execution.tokens.token.metadataIndex)
-    : new Map<TokenId, TokenMetadataSnapshot>();
-  const resolutionIndex = execution.tokens?.token.resolutionIndex
-    ? new Map(execution.tokens.token.resolutionIndex)
-    : new Map<TokenId, ResolvedTokenView>();
-  const flattened =
-    options.flatten && execution.tokens?.token.flattened
-      ? [...execution.tokens.token.flattened]
-      : [];
-
-  return {
-    document,
-    graph,
-    resolver,
-    flattened,
-    metadataIndex,
-    resolutionIndex,
-    diagnostics
-  } satisfies ParseTokensResult;
-}
-
-function notifyDiagnostics(
-  diagnostics: readonly DiagnosticEvent[],
-  options: {
-    readonly onDiagnostic?: (diagnostic: DiagnosticEvent) => void;
-    readonly warn?: (diagnostic: DiagnosticEvent) => void;
-  }
-): void {
-  if (diagnostics.length === 0) {
-    return;
-  }
-
-  if (options.onDiagnostic) {
-    for (const diagnostic of diagnostics) {
-      options.onDiagnostic(diagnostic);
-    }
-  }
-
-  if (options.warn) {
-    for (const diagnostic of diagnostics) {
-      if (diagnostic.severity !== 'error') {
-        options.warn(diagnostic);
-      }
-    }
-  }
 }
