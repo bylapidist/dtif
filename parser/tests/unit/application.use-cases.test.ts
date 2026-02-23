@@ -8,6 +8,10 @@ import {
   type TokenCache,
   type TokenCacheSnapshot
 } from '../../src/tokens/cache.js';
+import {
+  createParseTokensUseCase,
+  createTokenCacheConfiguration
+} from '../../src/tokens/use-case-factory.js';
 import { formatDiagnosticCode } from '../../src/diagnostics/codes.js';
 import { resolveOptions } from '../../src/session/options.js';
 
@@ -672,7 +676,7 @@ void test('application factory: createParseTokensUseCase computes cache variants
     set: () => undefined
   };
 
-  const useCase = application.createParseTokensUseCase(documents, resolvedOptions, parseCache);
+  const useCase = createParseTokensUseCase(documents, resolvedOptions, parseCache);
 
   await useCase.execute({
     request: { uri: identity.uri },
@@ -682,7 +686,7 @@ void test('application factory: createParseTokensUseCase computes cache variants
 
   assert.equal(variants.length, 1);
 
-  const configuration = application.createTokenCacheConfiguration(resolvedOptions);
+  const configuration = createTokenCacheConfiguration(resolvedOptions);
   const expectedVariant = createTokenCacheVariant(configuration, {
     flatten: false,
     includeGraphs: false

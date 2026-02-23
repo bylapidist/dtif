@@ -83,8 +83,3 @@ export function createInlineParseDocumentUseCase(
     resolution
   });
 }
-
-export {
-  createParseTokensUseCase,
-  createTokenCacheConfiguration
-} from '../tokens/use-case-factory.js';

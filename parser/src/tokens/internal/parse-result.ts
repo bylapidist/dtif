@@ -3,6 +3,7 @@ import type { DocumentAst } from '../../ast/nodes.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
 import type { DocumentGraph } from '../../graph/nodes.js';
 import type { DocumentResolver } from '../../resolver/document-resolver.js';
+import type { TokenCacheSnapshot } from '../cache.js';
 import type { ParseTokensResult } from '../contracts.js';
 import type { ResolvedTokenView, TokenId, TokenMetadataSnapshot } from '../types.js';
 
@@ -14,7 +15,7 @@ export interface ParseTokensResultOptions {
 }
 
 export function toParseTokensResult(
-  execution: ParseTokensExecution<DocumentAst, DocumentGraph, DocumentResolver>,
+  execution: ParseTokensExecution<DocumentAst, DocumentGraph, DocumentResolver, TokenCacheSnapshot>,
   options: ParseTokensResultOptions
 ): ParseTokensResult {
   const diagnostics = execution.diagnostics;
