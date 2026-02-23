@@ -26,43 +26,19 @@ import type {
   DocumentResolverOptions,
   ResolutionResult,
   ResolutionSource,
-  AppliedOverride,
   ResolutionTraceStep
 } from './types.js';
 import type { ResolvedTokenTransformEntry } from '../plugins/types.js';
 import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
 import { isOverrideValueCompatible } from './internal/type-compatibility.js';
 import { runTokenTransforms } from './internal/transform-runner.js';
+import { createResolutionKey } from './internal/resolution-key.js';
+import type { OverrideEvaluation, OverrideState, ResolutionState } from './internal/state.js';
 import {
   indexOverridesByGraph,
   normalizeExternalGraphs,
   type OverridesByGraph
 } from './internal/external-graph-index.js';
-
-interface ResolutionState {
-  readonly pointer: JsonPointer;
-  readonly type?: string;
-  readonly value?: unknown;
-  readonly source?: ResolutionSource;
-  readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly DiagnosticEvent[];
-  readonly trace: readonly ResolutionTraceStep[];
-}
-
-interface OverrideEvaluation {
-  readonly matched: boolean;
-  readonly state?: OverrideState;
-  readonly diagnostics: readonly DiagnosticEvent[];
-}
-
-interface OverrideState {
-  readonly type?: string;
-  readonly value?: unknown;
-  readonly source?: ResolutionSource;
-  readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly DiagnosticEvent[];
-  readonly trace: readonly ResolutionTraceStep[];
-}
 
 export class DocumentResolver {
   private readonly graph: DocumentGraph;
@@ -845,10 +821,6 @@ export class DocumentResolver {
 
     return this.resolveInternalInGraph(target.uri, target.pointer, diagnostics, depth);
   }
-}
-
-function createResolutionKey(uri: URL, pointer: JsonPointer): string {
-  return `${uri.href}#${pointer}`;
 }
 
 export function createDocumentResolver(
