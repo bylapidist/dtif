@@ -91,7 +91,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     const rawDocument = ingestionResult.outcome;
     if (!rawDocument || hasErrors(ingestionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { diagnostics, fromCache: false }
@@ -118,7 +118,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, decodedResult.diagnostics);
 
     if (!decoded || hasErrors(decodedResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -138,7 +138,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     const validationResult = await this.#schema.validate(decoded);
     appendDiagnostics(aggregated, validationResult.diagnostics);
     if (!validationResult.outcome || hasErrors(validationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -150,7 +150,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, normalizationResult.diagnostics);
 
     if (!normalized || hasErrors(normalizationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -168,7 +168,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, graphResult.diagnostics);
 
     if (!graph || hasErrors(graphResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -191,7 +191,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, resolutionResult.diagnostics);
 
     if (!resolution || hasErrors(resolutionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -207,7 +207,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     appendDiagnostics(aggregated, resolution.diagnostics);
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     return this.#finalize({
       reportDiagnostics,
       result: {
@@ -237,7 +237,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     const rawDocument = ingestionResult.outcome;
     if (!rawDocument || hasErrors(ingestionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { diagnostics, fromCache: false }
@@ -267,7 +267,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, decodedResult.diagnostics);
 
     if (!decoded || hasErrors(decodedResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -287,7 +287,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     const validationResult = ensureSynchronous(this.#schema.validate(decoded), 'validate document');
     appendDiagnostics(aggregated, validationResult.diagnostics);
     if (!validationResult.outcome || hasErrors(validationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -302,7 +302,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, normalizationResult.diagnostics);
 
     if (!normalized || hasErrors(normalizationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -320,7 +320,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, graphResult.diagnostics);
 
     if (!graph || hasErrors(graphResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -342,7 +342,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, resolutionResult.diagnostics);
 
     if (!resolution || hasErrors(resolutionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -358,7 +358,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     appendDiagnostics(aggregated, resolution.diagnostics);
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     return this.#finalize({
       reportDiagnostics,
       result: {
@@ -505,15 +505,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       }
     }
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     this.#reportDiagnostics(diagnostics);
 
-    return {
-      ...documentResult,
-      tokens: snapshot,
-      diagnostics,
-      tokensFromCache
-    } satisfies ParseTokensExecution<TAst, TGraph, TResult>;
+    return this.#createParseTokensExecution(documentResult, snapshot, diagnostics, tokensFromCache);
   }
 
   executeSync(input: ParseTokensInput): ParseTokensExecution<TAst, TGraph, TResult> {
@@ -566,15 +561,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       }
     }
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     this.#reportDiagnostics(diagnostics);
 
-    return {
-      ...documentResult,
-      tokens: snapshot,
-      diagnostics,
-      tokensFromCache
-    } satisfies ParseTokensExecution<TAst, TGraph, TResult>;
+    return this.#createParseTokensExecution(documentResult, snapshot, diagnostics, tokensFromCache);
   }
 
   async #flattenTokens(
@@ -668,6 +658,20 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       includeGraphs: input.includeGraphs ?? true
     });
   }
+
+  #createParseTokensExecution(
+    documentResult: ParseDocumentExecution<TAst, TGraph, TResult>,
+    snapshot: TokenSnapshot<TokenCacheSnapshot> | undefined,
+    diagnostics: readonly DiagnosticEvent[],
+    tokensFromCache: boolean
+  ): ParseTokensExecution<TAst, TGraph, TResult> {
+    return {
+      ...documentResult,
+      tokens: snapshot,
+      diagnostics,
+      tokensFromCache
+    } satisfies ParseTokensExecution<TAst, TGraph, TResult>;
+  }
 }
 
 const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
@@ -686,6 +690,10 @@ function appendDiagnostics(
   }
 
   return events.some((event) => event.severity === 'error');
+}
+
+function finalizeDiagnostics(aggregated: readonly DiagnosticEvent[]): readonly DiagnosticEvent[] {
+  return aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
 }
 
 function hasErrors(diagnostics?: PipelineDiagnostics | readonly DiagnosticEvent[]): boolean {
