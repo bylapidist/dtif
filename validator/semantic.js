@@ -16,6 +16,66 @@ const COLOR_COMPONENT_CHANNELS = new Map([
   ['hsl', 3],
   ['hwb', 3]
 ]);
+const MOTION_PATH_TYPE_PATTERN = /\.(?:path|offset-path|motion-path)$/i;
+const LENGTH_UNITS = new Set([
+  '%',
+  'cm',
+  'mm',
+  'q',
+  'in',
+  'pt',
+  'pc',
+  'px',
+  'em',
+  'ex',
+  'cap',
+  'ch',
+  'ic',
+  'rem',
+  'rex',
+  'rcap',
+  'rch',
+  'ric',
+  'lh',
+  'rlh',
+  'vw',
+  'vh',
+  'vi',
+  'vb',
+  'vmin',
+  'vmax',
+  'svw',
+  'svh',
+  'svi',
+  'svb',
+  'svmin',
+  'svmax',
+  'lvw',
+  'lvh',
+  'lvi',
+  'lvb',
+  'lvmin',
+  'lvmax',
+  'dvw',
+  'dvh',
+  'dvi',
+  'dvb',
+  'dvmin',
+  'dvmax',
+  'cqw',
+  'cqh',
+  'cqi',
+  'cqb',
+  'cqmin',
+  'cqmax',
+  'dp',
+  'sp'
+]);
+const ANGLE_UNITS = new Set(['deg', 'grad', 'rad', 'turn']);
+const RESOLUTION_UNITS = new Set(['dpi', 'dpcm', 'dppx', 'x']);
+const NUMERIC_UNIT_PATTERN = /^[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?([a-z%]+)$/i;
+const NUMERIC_WITH_OPTIONAL_UNIT_PATTERN =
+  /^[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?([a-z%]*)$/i;
 
 function createSemanticIssue(instancePath, message, code) {
   return {
@@ -475,6 +535,241 @@ function validateColorComponentCounts(value, errors, path) {
   }
 }
 
+function resolveDimensionUnitCategory(unit) {
+  const normalized = unit.toLowerCase();
+  if (LENGTH_UNITS.has(normalized)) {
+    return 'length';
+  }
+  if (ANGLE_UNITS.has(normalized)) {
+    return 'angle';
+  }
+  if (RESOLUTION_UNITS.has(normalized)) {
+    return 'resolution';
+  }
+  return undefined;
+}
+
+function extractStringUnitCategory(value) {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const match = NUMERIC_UNIT_PATTERN.exec(value.trim());
+  if (!match) {
+    return undefined;
+  }
+  return resolveDimensionUnitCategory(match[1]);
+}
+
+function parseNumericStringWithUnit(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const match = NUMERIC_WITH_OPTIONAL_UNIT_PATTERN.exec(value.trim());
+  if (!match) {
+    return null;
+  }
+
+  const number = Number.parseFloat(value);
+  if (!Number.isFinite(number)) {
+    return null;
+  }
+
+  return {
+    value: number,
+    unit: match[1].toLowerCase()
+  };
+}
+
+function validateDimensionFunctionSemantics(value, errors, path) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateDimensionFunctionSemantics(entry, errors, `${path}/${String(index)}`);
+    });
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (value.fn === 'calc' && Array.isArray(value.parameters)) {
+    const categories = new Set();
+    for (const parameter of value.parameters) {
+      const category = extractStringUnitCategory(parameter);
+      if (category) {
+        categories.add(category);
+      }
+    }
+
+    if (categories.size > 1) {
+      errors.push(
+        createSemanticIssue(
+          `${path}/parameters`,
+          'calc mixed incompatible unit categories',
+          'E_CALC_UNIT_MISMATCH'
+        )
+      );
+    }
+  }
+
+  if (value.fn === 'clamp' && Array.isArray(value.parameters) && value.parameters.length >= 3) {
+    const minToken = parseNumericStringWithUnit(value.parameters[0]);
+    const maxToken = parseNumericStringWithUnit(value.parameters[2]);
+
+    if (
+      minToken &&
+      maxToken &&
+      minToken.unit.length > 0 &&
+      minToken.unit === maxToken.unit &&
+      minToken.value > maxToken.value
+    ) {
+      errors.push(
+        createSemanticIssue(
+          `${path}/parameters`,
+          'clamp min greater than max',
+          'E_CLAMP_MIN_GT_MAX'
+        )
+      );
+    }
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    validateDimensionFunctionSemantics(nested, errors, `${path}/${key}`);
+  }
+}
+
+function validateGradientStopOrder(value, errors, path) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateGradientStopOrder(entry, errors, `${path}/${String(index)}`);
+    });
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (Array.isArray(value.stops)) {
+    let previous = -Infinity;
+    value.stops.forEach((stop, index) => {
+      if (!isObject(stop) || typeof stop.position !== 'number') {
+        return;
+      }
+
+      if (stop.position < previous) {
+        errors.push(
+          createSemanticIssue(
+            `${path}/stops/${String(index)}/position`,
+            'gradient stops must be sorted in ascending order',
+            'E_GRADIENT_STOP_ORDER'
+          )
+        );
+      }
+      previous = stop.position;
+    });
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    validateGradientStopOrder(nested, errors, `${path}/${key}`);
+  }
+}
+
+function validateMotionPathSemantics(root, value, errors, path) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateMotionPathSemantics(root, entry, errors, `${path}/${String(index)}`);
+    });
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (
+    typeof value.motionType === 'string' &&
+    MOTION_PATH_TYPE_PATTERN.test(value.motionType) &&
+    isObject(value.parameters) &&
+    Array.isArray(value.parameters.points)
+  ) {
+    const points = value.parameters.points;
+    const basePath = `${path}/parameters/points`;
+    if (points.length > 0) {
+      const firstTime = points[0]?.time;
+      if (typeof firstTime === 'number' && firstTime !== 0) {
+        errors.push(
+          createSemanticIssue(
+            `${basePath}/0/time`,
+            'motion path must start at time 0',
+            'E_MOTION_PATH_START'
+          )
+        );
+      }
+
+      const lastIndex = points.length - 1;
+      const lastTime = points[lastIndex]?.time;
+      if (typeof lastTime === 'number' && lastTime !== 1) {
+        errors.push(
+          createSemanticIssue(
+            `${basePath}/${String(lastIndex)}/time`,
+            'motion path must end at time 1',
+            'E_MOTION_PATH_END'
+          )
+        );
+      }
+    }
+
+    let previousTime = -Infinity;
+    points.forEach((point, index) => {
+      if (!isObject(point)) {
+        return;
+      }
+
+      const pointPath = `${basePath}/${String(index)}`;
+      if (typeof point.time === 'number') {
+        if (point.time < 0 || point.time > 1) {
+          errors.push(
+            createSemanticIssue(
+              `${pointPath}/time`,
+              'motion path keyframe time must be between 0 and 1',
+              'E_MOTION_PATH_TIME_RANGE'
+            )
+          );
+        }
+        if (point.time < previousTime) {
+          errors.push(
+            createSemanticIssue(
+              `${pointPath}/time`,
+              'motion path keyframes must increase monotonically',
+              'E_MOTION_PATH_ORDER'
+            )
+          );
+        }
+        previousTime = point.time;
+      }
+
+      if (typeof point.easing === 'string' && point.easing.startsWith('#')) {
+        const easingType = resolveTokenType(root, point.easing, errors, `${pointPath}/easing`);
+        if (easingType !== 'easing') {
+          errors.push(
+            createSemanticIssue(
+              `${pointPath}/easing`,
+              `motion path easing ${point.easing} must reference an easing token`,
+              'E_MOTION_PATH_EASING_TYPE'
+            )
+          );
+        }
+      }
+    });
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    validateMotionPathSemantics(root, nested, errors, `${path}/${key}`);
+  }
+}
+
 function collectOverrideGraph(root) {
   const graph = new Map();
   const tokenIndex = new Map();
@@ -812,6 +1107,18 @@ export function runSemanticValidation(document, options = {}) {
 
     if (node.$type === 'color') {
       validateColorComponentCounts(node.$value, errors, `${path}/$value`);
+    }
+
+    if (node.$type === 'dimension') {
+      validateDimensionFunctionSemantics(node.$value, errors, `${path}/$value`);
+    }
+
+    if (node.$type === 'gradient') {
+      validateGradientStopOrder(node.$value, errors, `${path}/$value`);
+    }
+
+    if (node.$type === 'motion') {
+      validateMotionPathSemantics(document, node.$value, errors, `${path}/$value`);
     }
 
     if (isObject(node.$deprecated) && '$replacement' in node.$deprecated) {

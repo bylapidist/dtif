@@ -233,6 +233,166 @@ const typographyFontSizeRefTypeMismatch = {
     }
   }
 };
+const gradientStopOrderViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'gradient',
+    $value: {
+      gradientType: 'linear',
+      stops: [
+        {
+          position: 0,
+          color: { colorSpace: 'srgb', components: [1, 0, 0, 1] }
+        },
+        {
+          position: 0.5,
+          color: { colorSpace: 'srgb', components: [0, 1, 0, 1] }
+        },
+        {
+          position: 0.4,
+          color: { colorSpace: 'srgb', components: [0, 0, 1, 1] }
+        }
+      ],
+      angle: 30
+    }
+  }
+};
+const calcMixedUnitsViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'dimension',
+    $value: { fn: 'calc', parameters: ['1px', '+', '1deg'] }
+  }
+};
+const clampMinGreaterThanMaxViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'dimension',
+    $value: { fn: 'clamp', parameters: ['10px', '5px', '1px'] }
+  }
+};
+const motionPathStartTimeViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0.25,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathEndTimeViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 0.75,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathOrderViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 0.8,
+            position: {
+              x: { dimensionType: 'length', value: 12, unit: 'px' }
+            }
+          },
+          {
+            time: 0.5,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 20, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathEasingTypeViolation = {
+  $version: '1.0.0',
+  palette: {
+    background: {
+      $type: 'color',
+      $value: {
+        colorSpace: 'srgb',
+        components: [0.2, 0.3, 0.4, 1]
+      }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            },
+            easing: '#/palette/background'
+          }
+        ]
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -458,6 +618,64 @@ export default function assertValidatorDefaults() {
       path: '',
       message:
         'validator should reject typography fontSize refs that do not resolve to dimension tokens'
+    });
+  }
+
+  if (validate(gradientStopOrderViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_GRADIENT_STOP_ORDER',
+      path: '',
+      message: 'validator should reject gradients whose stops are not sorted in ascending order'
+    });
+  }
+
+  if (validate(calcMixedUnitsViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_CALC_UNIT_MISMATCH',
+      path: '',
+      message:
+        'validator should reject calc dimension functions that mix incompatible unit families'
+    });
+  }
+
+  if (validate(clampMinGreaterThanMaxViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_CLAMP_MIN_GREATER_THAN_MAX',
+      path: '',
+      message: 'validator should reject clamp dimension functions where min is greater than max'
+    });
+  }
+
+  if (validate(motionPathStartTimeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_START',
+      path: '',
+      message: 'validator should reject motion path sequences that do not start at time 0'
+    });
+  }
+
+  if (validate(motionPathEndTimeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_END',
+      path: '',
+      message: 'validator should reject motion path sequences that do not end at time 1'
+    });
+  }
+
+  if (validate(motionPathOrderViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_ORDER',
+      path: '',
+      message: 'validator should reject motion path sequences with non-monotonic time values'
+    });
+  }
+
+  if (validate(motionPathEasingTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_EASING_TYPE',
+      path: '',
+      message:
+        'validator should reject motion path keyframes whose easing pointer does not resolve to an easing token'
     });
   }
 
