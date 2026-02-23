@@ -16,7 +16,6 @@
   "files": [
     "index.d.ts",
     "index.js",
-    "known-types.json",
     "semantic.js",
     "README.md",
     "CHANGELOG.md"
