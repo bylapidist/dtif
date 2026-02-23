@@ -19,7 +19,7 @@ hero:
       link: /spec/
     - theme: minimal
       text: View the schema
-      link: https://dtif.lapidist.net/schema/core.json
+      link: /schema/core.json
 features:
   - icon: 🔄
     title: Interoperable by design
@@ -73,7 +73,7 @@ colour, typography, spacing, motion, and more without loss of fidelity.
 Use the curated resources in this repository to streamline implementation and stay in
 sync with the standard:
 
-- **Core schema** – the canonical [JSON Schema](https://dtif.lapidist.net/schema/core.json) for validators and toolchains.
+- **Core schema** – the canonical [JSON Schema](/schema/core.json) for validators and toolchains.
 - **Reference examples** – schema-valid [token documents](https://github.com/bylapidist/dtif/tree/main/examples) designed for testing and education.
 - **Registry** – curated [`$type` identifiers and metadata](https://github.com/bylapidist/dtif/tree/main/registry).
 - **Conformance tests** – fixtures for verifying implementations and ensuring
