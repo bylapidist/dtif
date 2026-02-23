@@ -1,5 +1,4 @@
 {
-  "$schema": "https://dtif.lapidist.net/schema/core.json",
   "color": {
     "brand": {
       "alt": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [1, 1, 1, 1] } },

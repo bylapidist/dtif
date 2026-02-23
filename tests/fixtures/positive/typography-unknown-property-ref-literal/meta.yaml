@@ -1,0 +1,7 @@
+name: typography-unknown-property-ref-literal
+description: unknown typography properties are ignored even when they contain ref-like members
+assertions:
+  - schema
+  - refs
+  - type-compat
+tags: [typography]

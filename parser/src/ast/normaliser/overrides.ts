@@ -82,21 +82,25 @@ export function normalizeOverrideNode(
   if (!refField && !valueField && !fallback) {
     context.diagnostics.push({
       code: DiagnosticCodes.normaliser.INVALID_OVERRIDE,
-      message: 'Override entries must provide $ref, $value, or $fallback.',
-      severity: 'error',
+      message:
+        'Override entry is invalid because it omits $ref, $value, and $fallback; the entry is ignored.',
+      severity: 'warning',
       pointer,
       span: getSourceSpan(context, pointer)
     });
+    return undefined;
   }
 
   if (refField && valueField) {
     context.diagnostics.push({
       code: DiagnosticCodes.normaliser.INVALID_OVERRIDE,
-      message: 'Override entries must not declare both $ref and $value.',
-      severity: 'error',
+      message:
+        'Override entry is invalid because it declares both $ref and $value; the entry is ignored.',
+      severity: 'warning',
       pointer,
       span: getSourceSpan(context, pointer)
     });
+    return undefined;
   }
 
   return Object.freeze({
@@ -172,8 +176,9 @@ function normalizeFallbackEntry(
   if (!refField && !valueField) {
     context.diagnostics.push({
       code: DiagnosticCodes.normaliser.INVALID_OVERRIDE,
-      message: 'Fallback entries must provide $ref or $value.',
-      severity: 'error',
+      message:
+        'Fallback entry is invalid because it omits both $ref and $value; the entry is ignored.',
+      severity: 'warning',
       pointer,
       span: getSourceSpan(context, pointer)
     });
@@ -183,8 +188,9 @@ function normalizeFallbackEntry(
   if (refField && valueField) {
     context.diagnostics.push({
       code: DiagnosticCodes.normaliser.INVALID_OVERRIDE,
-      message: 'Fallback entries must not declare both $ref and $value.',
-      severity: 'error',
+      message:
+        'Fallback entry is invalid because it declares both $ref and $value; the entry is ignored.',
+      severity: 'warning',
       pointer,
       span: getSourceSpan(context, pointer)
     });

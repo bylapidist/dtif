@@ -76,6 +76,26 @@ const RESOLUTION_UNITS = new Set(['dpi', 'dpcm', 'dppx', 'x']);
 const NUMERIC_UNIT_PATTERN = /^[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?([a-z%]+)$/i;
 const NUMERIC_WITH_OPTIONAL_UNIT_PATTERN =
   /^[-+]?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?([a-z%]*)$/i;
+const TYPOGRAPHY_KNOWN_VALUE_KEYS = new Set([
+  'typographyType',
+  'fontFamily',
+  'fontSize',
+  'lineHeight',
+  'letterSpacing',
+  'wordSpacing',
+  'fontWeight',
+  'fontStyle',
+  'fontVariant',
+  'fontStretch',
+  'textDecoration',
+  'textTransform',
+  'color',
+  'fontFeatures',
+  'underlineThickness',
+  'underlineOffset',
+  'overlineThickness',
+  'overlineOffset'
+]);
 
 function createSemanticIssue(instancePath, message, code) {
   return {
@@ -89,6 +109,29 @@ function createSemanticIssue(instancePath, message, code) {
 
 function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isOverrideEntryPath(path) {
+  return /^\/\$overrides\/\d+$/.test(path);
+}
+
+function getIgnoredOverrideReason(value) {
+  if (!isObject(value)) {
+    return null;
+  }
+  const hasRef = Object.prototype.hasOwnProperty.call(value, '$ref');
+  const hasValue = Object.prototype.hasOwnProperty.call(value, '$value');
+  const hasFallback = Object.prototype.hasOwnProperty.call(value, '$fallback');
+
+  if (!hasRef && !hasValue && !hasFallback) {
+    return 'override entry omitted $ref, $value, and $fallback and was ignored';
+  }
+
+  if (hasRef && hasValue) {
+    return 'override entry declared both $ref and $value and was ignored';
+  }
+
+  return null;
 }
 
 function checkOrder(keys, expected, path, errors) {
@@ -960,6 +1003,9 @@ function collectOverrideGraph(root) {
     if (!isObject(override)) {
       return;
     }
+    if (getIgnoredOverrideReason(override)) {
+      return;
+    }
     const token = override.$token;
     if (typeof token !== 'string') {
       return;
@@ -1099,13 +1145,25 @@ export function runSemanticValidation(document, options = {}) {
     }
   }
 
-  const walk = (node, path = '') => {
+  const walk = (node, path = '', context = {}) => {
+    if (path.includes('/$extensions/')) {
+      return;
+    }
+
     if (Array.isArray(node)) {
-      node.forEach((value, index) => walk(value, `${path}/${String(index)}`));
+      node.forEach((value, index) => walk(value, `${path}/${String(index)}`, context));
       return;
     }
     if (!isObject(node)) {
       return;
+    }
+
+    if (isOverrideEntryPath(path)) {
+      const ignoredReason = getIgnoredOverrideReason(node);
+      if (ignoredReason) {
+        warnings.push(createSemanticIssue(path, ignoredReason, 'W_OVERRIDE_IGNORED'));
+        return;
+      }
     }
 
     const keys = Object.keys(node);
@@ -1121,7 +1179,9 @@ export function runSemanticValidation(document, options = {}) {
     if ('colorSpace' in node && 'components' in node) {
       checkOrder(keys, ['colorSpace', 'components'], path, errors);
     }
-    checkCollectionOrder(node, path, errors);
+    if (context.inTypographyValue !== true) {
+      checkCollectionOrder(node, path, errors);
+    }
 
     if (typeof node.$type === 'string' && !knownTypes.has(node.$type)) {
       warnings.push(
@@ -1389,7 +1449,27 @@ export function runSemanticValidation(document, options = {}) {
     }
 
     for (const [key, value] of Object.entries(node)) {
-      walk(value, `${path}/${key}`);
+      if (key === '$extensions') {
+        continue;
+      }
+
+      if (
+        context.inTypographyValue === true &&
+        !TYPOGRAPHY_KNOWN_VALUE_KEYS.has(key) &&
+        !key.startsWith('$')
+      ) {
+        continue;
+      }
+
+      const nextContext = {
+        inTypographyValue:
+          typeof node.$type === 'string' &&
+          node.$type === 'typography' &&
+          key === '$value' &&
+          isObject(value)
+      };
+
+      walk(value, `${path}/${key}`, nextContext);
     }
   };
 

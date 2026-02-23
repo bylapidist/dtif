@@ -1,0 +1,15 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "brand": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0, 0, 0, 1] },
+      "$extensions": {
+        "com.example": {
+          "z": { "x": 1 },
+          "a": { "y": 2 }
+        }
+      }
+    }
+  }
+}

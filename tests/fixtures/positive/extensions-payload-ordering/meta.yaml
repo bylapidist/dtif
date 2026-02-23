@@ -1,0 +1,6 @@
+name: extensions-payload-ordering
+description: extension payload key ordering is arbitrary JSON and must not trigger collection ordering errors
+assertions:
+  - schema
+  - ordering
+tags: [extensions]

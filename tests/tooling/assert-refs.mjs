@@ -1,6 +1,26 @@
 export default function assertRefs(doc, opts = {}) {
   const errors = [];
   const { allowRemote = false, allowExternal = false } = opts;
+  const TYPOGRAPHY_KNOWN_VALUE_KEYS = new Set([
+    'typographyType',
+    'fontFamily',
+    'fontSize',
+    'lineHeight',
+    'letterSpacing',
+    'wordSpacing',
+    'fontWeight',
+    'fontStyle',
+    'fontVariant',
+    'fontStretch',
+    'textDecoration',
+    'textTransform',
+    'color',
+    'fontFeatures',
+    'underlineThickness',
+    'underlineOffset',
+    'overlineThickness',
+    'overlineOffset'
+  ]);
 
   function resolvePointer(root, pointer, chain = [], refPath = '') {
     if (typeof pointer !== 'string') {
@@ -142,9 +162,12 @@ export default function assertRefs(doc, opts = {}) {
     return cur;
   }
 
-  function resolve(node) {
+  function resolve(node, path = '', context = {}) {
+    if (path.includes('/$extensions/')) {
+      return node;
+    }
     if (Array.isArray(node)) {
-      return node.map(resolve);
+      return node.map((entry, index) => resolve(entry, `${path}/${index}`, context));
     }
     if (node && typeof node === 'object') {
       if (node.$ref && !node.$token && typeof node.$ref === 'string' && node.$ref.startsWith('#')) {
@@ -152,17 +175,50 @@ export default function assertRefs(doc, opts = {}) {
       }
       const out = {};
       for (const [k, v] of Object.entries(node)) {
-        out[k] = resolve(v);
+        if (k === '$extensions') {
+          out[k] = v;
+          continue;
+        }
+        if (
+          context.inTypographyValue === true &&
+          !TYPOGRAPHY_KNOWN_VALUE_KEYS.has(k) &&
+          !k.startsWith('$')
+        ) {
+          out[k] = v;
+          continue;
+        }
+        out[k] = resolve(v, `${path}/${k}`, {
+          inTypographyValue:
+            node.$type === 'typography' &&
+            k === '$value' &&
+            v &&
+            typeof v === 'object' &&
+            !Array.isArray(v)
+        });
       }
       return out;
     }
     return node;
   }
 
-  function walk(node, curPath = '') {
+  function walk(node, curPath = '', context = {}) {
+    if (curPath.includes('/$extensions/')) {
+      return;
+    }
+
     if (Array.isArray(node)) {
-      node.forEach((v, i) => walk(v, `${curPath}/${i}`));
+      node.forEach((v, i) => walk(v, `${curPath}/${i}`, context));
     } else if (node && typeof node === 'object') {
+      const isOverrideEntry = /^\/\$overrides\/\d+$/.test(curPath);
+      if (isOverrideEntry) {
+        const hasRef = Object.prototype.hasOwnProperty.call(node, '$ref');
+        const hasValue = Object.prototype.hasOwnProperty.call(node, '$value');
+        const hasFallback = Object.prototype.hasOwnProperty.call(node, '$fallback');
+        if ((!hasRef && !hasValue && !hasFallback) || (hasRef && hasValue)) {
+          return;
+        }
+      }
+
       if (node.$ref) {
         resolvePointer(doc, node.$ref, [], `${curPath}/$ref`);
       }
@@ -182,7 +238,24 @@ export default function assertRefs(doc, opts = {}) {
         );
       }
       for (const [k, v] of Object.entries(node)) {
-        walk(v, `${curPath}/${k}`);
+        if (k === '$extensions') {
+          continue;
+        }
+        if (
+          context.inTypographyValue === true &&
+          !TYPOGRAPHY_KNOWN_VALUE_KEYS.has(k) &&
+          !k.startsWith('$')
+        ) {
+          continue;
+        }
+        walk(v, `${curPath}/${k}`, {
+          inTypographyValue:
+            node.$type === 'typography' &&
+            k === '$value' &&
+            v &&
+            typeof v === 'object' &&
+            !Array.isArray(v)
+        });
       }
     }
   }
@@ -196,6 +269,12 @@ export default function assertRefs(doc, opts = {}) {
 
     root.$overrides.forEach((override, idx) => {
       if (!override || typeof override !== 'object') {
+        return;
+      }
+      const hasRef = Object.prototype.hasOwnProperty.call(override, '$ref');
+      const hasValue = Object.prototype.hasOwnProperty.call(override, '$value');
+      const hasFallback = Object.prototype.hasOwnProperty.call(override, '$fallback');
+      if ((!hasRef && !hasValue && !hasFallback) || (hasRef && hasValue)) {
         return;
       }
       const token = override.$token;

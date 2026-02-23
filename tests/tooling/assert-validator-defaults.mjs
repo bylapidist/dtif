@@ -674,19 +674,19 @@ export default function assertValidatorDefaults() {
     });
   }
 
-  if (validate(overrideWithRefAndFallback)) {
+  if (!validate(overrideWithRefAndFallback)) {
     errors.push({
-      code: 'E_VALIDATOR_OVERRIDE_REF_FALLBACK_COMBINATION',
+      code: 'E_VALIDATOR_OVERRIDE_REF_FALLBACK_ALLOWED',
       path: '',
-      message: 'validator should reject overrides that combine $ref and $fallback'
+      message: 'validator should accept overrides that combine $ref and $fallback'
     });
   }
 
-  if (validate(overrideWithValueAndFallback)) {
+  if (!validate(overrideWithValueAndFallback)) {
     errors.push({
-      code: 'E_VALIDATOR_OVERRIDE_VALUE_FALLBACK_COMBINATION',
+      code: 'E_VALIDATOR_OVERRIDE_VALUE_FALLBACK_ALLOWED',
       path: '',
-      message: 'validator should reject overrides that combine $value and $fallback'
+      message: 'validator should accept overrides that combine $value and $fallback'
     });
   }
 
