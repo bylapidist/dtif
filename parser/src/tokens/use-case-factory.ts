@@ -10,6 +10,7 @@ import {
   createTokenCacheVariant,
   type TokenCacheConfiguration,
   type TokenCache,
+  type TokenCacheSnapshot,
   type TokenCacheVariantOverrides
 } from './cache.js';
 
@@ -24,7 +25,7 @@ export function createParseTokensUseCase(
   documents: ParseDocumentOrchestrator<DocumentAst, DocumentGraph, ResolverResult>,
   options: ParserRuntimeOptions,
   cache?: TokenCache
-): ParseTokensUseCase<DocumentAst, DocumentGraph, ResolverResult> {
+): ParseTokensUseCase<DocumentAst, DocumentGraph, ResolverResult, TokenCacheSnapshot> {
   const flattening = new TokenFlatteningAdapter();
   const configuration = createTokenCacheConfiguration(options);
 

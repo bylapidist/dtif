@@ -498,11 +498,10 @@ export class ParseTokensUseCase<
         } else {
           snapshot = await this.#flattenTokens(documentResult, aggregated, documentHash, flatten);
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = normalizeTokenCacheEntryDiagnostics(
-              ensureDocumentHash(snapshot.token, documentHash),
-              snapshot.diagnostics
+            await this.#tokenCache.set(
+              key,
+              withTokenCacheDiagnostics(snapshot.token, snapshot.diagnostics)
             );
-            await this.#tokenCache.set(key, entry);
           }
         }
       } else {
@@ -537,11 +536,13 @@ export class ParseTokensUseCase<
         } else {
           snapshot = this.#flattenTokensSync(documentResult, aggregated, documentHash, flatten);
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = normalizeTokenCacheEntryDiagnostics(
-              ensureDocumentHash(snapshot.token, documentHash),
-              snapshot.diagnostics
+            ensureSynchronous(
+              this.#tokenCache.set(
+                key,
+                withTokenCacheDiagnostics(snapshot.token, snapshot.diagnostics)
+              ),
+              'write token cache'
             );
-            ensureSynchronous(this.#tokenCache.set(key, entry), 'write token cache');
           }
         }
       } else {
@@ -579,11 +580,8 @@ export class ParseTokensUseCase<
       return undefined;
     }
 
-    const tokenDiagnostics = aggregated.length > 0 ? Object.freeze(aggregated.slice()) : undefined;
-    const token = ensureDocumentHash(snapshot.token, documentHash);
-
     return {
-      token: tokenDiagnostics ? { ...token, diagnostics: tokenDiagnostics } : token,
+      token: snapshot.token,
       diagnostics: snapshot.diagnostics
     } satisfies TokenSnapshot<TToken>;
   }
@@ -615,11 +613,8 @@ export class ParseTokensUseCase<
       return undefined;
     }
 
-    const tokenDiagnostics = aggregated.length > 0 ? Object.freeze(aggregated.slice()) : undefined;
-    const token = ensureDocumentHash(snapshot.token, documentHash);
-
     return {
-      token: tokenDiagnostics ? { ...token, diagnostics: tokenDiagnostics } : token,
+      token: snapshot.token,
       diagnostics: snapshot.diagnostics
     } satisfies TokenSnapshot<TToken>;
   }
@@ -734,32 +729,20 @@ function createSnapshotFromCache<TToken extends TokenCacheEntry>(
   } satisfies TokenSnapshot<TToken>;
 }
 
-function ensureDocumentHash<TToken extends TokenCacheEntry>(
+function withTokenCacheDiagnostics<TToken extends TokenCacheEntry>(
   entry: TToken,
-  documentHash: string | undefined
+  diagnostics: readonly DiagnosticEvent[]
 ): TToken {
-  if (!documentHash || entry.documentHash === documentHash) {
+  if (diagnostics.length === 0) {
     return entry;
   }
 
-  return { ...entry, documentHash };
-}
+  const updated: TToken = {
+    ...entry,
+    diagnostics
+  };
 
-function normalizeTokenCacheEntryDiagnostics<TToken extends TokenCacheEntry>(
-  entry: TToken,
-  diagnostics: readonly DiagnosticEvent[] | undefined
-): TToken {
-  const { diagnostics: existingDiagnostics, ...entryWithoutDiagnostics } = entry;
-
-  if (diagnostics && diagnostics.length > 0) {
-    return { ...entryWithoutDiagnostics, diagnostics };
-  }
-
-  if (!existingDiagnostics || existingDiagnostics.length === 0) {
-    return entry;
-  }
-
-  return entryWithoutDiagnostics;
+  return updated;
 }
 
 function toDiagnosticEvents(

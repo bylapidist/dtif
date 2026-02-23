@@ -1,4 +1,6 @@
-export type DiagnosticCode = `DTIF${number}${number}${number}${number}`;
+import type { DiagnosticCode } from '../domain/primitives.js';
+
+export type { DiagnosticCode } from '../domain/primitives.js';
 
 const DIAGNOSTIC_CODE_PATTERN = /^DTIF\d{4}$/u;
 

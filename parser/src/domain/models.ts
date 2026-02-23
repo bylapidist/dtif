@@ -1,5 +1,10 @@
-import type { DocumentContentType, JsonPointer, SourceMap, SourceSpan } from './primitives.js';
-import type { DiagnosticCode } from '../diagnostics/codes.js';
+import type {
+  DiagnosticCode,
+  DocumentContentType,
+  JsonPointer,
+  SourceMap,
+  SourceSpan
+} from './primitives.js';
 
 export interface RawDocumentIdentity {
   readonly uri: URL;
