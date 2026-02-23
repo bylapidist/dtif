@@ -30,7 +30,7 @@
     "lint:docs": "markdownlint \"docs/**/*.md\"",
     "changeset": "changeset",
     "release": "changeset publish",
-    "version-packages": "changeset version"
+    "version-packages": "changeset version && pnpm install --lockfile-only"
   },
   "dependencies": {
     "ajv": "^8.17.1",
