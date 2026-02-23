@@ -356,6 +356,20 @@ export default function assertValidatorDefaults() {
     });
   }
 
+  const { validate: validateWithExternalOptIn } = createDtifValidator({
+    allowExternalReferences: true,
+    allowRemoteReferences: true
+  });
+  const unresolvedRemoteWithOptInValid = validateWithExternalOptIn(unresolvedRemote);
+  if (!unresolvedRemoteWithOptInValid) {
+    errors.push({
+      code: 'E_VALIDATOR_REMOTE_OPT_IN_REJECTED',
+      path: '',
+      message:
+        'validator should defer remote reference resolution when external and remote opt-ins are both enabled'
+    });
+  }
+
   const deprecatedReplacementValid = validate(deprecatedReplacementTypeMismatch);
   if (deprecatedReplacementValid) {
     errors.push({

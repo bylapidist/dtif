@@ -754,13 +754,6 @@ export function runSemanticValidation(document, options = {}) {
           );
           return;
         }
-        errors.push(
-          createSemanticIssue(
-            refPath,
-            `remote reference could not be resolved: ${pointer}`,
-            'E_REF_UNRESOLVED'
-          )
-        );
         return;
       }
       resolvePointer(document, pointer, errors, refPath);
