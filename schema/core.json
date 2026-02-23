@@ -987,7 +987,7 @@
           "$ref": "#/$defs/override-core"
         },
         {
-          "anyOf": [
+          "oneOf": [
             {
               "required": ["$ref"],
               "type": "object",
@@ -1010,7 +1010,7 @@
               }
             }
           ],
-          "$comment": "Override entries MUST declare $ref, $value, or $fallback.",
+          "$comment": "Override entries MUST declare exactly one of $ref, $value, or $fallback.",
           "title": "Override resolution requirement"
         },
         {
@@ -1042,6 +1042,23 @@
               "$ref": false
             },
             "$comment": "Entries using inline $value MUST NOT also declare $ref.",
+            "type": "object"
+          }
+        },
+        {
+          "if": {
+            "required": ["$fallback"],
+            "type": "object",
+            "properties": {
+              "$fallback": {}
+            }
+          },
+          "then": {
+            "properties": {
+              "$ref": false,
+              "$value": false
+            },
+            "$comment": "Entries using $fallback MUST NOT also declare $ref or $value.",
             "type": "object"
           }
         }

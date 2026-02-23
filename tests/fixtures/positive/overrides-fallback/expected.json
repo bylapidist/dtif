@@ -5,14 +5,22 @@
       "$when": {
         "prefers-color-scheme": "dark"
       },
-      "$ref": "#/color/brand/dark",
-      "$fallback": {
-        "$type": "color",
-        "$value": {
-          "colorSpace": "srgb",
-          "components": [0.5, 0.5, 0.5, 1]
+      "$fallback": [
+        {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0, 1]
+          }
+        },
+        {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.5, 0.5, 0.5, 1]
+          }
         }
-      }
+      ]
     },
     {
       "$token": "#/button/text",
