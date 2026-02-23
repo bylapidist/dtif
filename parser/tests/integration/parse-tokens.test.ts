@@ -107,6 +107,54 @@ void test('parseTokens accepts in-memory design token objects', async () => {
   assertNullPrototypeDeep(document.data);
 });
 
+void test('parseTokensSync ignores invalid override entries that omit selectors or mix $ref with $value', () => {
+  const result = parseTokensSync({
+    color: {
+      alt: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0.9, 0.8, 0.7, 1] }
+      },
+      base: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0.2, 0.3, 0.4, 1] }
+      }
+    },
+    $overrides: [
+      {
+        $token: '#/color/base',
+        $when: { mode: 'dark' }
+      },
+      {
+        $token: '#/color/base',
+        $when: { mode: 'dark' },
+        $ref: '#/color/alt',
+        $value: { colorSpace: 'srgb', components: [0.1, 0.1, 0.1, 1] }
+      }
+    ]
+  });
+
+  assert.equal(
+    result.flattened.length,
+    2,
+    'expected parsing to continue when overrides are ignored'
+  );
+  const base = result.flattened.find((token) => token.pointer === '#/color/base');
+  assert.ok(base, 'expected base token to remain resolvable');
+  assert.deepEqual(base.value, { colorSpace: 'srgb', components: [0.2, 0.3, 0.4, 1] });
+
+  const ignoredWarnings = result.diagnostics.filter(
+    (diagnostic) =>
+      diagnostic.severity === 'warning' &&
+      /override entry is invalid .* ignored/i.test(diagnostic.message)
+  );
+  assert.ok(ignoredWarnings.length >= 2, 'expected warnings for ignored invalid override entries');
+  assert.equal(
+    result.diagnostics.some((diagnostic) => diagnostic.severity === 'error'),
+    false,
+    'expected ignored invalid overrides not to produce parse-stopping errors'
+  );
+});
+
 void test('parseTokens rejects deprecated replacements that resolve to a mismatched token type', async () => {
   const result = await parseTokens({
     $schema: 'https://dtif.lapidist.net/schema/core.json',

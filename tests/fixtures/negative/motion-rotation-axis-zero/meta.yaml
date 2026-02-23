@@ -1,0 +1,4 @@
+name: motion-rotation-axis-zero
+description: rotation axis vectors must include at least one non-zero component
+tags:
+  - motion

@@ -88,7 +88,10 @@ for (const dir of walk(fixturesRoot)) {
   const hasError = fs.existsSync(path.join(dir, 'expected.error.json'));
 
   const schemaRes = assertSchema(input);
-  const refRes = assertRefs(input, { allowRemote: meta.allowRemote });
+  const refRes = assertRefs(input, {
+    allowRemote: meta.allowRemote,
+    allowExternal: meta.allowExternal
+  });
   const roundtripRes = assertRoundtrip(input);
   const typeRes = assertTypeCompat(input);
   const orderingRes = assertOrdering(input);

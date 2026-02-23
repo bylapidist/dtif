@@ -1,0 +1,4 @@
+name: motion-translation-dimension-type
+description: motion translation coordinates must reference length dimensions
+tags:
+  - motion

@@ -53,6 +53,7 @@ export function createDtifValidator(options = {}) {
     formats = addFormats,
     schemaId = DEFAULT_SCHEMA_ID,
     allowRemoteReferences = false,
+    allowExternalReferences = false,
     enforceSemanticRules = true
   } = options;
 
@@ -77,6 +78,7 @@ export function createDtifValidator(options = {}) {
       schemaValid && enforceSemanticRules
         ? runSemanticValidation(document, {
             allowRemoteReferences,
+            allowExternalReferences,
             knownTypes: KNOWN_TYPES,
             isValueCompatible
           })

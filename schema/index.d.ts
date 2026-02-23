@@ -1692,34 +1692,14 @@ export namespace CoreJson {
          * Override rule
          * Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.
          */
-        export type Override = /**
-         * Theming and overrides §$overrides.
-         * Override rule
-         * Contextual substitution entry evaluated against $when conditions per Theming and overrides §$overrides.
-         */ {
-            /**
-             * Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).
-             * Override reference
-             * Pointer to the replacement token per Theming and overrides §$overrides.
-             */
-            $ref: void; // ^(?:#|[^#]+#)(?:\/[^~\/]*(?:~[01][^~\/]*)*)*$
-        } | {
-            $value: any;
+        export interface Override {
             /**
              * Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).
              * Override reference
              * Pointer to the replacement token per Theming and overrides §$overrides.
              */
             $ref?: void; // ^(?:#|[^#]+#)(?:\/[^~\/]*(?:~[01][^~\/]*)*)*$
-        } | {
-            $fallback: any;
-            /**
-             * Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).
-             * Override reference
-             * Pointer to the replacement token per Theming and overrides §$overrides.
-             */
-            $ref?: void; // ^(?:#|[^#]+#)(?:\/[^~\/]*(?:~[01][^~\/]*)*)*$
-        };
+        }
         /**
          * Theming and overrides §$overrides.
          * Override rule members
@@ -2286,7 +2266,8 @@ export interface Opacity extends CoreJson.Definitions.Opacity {
 }
 export type OpacityValueEntry = CoreJson.Definitions.OpacityValueEntry;
 export type OpacityValueFallback = CoreJson.Definitions.OpacityValueFallback;
-export type Override = CoreJson.Definitions.Override;
+export interface Override extends CoreJson.Definitions.Override {
+}
 export interface OverrideCore extends CoreJson.Definitions.OverrideCore {
 }
 export type PlatformIdentifier = CoreJson.Definitions.PlatformIdentifier;

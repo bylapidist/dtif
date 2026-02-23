@@ -1,7 +1,0 @@
-{
-  "error": {
-    "code": "E_NUMERIC_PRECISION",
-    "path": "/precise/$value/value",
-    "message": "numeric precision overflow"
-  }
-}

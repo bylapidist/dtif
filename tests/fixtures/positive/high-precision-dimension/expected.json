@@ -1,0 +1,6 @@
+{
+  "precise": {
+    "$type": "dimension",
+    "$value": { "dimensionType": "length", "value": 0.1234567890123, "unit": "px" }
+  }
+}

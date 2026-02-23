@@ -1,0 +1,14 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "color": {
+    "brand": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.1, 0.2, 0.3, 1] },
+      "$extensions": {
+        "com.example": {
+          "$ref": "literal-value-not-a-dtif-ref"
+        }
+      }
+    }
+  }
+}

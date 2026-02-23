@@ -1,0 +1,14 @@
+{
+  "typography": {
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": { "dimensionType": "length", "value": 16, "unit": "px" },
+        "unknownProp": {
+          "$ref": "not-a-dtif-ref"
+        }
+      }
+    }
+  }
+}
