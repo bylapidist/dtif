@@ -22,9 +22,19 @@ function writeSchemaAsset(outDir: string) {
   fs.writeFileSync(filePath, readSchema(), 'utf8');
 }
 
+let resolvedViteConfig: ResolvedConfig | null = null;
+
 const schemaStaticPlugin: Plugin = {
   name: 'dtif-schema-static',
   configResolved(config: ResolvedConfig) {
+    // Write after bundling because Vite clears outDir during builds.
+    resolvedViteConfig = config;
+  },
+  closeBundle() {
+    const config = resolvedViteConfig;
+    if (!config) {
+      return;
+    }
     writeSchemaAsset(path.resolve(config.root, config.build.outDir));
   },
   configureServer(server: ViteDevServer) {
