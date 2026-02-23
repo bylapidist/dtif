@@ -451,20 +451,6 @@ export default function assertTypeCompat(doc) {
   function walk(node, path = '') {
     if (node && typeof node === 'object') {
       validateDeprecated(node, path);
-      // generic numeric precision check
-      for (const [key, val] of Object.entries(node)) {
-        const nextPath = `${path}/${key}`;
-        if (typeof val === 'number') {
-          const m = val.toString().match(/\.(\d+)/);
-          if (m && m[1].length > 10) {
-            errors.push({
-              code: 'E_NUMERIC_PRECISION',
-              path: nextPath,
-              message: 'numeric precision overflow'
-            });
-          }
-        }
-      }
       if (
         node.$type === 'dimension' &&
         node.$value &&

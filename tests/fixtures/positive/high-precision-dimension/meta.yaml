@@ -1,0 +1,10 @@
+name: high-precision-dimension
+description: high precision numeric values remain valid dimension payloads
+assertions:
+  - schema
+  - roundtrip
+  - type-compat
+  - ordering
+tags:
+  - type:dimension
+  - precision
