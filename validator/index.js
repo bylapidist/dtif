@@ -92,7 +92,7 @@ export { schema };
 
 function collectKnownTypes(value) {
   const known = new Set();
-  const tokenSchema = value?.$defs?.token;
+  const tokenSchema = value?.$defs?.['token-core'];
   const clauses = tokenSchema?.allOf;
   if (!Array.isArray(clauses)) {
     return known;

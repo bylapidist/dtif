@@ -109,6 +109,94 @@ function resolvePointer(root, pointer, errors, refPath, chain = []) {
   return current;
 }
 
+function getPointerValue(root, pointer) {
+  if (typeof pointer !== 'string' || !pointer.startsWith('#')) {
+    return null;
+  }
+
+  const parts = pointer
+    .slice(1)
+    .split('/')
+    .filter(Boolean)
+    .map((p) => p.replace(/~1/g, '/').replace(/~0/g, '~'));
+
+  let current = root;
+  for (const part of parts) {
+    if (isObject(current) && Object.prototype.hasOwnProperty.call(current, part)) {
+      current = current[part];
+      continue;
+    }
+    return null;
+  }
+
+  return current;
+}
+
+function resolveTokenType(root, pointer, errors, refPath, chain = []) {
+  if (typeof pointer !== 'string' || !pointer.startsWith('#')) {
+    return null;
+  }
+
+  if (chain.includes(pointer)) {
+    errors.push(
+      createSemanticIssue(
+        refPath,
+        `circular reference ${[...chain, pointer].join(' -> ')}`,
+        'E_REF_CIRCULAR'
+      )
+    );
+    return null;
+  }
+
+  const target = getPointerValue(root, pointer);
+  if (target === null) {
+    errors.push(createSemanticIssue(refPath, `unresolved pointer ${pointer}`, 'E_REF_UNRESOLVED'));
+    return null;
+  }
+
+  if (isObject(target) && typeof target.$ref === 'string' && target.$ref.startsWith('#')) {
+    return resolveTokenType(root, target.$ref, errors, refPath, [...chain, pointer]);
+  }
+
+  return isObject(target) && typeof target.$type === 'string' ? target.$type : null;
+}
+
+function validateOverrideFallbackTypes(root, fallback, expectedType, errors, refPath) {
+  if (Array.isArray(fallback)) {
+    fallback.forEach((entry, index) => {
+      validateOverrideFallbackTypes(root, entry, expectedType, errors, `${refPath}/${index}`);
+    });
+    return;
+  }
+
+  if (!isObject(fallback)) {
+    return;
+  }
+
+  if (typeof fallback.$ref === 'string') {
+    const fallbackType = resolveTokenType(root, fallback.$ref, errors, `${refPath}/$ref`);
+    if (fallbackType && fallbackType !== expectedType) {
+      errors.push(
+        createSemanticIssue(
+          `${refPath}/$ref`,
+          `override fallback ${fallback.$ref} has type ${fallbackType}, expected ${expectedType}`,
+          'E_OVERRIDE_TYPE_MISMATCH'
+        )
+      );
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(fallback, '$fallback')) {
+    validateOverrideFallbackTypes(
+      root,
+      fallback.$fallback,
+      expectedType,
+      errors,
+      `${refPath}/$fallback`
+    );
+  }
+}
+
 function collectOverrideGraph(root) {
   const graph = new Map();
   const tokenIndex = new Map();
@@ -358,7 +446,72 @@ export function runSemanticValidation(document, options = {}) {
       validateReference(node.$token, `${path}/$token`);
     }
     if (isObject(node.$deprecated) && '$replacement' in node.$deprecated) {
-      validateReference(node.$deprecated.$replacement, `${path}/$deprecated/$replacement`);
+      const replacementPath = `${path}/$deprecated/$replacement`;
+      const replacement = node.$deprecated.$replacement;
+      validateReference(replacement, replacementPath);
+
+      if (
+        typeof node.$type === 'string' &&
+        typeof replacement === 'string' &&
+        replacement.startsWith('#')
+      ) {
+        const replacementType = resolveTokenType(document, replacement, errors, replacementPath);
+        if (!replacementType) {
+          errors.push(
+            createSemanticIssue(
+              replacementPath,
+              `deprecated replacement ${replacement} must resolve to a token declaring $type ${node.$type}`,
+              'E_DEPRECATED_REPLACEMENT_TYPE'
+            )
+          );
+        } else if (replacementType !== node.$type) {
+          errors.push(
+            createSemanticIssue(
+              replacementPath,
+              `deprecated replacement ${replacement} has type ${replacementType}, expected ${node.$type}`,
+              'E_DEPRECATED_REPLACEMENT_TYPE'
+            )
+          );
+        }
+      }
+    }
+
+    if (path.startsWith('/$overrides/') && isObject(node) && typeof node.$token === 'string') {
+      const tokenPath = `${path}/$token`;
+      const overrideTargetType = resolveTokenType(document, node.$token, errors, tokenPath);
+      if (!overrideTargetType) {
+        errors.push(
+          createSemanticIssue(
+            tokenPath,
+            `override target ${node.$token} must resolve to a token declaring $type`,
+            'E_OVERRIDE_TARGET_TYPE'
+          )
+        );
+      } else {
+        if (typeof node.$ref === 'string') {
+          const refPath = `${path}/$ref`;
+          const overrideRefType = resolveTokenType(document, node.$ref, errors, refPath);
+          if (overrideRefType && overrideRefType !== overrideTargetType) {
+            errors.push(
+              createSemanticIssue(
+                refPath,
+                `override reference ${node.$ref} has type ${overrideRefType}, expected ${overrideTargetType}`,
+                'E_OVERRIDE_TYPE_MISMATCH'
+              )
+            );
+          }
+        }
+
+        if (Object.prototype.hasOwnProperty.call(node, '$fallback')) {
+          validateOverrideFallbackTypes(
+            document,
+            node.$fallback,
+            overrideTargetType,
+            errors,
+            `${path}/$fallback`
+          );
+        }
+      }
     }
 
     for (const [key, value] of Object.entries(node)) {

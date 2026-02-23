@@ -32,6 +32,50 @@ const unresolvedRemote = {
     $ref: 'https://example.com/remote.tokens.json#/custom/token'
   }
 };
+const deprecatedReplacementTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] },
+      $deprecated: { $replacement: '#/dimension/space' }
+    }
+  },
+  dimension: {
+    space: {
+      $type: 'dimension',
+      $value: { dimensionType: 'length', value: 4, unit: 'px' }
+    }
+  }
+};
+const overrideReferenceTypeMismatch = {
+  $version: '1.0.0',
+  button: {
+    bg: {
+      $type: 'color',
+      $ref: '#/color/base'
+    }
+  },
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  dimension: {
+    space: {
+      $type: 'dimension',
+      $value: { dimensionType: 'length', value: 4, unit: 'px' }
+    }
+  },
+  $overrides: [
+    {
+      $token: '#/button/bg',
+      $when: { platform: 'web' },
+      $ref: '#/dimension/space'
+    }
+  ]
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -112,12 +156,46 @@ export default function assertValidatorDefaults() {
     }
   }
 
+  validate(minimalExample);
+  const minimalWarnings = validate.warnings ?? [];
+  if (minimalWarnings.some((warning) => warning.keyword === 'dtifSemantic')) {
+    errors.push({
+      code: 'E_VALIDATOR_REGISTERED_TYPES_WARN',
+      path: '',
+      message: `validator should not warn about registered token types: ${JSON.stringify(
+        minimalWarnings,
+        null,
+        2
+      )}`
+    });
+  }
+
   const unresolvedRemoteValid = validate(unresolvedRemote);
   if (unresolvedRemoteValid) {
     errors.push({
       code: 'E_VALIDATOR_REMOTE_RESOLUTION_MISSING',
       path: '',
       message: 'validator should reject unresolved remote references even when semantic checks run'
+    });
+  }
+
+  const deprecatedReplacementValid = validate(deprecatedReplacementTypeMismatch);
+  if (deprecatedReplacementValid) {
+    errors.push({
+      code: 'E_VALIDATOR_DEPRECATED_REPLACEMENT_TYPE',
+      path: '',
+      message:
+        'validator should reject $deprecated.$replacement values that resolve to a different $type'
+    });
+  }
+
+  const overrideTypeMismatchValid = validate(overrideReferenceTypeMismatch);
+  if (overrideTypeMismatchValid) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_TYPE_MISMATCH',
+      path: '',
+      message:
+        'validator should reject overrides whose $ref resolves to a different $type than $token'
     });
   }
 
