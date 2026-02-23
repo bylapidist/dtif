@@ -1,4 +1,4 @@
-import type { SourcePosition, SourceSpan } from '../types.js';
+import type { SourcePosition, SourceSpan } from '../domain/primitives.js';
 
 export const ZERO_SOURCE_POSITION: SourcePosition = Object.freeze({
   offset: 0,

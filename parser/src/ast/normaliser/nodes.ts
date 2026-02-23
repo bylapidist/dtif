@@ -1,6 +1,6 @@
 import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import { appendJsonPointer } from '../../utils/json-pointer.js';
-import type { JsonPointer } from '../../types.js';
+import type { JsonPointer } from '../../domain/primitives.js';
 import type {
   AliasNode,
   CollectionNode,
