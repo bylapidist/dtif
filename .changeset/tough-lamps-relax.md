@@ -1,7 +1,7 @@
 ---
-"@lapidist/dtif-schema": patch
-"@lapidist/dtif-validator": patch
-"@lapidist/dtif-parser": patch
+'@lapidist/dtif-schema': patch
+'@lapidist/dtif-validator': patch
+'@lapidist/dtif-parser': patch
 ---
 
 Enforce additional DTIF spec constraints across schema and validator.
