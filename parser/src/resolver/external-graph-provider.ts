@@ -109,7 +109,7 @@ export class DefaultExternalGraphProvider implements ExternalGraphProvider {
       } catch (error) {
         const code =
           error instanceof DocumentLoaderError
-            ? DiagnosticCodes.loader.TOO_LARGE
+            ? resolveLoaderDiagnosticCode(error)
             : DiagnosticCodes.resolver.EXTERNAL_REFERENCE;
         diagnostics.push({
           code,
@@ -127,6 +127,19 @@ export class DefaultExternalGraphProvider implements ExternalGraphProvider {
       graphs,
       diagnostics
     } satisfies ExternalGraphProviderResult;
+  }
+}
+
+function resolveLoaderDiagnosticCode(
+  error: DocumentLoaderError
+): (typeof DiagnosticCodes.loader)[keyof typeof DiagnosticCodes.loader] {
+  switch (error.reason) {
+    case 'MAX_BYTES_EXCEEDED':
+      return DiagnosticCodes.loader.TOO_LARGE;
+    case 'HTTP_HOST_NOT_ALLOWED':
+      return DiagnosticCodes.loader.HOST_NOT_ALLOWED;
+    default:
+      return DiagnosticCodes.loader.FAILED;
   }
 }
 

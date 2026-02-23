@@ -561,11 +561,22 @@ function createFailureDiagnostics(code: DiagnosticCode, message: string): Pipeli
 
 function createLoaderDiagnostics(error: unknown): PipelineDiagnostics {
   if (error instanceof DocumentLoaderError) {
-    return createFailureDiagnostics(DiagnosticCodes.loader.TOO_LARGE, error.message);
+    return createFailureDiagnostics(resolveLoaderDiagnosticCode(error), error.message);
   }
 
   const message = error instanceof Error ? error.message : 'Failed to load DTIF document.';
   return createFailureDiagnostics(DiagnosticCodes.loader.FAILED, message);
+}
+
+function resolveLoaderDiagnosticCode(error: DocumentLoaderError): DiagnosticCode {
+  switch (error.reason) {
+    case 'MAX_BYTES_EXCEEDED':
+      return DiagnosticCodes.loader.TOO_LARGE;
+    case 'HTTP_HOST_NOT_ALLOWED':
+      return DiagnosticCodes.loader.HOST_NOT_ALLOWED;
+    default:
+      return DiagnosticCodes.loader.FAILED;
+  }
 }
 
 function normalizeDecodedDocument(

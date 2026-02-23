@@ -80,7 +80,8 @@ export const DiagnosticCodes = {
   },
   loader: {
     FAILED: formatDiagnosticCode('Loader', 0, 0),
-    TOO_LARGE: formatDiagnosticCode('Loader', 0, 1)
+    TOO_LARGE: formatDiagnosticCode('Loader', 0, 1),
+    HOST_NOT_ALLOWED: formatDiagnosticCode('Loader', 0, 2)
   },
   decoder: {
     FAILED: formatDiagnosticCode('Decoder', 0, 0)

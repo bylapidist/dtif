@@ -179,6 +179,23 @@ void test('parseDocument surfaces loader diagnostics when documents exceed the b
   assert.equal(hasErrors(result.diagnostics), true);
 });
 
+void test('parseDocument surfaces host allow-list diagnostics for disallowed HTTP(S) hosts', async () => {
+  const loader = new DefaultDocumentLoader({
+    allowHttp: true,
+    httpAllowedHosts: ['allowed.example']
+  });
+  const session = new ParseSession({ loader });
+
+  const result = await session.parseDocument('https://blocked.example/tokens.json');
+  const hostDiagnostic = findDiagnostic(
+    result.diagnostics,
+    DiagnosticCodes.loader.HOST_NOT_ALLOWED
+  );
+
+  assert.ok(hostDiagnostic, 'expected host allow-list diagnostic for disallowed hosts');
+  assert.equal(hasErrors(result.diagnostics), true);
+});
+
 void test('ParseSession refreshes the cache when document bytes change', async () => {
   const uri = new URL('memory://cache/refresh');
   const staleDocument = await decodeDocument(
