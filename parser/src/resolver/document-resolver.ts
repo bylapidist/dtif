@@ -11,16 +11,9 @@ import type {
   GraphTokenNode,
   GraphReferenceField
 } from '../graph/nodes.js';
-import {
-  EMPTY_DIAGNOSTICS,
-  EMPTY_OVERRIDES,
-  EMPTY_WARNINGS,
-  EMPTY_TRANSFORM_EVALUATIONS
-} from './internal/constants.js';
+import { EMPTY_DIAGNOSTICS, EMPTY_OVERRIDES, EMPTY_WARNINGS } from './internal/constants.js';
 import {
   finalizeResolution,
-  freezeResultDiagnostics,
-  createTransformFailureDiagnostic,
   createTraceStep,
   createFieldSource,
   createTargetSource,
@@ -36,12 +29,10 @@ import type {
   AppliedOverride,
   ResolutionTraceStep
 } from './types.js';
-import type {
-  ResolvedTokenTransformEntry,
-  ResolvedTokenTransformEvaluation
-} from '../plugins/types.js';
+import type { ResolvedTokenTransformEntry } from '../plugins/types.js';
 import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
 import { isOverrideValueCompatible } from './internal/type-compatibility.js';
+import { runTokenTransforms } from './internal/transform-runner.js';
 import {
   indexOverridesByGraph,
   normalizeExternalGraphs,
@@ -116,7 +107,7 @@ export class DocumentResolver {
         warnings: state.warnings,
         trace: state.trace
       });
-      const transforms = this.applyTransforms(token, diagnostics);
+      const transforms = runTokenTransforms(token, this.transforms, this.document, diagnostics);
 
       return finalizeResolution(token, diagnostics, transforms);
     } catch (error) {
@@ -853,45 +844,6 @@ export class DocumentResolver {
     }
 
     return this.resolveInternalInGraph(target.uri, target.pointer, diagnostics, depth);
-  }
-
-  private applyTransforms(
-    token: ResolvedTokenImpl,
-    diagnostics: DiagnosticCollector
-  ): readonly ResolvedTokenTransformEvaluation[] {
-    if (this.transforms.length === 0 || !this.document) {
-      return EMPTY_TRANSFORM_EVALUATIONS;
-    }
-
-    const evaluations: ResolvedTokenTransformEvaluation[] = [];
-
-    for (const entry of this.transforms) {
-      try {
-        const result = entry.transform(token, { document: this.document });
-        const transformDiagnostics = freezeResultDiagnostics(result?.diagnostics);
-        if (transformDiagnostics.length > 0) {
-          for (const diagnostic of transformDiagnostics) {
-            diagnostics.add(diagnostic);
-          }
-        }
-        evaluations.push(
-          Object.freeze({
-            plugin: entry.plugin,
-            pointer: token.pointer,
-            data: result?.data,
-            diagnostics: transformDiagnostics
-          })
-        );
-      } catch (error) {
-        diagnostics.add(createTransformFailureDiagnostic(entry.plugin, token.pointer, error));
-      }
-    }
-
-    if (evaluations.length === 0) {
-      return EMPTY_TRANSFORM_EVALUATIONS;
-    }
-
-    return Object.freeze(evaluations);
   }
 }
 
