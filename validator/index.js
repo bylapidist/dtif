@@ -32,6 +32,20 @@ function ensureSchema(ajv, schemaId = DEFAULT_SCHEMA_ID) {
   return validate ?? ajv.compile(schema);
 }
 
+function createTokenValueCompatibilityChecker(ajv, schemaId = DEFAULT_SCHEMA_ID) {
+  const tokenSchemaRef = `${schemaId}#/$defs/token`;
+  const existing = ajv.getSchema(tokenSchemaRef);
+  const tokenValidate = existing ?? ajv.compile({ $ref: tokenSchemaRef });
+
+  return (type, value) => {
+    if (typeof type !== 'string' || type.length === 0) {
+      return false;
+    }
+    const result = tokenValidate({ $type: type, $value: value });
+    return typeof result === 'boolean' ? result : false;
+  };
+}
+
 export function createDtifValidator(options = {}) {
   const {
     ajv: existingAjv,
@@ -55,12 +69,17 @@ export function createDtifValidator(options = {}) {
   }
 
   const schemaValidate = ensureSchema(ajv, schemaId);
+  const isValueCompatible = createTokenValueCompatibilityChecker(ajv, schemaId);
   const validate = (document) => {
     const schemaValid = schemaValidate(document);
     const schemaErrors = schemaValid ? [] : (schemaValidate.errors ?? []);
     const semantic =
       schemaValid && enforceSemanticRules
-        ? runSemanticValidation(document, { allowRemoteReferences, knownTypes: KNOWN_TYPES })
+        ? runSemanticValidation(document, {
+            allowRemoteReferences,
+            knownTypes: KNOWN_TYPES,
+            isValueCompatible
+          })
         : { errors: [], warnings: [] };
 
     const mergedErrors = [...schemaErrors, ...semantic.errors];

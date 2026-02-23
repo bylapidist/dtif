@@ -104,6 +104,112 @@ const typographyReservedMember = {
     }
   }
 };
+const overrideWithRefAndFallback = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    },
+    dark: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [1, 1, 1, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: '#/color/base',
+      $when: { platform: 'web' },
+      $ref: '#/color/dark',
+      $fallback: { $ref: '#/color/dark' }
+    }
+  ]
+};
+const overrideWithValueAndFallback = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: '#/color/base',
+      $when: { platform: 'web' },
+      $value: { colorSpace: 'srgb', components: [1, 1, 1, 1] },
+      $fallback: { $value: { colorSpace: 'srgb', components: [1, 1, 1, 1] } }
+    }
+  ]
+};
+const overrideInlineValueTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: '#/color/base',
+      $when: { platform: 'web' },
+      $value: { dimensionType: 'length', value: 8, unit: 'px' }
+    }
+  ]
+};
+const overrideFallbackValueTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: '#/color/base',
+      $when: { platform: 'web' },
+      $fallback: [{ $value: { dimensionType: 'length', value: 8, unit: 'px' } }]
+    }
+  ]
+};
+const functionParameterTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  spacing: {
+    calc: {
+      $type: 'dimension',
+      $value: {
+        fn: 'calc',
+        parameters: [{ $ref: '#/color/base' }]
+      }
+    }
+  }
+};
+const typographyFontSizeRefTypeMismatch = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  typography: {
+    body: {
+      $type: 'typography',
+      $value: {
+        fontFamily: 'Inter',
+        fontSize: { $ref: '#/color/base' }
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -243,6 +349,58 @@ export default function assertValidatorDefaults() {
       path: '',
       message:
         'validator should reject unrecognised reserved members beginning with $ in typography values'
+    });
+  }
+
+  if (validate(overrideWithRefAndFallback)) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_REF_FALLBACK_COMBINATION',
+      path: '',
+      message: 'validator should reject overrides that combine $ref and $fallback'
+    });
+  }
+
+  if (validate(overrideWithValueAndFallback)) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_VALUE_FALLBACK_COMBINATION',
+      path: '',
+      message: 'validator should reject overrides that combine $value and $fallback'
+    });
+  }
+
+  if (validate(overrideInlineValueTypeMismatch)) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_INLINE_VALUE_TYPE_MISMATCH',
+      path: '',
+      message:
+        'validator should reject override inline values that do not match the target token type'
+    });
+  }
+
+  if (validate(overrideFallbackValueTypeMismatch)) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_FALLBACK_VALUE_TYPE_MISMATCH',
+      path: '',
+      message:
+        'validator should reject override fallback inline values that do not match the target token type'
+    });
+  }
+
+  if (validate(functionParameterTypeMismatch)) {
+    errors.push({
+      code: 'E_VALIDATOR_FUNCTION_PARAMETER_TYPE_MISMATCH',
+      path: '',
+      message:
+        'validator should reject function parameter refs that resolve to a token with a different $type'
+    });
+  }
+
+  if (validate(typographyFontSizeRefTypeMismatch)) {
+    errors.push({
+      code: 'E_VALIDATOR_TYPOGRAPHY_REF_TYPE_MISMATCH',
+      path: '',
+      message:
+        'validator should reject typography fontSize refs that do not resolve to dimension tokens'
     });
   }
 

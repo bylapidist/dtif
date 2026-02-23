@@ -164,10 +164,24 @@ function resolveTokenType(root, pointer, errors, refPath, chain = []) {
   return isObject(target) && typeof target.$type === 'string' ? target.$type : null;
 }
 
-function validateOverrideFallbackTypes(root, fallback, expectedType, errors, refPath) {
+function validateOverrideFallbackTypes(
+  root,
+  fallback,
+  expectedType,
+  errors,
+  refPath,
+  isValueCompatible
+) {
   if (Array.isArray(fallback)) {
     fallback.forEach((entry, index) => {
-      validateOverrideFallbackTypes(root, entry, expectedType, errors, `${refPath}/${index}`);
+      validateOverrideFallbackTypes(
+        root,
+        entry,
+        expectedType,
+        errors,
+        `${refPath}/${index}`,
+        isValueCompatible
+      );
     });
     return;
   }
@@ -195,8 +209,217 @@ function validateOverrideFallbackTypes(root, fallback, expectedType, errors, ref
       fallback.$fallback,
       expectedType,
       errors,
-      `${refPath}/$fallback`
+      `${refPath}/$fallback`,
+      isValueCompatible
     );
+  }
+
+  if (
+    typeof isValueCompatible === 'function' &&
+    Object.prototype.hasOwnProperty.call(fallback, '$value') &&
+    !isValueCompatible(expectedType, fallback.$value)
+  ) {
+    errors.push(
+      createSemanticIssue(
+        `${refPath}/$value`,
+        `override fallback value is incompatible with target type ${expectedType}`,
+        'E_OVERRIDE_TYPE_MISMATCH'
+      )
+    );
+  }
+}
+
+function isLengthDimensionToken(root, pointer, errors, refPath) {
+  const target = resolvePointer(root, pointer, errors, refPath);
+  if (!isObject(target)) {
+    return false;
+  }
+  if (typeof target.$type !== 'string' || target.$type !== 'dimension') {
+    return false;
+  }
+  if (!isObject(target.$value)) {
+    return false;
+  }
+  return target.$value.dimensionType === 'length';
+}
+
+function validateFunctionParameterTypeCompatibility(root, value, expectedType, errors, path) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateFunctionParameterTypeCompatibility(
+        root,
+        entry,
+        expectedType,
+        errors,
+        `${path}/${String(index)}`
+      );
+    });
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (typeof value.$ref === 'string') {
+    const refPath = `${path}/$ref`;
+    const referenceType = resolveTokenType(root, value.$ref, errors, refPath);
+    if (!referenceType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `function parameter ref ${value.$ref} must resolve to a token declaring $type ${expectedType}`,
+          'E_FUNCTION_REF_TYPE_MISMATCH'
+        )
+      );
+    } else if (referenceType !== expectedType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `function parameter ref ${value.$ref} has type ${referenceType}, expected ${expectedType}`,
+          'E_FUNCTION_REF_TYPE_MISMATCH'
+        )
+      );
+    }
+  }
+
+  if (typeof value.fn === 'string' && Array.isArray(value.parameters)) {
+    value.parameters.forEach((entry, index) => {
+      validateFunctionParameterTypeCompatibility(
+        root,
+        entry,
+        expectedType,
+        errors,
+        `${path}/parameters/${String(index)}`
+      );
+    });
+    return;
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    if (key === '$ref') {
+      continue;
+    }
+    validateFunctionParameterTypeCompatibility(
+      root,
+      nested,
+      expectedType,
+      errors,
+      `${path}/${key}`
+    );
+  }
+}
+
+function validateTypographyReferenceTypes(root, value, errors, path) {
+  if (!isObject(value)) {
+    return;
+  }
+
+  const colorField = value.color;
+  if (
+    isObject(colorField) &&
+    typeof colorField.$ref === 'string' &&
+    colorField.$ref.startsWith('#')
+  ) {
+    const refPath = `${path}/color/$ref`;
+    const referenceType = resolveTokenType(root, colorField.$ref, errors, refPath);
+    if (!referenceType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography color ref ${colorField.$ref} must resolve to a token declaring $type color`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+    } else if (referenceType !== 'color') {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography color ref ${colorField.$ref} has type ${referenceType}, expected color`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+    }
+  }
+
+  const fontFamilyField = value.fontFamily;
+  if (
+    isObject(fontFamilyField) &&
+    typeof fontFamilyField.$ref === 'string' &&
+    fontFamilyField.$ref.startsWith('#')
+  ) {
+    const refPath = `${path}/fontFamily/$ref`;
+    const referenceType = resolveTokenType(root, fontFamilyField.$ref, errors, refPath);
+    if (!referenceType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography fontFamily ref ${fontFamilyField.$ref} must resolve to a token declaring $type font`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+    } else if (referenceType !== 'font') {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography fontFamily ref ${fontFamilyField.$ref} has type ${referenceType}, expected font`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+    }
+  }
+
+  const lengthDimensionFields = [
+    'fontSize',
+    'lineHeight',
+    'letterSpacing',
+    'wordSpacing',
+    'underlineThickness',
+    'underlineOffset',
+    'overlineThickness',
+    'overlineOffset'
+  ];
+
+  for (const fieldName of lengthDimensionFields) {
+    const fieldValue = value[fieldName];
+    if (
+      !isObject(fieldValue) ||
+      typeof fieldValue.$ref !== 'string' ||
+      !fieldValue.$ref.startsWith('#')
+    ) {
+      continue;
+    }
+    const refPath = `${path}/${fieldName}/$ref`;
+    const referenceType = resolveTokenType(root, fieldValue.$ref, errors, refPath);
+    if (!referenceType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography ${fieldName} ref ${fieldValue.$ref} must resolve to a token declaring $type dimension`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+      continue;
+    }
+    if (referenceType !== 'dimension') {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography ${fieldName} ref ${fieldValue.$ref} has type ${referenceType}, expected dimension`,
+          'E_TYPOGRAPHY_REF_TYPE_MISMATCH'
+        )
+      );
+      continue;
+    }
+    if (!isLengthDimensionToken(root, fieldValue.$ref, errors, refPath)) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `typography ${fieldName} ref ${fieldValue.$ref} must resolve to a dimension token with $value.dimensionType "length"`,
+          'E_TYPOGRAPHY_REF_DIMENSION_KIND'
+        )
+      );
+    }
   }
 }
 
@@ -319,7 +542,11 @@ function detectOverrideCycles(root, errors) {
 }
 
 export function runSemanticValidation(document, options = {}) {
-  const { allowRemoteReferences = false, knownTypes = new Set() } = options;
+  const {
+    allowRemoteReferences = false,
+    knownTypes = new Set(),
+    isValueCompatible = undefined
+  } = options;
   const errors = [];
   const warnings = [];
 
@@ -499,6 +726,26 @@ export function runSemanticValidation(document, options = {}) {
     if ('$token' in node) {
       validateReference(node.$token, `${path}/$token`);
     }
+
+    if (
+      typeof node.$type === 'string' &&
+      isObject(node.$value) &&
+      typeof node.$value.fn === 'string' &&
+      Array.isArray(node.$value.parameters)
+    ) {
+      validateFunctionParameterTypeCompatibility(
+        document,
+        node.$value,
+        node.$type,
+        errors,
+        `${path}/$value`
+      );
+    }
+
+    if (node.$type === 'typography' && isObject(node.$value)) {
+      validateTypographyReferenceTypes(document, node.$value, errors, `${path}/$value`);
+    }
+
     if (isObject(node.$deprecated) && '$replacement' in node.$deprecated) {
       const replacementPath = `${path}/$deprecated/$replacement`;
       const replacement = node.$deprecated.$replacement;
@@ -561,13 +808,28 @@ export function runSemanticValidation(document, options = {}) {
           }
         }
 
+        if (
+          typeof isValueCompatible === 'function' &&
+          Object.prototype.hasOwnProperty.call(node, '$value') &&
+          !isValueCompatible(overrideTargetType, node.$value)
+        ) {
+          errors.push(
+            createSemanticIssue(
+              `${path}/$value`,
+              `override value is incompatible with target type ${overrideTargetType}`,
+              'E_OVERRIDE_TYPE_MISMATCH'
+            )
+          );
+        }
+
         if (Object.prototype.hasOwnProperty.call(node, '$fallback')) {
           validateOverrideFallbackTypes(
             document,
             node.$fallback,
             overrideTargetType,
             errors,
-            `${path}/$fallback`
+            `${path}/$fallback`,
+            isValueCompatible
           );
         }
       }
