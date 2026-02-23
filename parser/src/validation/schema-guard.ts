@@ -59,7 +59,11 @@ export class SchemaGuard {
     }
 
     const errors = valid ? [] : (this.validator.validate.errors ?? []);
-    const diagnostics = errors.map((error) => this.createDiagnostic(error, document));
+    const warnings = this.validator.validate.warnings ?? [];
+    const diagnostics = [
+      ...errors.map((error) => this.createDiagnostic(error, document)),
+      ...warnings.map((warning) => this.createDiagnostic(warning, document))
+    ];
 
     const frozenDiagnostics = diagnostics.map((diagnostic) => Object.freeze(diagnostic));
 
@@ -74,11 +78,12 @@ export class SchemaGuard {
     const span =
       this.resolveSpan(pointer, document) ?? this.resolveSpan(JSON_POINTER_ROOT, document);
     const related = buildRelatedInformation(error);
+    const severity = resolveDiagnosticSeverity(error);
 
     return {
       code: DiagnosticCodes.schemaGuard.INVALID_DOCUMENT,
       message: formatErrorMessage(error),
-      severity: 'error',
+      severity,
       pointer,
       span,
       related: related.length > 0 ? related : undefined
@@ -104,6 +109,19 @@ function formatErrorMessage(error: ErrorObject): string {
   }
 
   return 'Schema violation: Document does not conform to the DTIF schema.';
+}
+
+function resolveDiagnosticSeverity(error: ErrorObject): DiagnosticEvent['severity'] {
+  if (error.keyword !== 'dtifSemantic') {
+    return 'error';
+  }
+
+  if (!isJsonObject(error.params)) {
+    return 'error';
+  }
+
+  const code = error.params.code;
+  return typeof code === 'string' && code.startsWith('W_') ? 'warning' : 'error';
 }
 
 function ensureSentence(value: string): string {

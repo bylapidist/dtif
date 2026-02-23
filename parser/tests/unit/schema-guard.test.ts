@@ -126,6 +126,33 @@ void test('SchemaGuard reports unresolved $ref pointers as validation errors', a
   assert.ok(/unresolved pointer/i.test(diagnostic.message));
 });
 
+void test('SchemaGuard surfaces semantic warnings for unknown token types', async () => {
+  const json = JSON.stringify(
+    {
+      token: {
+        custom: {
+          $type: 'com.example.spacing',
+          $value: 4
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const raw = await decodeJsonDocument(json);
+  const guard = new SchemaGuard();
+
+  const result = guard.validate(raw);
+
+  assert.equal(result.valid, true);
+  const diagnostic = result.diagnostics.find((entry) => entry.pointer === '#/token/custom/$type');
+  assert.ok(diagnostic, 'expected unknown type warning diagnostic');
+  assert.equal(diagnostic.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
+  assert.equal(diagnostic.severity, 'warning');
+  assert.ok(/unknown \$type/i.test(diagnostic.message));
+});
+
 void test('SchemaGuard configures Ajv with strict mode by default', () => {
   assert.equal(DEFAULT_VALIDATOR_OPTIONS.strict, true);
   assert.equal(DEFAULT_VALIDATOR_OPTIONS.$data, true);
