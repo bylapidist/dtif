@@ -1,5 +1,47 @@
 # @lapidist/dtif-schema changelog
 
+## 2.0.0
+
+### Patch Changes
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Clarify the architecture model token definition to match the schema: tokens declare exactly one of `$value` or `$ref`, while collections declare neither.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Allow reverse-DNS extension identifiers with hyphenated labels (for example `com.example-ui.tokens`) so schema validation matches DTIF extension namespace rules.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Align override and semantic validation behavior with the DTIF specification.
+  - Schema now permits override entries that omit `$ref`/`$value`/`$fallback` or combine `$ref` with `$value`, so consumers can ignore those entries instead of rejecting entire documents.
+  - Parser normalisation now ignores invalid override and fallback entries with warnings rather than parse-stopping errors.
+  - Semantic validation no longer applies DTIF reference/ordering checks inside arbitrary `$extensions` payloads and ignored unknown typography properties.
+  - Added conformance fixtures and parser regression tests covering ignored-invalid overrides and literal `$ref` members in extension/unknown-property payloads.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Reject absolute-path and schemeless network-path `$ref` values so only local pointers, relative document paths, and explicit HTTP(S) references are accepted.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Disallow unrecognised reserved `$*` members inside `typography.$value` while preserving unknown non-reserved properties for forward compatibility.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Clarify conformance wording so non-object `$extensions` members invalidate tokens, matching schema validation behavior.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Block directory traversal attempts that use backslash separators or `%5C` encoded separators in `$ref` values.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Reject unrecognised reserved (`$*`) members in component values, cursor object payloads, cursor parameters, and function-parameter object literals to align with conformance and extensibility rules.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Fix the repository README release-history section by removing the non-existent root CHANGELOG link and listing changelogs for all published workspaces.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Tighten motion conformance by requiring rotation axes to include `x`, `y`, and `z` with at least one non-zero component, and reject motion parameters that reference non-`dimension` tokens.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce `$overrides` resolution-source exclusivity so each override uses exactly one of `$ref`, `$value`, or `$fallback`, matching the DTIF theming specification.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Clarify metadata conformance text so invalid metadata members make the containing token invalid, matching current schema enforcement.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Adjust change-management wording so key-order requirements are documented as interoperability guidance enforced by lint/tooling rather than core schema validation.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Restore normative ordering requirements in the change-management specification by reverting accidental downgrades from MUST to SHOULD.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce additional DTIF spec constraints across schema and validator.
+  - restrict `dimension` length/angle/resolution units to spec-defined grammars
+  - require `$deprecated.$replacement` to be a local JSON Pointer
+  - enforce known CSS color-space component cardinality for `color` tokens
+  - add regression fixtures for these invalid states and align parser schema-guard diagnostics tests
+
 ## 1.0.6
 
 ## 1.0.5
