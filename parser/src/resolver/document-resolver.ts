@@ -17,8 +17,7 @@ import {
   createTraceStep,
   createFieldSource,
   createTargetSource,
-  mergeDiagnostics,
-  conditionMatches
+  mergeDiagnostics
 } from './internal/helpers.js';
 import { normalizeContext, normalizeMaxDepth, normalizeTransforms } from './internal/context.js';
 import { ResolvedTokenImpl } from './internal/resolved-token.js';
@@ -34,6 +33,7 @@ import { isOverrideValueCompatible } from './internal/type-compatibility.js';
 import { runTokenTransforms } from './internal/transform-runner.js';
 import { createResolutionKey } from './internal/resolution-key.js';
 import type { OverrideEvaluation, OverrideState, ResolutionState } from './internal/state.js';
+import { doesOverrideApply } from './internal/override-evaluator.js';
 import {
   indexOverridesByGraph,
   normalizeExternalGraphs,
@@ -430,7 +430,7 @@ export class DocumentResolver {
     base: ResolutionState,
     depth: number
   ): OverrideEvaluation {
-    if (!this.doesOverrideApply(override)) {
+    if (!doesOverrideApply(override, this.context)) {
       return { matched: false, diagnostics: EMPTY_DIAGNOSTICS };
     }
 
@@ -487,25 +487,6 @@ export class DocumentResolver {
       state,
       diagnostics: localDiagnostics.toArray()
     };
-  }
-
-  private doesOverrideApply(override: GraphOverrideNode): boolean {
-    const conditions = override.when.value;
-    let recognized = false;
-
-    for (const [key, expected] of Object.entries(conditions)) {
-      if (!this.context.has(key)) {
-        continue;
-      }
-
-      recognized = true;
-      const actual = this.context.get(key);
-      if (!conditionMatches(expected, actual)) {
-        return false;
-      }
-    }
-
-    return recognized;
   }
 
   private resolveOverrideRef(

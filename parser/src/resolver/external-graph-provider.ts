@@ -68,6 +68,12 @@ export class DefaultExternalGraphProvider implements ExternalGraphProvider {
       const protocol = target.uri.protocol.toLowerCase();
       const networkReference = protocol === 'http:' || protocol === 'https:';
       if (networkReference && !this.#allowNetworkReferences) {
+        diagnostics.push({
+          code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+          message: `Skipped network reference "${href}" because network references are disabled.`,
+          severity: 'warning',
+          pointer: target.pointer
+        });
         continue;
       }
 
