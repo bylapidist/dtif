@@ -676,15 +676,40 @@ function validateGradientStopOrder(value, errors, path) {
   }
 }
 
-function validateMotionParameterType(root, value, errors, path, label) {
-  if (!isObject(value)) {
+function describeExpectedDimensionTypes(expectedDimensionTypes) {
+  const values = [...expectedDimensionTypes];
+  if (values.length === 1) {
+    return values[0];
+  }
+  if (values.length === 2) {
+    return `${values[0]} or ${values[1]}`;
+  }
+  return values.join(', ');
+}
+
+function validateMotionParameterType(root, value, errors, path, label, expectedDimensionTypes) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateMotionParameterType(
+        root,
+        entry,
+        errors,
+        `${path}/${String(index)}`,
+        label,
+        expectedDimensionTypes
+      );
+    });
+    return;
+  }
+
+  if (!isObject(value) || !(expectedDimensionTypes instanceof Set)) {
     return;
   }
 
   if (typeof value.$ref === 'string') {
     const refPath = `${path}/$ref`;
-    const referenceType = resolveTokenType(root, value.$ref, errors, refPath);
-    if (!referenceType) {
+    const target = resolvePointer(root, value.$ref, errors, refPath);
+    if (!isObject(target)) {
       errors.push(
         createSemanticIssue(
           refPath,
@@ -692,19 +717,54 @@ function validateMotionParameterType(root, value, errors, path, label) {
           'E_MOTION_PARAMETER_TYPE'
         )
       );
-    } else if (referenceType !== 'dimension') {
+    } else if (target.$type !== 'dimension') {
       errors.push(
         createSemanticIssue(
           refPath,
-          `${label} ref ${value.$ref} has type ${referenceType}, expected dimension`,
+          `${label} ref ${value.$ref} has type ${target.$type}, expected dimension`,
           'E_MOTION_PARAMETER_TYPE'
+        )
+      );
+    } else if (
+      !isObject(target.$value) ||
+      typeof target.$value.dimensionType !== 'string' ||
+      !expectedDimensionTypes.has(target.$value.dimensionType)
+    ) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `${label} ref ${value.$ref} must resolve to a dimension token with dimensionType ${describeExpectedDimensionTypes(expectedDimensionTypes)}`,
+          'E_MOTION_PARAMETER_DIMENSION_TYPE'
         )
       );
     }
   }
 
   if (typeof value.fn === 'string' && Array.isArray(value.parameters)) {
-    validateFunctionParameterTypeCompatibility(root, value, 'dimension', errors, path);
+    value.parameters.forEach((entry, index) => {
+      validateMotionParameterType(
+        root,
+        entry,
+        errors,
+        `${path}/parameters/${String(index)}`,
+        label,
+        expectedDimensionTypes
+      );
+    });
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    if (key === '$ref') {
+      continue;
+    }
+    validateMotionParameterType(
+      root,
+      nested,
+      errors,
+      `${path}/${key}`,
+      label,
+      expectedDimensionTypes
+    );
   }
 }
 
@@ -723,7 +783,8 @@ function validateMotionRotationAxis(root, value, errors, path) {
       value.parameters.angle,
       errors,
       `${path}/parameters/angle`,
-      'motion rotation angle'
+      'motion rotation angle',
+      new Set(['angle'])
     );
   }
 
@@ -767,7 +828,8 @@ function validateMotionPathSemantics(root, value, errors, path) {
           value.parameters[axis],
           errors,
           `${path}/parameters/${axis}`,
-          `motion translation ${axis}`
+          `motion translation ${axis}`,
+          new Set(['length'])
         );
       }
     }
@@ -821,7 +883,8 @@ function validateMotionPathSemantics(root, value, errors, path) {
               point.position[axis],
               errors,
               `${pointPath}/position/${axis}`,
-              `motion path position ${axis}`
+              `motion path position ${axis}`,
+              new Set(['length'])
             );
           }
         }

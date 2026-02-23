@@ -437,6 +437,43 @@ const motionRotationAxisMissingComponentsViolation = {
     }
   }
 };
+const motionRotationAngleTypeViolation = {
+  $version: '1.0.0',
+  sizing: {
+    base: {
+      $type: 'dimension',
+      $value: { dimensionType: 'length', value: 16, unit: 'px' }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { $ref: '#/sizing/base' },
+        axis: { x: 0, y: 1, z: 0 }
+      }
+    }
+  }
+};
+const motionTranslationDimensionTypeViolation = {
+  $version: '1.0.0',
+  angles: {
+    quarterTurn: {
+      $type: 'dimension',
+      $value: { dimensionType: 'angle', value: 90, unit: 'deg' }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate',
+      parameters: {
+        x: { $ref: '#/angles/quarterTurn' }
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -744,6 +781,22 @@ export default function assertValidatorDefaults() {
       code: 'E_VALIDATOR_MOTION_ROTATION_AXIS_COMPONENTS',
       path: '',
       message: 'validator should reject motion rotation axes missing x/y/z components'
+    });
+  }
+
+  if (validate(motionRotationAngleTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_ANGLE_DIMENSION_TYPE',
+      path: '',
+      message: 'validator should reject motion rotation angle refs that are not angle dimensions'
+    });
+  }
+
+  if (validate(motionTranslationDimensionTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_TRANSLATION_DIMENSION_TYPE',
+      path: '',
+      message: 'validator should reject motion translation refs that are not length dimensions'
     });
   }
 
