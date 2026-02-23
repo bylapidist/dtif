@@ -688,6 +688,20 @@ function describeExpectedDimensionTypes(expectedDimensionTypes) {
 }
 
 function validateMotionParameterType(root, value, errors, path, label, expectedDimensionTypes) {
+  if (typeof value === 'string' && expectedDimensionTypes instanceof Set) {
+    const category = extractStringUnitCategory(value);
+    if (category && !expectedDimensionTypes.has(category)) {
+      errors.push(
+        createSemanticIssue(
+          path,
+          `${label} value ${value} must use ${describeExpectedDimensionTypes(expectedDimensionTypes)} units`,
+          'E_MOTION_PARAMETER_UNIT_CATEGORY'
+        )
+      );
+    }
+    return;
+  }
+
   if (Array.isArray(value)) {
     value.forEach((entry, index) => {
       validateMotionParameterType(

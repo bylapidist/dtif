@@ -474,6 +474,30 @@ const motionTranslationDimensionTypeViolation = {
     }
   }
 };
+const motionRotationAngleUnitCategoryViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate',
+      parameters: {
+        angle: { fn: 'calc', parameters: ['1px'] }
+      }
+    }
+  }
+};
+const motionTranslationUnitCategoryViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate',
+      parameters: {
+        x: { fn: 'calc', parameters: ['1deg'] }
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -797,6 +821,23 @@ export default function assertValidatorDefaults() {
       code: 'E_VALIDATOR_MOTION_TRANSLATION_DIMENSION_TYPE',
       path: '',
       message: 'validator should reject motion translation refs that are not length dimensions'
+    });
+  }
+
+  if (validate(motionRotationAngleUnitCategoryViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_ANGLE_UNIT_CATEGORY',
+      path: '',
+      message: 'validator should reject motion rotation angles with non-angle units in functions'
+    });
+  }
+
+  if (validate(motionTranslationUnitCategoryViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_TRANSLATION_UNIT_CATEGORY',
+      path: '',
+      message:
+        'validator should reject motion translation coordinates with non-length units in functions'
     });
   }
 
