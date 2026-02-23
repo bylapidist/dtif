@@ -1,6 +1,6 @@
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
-import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/parse-tokens.js';
+import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/contracts.js';
 import { formatDiagnostic } from '../../diagnostics/format.js';
 import type { FormatDiagnosticOptions } from '../../diagnostics/format.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
