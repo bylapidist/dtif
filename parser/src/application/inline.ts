@@ -7,6 +7,7 @@ import { createSyntheticSourceMap } from '../io/decoder/synthetic-source-map.js'
 import { normalizeInlineYamlText } from '../io/decoder/inline-yaml.js';
 import { parseYaml, toJavaScript } from '../io/decoder/yaml.js';
 import { buildSourceMap } from '../io/decoder/source-map.js';
+import { isDesignTokenDocument } from '../input/contracts.js';
 
 export function createInlineDocumentHandle(input: InlineDocumentRequestInput): DocumentHandle {
   const encoder = new TextEncoder();
@@ -84,17 +85,4 @@ type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['d
 
 function hasProvidedData(handle: DocumentHandle): handle is ProvidedDataHandle {
   return handle.data !== undefined && isDesignTokenDocument(handle.data);
-}
-
-function isDesignTokenDocument(value: unknown): value is ProvidedDataHandle['data'] {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  if (value instanceof URL || value instanceof Uint8Array) {
-    return false;
-  }
-
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }

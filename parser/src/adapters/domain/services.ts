@@ -2,6 +2,11 @@ import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import { normalizeDocument } from '../../ast/normaliser.js';
 import { buildDocumentGraph } from '../../graph/builder.js';
 import { createDocumentResolver } from '../../resolver/index.js';
+import {
+  collectExternalReferenceTargets,
+  createExternalGraphProvider,
+  type ExternalGraphProvider
+} from '../../resolver/external-graph-provider.js';
 import { decodeDocument } from '../../io/decoder.js';
 import { DocumentLoaderError } from '../../io/document-loader.js';
 import type { DocumentHandle } from '../../types.js';
@@ -53,9 +58,8 @@ import type {
   TokenFlatteningRequest
 } from '../../domain/ports.js';
 import type { DocumentAst } from '../../ast/nodes.js';
-import type { DocumentGraph } from '../../graph/nodes.js';
+import type { DocumentGraph, GraphReferenceTarget } from '../../graph/nodes.js';
 import type { DocumentLoader } from '../../io/document-loader.js';
-import type { GraphOverrideFallbackNode, GraphReferenceTarget } from '../../graph/nodes.js';
 
 const EMPTY_RESOLUTION_EVENTS: readonly DiagnosticEvent[] = Object.freeze([]);
 
@@ -299,6 +303,7 @@ export interface ResolutionAdapterOptions {
   readonly schemaGuard?: SchemaGuard;
   readonly extensions?: PluginRegistry;
   readonly allowNetworkReferences?: boolean;
+  readonly externalGraphProvider?: ExternalGraphProvider;
 }
 
 type ResolverInstance = ReturnType<typeof createDocumentResolver>;
@@ -312,19 +317,24 @@ export class ResolutionAdapter implements ResolutionService<
   readonly #overrideContext: ReadonlyMap<string, unknown>;
   readonly #maxDepth: number;
   readonly #transforms: readonly ResolvedTokenTransformEntry[];
-  readonly #loader?: DocumentLoader;
-  readonly #schemaGuard?: SchemaGuard;
-  readonly #extensions?: PluginRegistry;
   readonly #allowNetworkReferences: boolean;
+  readonly #externalGraphProvider?: ExternalGraphProvider;
 
   constructor(options: ResolutionAdapterOptions = {}) {
     this.#overrideContext = options.overrideContext ?? new Map();
     this.#maxDepth = options.maxDepth ?? 32;
     this.#transforms = options.transforms ?? [];
-    this.#loader = options.loader;
-    this.#schemaGuard = options.schemaGuard;
-    this.#extensions = options.extensions;
     this.#allowNetworkReferences = options.allowNetworkReferences ?? false;
+    this.#externalGraphProvider =
+      options.externalGraphProvider ??
+      (options.loader && options.schemaGuard
+        ? createExternalGraphProvider({
+            loader: options.loader,
+            schemaGuard: options.schemaGuard,
+            extensions: options.extensions,
+            allowNetworkReferences: this.#allowNetworkReferences
+          })
+        : undefined);
     this.resolver = {
       resolve: (graph, context) => this.resolve(graph, context)
     } satisfies ResolutionPort<DocumentGraph, ResolverInstance, DocumentAst>;
@@ -337,10 +347,8 @@ export class ResolutionAdapter implements ResolutionService<
     | PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>
     | Promise<PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>> {
     const externalTargets = collectExternalReferenceTargets(graph.graph);
-    const loader = this.#loader;
-    const schemaGuard = this.#schemaGuard;
-    if (externalTargets.length > 0 && loader && schemaGuard) {
-      return this.resolveWithExternalGraphs(graph, context, externalTargets, loader, schemaGuard);
+    if (externalTargets.length > 0 && this.#externalGraphProvider) {
+      return this.resolveWithExternalGraphs(graph, context, externalTargets);
     }
 
     try {
@@ -376,78 +384,26 @@ export class ResolutionAdapter implements ResolutionService<
   private async resolveWithExternalGraphs(
     graph: GraphSnapshot<DocumentGraph>,
     context: ResolutionContext<DocumentAst>,
-    externalTargets: readonly GraphReferenceTarget[],
-    loader: DocumentLoader,
-    schemaGuard: SchemaGuard
+    externalTargets: readonly GraphReferenceTarget[]
   ): Promise<PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>> {
-    const externalGraphs = new Map<string, DocumentGraph>();
-    const diagnostics: DiagnosticEvent[] = [];
-    const queue = [...externalTargets];
-    const visited = new Set<string>([graph.graph.uri.href]);
-
-    while (queue.length > 0) {
-      const target = queue.shift();
-      if (!target) {
-        continue;
-      }
-
-      const href = target.uri.href;
-      if (visited.has(href)) {
-        continue;
-      }
-      visited.add(href);
-
-      const protocol = target.uri.protocol.toLowerCase();
-      const networkReference = protocol === 'http:' || protocol === 'https:';
-      if (networkReference && !this.#allowNetworkReferences) {
-        continue;
-      }
-
-      try {
-        const handle = await loader.load(target.uri, { baseUri: context.document.identity.uri });
-        const decoded = await decodeDocument(handle);
-        const validation = schemaGuard.validate(decoded);
-        diagnostics.push(...validation.diagnostics);
-        if (!validation.valid) {
-          continue;
-        }
-
-        const normalized = normalizeDocument(decoded, { extensions: this.#extensions });
-        diagnostics.push(...normalized.diagnostics);
-        if (!normalized.ast) {
-          continue;
-        }
-
-        const graphResult = buildDocumentGraph(normalized.ast);
-        diagnostics.push(...graphResult.diagnostics.map(toDomainDiagnostic));
-        if (!graphResult.graph) {
-          continue;
-        }
-
-        const loadedGraph = graphResult.graph;
-        externalGraphs.set(loadedGraph.uri.href, loadedGraph);
-        const nestedTargets = collectExternalReferenceTargets(loadedGraph);
-        for (const nested of nestedTargets) {
-          if (!visited.has(nested.uri.href)) {
-            queue.push(nested);
-          }
-        }
-      } catch (error) {
-        const code =
-          error instanceof DocumentLoaderError
-            ? DiagnosticCodes.loader.TOO_LARGE
-            : DiagnosticCodes.resolver.EXTERNAL_REFERENCE;
-        diagnostics.push({
-          code,
-          message:
-            error instanceof Error
-              ? error.message
-              : `Failed to load external DTIF document "${href}".`,
-          severity: 'error',
-          pointer: target.pointer
-        });
-      }
+    const provider = this.#externalGraphProvider;
+    if (!provider) {
+      return {
+        outcome: undefined,
+        diagnostics: createFailureDiagnostics(
+          DiagnosticCodes.resolver.FAILED,
+          'Failed to resolve external references: no external graph provider configured.'
+        )
+      } satisfies PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>;
     }
+
+    const loaded = await provider.load({
+      rootGraph: graph.graph,
+      targets: externalTargets,
+      baseUri: context.document.identity.uri
+    });
+    const externalGraphs = loaded.graphs;
+    const diagnostics = loaded.diagnostics;
 
     try {
       const resolver = createDocumentResolver(graph.graph, {
@@ -462,7 +418,7 @@ export class ResolutionAdapter implements ResolutionService<
       const outcome: ResolutionOutcome<ResolverInstance> = Object.freeze({
         identity: graph.identity,
         result: resolver,
-        diagnostics: diagnostics.length === 0 ? EMPTY_RESOLUTION_EVENTS : Object.freeze(diagnostics)
+        diagnostics: diagnostics.length === 0 ? EMPTY_RESOLUTION_EVENTS : Object.freeze([...diagnostics])
       });
 
       return {
@@ -654,44 +610,6 @@ function buildGraphSnapshot(
   return { outcome, diagnostics } satisfies PipelineResult<
     GraphSnapshot<DocumentGraph> | undefined
   >;
-}
-
-function collectExternalReferenceTargets(graph: DocumentGraph): readonly GraphReferenceTarget[] {
-  const targets: GraphReferenceTarget[] = [];
-
-  for (const node of graph.nodes.values()) {
-    if (node.kind === 'alias' && node.ref.value.external) {
-      targets.push(node.ref.value);
-    }
-  }
-
-  for (const override of graph.overrides) {
-    if (override.token.value.external) {
-      targets.push(override.token.value);
-    }
-    if (override.ref?.value.external) {
-      targets.push(override.ref.value);
-    }
-    if (override.fallback) {
-      collectExternalFallbackTargets(override.fallback, targets);
-    }
-  }
-
-  return Object.freeze(targets);
-}
-
-function collectExternalFallbackTargets(
-  entries: readonly GraphOverrideFallbackNode[],
-  targets: GraphReferenceTarget[]
-): void {
-  for (const entry of entries) {
-    if (entry.ref?.value.external) {
-      targets.push(entry.ref.value);
-    }
-    if (entry.fallback && entry.fallback.length > 0) {
-      collectExternalFallbackTargets(entry.fallback, targets);
-    }
-  }
 }
 
 function toExtensionSnapshots(

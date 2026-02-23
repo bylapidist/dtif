@@ -1,7 +1,12 @@
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
-import type { ContentType, ParseInput, ParseInputRecord, ParseDataInputRecord } from '../types.js';
+import type { ContentType, ParseInput } from '../types.js';
 import type { DocumentRequest } from '../domain/ports.js';
+import {
+  isDesignTokenDocument,
+  isParseDataInputRecord,
+  isParseInputRecord
+} from '../input/contracts.js';
 
 export function createDocumentRequest(input: ParseInput): DocumentRequest {
   if (typeof input === 'string' || input instanceof URL) {
@@ -59,54 +64,4 @@ export function createInlineDocumentRequest(input: InlineDocumentRequestInput): 
     inlineContent: input.text ?? '',
     contentTypeHint: input.contentType
   } satisfies DocumentRequest;
-}
-
-function isParseInputRecord(value: unknown): value is ParseInputRecord {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  const content = value.content;
-  if (typeof content !== 'string' && !(content instanceof Uint8Array)) {
-    return false;
-  }
-
-  const uri = value.uri;
-  const contentType = value.contentType;
-  const validUri = uri === undefined || typeof uri === 'string' || uri instanceof URL;
-  const validContentType =
-    contentType === undefined ||
-    contentType === 'application/json' ||
-    contentType === 'application/yaml';
-
-  return validUri && validContentType;
-}
-
-function isParseDataInputRecord(value: unknown): value is ParseDataInputRecord {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  if (!('data' in value)) {
-    return false;
-  }
-
-  return isDesignTokenDocument(value.data);
-}
-
-function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  if (value instanceof URL || value instanceof Uint8Array) {
-    return false;
-  }
-
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }

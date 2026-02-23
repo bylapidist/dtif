@@ -12,11 +12,13 @@ import type {
   DocumentSourcePort,
   GraphBuilderPort,
   NormalizationPort,
+  ResolutionContext,
   ResolutionPort,
   SchemaValidationPort,
   TokenFlatteningPort,
   TokenFlatteningRequest
 } from './ports.js';
+export type { ResolutionContext } from './ports.js';
 
 export interface DocumentIngestionService {
   readonly source: DocumentSourcePort;
@@ -55,12 +57,6 @@ export interface GraphConstructionService<TGraph = unknown, TAst = unknown> {
     | Promise<PipelineResult<GraphSnapshot<TGraph> | undefined>>
     | PipelineResult<GraphSnapshot<TGraph> | undefined>;
 }
-export interface ResolutionContext<TAst = unknown> {
-  readonly document: RawDocument;
-  readonly decoded: DecodedDocument;
-  readonly normalized?: NormalizedDocument<TAst>;
-}
-
 export interface ResolutionService<TGraph = unknown, TResult = unknown, TAst = unknown> {
   readonly resolver: ResolutionPort<TGraph, TResult>;
   resolve(

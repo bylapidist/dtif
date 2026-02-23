@@ -1,20 +1,13 @@
 import type { JsonPointer } from '../../domain/primitives.js';
 import type { GraphOverrideNode } from '../../graph/nodes.js';
-import type { ResolvedTokenTransformEntry } from '../../plugins/index.js';
+import type { ResolvedTokenTransformEntry } from '../../plugins/types.js';
+import { toReadonlyContextMap } from '../../utils/context.js';
 import { DEFAULT_MAX_DEPTH, EMPTY_TRANSFORM_ENTRIES } from './constants.js';
 
 export function normalizeContext(
   context?: ReadonlyMap<string, unknown> | Readonly<Record<string, unknown>>
 ): ReadonlyMap<string, unknown> {
-  if (!context) {
-    return new Map();
-  }
-
-  if (context instanceof Map) {
-    return context;
-  }
-
-  return new Map(Object.entries(context));
+  return toReadonlyContextMap(context);
 }
 
 export function normalizeMaxDepth(value: number | undefined): number {

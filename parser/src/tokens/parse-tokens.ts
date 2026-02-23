@@ -9,25 +9,34 @@ import type {
   TokenId,
   TokenMetadataSnapshot
 } from './types.js';
-import {
-  createParseDocumentUseCase,
-  createInlineParseDocumentUseCase,
-  createParseTokensUseCase
-} from '../application/factory.js';
+import { createInlineParseDocumentUseCase, createParseTokensUseCase } from '../application/factory.js';
 import type { ParseTokensExecution } from '../application/use-cases.js';
 import { resolveOptions } from '../session/internal/options.js';
+import { createRuntime } from '../session/internal/runtime.js';
 import { createDocumentRequest, createInlineDocumentRequest } from '../application/requests.js';
 import { type ParseTokensInput, normalizeInput, normalizeInlineInput } from './inputs.js';
 import type { DiagnosticEvent } from '../domain/models.js';
 export type { ParseTokensInput } from './inputs.js';
 import type { DocumentAst } from '../ast/nodes.js';
 
-export interface ParseTokensOptions extends ParseSessionOptions {
+interface ParseTokensBaseOptions {
   readonly flatten?: boolean;
   readonly includeGraphs?: boolean;
   readonly tokenCache?: TokenCache;
   readonly onDiagnostic?: (diagnostic: DiagnosticEvent) => void;
   readonly warn?: (diagnostic: DiagnosticEvent) => void;
+}
+
+export interface ParseTokensOptions extends ParseSessionOptions, ParseTokensBaseOptions {}
+
+type ParseTokensSyncSessionOptions = Omit<ParseSessionOptions, 'documentCache' | 'loader' | 'allowHttp'>;
+
+export interface ParseTokensSyncOptions
+  extends ParseTokensSyncSessionOptions,
+    ParseTokensBaseOptions {
+  readonly documentCache?: never;
+  readonly loader?: never;
+  readonly allowHttp?: never;
 }
 
 export interface ParseTokensResult {
@@ -48,16 +57,14 @@ export async function parseTokens(
     flatten = true,
     includeGraphs = true,
     tokenCache,
-    documentCache,
     onDiagnostic,
     warn,
-    ...sessionOptions
+    ...runtimeOptions
   } = options;
-  const resolvedOptions = resolveOptions({ ...sessionOptions, documentCache });
+  const runtime = createRuntime(runtimeOptions);
   const request = createDocumentRequest(normalizeInput(input));
 
-  const documents = createParseDocumentUseCase(resolvedOptions);
-  const useCase = createParseTokensUseCase(documents, resolvedOptions, tokenCache);
+  const useCase = runtime.createTokensUseCase(tokenCache);
 
   const execution = await useCase.execute({
     request,
@@ -75,21 +82,18 @@ export async function parseTokens(
 
 export function parseTokensSync(
   input: ParseTokensInput,
-  options: ParseTokensOptions = {}
+  options: ParseTokensSyncOptions = {}
 ): ParseTokensResult {
+  assertSyncCompatibleOptions(options);
+
   const {
     flatten = true,
     includeGraphs = true,
     tokenCache,
-    documentCache,
     onDiagnostic,
     warn,
     ...sessionOptions
   } = options;
-
-  if (documentCache) {
-    throw new Error('parseTokensSync does not support document caches.');
-  }
 
   const inline = normalizeInlineInput(input);
   if (!inline) {
@@ -112,6 +116,21 @@ export function parseTokensSync(
     onDiagnostic,
     warn
   });
+}
+
+function assertSyncCompatibleOptions(options: ParseTokensSyncOptions): void {
+  const dynamic = options as Record<string, unknown>;
+  if (dynamic.documentCache !== undefined) {
+    throw new Error('parseTokensSync does not support document caches.');
+  }
+
+  if (dynamic.loader !== undefined) {
+    throw new Error('parseTokensSync does not support custom document loaders.');
+  }
+
+  if (dynamic.allowHttp !== undefined) {
+    throw new Error('parseTokensSync does not support allowHttp because inputs must be inline.');
+  }
 }
 
 function assembleParseTokensResult(

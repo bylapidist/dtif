@@ -40,7 +40,7 @@ import type {
 import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
-} from '../plugins/index.js';
+} from '../plugins/types.js';
 import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
 import { isOverrideValueCompatible } from './internal/type-compatibility.js';
 

@@ -6,7 +6,7 @@ import type { GraphReferenceTarget } from '../../graph/nodes.js';
 import { EMPTY_DIAGNOSTICS, EMPTY_TRANSFORM_EVALUATIONS } from './constants.js';
 import type { ResolutionResult, ResolvedToken } from '../types.js';
 import type { ResolutionSource, ResolutionTraceStep } from '../types.js';
-import type { ResolvedTokenTransformEvaluation } from '../../plugins/index.js';
+import type { ResolvedTokenTransformEvaluation } from '../../plugins/types.js';
 import type { DiagnosticCollector } from './diagnostics.js';
 
 export function finalizeResolution(

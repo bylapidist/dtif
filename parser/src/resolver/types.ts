@@ -3,7 +3,7 @@ import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
 import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
-} from '../plugins/index.js';
+} from '../plugins/types.js';
 import type { GraphOverrideNode } from '../graph/nodes.js';
 import type { DocumentGraph } from '../graph/nodes.js';
 

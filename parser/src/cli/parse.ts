@@ -2,9 +2,8 @@
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
-import { createParseDocumentUseCase } from '../application/factory.js';
 import { createDocumentRequest } from '../application/requests.js';
-import { resolveOptions } from '../session/internal/options.js';
+import { createRuntime } from '../session/internal/runtime.js';
 import { parseArguments } from './args.js';
 import { gatherInputs } from './io.js';
 import { printPrettyOutput } from './output.js';
@@ -83,13 +82,12 @@ export async function runCli(
     return 1;
   }
 
-  const resolvedOptions = resolveOptions({
+  const runtime = createRuntime({
     allowHttp: cliOptions.allowHttp,
     maxDepth: cliOptions.maxDepth,
     overrideContext: cliOptions.context
   });
-
-  const documentsUseCase = createParseDocumentUseCase(resolvedOptions);
+  const documentsUseCase = runtime.documents;
   const aggregatedDiagnostics: DiagnosticEvent[] = [];
   const executions: DocumentExecution[] = [];
   let exitCode = 0;

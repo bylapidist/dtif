@@ -9,7 +9,7 @@ import type {
   OverrideNode,
   TokenNode
 } from '../ast/nodes.js';
-import type { JsonPointer, SourceSpan } from '../types.js';
+import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
 
 export type GraphNode = GraphCollectionNode | GraphTokenNode | GraphAliasNode;
 

@@ -17,6 +17,15 @@ import {
   DEFAULT_HTTP_TIMEOUT_MS,
   DEFAULT_MAX_BYTES
 } from '../config/defaults.js';
+import {
+  isDesignTokenDocument,
+  isParseDataInputRecord,
+  isParseInputRecord
+} from '../input/contracts.js';
+import {
+  inferContentTypeFromContent,
+  isInlineDocumentText
+} from '../input/content-sniffing.js';
 
 const MEMORY_SCHEME = 'memory://dtif-document/';
 
@@ -102,7 +111,7 @@ export class DefaultDocumentLoader implements DocumentLoader {
     }
 
     if (typeof input === 'string') {
-      if (looksLikeInlineDocument(input)) {
+      if (isInlineDocumentText(input)) {
         const uri = this.#createMemoryUri();
         const bytes = encodeText(input);
         this.#assertSizeWithinLimit(uri, bytes.byteLength);
@@ -419,66 +428,8 @@ function resolveFilePath(reference: string, baseUri: URL | undefined, cwd: strin
   return path.resolve(cwd, reference);
 }
 
-interface ContentCarrier {
-  readonly content?: unknown;
-}
-
-interface DataCarrier {
-  readonly data?: unknown;
-}
-
-function hasContentProperty(value: object): value is ContentCarrier {
-  return 'content' in value;
-}
-
-function hasDataProperty(value: object): value is DataCarrier {
-  return 'data' in value;
-}
-
-function isObjectLike(value: unknown): value is object {
-  return typeof value === 'object' && value !== null;
-}
-
-function isParseInputRecord(value: ParseInput): value is ParseInputRecord {
-  if (!isObjectLike(value)) {
-    return false;
-  }
-
-  if (!hasContentProperty(value)) {
-    return false;
-  }
-
-  const { content } = value;
-  return typeof content === 'string' || content instanceof Uint8Array;
-}
-
-function isParseDataInputRecord(value: ParseInput): value is ParseDataInputRecord {
-  if (!isObjectLike(value)) {
-    return false;
-  }
-
-  if (!hasDataProperty(value)) {
-    return false;
-  }
-
-  return isDesignTokenDocument(value.data);
-}
-
 function encodeText(content: string): Uint8Array {
   return new TextEncoder().encode(content);
-}
-
-function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  if (value instanceof URL || value instanceof Uint8Array) {
-    return false;
-  }
-
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }
 
 function detectContentType(params: {
@@ -505,7 +456,7 @@ function detectContentType(params: {
   }
 
   if (typeof params.content === 'string') {
-    const fromContent = detectContentTypeFromContent(params.content);
+    const fromContent = inferContentTypeFromContent(params.content);
     if (fromContent) {
       return fromContent;
     }
@@ -523,43 +474,6 @@ function detectContentTypeFromUri(uri: URL): ContentType | undefined {
     return 'application/json';
   }
   return undefined;
-}
-
-function detectContentTypeFromContent(content: string): ContentType | undefined {
-  const trimmed = content.trimStart();
-  if (trimmed.length === 0) {
-    return undefined;
-  }
-  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-    return 'application/json';
-  }
-  if (trimmed.startsWith('---') || trimmed.startsWith('%')) {
-    return 'application/yaml';
-  }
-  if (trimmed.includes('\n')) {
-    return 'application/yaml';
-  }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
-    return 'application/yaml';
-  }
-  return undefined;
-}
-
-function looksLikeInlineDocument(value: string): boolean {
-  const trimmed = value.trimStart();
-  if (trimmed.length === 0) {
-    return true;
-  }
-  if (trimmed.startsWith('{') || trimmed.startsWith('[') || trimmed.startsWith('---')) {
-    return true;
-  }
-  if (trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
-    return true;
-  }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
-    return true;
-  }
-  return false;
 }
 
 function noop(): void {

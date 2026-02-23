@@ -3,7 +3,8 @@ import { SchemaGuard } from '../../validation/schema-guard.js';
 import { PluginRegistry } from '../../plugins/index.js';
 import type { DocumentLoader } from '../../io/document-loader.js';
 import type { DocumentCachePort } from '../../domain/ports.js';
-import type { OverrideContext, ParseSessionOptions } from '../types.js';
+import type { ParseSessionOptions } from '../types.js';
+import { toReadonlyContextMap } from '../../utils/context.js';
 
 export interface ResolvedParseSessionOptions {
   readonly loader: DocumentLoader;
@@ -30,20 +31,8 @@ export function resolveOptions(options: ParseSessionOptions = {}): ResolvedParse
     documentCache: options.documentCache,
     allowHttp,
     maxDepth: options.maxDepth ?? DEFAULT_MAX_DEPTH,
-    overrideContext: normalizeOverrideContext(options.overrideContext),
+    overrideContext: toReadonlyContextMap(options.overrideContext),
     schemaGuard,
     plugins
   };
-}
-
-function normalizeOverrideContext(context?: OverrideContext): ReadonlyMap<string, unknown> {
-  if (!context) {
-    return new Map();
-  }
-
-  if (context instanceof Map) {
-    return context;
-  }
-
-  return new Map(Object.entries(context));
 }

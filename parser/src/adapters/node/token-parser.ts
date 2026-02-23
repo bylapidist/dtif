@@ -5,6 +5,7 @@ import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/parse-t
 import { formatDiagnostic } from '../../diagnostics/format.js';
 import type { FormatDiagnosticOptions } from '../../diagnostics/format.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
+import { isDesignTokenDocument } from '../../input/contracts.js';
 
 const SUPPORTED_EXTENSIONS = ['.tokens', '.tokens.json', '.tokens.yaml', '.tokens.yml'];
 
@@ -110,12 +111,4 @@ function assertIsDesignTokenDocument(
   if (!isDesignTokenDocument(value)) {
     throw new Error(`DTIF parser returned unexpected document contents for ${source}`);
   }
-}
-
-function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }

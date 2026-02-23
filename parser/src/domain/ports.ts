@@ -9,7 +9,6 @@ import type {
   ResolutionOutcome,
   TokenSnapshot
 } from './models.js';
-import type { ResolutionContext } from './services.js';
 import type { DocumentContentType } from './primitives.js';
 
 export interface DocumentRequest {
@@ -83,6 +82,12 @@ export interface GraphBuilderPort<TGraph = unknown, TAst = unknown> {
   ):
     | Promise<PipelineResult<GraphSnapshot<TGraph> | undefined>>
     | PipelineResult<GraphSnapshot<TGraph> | undefined>;
+}
+
+export interface ResolutionContext<TAst = unknown> {
+  readonly document: RawDocument;
+  readonly decoded: DecodedDocument;
+  readonly normalized?: NormalizedDocument<TAst>;
 }
 
 export interface ResolutionPort<TGraph = unknown, TResult = unknown, TAst = unknown> {

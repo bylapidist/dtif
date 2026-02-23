@@ -5,6 +5,7 @@ import { parseTokens, parseTokensSync } from '../../src/tokens/parse-tokens.js';
 import type { TokenCache, TokenCacheSnapshot, TokenCacheKey } from '../../src/tokens/cache.js';
 import { computeDocumentHash } from '../../src/tokens/cache.js';
 import type { DiagnosticEvent } from '../../src/domain/models.js';
+import { DefaultDocumentLoader } from '../../src/io/document-loader.js';
 import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 const INLINE_DOCUMENT = `
@@ -281,6 +282,29 @@ void test('parseTokensSync throws when provided an asynchronous cache implementa
     () => parseTokensSync(INLINE_DOCUMENT, { tokenCache: asyncCache }),
     /synchronous get\/set semantics/,
     'expected synchronous parsing to reject asynchronous caches'
+  );
+});
+
+void test('parseTokensSync rejects document caches in JavaScript callers', () => {
+  assert.throws(
+    () =>
+      parseTokensSync(INLINE_DOCUMENT, {
+        // emulate untyped JavaScript consumers
+        ...( { documentCache: {} } as unknown as Record<string, unknown>)
+      }),
+    /does not support document caches/,
+    'expected synchronous parsing to reject document cache options'
+  );
+});
+
+void test('parseTokensSync rejects custom loaders in JavaScript callers', () => {
+  assert.throws(
+    () =>
+      parseTokensSync(INLINE_DOCUMENT, {
+        ...( { loader: new DefaultDocumentLoader() } as unknown as Record<string, unknown>)
+      }),
+    /does not support custom document loaders/,
+    'expected synchronous parsing to reject loader options'
   );
 });
 
