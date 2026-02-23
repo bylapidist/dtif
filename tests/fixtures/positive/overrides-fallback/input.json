@@ -6,10 +6,14 @@
       "$when": {
         "prefers-color-scheme": "dark"
       },
-      "$ref": "#/color/brand/dark",
-      "$fallback": {
-        "$ref": "#/color/brand/mid"
-      }
+      "$fallback": [
+        {
+          "$ref": "#/color/brand/dark"
+        },
+        {
+          "$ref": "#/color/brand/mid"
+        }
+      ]
     },
     {
       "$token": "#/button/text",

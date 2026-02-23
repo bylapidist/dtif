@@ -23,7 +23,7 @@ Use DTIF when you need:
 
 - a single, versioned definition of design tokens that designers and engineers can share;
 - predictable token payloads validated by an official JSON Schema; and
-- a registry-backed naming system that keeps custom extensions interoperable.
+- a registry-documented naming catalogue that helps teams coordinate custom extensions.
 
 ## Documentation
 
@@ -191,7 +191,7 @@ Embed the [`@lapidist/dtif-language-server`](language-server/README.md) package 
 - Jump-to-definition, hover documentation, and pointer-aware navigation for `$ref` targets.
 - Rename refactors that update pointer declarations alongside every in-memory reference.
 - Quick fixes for common schema violations such as missing `$type` or `$ref` members.
-- Contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the registry.
+- Contextual completions for `$type` identifiers sourced from the registry, plus measurement units and `$extensions` namespace suggestions from reverse-DNS snippets and workspace context.
 
 See the [language server guide](docs/tooling/language-server.md) for client configuration, workspace settings, and transport options.
 
@@ -210,7 +210,7 @@ declare const tokens: DesignTokenInterchangeFormat;
 
 - [`schema/`](schema/) – JSON Schema definitions used by validators.
 - [`examples/`](examples/) – schema-valid token sets shared across docs and tests.
-- [`registry/`](registry/) – the canonical list of `$type` identifiers and extension namespaces.
+- [`registry/`](registry/) – canonical metadata for registered `$type` identifiers used by docs and tooling.
 - [`tests/`](tests/) – conformance fixtures and the test harness invoked by CI.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) – contribution workflow, coding standards, and release process expectations.
 - [`.changeset/`](.changeset/) – Changesets configuration for tracking package releases.
@@ -227,11 +227,12 @@ requests:
 - CI uses [`changesets/action`](https://github.com/changesets/action) to open release pull requests and run `pnpm run release`
   once they land on `main`.
 
-Repository-wide changes are documented in [`CHANGELOG.md`](CHANGELOG.md). Package-specific history lives alongside each
-workspace:
+Release history lives alongside each published workspace:
 
 - [`schema/CHANGELOG.md`](schema/CHANGELOG.md)
 - [`validator/CHANGELOG.md`](validator/CHANGELOG.md)
+- [`parser/CHANGELOG.md`](parser/CHANGELOG.md)
+- [`language-server/CHANGELOG.md`](language-server/CHANGELOG.md)
 
 ## Contributing & community
 

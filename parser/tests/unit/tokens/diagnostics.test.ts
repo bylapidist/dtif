@@ -3,10 +3,14 @@ import test from 'node:test';
 
 import { createSourcePosition, createSourceSpan } from '../../../src/utils/source.js';
 import { formatDiagnostic } from '../../../src/diagnostics/format.js';
+import { formatDiagnosticCode } from '../../../src/diagnostics/codes.js';
 import type { DiagnosticEvent } from '../../../src/domain/models.js';
 
 const DOCUMENT_URI = new URL('file:///tokens.json');
 const POINTER = '#/color/background';
+const MISSING_VALUE_CODE = formatDiagnosticCode('Normaliser', 2, 0);
+const TARGET_MISMATCH_CODE = formatDiagnosticCode('Resolver', 2, 1);
+const FAILURE_CODE = formatDiagnosticCode('Core', 0, 0);
 
 function createSpan() {
   return createSourceSpan(
@@ -19,7 +23,7 @@ function createSpan() {
 void test('formatDiagnostic renders source locations when spans exist', () => {
   const span = createSpan();
   const diagnostic: DiagnosticEvent = {
-    code: 'parser.missingValue',
+    code: MISSING_VALUE_CODE,
     message: 'Token is missing a $value property.',
     severity: 'error',
     pointer: POINTER,
@@ -28,13 +32,16 @@ void test('formatDiagnostic renders source locations when spans exist', () => {
 
   const formatted = formatDiagnostic(diagnostic, { cwd: '/workspace' });
 
-  assert.match(formatted, /ERROR parser.missingValue: Token is missing a \$value property\./);
+  assert.match(
+    formatted,
+    new RegExp(`ERROR ${MISSING_VALUE_CODE}: Token is missing a \\\\$value property\\\\.`)
+  );
   assert.match(formatted, /tokens.json:1:1/);
 });
 
 void test('formatDiagnostic falls back to pointers when spans are not available', () => {
   const diagnostic: DiagnosticEvent = {
-    code: 'resolver.targetMismatch',
+    code: TARGET_MISMATCH_CODE,
     message: 'Alias type does not match resolved token type.',
     severity: 'warning',
     pointer: POINTER
@@ -44,7 +51,9 @@ void test('formatDiagnostic falls back to pointers when spans are not available'
 
   assert.match(
     formatted,
-    /WARNING resolver.targetMismatch: Alias type does not match resolved token type\./
+    new RegExp(
+      `WARNING ${TARGET_MISMATCH_CODE}: Alias type does not match resolved token type\\\\.`
+    )
   );
   assert.match(formatted, /at #\/color\/background/);
 });
@@ -52,7 +61,7 @@ void test('formatDiagnostic falls back to pointers when spans are not available'
 void test('formatDiagnostic applies ANSI colors when enabled', () => {
   const span = createSpan();
   const diagnostic: DiagnosticEvent = {
-    code: 'parser.failure',
+    code: FAILURE_CODE,
     message: 'Example failure',
     severity: 'error',
     pointer: POINTER,

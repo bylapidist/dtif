@@ -1,20 +1,25 @@
-import { DiagnosticCodes } from '../../diagnostics/codes.js';
+import { DiagnosticCodes, type DiagnosticCode } from '../../diagnostics/codes.js';
 import { normalizeDocument } from '../../ast/normaliser.js';
 import { buildDocumentGraph } from '../../graph/builder.js';
 import { createDocumentResolver } from '../../resolver/index.js';
+import {
+  collectExternalReferenceTargets,
+  createExternalGraphProvider,
+  type ExternalGraphProvider
+} from '../../resolver/external-graph-provider.js';
 import { decodeDocument } from '../../io/decoder.js';
 import { DocumentLoaderError } from '../../io/document-loader.js';
+import { diagnosticCodeForLoaderError } from '../../io/loader-diagnostics.js';
 import type { DocumentHandle } from '../../types.js';
 import type { SchemaGuard } from '../../validation/schema-guard.js';
 import type { ResolvedTokenTransformEntry } from '../../plugins/registry.js';
 import type { PluginRegistry } from '../../plugins/index.js';
 import type { ExtensionEvaluation } from '../../plugins/types.js';
-import { flattenTokens } from '../../tokens/flatten.js';
-import { createMetadataSnapshot, createResolutionSnapshot } from '../../tokens/snapshots.js';
-import { computeDocumentHash } from '../../tokens/cache.js';
-import type { TokenCacheSnapshot } from '../../tokens/cache.js';
-import type { InlineDocumentRequestInput } from '../../application/requests.js';
-import { createInlineDocumentHandle, decodeInlineDocument } from '../../application/inline.js';
+import {
+  createInlineDocumentHandle,
+  type InlineDocumentRequestInput
+} from '../../input/inline-document.js';
+import { decodeInlineDocument } from '../../io/decoder/inline-document.js';
 import {
   EMPTY_PIPELINE_DIAGNOSTICS,
   toDomainDiagnostic,
@@ -29,8 +34,7 @@ import type {
   PipelineDiagnostics,
   PipelineResult,
   RawDocument,
-  ResolutionOutcome,
-  TokenSnapshot
+  ResolutionOutcome
 } from '../../domain/models.js';
 import type {
   DocumentDecodingService,
@@ -39,8 +43,7 @@ import type {
   GraphConstructionService,
   ResolutionContext,
   ResolutionService,
-  SchemaValidationService,
-  TokenFlatteningService
+  SchemaValidationService
 } from '../../domain/services.js';
 import type {
   DocumentRequest,
@@ -48,12 +51,11 @@ import type {
   GraphBuilderPort,
   NormalizationPort,
   ResolutionPort,
-  SchemaValidationPort,
-  TokenFlatteningPort,
-  TokenFlatteningRequest
+  SchemaValidationPort
 } from '../../domain/ports.js';
 import type { DocumentAst } from '../../ast/nodes.js';
-import type { DocumentGraph } from '../../graph/nodes.js';
+import type { DocumentGraph, GraphReferenceTarget } from '../../graph/nodes.js';
+import type { DocumentLoader } from '../../io/document-loader.js';
 
 const EMPTY_RESOLUTION_EVENTS: readonly DiagnosticEvent[] = Object.freeze([]);
 
@@ -293,6 +295,11 @@ export interface ResolutionAdapterOptions {
   readonly overrideContext?: ReadonlyMap<string, unknown>;
   readonly maxDepth?: number;
   readonly transforms?: readonly ResolvedTokenTransformEntry[];
+  readonly loader?: DocumentLoader;
+  readonly schemaGuard?: SchemaGuard;
+  readonly extensions?: PluginRegistry;
+  readonly allowNetworkReferences?: boolean;
+  readonly externalGraphProvider?: ExternalGraphProvider;
 }
 
 type ResolverInstance = ReturnType<typeof createDocumentResolver>;
@@ -306,11 +313,24 @@ export class ResolutionAdapter implements ResolutionService<
   readonly #overrideContext: ReadonlyMap<string, unknown>;
   readonly #maxDepth: number;
   readonly #transforms: readonly ResolvedTokenTransformEntry[];
+  readonly #allowNetworkReferences: boolean;
+  readonly #externalGraphProvider?: ExternalGraphProvider;
 
   constructor(options: ResolutionAdapterOptions = {}) {
     this.#overrideContext = options.overrideContext ?? new Map();
     this.#maxDepth = options.maxDepth ?? 32;
     this.#transforms = options.transforms ?? [];
+    this.#allowNetworkReferences = options.allowNetworkReferences ?? false;
+    this.#externalGraphProvider =
+      options.externalGraphProvider ??
+      (options.loader && options.schemaGuard
+        ? createExternalGraphProvider({
+            loader: options.loader,
+            schemaGuard: options.schemaGuard,
+            extensions: options.extensions,
+            allowNetworkReferences: this.#allowNetworkReferences
+          })
+        : undefined);
     this.resolver = {
       resolve: (graph, context) => this.resolve(graph, context)
     } satisfies ResolutionPort<DocumentGraph, ResolverInstance, DocumentAst>;
@@ -319,13 +339,21 @@ export class ResolutionAdapter implements ResolutionService<
   resolve(
     graph: GraphSnapshot<DocumentGraph>,
     context: ResolutionContext<DocumentAst>
-  ): PipelineResult<ResolutionOutcome<ResolverInstance> | undefined> {
+  ):
+    | PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>
+    | Promise<PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>> {
+    const externalTargets = collectExternalReferenceTargets(graph.graph);
+    if (externalTargets.length > 0 && this.#externalGraphProvider) {
+      return this.resolveWithExternalGraphs(graph, context, externalTargets);
+    }
+
     try {
       const resolver = createDocumentResolver(graph.graph, {
         context: this.#overrideContext,
         maxDepth: this.#maxDepth,
         document: context.decoded,
-        transforms: this.#transforms
+        transforms: this.#transforms,
+        allowNetworkReferences: this.#allowNetworkReferences
       });
 
       const outcome: ResolutionOutcome<ResolverInstance> = Object.freeze({
@@ -348,86 +376,61 @@ export class ResolutionAdapter implements ResolutionService<
       } satisfies PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>;
     }
   }
-}
 
-export interface TokenFlatteningAdapterOptions {
-  readonly metadataSnapshot?: typeof createMetadataSnapshot;
-  readonly resolutionSnapshot?: typeof createResolutionSnapshot;
-  readonly flattenTokens?: typeof flattenTokens;
-  readonly clock?: () => number;
-}
-
-export class TokenFlatteningAdapter implements TokenFlatteningService<
-  ResolverInstance,
-  DocumentGraph,
-  TokenCacheSnapshot
-> {
-  readonly flattener: TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
-  readonly #metadataSnapshot: typeof createMetadataSnapshot;
-  readonly #resolutionSnapshot: typeof createResolutionSnapshot;
-  readonly #flattenTokens: typeof flattenTokens;
-  readonly #clock: () => number;
-
-  constructor(options: TokenFlatteningAdapterOptions = {}) {
-    this.#metadataSnapshot = options.metadataSnapshot ?? createMetadataSnapshot;
-    this.#resolutionSnapshot = options.resolutionSnapshot ?? createResolutionSnapshot;
-    this.#flattenTokens = options.flattenTokens ?? flattenTokens;
-    this.#clock = options.clock ?? Date.now;
-    this.flattener = {
-      flatten: (request) => this.flatten(request)
-    } satisfies TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
-  }
-
-  flatten(
-    request: TokenFlatteningRequest<DocumentGraph, ResolverInstance>
-  ): PipelineResult<TokenSnapshot<TokenCacheSnapshot> | undefined> {
-    const { document, graph, resolution, documentHash, flatten } = request;
-
-    const metadataIndex = this.#metadataSnapshot(graph.graph);
-    let resolutionIndex: TokenCacheSnapshot['resolutionIndex'];
-    let flattenedTokens: TokenCacheSnapshot['flattened'];
-    const resolutionDiagnostics: DiagnosticEvent[] = [];
-
-    if (flatten) {
-      resolutionIndex = this.#resolutionSnapshot(graph.graph, resolution.result, {
-        onDiagnostic: (diagnostic) => {
-          resolutionDiagnostics.push(diagnostic);
-        }
-      });
-      flattenedTokens = this.#flattenTokens(graph.graph, resolutionIndex);
+  private async resolveWithExternalGraphs(
+    graph: GraphSnapshot<DocumentGraph>,
+    context: ResolutionContext<DocumentAst>,
+    externalTargets: readonly GraphReferenceTarget[]
+  ): Promise<PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>> {
+    const provider = this.#externalGraphProvider;
+    if (!provider) {
+      return {
+        outcome: undefined,
+        diagnostics: createFailureDiagnostics(
+          DiagnosticCodes.resolver.FAILED,
+          'Failed to resolve external references: no external graph provider configured.'
+        )
+      } satisfies PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>;
     }
 
-    const snapshotDiagnostics =
-      resolutionDiagnostics.length > 0
-        ? Object.freeze(resolutionDiagnostics.map(toDomainDiagnostic))
-        : EMPTY_RESOLUTION_EVENTS;
+    const loaded = await provider.load({
+      rootGraph: graph.graph,
+      targets: externalTargets,
+      baseUri: context.document.identity.uri
+    });
+    const externalGraphs = loaded.graphs;
+    const diagnostics = loaded.diagnostics;
 
-    const entryDiagnostics =
-      resolutionDiagnostics.length > 0
-        ? Object.freeze(resolutionDiagnostics.map(toDomainDiagnostic))
-        : undefined;
+    try {
+      const resolver = createDocumentResolver(graph.graph, {
+        context: this.#overrideContext,
+        maxDepth: this.#maxDepth,
+        document: context.decoded,
+        transforms: this.#transforms,
+        externalGraphs,
+        allowNetworkReferences: this.#allowNetworkReferences
+      });
 
-    const entry: TokenCacheSnapshot = {
-      documentHash: documentHash ?? computeDocumentHash(document),
-      flattened: flatten ? (flattenedTokens ?? []) : undefined,
-      metadataIndex,
-      resolutionIndex: flatten ? resolutionIndex : undefined,
-      diagnostics: entryDiagnostics,
-      timestamp: this.#clock()
-    } satisfies TokenCacheSnapshot;
+      const outcome: ResolutionOutcome<ResolverInstance> = Object.freeze({
+        identity: graph.identity,
+        result: resolver,
+        diagnostics:
+          diagnostics.length === 0 ? EMPTY_RESOLUTION_EVENTS : Object.freeze([...diagnostics])
+      });
 
-    const snapshot: TokenSnapshot<TokenCacheSnapshot> = {
-      token: entry,
-      diagnostics: snapshotDiagnostics
-    } satisfies TokenSnapshot<TokenCacheSnapshot>;
-
-    const diagnostics: PipelineDiagnostics = snapshotDiagnostics.length
-      ? { events: snapshotDiagnostics }
-      : EMPTY_PIPELINE_DIAGNOSTICS;
-
-    return { outcome: snapshot, diagnostics } satisfies PipelineResult<
-      TokenSnapshot<TokenCacheSnapshot> | undefined
-    >;
+      return {
+        outcome,
+        diagnostics: EMPTY_PIPELINE_DIAGNOSTICS
+      } satisfies PipelineResult<ResolutionOutcome<ResolverInstance>>;
+    } catch (error) {
+      return {
+        outcome: undefined,
+        diagnostics: createFailureDiagnostics(
+          DiagnosticCodes.resolver.FAILED,
+          error instanceof Error ? error.message : 'Failed to create document resolver.'
+        )
+      } satisfies PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>;
+    }
   }
 }
 
@@ -461,7 +464,7 @@ function freezeDecodedDocument(decoded: DecodedDocument): DecodedDocument {
   });
 }
 
-function createFailureDiagnostics(code: string, message: string): PipelineDiagnostics {
+function createFailureDiagnostics(code: DiagnosticCode, message: string): PipelineDiagnostics {
   const event: DiagnosticEvent = Object.freeze({
     code,
     message,
@@ -473,7 +476,7 @@ function createFailureDiagnostics(code: string, message: string): PipelineDiagno
 
 function createLoaderDiagnostics(error: unknown): PipelineDiagnostics {
   if (error instanceof DocumentLoaderError) {
-    return createFailureDiagnostics(DiagnosticCodes.loader.TOO_LARGE, error.message);
+    return createFailureDiagnostics(diagnosticCodeForLoaderError(error), error.message);
   }
 
   const message = error instanceof Error ? error.message : 'Failed to load DTIF document.';

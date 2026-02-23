@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { domain } from '../../src/index.js';
+import { formatDiagnosticCode } from '../../src/diagnostics/codes.js';
 
 void test('domain models: creates diagnostic events with optional related information', () => {
   const related: domain.DiagnosticEventRelatedInformation = {
@@ -9,7 +10,7 @@ void test('domain models: creates diagnostic events with optional related inform
   };
 
   const event: domain.DiagnosticEvent = {
-    code: 'example/code',
+    code: formatDiagnosticCode('Core', 9, 9),
     message: 'Example message',
     severity: 'warning',
     related: [related]
@@ -22,7 +23,7 @@ void test('domain models: allows pipeline results to surface diagnostics', () =>
   const diagnostics: domain.PipelineDiagnostics = {
     events: [
       {
-        code: 'pipeline/check',
+        code: formatDiagnosticCode('Core', 8, 8),
         message: 'ok',
         severity: 'info'
       }

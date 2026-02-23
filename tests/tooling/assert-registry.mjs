@@ -13,7 +13,7 @@ function readJSON(filePath) {
 
 function collectBuiltInTypes(schema) {
   const builtIn = new Set();
-  const tokenSchema = schema?.$defs?.token;
+  const tokenSchema = schema?.$defs?.['token-core'];
   if (tokenSchema && Array.isArray(tokenSchema.allOf)) {
     for (const clause of tokenSchema.allOf) {
       const typeConst = clause?.if?.properties?.$type?.const;

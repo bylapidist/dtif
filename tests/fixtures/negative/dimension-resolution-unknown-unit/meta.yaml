@@ -1,0 +1,5 @@
+name: dimension-resolution-unknown-unit
+description: resolution dimensions must use CSS resolution units
+assertions:
+  - schema
+tags: [dimension]

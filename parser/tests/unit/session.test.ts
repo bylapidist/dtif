@@ -9,8 +9,8 @@ import { decodeDocument } from '../../src/io/decoder.js';
 import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { DocumentCache, DocumentHandle, RawDocument } from '../../src/types.js';
 import type { DocumentLoader } from '../../src/io/document-loader.js';
-import type { DiagnosticEvent } from '../../src/domain/models.js';
 import { areByteArraysEqual } from '../../src/utils/bytes.js';
+import { findDiagnostic, hasErrors } from '../helpers/diagnostics.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -179,6 +179,23 @@ void test('parseDocument surfaces loader diagnostics when documents exceed the b
   assert.equal(hasErrors(result.diagnostics), true);
 });
 
+void test('parseDocument surfaces host allow-list diagnostics for disallowed HTTP(S) hosts', async () => {
+  const loader = new DefaultDocumentLoader({
+    allowHttp: true,
+    httpAllowedHosts: ['allowed.example']
+  });
+  const session = new ParseSession({ loader });
+
+  const result = await session.parseDocument('https://blocked.example/tokens.json');
+  const hostDiagnostic = findDiagnostic(
+    result.diagnostics,
+    DiagnosticCodes.loader.HOST_NOT_ALLOWED
+  );
+
+  assert.ok(hostDiagnostic, 'expected host allow-list diagnostic for disallowed hosts');
+  assert.equal(hasErrors(result.diagnostics), true);
+});
+
 void test('ParseSession refreshes the cache when document bytes change', async () => {
   const uri = new URL('memory://cache/refresh');
   const staleDocument = await decodeDocument(
@@ -271,6 +288,26 @@ void test('ParseSession assigns unique URIs to inline documents for caching', as
   assert.ok(firstDocument);
   assert.ok(secondDocument);
   assert.notEqual(firstDocument.identity.uri.href, secondDocument.identity.uri.href);
+});
+
+void test('ParseSession reuses deterministic URI identity for identical inline content', async () => {
+  const cache = new RecordingCache();
+  const session = new ParseSession({ documentCache: cache });
+  const content = JSON.stringify({
+    $schema: 'https://dtif.lapidist.net/schema/core.json',
+    value: 7
+  });
+
+  const first = await session.parseDocument(content);
+  const second = await session.parseDocument(content);
+
+  assert.equal(cache.getCalls, 2, 'expected both parses to consult cache');
+  assert.equal(cache.setCalls, 1, 'expected second parse to reuse cached document');
+  const firstDocument = first.document;
+  const secondDocument = second.document;
+  assert.ok(firstDocument);
+  assert.ok(secondDocument);
+  assert.equal(firstDocument.identity.uri.href, secondDocument.identity.uri.href);
 });
 
 void test('ParseSession surfaces diagnostics when cache writes fail', async () => {
@@ -380,17 +417,6 @@ void test('ParseSession surfaces diagnostics when extension plugins throw', asyn
   const extensions = result.normalized?.extensions ?? [];
   assert.equal(extensions.length, 0);
 });
-
-function hasErrors(events: readonly DiagnosticEvent[]): boolean {
-  return events.some((event) => event.severity === 'error');
-}
-
-function findDiagnostic(
-  events: readonly DiagnosticEvent[],
-  code: string
-): DiagnosticEvent | undefined {
-  return events.find((event) => event.code === code);
-}
 
 class StaticLoader implements DocumentLoader {
   constructor(

@@ -11,84 +11,56 @@ import type {
   GraphTokenNode,
   GraphReferenceField
 } from '../graph/nodes.js';
-import {
-  EMPTY_DIAGNOSTICS,
-  EMPTY_OVERRIDES,
-  EMPTY_WARNINGS,
-  EMPTY_TRANSFORM_EVALUATIONS
-} from './internal/constants.js';
+import { EMPTY_DIAGNOSTICS, EMPTY_OVERRIDES, EMPTY_WARNINGS } from './internal/constants.js';
 import {
   finalizeResolution,
-  freezeResultDiagnostics,
-  createTransformFailureDiagnostic,
   createTraceStep,
   createFieldSource,
   createTargetSource,
-  mergeDiagnostics,
-  conditionMatches
+  mergeDiagnostics
 } from './internal/helpers.js';
-import {
-  normalizeContext,
-  normalizeMaxDepth,
-  indexOverrides,
-  normalizeTransforms
-} from './internal/context.js';
+import { normalizeContext, normalizeMaxDepth, normalizeTransforms } from './internal/context.js';
 import { ResolvedTokenImpl } from './internal/resolved-token.js';
 import type {
   DocumentResolverOptions,
   ResolutionResult,
   ResolutionSource,
-  AppliedOverride,
   ResolutionTraceStep
 } from './types.js';
-import type {
-  ResolvedTokenTransformEntry,
-  ResolvedTokenTransformEvaluation
-} from '../plugins/index.js';
+import type { ResolvedTokenTransformEntry } from '../plugins/types.js';
 import { createDiagnosticCollector, type DiagnosticCollector } from './internal/diagnostics.js';
-
-interface ResolutionState {
-  readonly pointer: JsonPointer;
-  readonly type?: string;
-  readonly value?: unknown;
-  readonly source?: ResolutionSource;
-  readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly DiagnosticEvent[];
-  readonly trace: readonly ResolutionTraceStep[];
-}
-
-interface OverrideEvaluation {
-  readonly matched: boolean;
-  readonly state?: OverrideState;
-  readonly diagnostics: readonly DiagnosticEvent[];
-}
-
-interface OverrideState {
-  readonly type?: string;
-  readonly value?: unknown;
-  readonly source?: ResolutionSource;
-  readonly overrides: readonly AppliedOverride[];
-  readonly warnings: readonly DiagnosticEvent[];
-  readonly trace: readonly ResolutionTraceStep[];
-}
+import { isOverrideValueCompatible } from './internal/type-compatibility.js';
+import { runTokenTransforms } from './internal/transform-runner.js';
+import { createResolutionKey } from './internal/resolution-key.js';
+import type { OverrideEvaluation, OverrideState, ResolutionState } from './internal/state.js';
+import { doesOverrideApply } from './internal/override-evaluator.js';
+import {
+  indexOverridesByGraph,
+  normalizeExternalGraphs,
+  type OverridesByGraph
+} from './internal/external-graph-index.js';
 
 export class DocumentResolver {
   private readonly graph: DocumentGraph;
+  private readonly graphs: ReadonlyMap<string, DocumentGraph>;
   private readonly context: ReadonlyMap<string, unknown>;
-  private readonly overrides: ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>;
+  private readonly overridesByGraph: OverridesByGraph;
   private readonly maxDepth: number;
   private readonly document?: DecodedDocument;
   private readonly transforms: readonly ResolvedTokenTransformEntry[];
-  private readonly cache = new Map<JsonPointer, ResolutionState>();
-  private readonly pending = new Set<JsonPointer>();
+  private readonly allowNetworkReferences: boolean;
+  private readonly cache = new Map<string, ResolutionState>();
+  private readonly pending = new Set<string>();
 
   constructor(graph: DocumentGraph, options: DocumentResolverOptions = {}) {
     this.graph = graph;
+    this.graphs = normalizeExternalGraphs(graph, options.externalGraphs);
     this.context = normalizeContext(options.context);
-    this.overrides = indexOverrides(graph.overrides);
+    this.overridesByGraph = indexOverridesByGraph(this.graphs);
     this.maxDepth = normalizeMaxDepth(options.maxDepth);
     this.document = options.document;
     this.transforms = normalizeTransforms(options.transforms);
+    this.allowNetworkReferences = options.allowNetworkReferences ?? false;
   }
 
   resolve(pointer: JsonPointer): ResolutionResult {
@@ -96,7 +68,7 @@ export class DocumentResolver {
 
     try {
       const normalized = normalizeJsonPointer(pointer);
-      const state = this.resolveInternal(normalized, diagnostics, 0);
+      const state = this.resolveInternalInGraph(this.graph.uri, normalized, diagnostics, 0);
       if (!state) {
         return finalizeResolution(undefined, diagnostics);
       }
@@ -111,7 +83,7 @@ export class DocumentResolver {
         warnings: state.warnings,
         trace: state.trace
       });
-      const transforms = this.applyTransforms(token, diagnostics);
+      const transforms = runTokenTransforms(token, this.transforms, this.document, diagnostics);
 
       return finalizeResolution(token, diagnostics, transforms);
     } catch (error) {
@@ -125,22 +97,25 @@ export class DocumentResolver {
     }
   }
 
-  private resolveInternal(
+  private resolveInternalInGraph(
+    graphUri: URL,
     pointer: JsonPointer,
     diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState | undefined {
-    if (this.cache.has(pointer)) {
-      const cached = this.cache.get(pointer);
+    const cacheKey = createResolutionKey(graphUri, pointer);
+
+    if (this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
       if (cached) {
         return cached;
       }
     }
 
-    if (this.pending.has(pointer)) {
+    if (this.pending.has(cacheKey)) {
       diagnostics.add({
         code: DiagnosticCodes.resolver.CYCLE_DETECTED,
-        message: `Circular reference detected while resolving "${pointer}".`,
+        message: `Circular reference detected while resolving "${graphUri.href}#${pointer}".`,
         severity: 'error',
         pointer
       });
@@ -159,12 +134,24 @@ export class DocumentResolver {
       return undefined;
     }
 
-    const node = this.graph.nodes.get(pointer);
+    const graph = this.graphs.get(graphUri.href);
+
+    if (!graph) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+        message: `External document "${graphUri.href}" is not available for resolution.`,
+        severity: 'error',
+        pointer
+      });
+      return undefined;
+    }
+
+    const node = graph.nodes.get(pointer);
 
     if (!node) {
       diagnostics.add({
         code: DiagnosticCodes.resolver.UNKNOWN_POINTER,
-        message: `No token exists at pointer "${pointer}".`,
+        message: `No token exists at pointer "${graphUri.href}#${pointer}".`,
         severity: 'error',
         pointer
       });
@@ -182,30 +169,32 @@ export class DocumentResolver {
       return undefined;
     }
 
-    this.pending.add(pointer);
+    this.pending.add(cacheKey);
 
     try {
-      const base = this.resolveBaseNode(node, diagnostics, depth);
+      const base = this.resolveBaseNode(graph, node, diagnostics, depth);
       if (!base) {
         return undefined;
       }
 
-      const withOverrides = this.applyOverrides(node.pointer, base, diagnostics, depth);
-      this.cache.set(pointer, withOverrides);
+      const withOverrides = this.applyOverrides(graph, node.pointer, base, diagnostics, depth);
+      this.validateDeprecatedReplacement(graph, node, withOverrides, diagnostics);
+      this.cache.set(cacheKey, withOverrides);
       return withOverrides;
     } finally {
-      this.pending.delete(pointer);
+      this.pending.delete(cacheKey);
     }
   }
 
   private resolveBaseNode(
+    graph: DocumentGraph,
     node: GraphNode,
     diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState | undefined {
     switch (node.kind) {
       case 'token':
-        return this.resolveTokenNode(node, diagnostics);
+        return this.resolveTokenNode(graph, node, diagnostics);
       case 'alias':
         return this.resolveAliasNode(node, diagnostics, depth);
       default:
@@ -214,6 +203,7 @@ export class DocumentResolver {
   }
 
   private resolveTokenNode(
+    graph: DocumentGraph,
     node: GraphTokenNode,
     diagnostics: DiagnosticCollector
   ): ResolutionState {
@@ -225,7 +215,7 @@ export class DocumentResolver {
 
     if (valueField) {
       value = valueField.value;
-      source = createFieldSource(valueField, this.graph.uri);
+      source = createFieldSource(valueField, graph.uri);
     } else {
       diagnostics.add({
         code: DiagnosticCodes.resolver.MISSING_BASE_VALUE,
@@ -256,26 +246,7 @@ export class DocumentResolver {
     const tracePrefix = createTraceStep(node.pointer, 'alias', node.span);
     const target = node.ref.value;
 
-    if (target.external) {
-      diagnostics.add({
-        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
-        message: `Alias "${node.pointer}" references external pointer "${target.uri.href}${target.pointer}" which is not yet supported.`,
-        severity: 'error',
-        pointer: node.pointer,
-        span: node.ref.span
-      });
-      return {
-        pointer: node.pointer,
-        type: node.type.value,
-        value: undefined,
-        source: undefined,
-        overrides: EMPTY_OVERRIDES,
-        warnings: EMPTY_WARNINGS,
-        trace: Object.freeze([tracePrefix])
-      };
-    }
-
-    const targetState = this.resolveInternal(target.pointer, diagnostics, depth + 1);
+    const targetState = this.resolveTargetReference(target, diagnostics, depth + 1, node.ref.span);
     if (!targetState) {
       return {
         pointer: node.pointer,
@@ -321,12 +292,13 @@ export class DocumentResolver {
   }
 
   private applyOverrides(
+    graph: DocumentGraph,
     pointer: JsonPointer,
     base: ResolutionState,
     diagnostics: DiagnosticCollector,
     depth: number
   ): ResolutionState {
-    const overrides = this.overrides.get(pointer);
+    const overrides = this.overridesByGraph.get(graph.uri.href)?.get(pointer);
     if (!overrides || overrides.length === 0) {
       return base;
     }
@@ -361,28 +333,105 @@ export class DocumentResolver {
     };
   }
 
+  private validateDeprecatedReplacement(
+    graph: DocumentGraph,
+    node: GraphTokenNode | GraphAliasNode,
+    state: ResolutionState,
+    diagnostics: DiagnosticCollector
+  ): void {
+    const replacement = node.metadata.deprecated?.value.replacement;
+    if (!replacement) {
+      return;
+    }
+
+    let resolved: URL;
+    try {
+      resolved = new URL(replacement.value, graph.uri);
+    } catch {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+        message: `Deprecated replacement "${replacement.value}" is not a valid reference URI.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const pointer = normalizeJsonPointer(resolved.hash.length > 0 ? resolved.hash : '#');
+    const targetUri = new URL(resolved.href);
+    targetUri.hash = '';
+    const target = Object.freeze({
+      uri: targetUri,
+      pointer,
+      external: targetUri.href !== graph.uri.href
+    });
+    const targetGraph = this.graphs.get(target.uri.href);
+    if (!targetGraph) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+        message: `Deprecated replacement "${replacement.value}" points to an unavailable document.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const targetNode = targetGraph.nodes.get(target.pointer);
+    if (!targetNode || targetNode.kind === 'collection') {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.UNKNOWN_POINTER,
+        message: `Deprecated replacement "${replacement.value}" must resolve to an existing token.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const expectedType = state.type;
+    if (!expectedType) {
+      return;
+    }
+
+    const targetType = targetNode.type?.value;
+    if (!targetType) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Deprecated replacement "${replacement.value}" must resolve to a token declaring "$type" "${expectedType}".`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    if (targetType !== expectedType) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Deprecated replacement "${replacement.value}" resolved to type "${targetType}" but expected "${expectedType}".`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span,
+        related: [
+          {
+            message: 'Replacement token resolved here.',
+            pointer: target.pointer,
+            span: targetNode.span
+          }
+        ]
+      });
+    }
+  }
+
   private evaluateOverride(
     override: GraphOverrideNode,
     base: ResolutionState,
     depth: number
   ): OverrideEvaluation {
-    if (!this.doesOverrideApply(override)) {
+    if (!doesOverrideApply(override, this.context)) {
       return { matched: false, diagnostics: EMPTY_DIAGNOSTICS };
-    }
-
-    if (override.token.value.external) {
-      return {
-        matched: true,
-        diagnostics: [
-          {
-            code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
-            message: `Override "$token" target "${override.token.value.uri.href}${override.token.value.pointer}" is external and not yet supported.`,
-            severity: 'error',
-            pointer: override.pointer,
-            span: override.token.span
-          }
-        ]
-      };
     }
 
     const traceSteps: ResolutionTraceStep[] = [
@@ -403,7 +452,13 @@ export class DocumentResolver {
     }
 
     if (!state && override.value) {
-      state = this.resolveOverrideValue(override, override.value, traceSteps);
+      state = this.resolveOverrideValue(
+        override,
+        override.value,
+        base,
+        localDiagnostics,
+        traceSteps
+      );
     }
 
     if (!state && override.fallback) {
@@ -434,25 +489,6 @@ export class DocumentResolver {
     };
   }
 
-  private doesOverrideApply(override: GraphOverrideNode): boolean {
-    const conditions = override.when.value;
-    let recognized = false;
-
-    for (const [key, expected] of Object.entries(conditions)) {
-      if (!this.context.has(key)) {
-        return false;
-      }
-
-      recognized = true;
-      const actual = this.context.get(key);
-      if (!conditionMatches(expected, actual)) {
-        return false;
-      }
-    }
-
-    return recognized;
-  }
-
   private resolveOverrideRef(
     override: GraphOverrideNode,
     ref: GraphReferenceField,
@@ -463,19 +499,8 @@ export class DocumentResolver {
   ): OverrideState | undefined {
     const target = ref.value;
 
-    if (target.external) {
-      diagnostics.add({
-        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
-        message: `Override "${override.pointer}" references external pointer "${target.uri.href}${target.pointer}" which is not yet supported.`,
-        severity: 'error',
-        pointer: ref.pointer,
-        span: ref.span
-      });
-      return undefined;
-    }
-
     const targetDiagnostics = createDiagnosticCollector();
-    const targetState = this.resolveInternal(target.pointer, targetDiagnostics, depth + 1);
+    const targetState = this.resolveTargetReference(target, targetDiagnostics, depth + 1, ref.span);
     diagnostics.addMany(targetDiagnostics.toArray());
     if (!targetState) {
       diagnostics.add({
@@ -534,8 +559,21 @@ export class DocumentResolver {
   private resolveOverrideValue(
     override: GraphOverrideNode,
     valueField: NonNullable<GraphOverrideNode['value']>,
+    base: ResolutionState,
+    diagnostics: DiagnosticCollector,
     trace: ResolutionTraceStep[]
-  ): OverrideState {
+  ): OverrideState | undefined {
+    if (!isOverrideValueCompatible(base.type, valueField.value)) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Override "${override.pointer}" expects type "${base.type ?? '(unknown)'}" but inline $value is incompatible.`,
+        severity: 'error',
+        pointer: valueField.pointer,
+        span: valueField.span
+      });
+      return undefined;
+    }
+
     const source = createFieldSource(valueField, this.graph.uri);
 
     const overrides = Object.freeze([
@@ -551,6 +589,7 @@ export class DocumentResolver {
     const traceSteps = Object.freeze([...trace]);
 
     return {
+      type: base.type,
       value: valueField.value,
       source,
       overrides,
@@ -628,69 +667,71 @@ export class DocumentResolver {
 
     if (entry.ref) {
       const target = entry.ref.value;
-      if (target.external) {
-        diagnostics.add({
-          code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
-          message: `Fallback entry "${entry.pointer}" references external pointer "${target.uri.href}${target.pointer}" which is not yet supported.`,
-          severity: 'error',
-          pointer: entry.ref.pointer,
-          span: entry.ref.span
-        });
-      } else {
-        const targetDiagnostics = createDiagnosticCollector();
-        const targetState = this.resolveInternal(
-          target.pointer,
-          targetDiagnostics,
-          resolutionDepth + 1
-        );
-        diagnostics.addMany(targetDiagnostics.toArray());
-        if (targetState) {
-          const type = base.type ?? targetState.type;
-          if (base.type && targetState.type && base.type !== targetState.type) {
-            diagnostics.add({
-              code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
-              message: `Fallback entry "${entry.pointer}" expects type "${base.type}" but target "${target.pointer}" resolved to type "${targetState.type}".`,
-              severity: 'error',
-              pointer: entry.ref.pointer,
-              span: entry.ref.span,
-              related: [
-                {
-                  message: 'Target token resolved here.',
-                  pointer: target.pointer,
-                  span: targetState.source?.span
-                }
-              ]
-            });
-          }
-
-          const source = targetState.source ?? createTargetSource(target, entry.ref.span);
-          const overrides = Object.freeze([
-            ...targetState.overrides,
-            Object.freeze({
-              pointer: entry.pointer,
-              span: entry.span,
-              kind: 'fallback-ref',
-              depth,
-              source
-            })
-          ]);
-
-          const warnings = mergeDiagnostics(targetState.warnings, []);
-          const traceSteps = Object.freeze([...fallbackTrace, ...targetState.trace]);
-
-          return {
-            type,
-            value: targetState.value,
-            source,
-            overrides,
-            warnings,
-            trace: traceSteps
-          };
+      const targetDiagnostics = createDiagnosticCollector();
+      const targetState = this.resolveTargetReference(
+        target,
+        targetDiagnostics,
+        resolutionDepth + 1,
+        entry.ref.span
+      );
+      diagnostics.addMany(targetDiagnostics.toArray());
+      if (targetState) {
+        const type = base.type ?? targetState.type;
+        if (base.type && targetState.type && base.type !== targetState.type) {
+          diagnostics.add({
+            code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+            message: `Fallback entry "${entry.pointer}" expects type "${base.type}" but target "${target.pointer}" resolved to type "${targetState.type}".`,
+            severity: 'error',
+            pointer: entry.ref.pointer,
+            span: entry.ref.span,
+            related: [
+              {
+                message: 'Target token resolved here.',
+                pointer: target.pointer,
+                span: targetState.source?.span
+              }
+            ]
+          });
         }
+
+        const source = targetState.source ?? createTargetSource(target, entry.ref.span);
+        const overrides = Object.freeze([
+          ...targetState.overrides,
+          Object.freeze({
+            pointer: entry.pointer,
+            span: entry.span,
+            kind: 'fallback-ref',
+            depth,
+            source
+          })
+        ]);
+
+        const warnings = mergeDiagnostics(targetState.warnings, []);
+        const traceSteps = Object.freeze([...fallbackTrace, ...targetState.trace]);
+
+        return {
+          type,
+          value: targetState.value,
+          source,
+          overrides,
+          warnings,
+          trace: traceSteps
+        };
       }
     }
 
     if (entry.value) {
+      if (!isOverrideValueCompatible(base.type, entry.value.value)) {
+        diagnostics.add({
+          code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+          message: `Fallback entry "${entry.pointer}" expects type "${base.type ?? '(unknown)'}" but inline $value is incompatible.`,
+          severity: 'error',
+          pointer: entry.value.pointer,
+          span: entry.value.span
+        });
+        return undefined;
+      }
+
       const source = createFieldSource(entry.value, this.graph.uri);
       const overrides = Object.freeze([
         Object.freeze({
@@ -704,6 +745,7 @@ export class DocumentResolver {
       const traceSteps = Object.freeze([...fallbackTrace]);
 
       return {
+        type: base.type,
         value: entry.value.value,
         source,
         overrides,
@@ -726,43 +768,39 @@ export class DocumentResolver {
     return undefined;
   }
 
-  private applyTransforms(
-    token: ResolvedTokenImpl,
-    diagnostics: DiagnosticCollector
-  ): readonly ResolvedTokenTransformEvaluation[] {
-    if (this.transforms.length === 0 || !this.document) {
-      return EMPTY_TRANSFORM_EVALUATIONS;
-    }
+  private resolveTargetReference(
+    target: GraphReferenceField['value'],
+    diagnostics: DiagnosticCollector,
+    depth: number,
+    span: GraphReferenceField['span']
+  ): ResolutionState | undefined {
+    if (target.external) {
+      const protocol = target.uri.protocol.toLowerCase();
+      const networkReference = protocol === 'http:' || protocol === 'https:';
+      if (networkReference && !this.allowNetworkReferences) {
+        diagnostics.add({
+          code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+          message: `Reference "${target.uri.href}${target.pointer}" uses a network scheme and requires explicit opt-in.`,
+          severity: 'error',
+          pointer: target.pointer,
+          span
+        });
+        return undefined;
+      }
 
-    const evaluations: ResolvedTokenTransformEvaluation[] = [];
-
-    for (const entry of this.transforms) {
-      try {
-        const result = entry.transform(token, { document: this.document });
-        const transformDiagnostics = freezeResultDiagnostics(result?.diagnostics);
-        if (transformDiagnostics.length > 0) {
-          for (const diagnostic of transformDiagnostics) {
-            diagnostics.add(diagnostic);
-          }
-        }
-        evaluations.push(
-          Object.freeze({
-            plugin: entry.plugin,
-            pointer: token.pointer,
-            data: result?.data,
-            diagnostics: transformDiagnostics
-          })
-        );
-      } catch (error) {
-        diagnostics.add(createTransformFailureDiagnostic(entry.plugin, token.pointer, error));
+      if (!this.graphs.has(target.uri.href)) {
+        diagnostics.add({
+          code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+          message: `Reference "${target.uri.href}${target.pointer}" could not be resolved because document "${target.uri.href}" is unavailable.`,
+          severity: 'error',
+          pointer: target.pointer,
+          span
+        });
+        return undefined;
       }
     }
 
-    if (evaluations.length === 0) {
-      return EMPTY_TRANSFORM_EVALUATIONS;
-    }
-
-    return Object.freeze(evaluations);
+    return this.resolveInternalInGraph(target.uri, target.pointer, diagnostics, depth);
   }
 }
 

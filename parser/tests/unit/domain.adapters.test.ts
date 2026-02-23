@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { domain, domainAdapters } from '../../src/index.js';
-import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
+import { DiagnosticCodes, formatDiagnosticCode } from '../../src/diagnostics/codes.js';
 import type { DocumentLoader, DocumentLoaderContext } from '../../src/io/document-loader.js';
 import type { DocumentHandle, SourceMap, Diagnostic } from '../../src/types.js';
 import { PluginRegistry } from '../../src/plugins/index.js';
 import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { ResolvedToken } from '../../src/resolver/types.js';
 import type { TokenMetadataSnapshot, ResolvedTokenView } from '../../src/tokens/types.js';
+import { TokenFlatteningAdapter } from '../../src/tokens/token-flattening-adapter.js';
 
 const EMPTY_PIPELINE: domain.PipelineDiagnostics = Object.freeze({ events: Object.freeze([]) });
 
@@ -119,7 +120,7 @@ void test('domain adapters: token flattening adapter assembles cache entries', (
     severity: 'warning'
   } satisfies Diagnostic;
 
-  const adapter = new domainAdapters.TokenFlatteningAdapter({
+  const adapter = new TokenFlatteningAdapter({
     metadataSnapshot: () => metadata,
     resolutionSnapshot: (_graph, _resolver, options) => {
       options?.onDiagnostic?.(resolutionDiagnostic);
@@ -350,7 +351,7 @@ void test('domain adapters: document normalization adapter delegates to provided
         pipelineResult(normalized, {
           events: [
             {
-              code: 'normalizer/test',
+              code: formatDiagnosticCode('Normaliser', 9, 0),
               message: 'ok',
               severity: 'info'
             }
@@ -362,7 +363,7 @@ void test('domain adapters: document normalization adapter delegates to provided
   const result = await adapter.normalize(decoded);
 
   assert.equal(result.outcome, normalized);
-  assert.equal(result.diagnostics.events[0]?.code, 'normalizer/test');
+  assert.equal(result.diagnostics.events[0]?.code, formatDiagnosticCode('Normaliser', 9, 0));
 });
 
 void test('domain adapters: graph construction adapter delegates to provided builder', async () => {
@@ -379,7 +380,7 @@ void test('domain adapters: graph construction adapter delegates to provided bui
       pipelineResult(snapshot, {
         events: [
           {
-            code: 'graph/info',
+            code: formatDiagnosticCode('Graph', 9, 0),
             message: 'ok',
             severity: 'info'
           }
@@ -390,5 +391,5 @@ void test('domain adapters: graph construction adapter delegates to provided bui
   const result = await adapter.build(normalized);
 
   assert.equal(result.outcome, snapshot);
-  assert.equal(result.diagnostics.events[0]?.code, 'graph/info');
+  assert.equal(result.diagnostics.events[0]?.code, formatDiagnosticCode('Graph', 9, 0));
 });

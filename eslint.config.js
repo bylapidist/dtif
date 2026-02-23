@@ -31,5 +31,37 @@ export default [
     rules: {
       '@typescript-eslint/consistent-type-assertions': 'off'
     }
+  },
+  {
+    files: ['parser/src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/session/internal/**'],
+              message: 'Import session APIs through parser/src/session/options.ts or runtime.ts.'
+            },
+            {
+              group: ['**/resolver/internal/**'],
+              message: 'Import resolver internals through parser/src/resolver/index.ts.'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    files: [
+      'parser/src/session.ts',
+      'parser/src/session/options.ts',
+      'parser/src/session/runtime.ts',
+      'parser/src/session/internal/**/*.ts',
+      'parser/src/resolver/**/*.ts'
+    ],
+    rules: {
+      'no-restricted-imports': 'off'
+    }
   }
 ];

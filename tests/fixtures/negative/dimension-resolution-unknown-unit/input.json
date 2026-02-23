@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "resolution": {
+    "display": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "resolution", "value": 2, "unit": "pixels" }
+    }
+  }
+}

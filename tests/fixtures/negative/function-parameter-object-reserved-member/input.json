@@ -1,0 +1,16 @@
+{
+  "$version": "1.0.0",
+  "dimension": {
+    "example": {
+      "$type": "dimension",
+      "$value": {
+        "fn": "calc",
+        "parameters": [
+          {
+            "$custom": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@
 
 ### Diagnostics and validation
 
-- Parses DTIF documents with tolerant JSONC support and precise error ranges.
+- Parses DTIF documents as strict JSON (no comments or trailing commas) with precise error ranges.
 - Validates against the canonical DTIF schema via `@lapidist/dtif-validator`.
 - Publishes diagnostics on open and change events, clearing them automatically when documents close.
 
@@ -26,7 +26,7 @@
 
 ### Authoring assistance
 
-- Supplies contextual completions for `$type` identifiers, measurement units, and `$extensions` namespaces sourced from the DTIF registry.
+- Supplies contextual completions for `$type` identifiers (registry-backed), measurement units, and `$extensions` namespaces based on reverse-DNS snippets and observed workspace keys.
 - Orders completion results by relevance to the active pointer scope.
 
 ## Installation

@@ -1,11 +1,7 @@
 import type { DocumentHandle } from '../types.js';
 import type { DecodedDocument } from '../domain/models.js';
-import { decodeBytes } from './decoder/encoding.js';
-import { buildSourceMap } from './decoder/source-map.js';
-import { normalizeInlineYamlText } from './decoder/inline-yaml.js';
-import { parseYaml, toJavaScript } from './decoder/yaml.js';
-import { cloneJsonValue } from '../utils/clone-json.js';
-import { createSyntheticSourceMap } from './decoder/synthetic-source-map.js';
+import { decodeProvidedDataDocument, decodeTextDocument } from './decoder/core.js';
+import type { ProvidedDataHandle } from './decoder/core.js';
 
 export { DecoderError } from './decoder/errors.js';
 
@@ -20,69 +16,15 @@ function ensureError(error: unknown): Error {
 export function decodeDocument(handle: DocumentHandle): Promise<DecodedDocument> {
   if (hasProvidedData(handle)) {
     try {
-      return Promise.resolve(Object.freeze(createDocumentFromProvidedData(handle)));
+      return Promise.resolve(decodeProvidedDataDocument(handle));
     } catch (error) {
       return Promise.reject(ensureError(error));
     }
   }
 
   try {
-    const { text: decodedText } = decodeBytes(handle.bytes);
-    const text = normalizeInlineYamlText(decodedText);
-    const { document: yamlDocument, lineCounter } = parseYaml(text);
-    const data = toJavaScript(yamlDocument);
-    const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
-
-    return Promise.resolve(
-      Object.freeze({
-        identity: Object.freeze({
-          uri: handle.uri,
-          contentType: handle.contentType
-        }),
-        bytes: handle.bytes,
-        text,
-        data,
-        sourceMap
-      })
-    );
+    return Promise.resolve(decodeTextDocument(handle));
   } catch (error) {
     return Promise.reject(ensureError(error));
   }
-}
-
-type ProvidedDataHandle = DocumentHandle & { data: NonNullable<DocumentHandle['data']> };
-
-function createDocumentFromProvidedData(handle: ProvidedDataHandle): DecodedDocument {
-  const data = cloneJsonValue(handle.data);
-
-  if (typeof handle.text === 'string' && handle.text.length > 0) {
-    const text = normalizeInlineYamlText(handle.text);
-    const { document: yamlDocument, lineCounter } = parseYaml(text);
-    const sourceMap = buildSourceMap(handle, text, yamlDocument.contents, lineCounter);
-
-    return {
-      identity: Object.freeze({
-        uri: handle.uri,
-        contentType: handle.contentType
-      }),
-      bytes: handle.bytes,
-      text,
-      data,
-      sourceMap
-    } satisfies DecodedDocument;
-  }
-
-  const text = normalizeInlineYamlText(handle.text ?? '');
-  const sourceMap = createSyntheticSourceMap(handle.uri, data);
-
-  return {
-    identity: Object.freeze({
-      uri: handle.uri,
-      contentType: handle.contentType
-    }),
-    bytes: handle.bytes,
-    text,
-    data,
-    sourceMap
-  } satisfies DecodedDocument;
 }

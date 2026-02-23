@@ -94,9 +94,63 @@ void test('SchemaGuard reports diagnostics with pointers and spans for schema vi
   assert.ok(/schema violation/i.test(diagnostic.message));
   const related = diagnostic.related ?? [];
   assert.ok(
-    related.some((info) => /at least 1 item/i.test(info.message)),
+    related.some((info) => /at least 3 item/i.test(info.message)),
     'expected related information describing the minItems violation'
   );
+});
+
+void test('SchemaGuard reports unresolved $ref pointers as validation errors', async () => {
+  const json = JSON.stringify(
+    {
+      color: {
+        alias: {
+          $type: 'color',
+          $ref: '#/color/missing'
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const raw = await decodeJsonDocument(json);
+  const guard = new SchemaGuard();
+
+  const result = guard.validate(raw);
+
+  assert.equal(result.valid, false);
+  const diagnostic = result.diagnostics.find((entry) => entry.pointer === '#/color/alias/$ref');
+  assert.ok(diagnostic, 'expected unresolved pointer diagnostic');
+  assert.equal(diagnostic.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
+  assert.equal(diagnostic.severity, 'error');
+  assert.ok(/unresolved pointer/i.test(diagnostic.message));
+});
+
+void test('SchemaGuard surfaces semantic warnings for unknown token types', async () => {
+  const json = JSON.stringify(
+    {
+      token: {
+        custom: {
+          $type: 'com.example.spacing',
+          $value: 4
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const raw = await decodeJsonDocument(json);
+  const guard = new SchemaGuard();
+
+  const result = guard.validate(raw);
+
+  assert.equal(result.valid, true);
+  const diagnostic = result.diagnostics.find((entry) => entry.pointer === '#/token/custom/$type');
+  assert.ok(diagnostic, 'expected unknown type warning diagnostic');
+  assert.equal(diagnostic.code, DiagnosticCodes.schemaGuard.INVALID_DOCUMENT);
+  assert.equal(diagnostic.severity, 'warning');
+  assert.ok(/unknown \$type/i.test(diagnostic.message));
 });
 
 void test('SchemaGuard configures Ajv with strict mode by default', () => {

@@ -1,0 +1,5 @@
+name: deprecated-replacement-external
+description: $deprecated $replacement must be a local JSON Pointer
+assertions:
+  - refs
+tags: [metadata:deprecated]

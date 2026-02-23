@@ -12,7 +12,7 @@ import type { ExtensionCollector, ResolvedTokenTransformEntry } from '../../plug
 import {
   createTransformFailureDiagnostic,
   freezeResultDiagnostics
-} from '../../resolver/internal/helpers.js';
+} from '../../plugins/transform-utils.js';
 import type { ResolvedToken } from '../../resolver/types.js';
 import {
   EMPTY_PIPELINE_DIAGNOSTICS,

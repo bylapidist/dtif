@@ -44,15 +44,15 @@ void test('normalises collections, tokens, aliases, and metadata', async () => {
       $description: 'Root description',
       color: {
         $description: 'Color tokens',
+        accent: {
+          $type: 'color',
+          $ref: '#/color/brand'
+        },
         brand: {
           $type: 'color',
           $value: { colorSpace: 'srgb', components: [1, 0, 0, 1] },
           $tags: ['brand', 'primary'],
           $extensions: { 'com.example': { role: 'primary' } }
-        },
-        accent: {
-          $type: 'color',
-          $ref: '#/color/brand'
         }
       }
     },
@@ -79,15 +79,64 @@ void test('normalises collections, tokens, aliases, and metadata', async () => {
   assert.equal(colorCollection.metadata.description?.value, 'Color tokens');
   assert.equal(colorCollection.children.length, 2);
 
-  const [brandToken, accentAlias] = colorCollection.children;
-  assert.equal(brandToken.kind, 'token');
-  assert.equal(brandToken.name, 'brand');
-  assert.deepEqual(brandToken.metadata.tags?.value, ['brand', 'primary']);
-  assert.equal(brandToken.metadata.extensions?.value['com.example'].role, 'primary');
+  const [accentAlias, brandToken] = colorCollection.children;
   assert.equal(accentAlias.kind, 'alias');
   assert.equal(accentAlias.name, 'accent');
   assert.equal(accentAlias.type.value, 'color');
   assert.equal(accentAlias.ref.value, '#/color/brand');
+  assert.equal(brandToken.kind, 'token');
+  assert.equal(brandToken.name, 'brand');
+  assert.deepEqual(brandToken.metadata.tags?.value, ['brand', 'primary']);
+  assert.equal(brandToken.metadata.extensions?.value['com.example'].role, 'primary');
+});
+
+void test('warns when document major version is newer than supported', async () => {
+  const json = JSON.stringify(
+    {
+      $version: '2.0.0',
+      color: {
+        primary: {
+          $type: 'color',
+          $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { ast, diagnostics } = result;
+  assert.ok(ast, 'expected document AST to be created');
+  assert.equal(diagnostics.length, 1);
+  assert.equal(diagnostics[0]?.code, DiagnosticCodes.normaliser.FUTURE_VERSION);
+  assert.equal(diagnostics[0]?.severity, 'warning');
+  assert.equal(diagnostics[0]?.pointer, '#/$version');
+});
+
+void test('warns when token type is not recognised', async () => {
+  const json = JSON.stringify(
+    {
+      $version: '1.0.0',
+      color: {
+        brand: {
+          $type: 'vendor.custom',
+          $value: 12
+        }
+      }
+    },
+    null,
+    2
+  );
+
+  const result = await normalise(json);
+  const { diagnostics } = result;
+  const warning = diagnostics.find(
+    (diagnostic) => diagnostic.code === DiagnosticCodes.normaliser.UNKNOWN_TYPE
+  );
+  assert.ok(warning, 'expected unknown type warning');
+  assert.equal(warning.severity, 'warning');
+  assert.equal(warning.pointer, '#/color/brand');
 });
 
 void test('metadata rejects invalid lifecycle timestamps', async () => {
@@ -173,14 +222,14 @@ void test('metadata enforces $lastUsed and $usageCount pairing rules', async () 
         ...BASE_TOKEN,
         $lastUsed: '2024-03-01T00:00:00Z'
       },
+      positiveWithoutUsed: {
+        ...BASE_TOKEN,
+        $usageCount: 5
+      },
       zeroCount: {
         ...BASE_TOKEN,
         $lastUsed: '2024-03-01T00:00:00Z',
         $usageCount: 0
-      },
-      positiveWithoutUsed: {
-        ...BASE_TOKEN,
-        $usageCount: 5
       }
     },
     null,
@@ -212,25 +261,25 @@ void test('metadata enforces $lastUsed and $usageCount pairing rules', async () 
   assert.equal(missingCount.metadata.lastUsed, undefined);
   assert.equal(missingCount.metadata.usageCount, undefined);
 
-  const zeroCount = getToken(ast, 'zeroCount');
-  assert.equal(zeroCount.metadata.lastUsed, undefined);
-  assert.equal(zeroCount.metadata.usageCount?.value, 0);
-
   const positiveWithoutUsed = getToken(ast, 'positiveWithoutUsed');
   assert.equal(positiveWithoutUsed.metadata.lastUsed, undefined);
   assert.equal(positiveWithoutUsed.metadata.usageCount, undefined);
+
+  const zeroCount = getToken(ast, 'zeroCount');
+  assert.equal(zeroCount.metadata.lastUsed, undefined);
+  assert.equal(zeroCount.metadata.usageCount?.value, 0);
 });
 
 void test('normalises overrides with fallback chains', async () => {
   const json = JSON.stringify(
     {
-      token: {
-        $type: 'color',
-        $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
-      },
       alternate: {
         $type: 'color',
         $value: { colorSpace: 'srgb', components: [1, 1, 1, 1] }
+      },
+      token: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
       },
       $overrides: [
         {
@@ -291,4 +340,60 @@ void test('emits diagnostics when alias tokens omit $type', async () => {
   assert.equal(colorCollection.kind, 'collection');
   const names = colorCollection.children.map((child) => child.name);
   assert.deepEqual(names, ['base']);
+});
+
+void test('emits diagnostics when root collection members are not lexicographically sorted', async () => {
+  const json = `{
+    "$schema": "https://dtif.lapidist.net/schema/core.json",
+    "zeta": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [0, 0, 0, 1] } },
+    "alpha": { "$type": "color", "$value": { "colorSpace": "srgb", "components": [1, 0, 0, 1] } }
+  }`;
+
+  const result = await normalise(json);
+  assert.ok(
+    result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === DiagnosticCodes.normaliser.INVALID_MEMBER_ORDER &&
+        diagnostic.message === 'collection members must be sorted lexicographically' &&
+        diagnostic.pointer === JSON_POINTER_ROOT
+    )
+  );
+});
+
+void test('emits diagnostics when token members place $value before $type', async () => {
+  const json = `{
+    "color": {
+      "$value": { "components": [0, 0, 0, 1], "colorSpace": "srgb" },
+      "$type": "color"
+    }
+  }`;
+
+  const result = await normalise(json);
+  assert.ok(
+    result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === DiagnosticCodes.normaliser.INVALID_MEMBER_ORDER &&
+        diagnostic.message === 'token members must place $type before $value' &&
+        diagnostic.pointer === '#/color'
+    )
+  );
+});
+
+void test('emits diagnostics when canonical value object members are out of order', async () => {
+  const json = `{
+    "color": {
+      "$type": "color",
+      "$value": { "components": [0, 0, 0, 1], "colorSpace": "srgb" }
+    }
+  }`;
+
+  const result = await normalise(json);
+  assert.ok(
+    result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === DiagnosticCodes.normaliser.INVALID_MEMBER_ORDER &&
+        diagnostic.message === 'canonical key order violated: colorSpace, components' &&
+        diagnostic.pointer === '#/color/$value'
+    )
+  );
 });

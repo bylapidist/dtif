@@ -4,7 +4,7 @@ import type { ResolutionTraceStep } from '../types.js';
 import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
-} from '../../plugins/index.js';
+} from '../../plugins/types.js';
 
 export const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
 export const EMPTY_OVERRIDES: readonly AppliedOverride[] = Object.freeze([]);

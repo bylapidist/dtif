@@ -156,6 +156,7 @@ export { parseTokens, parseTokensSync } from './tokens/parse-tokens.js';
 export type {
   ParseTokensInput,
   ParseTokensOptions,
+  ParseTokensSyncOptions,
   ParseTokensResult
 } from './tokens/parse-tokens.js';
 export { createMetadataSnapshot, createResolutionSnapshot } from './tokens/snapshots.js';

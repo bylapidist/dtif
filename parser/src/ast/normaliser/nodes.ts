@@ -1,6 +1,6 @@
 import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import { appendJsonPointer } from '../../utils/json-pointer.js';
-import type { JsonPointer } from '../../types.js';
+import type { JsonPointer } from '../../domain/primitives.js';
 import type {
   AliasNode,
   CollectionNode,
@@ -12,7 +12,13 @@ import type { NormaliserContext } from './context.js';
 import { getSourceSpan } from './context.js';
 import { readOptionalStringField } from './fields.js';
 import { extractMetadata } from './metadata.js';
+import {
+  validateCanonicalValueOrdering,
+  validateCollectionMemberOrder,
+  validateTokenMemberOrder
+} from './ordering.js';
 import { createField, EMPTY_CHILDREN, isPlainObject } from './utils.js';
+import { isKnownTokenType } from './known-types.js';
 
 export function normalizeNode(
   context: NormaliserContext,
@@ -50,6 +56,8 @@ function normalizeCollectionNode(
   pointer: JsonPointer,
   metadata: NodeMetadata
 ): CollectionNode {
+  validateCollectionMemberOrder(context, value, pointer);
+
   const children: DocumentChildNode[] = [];
 
   for (const [childName, childValue] of Object.entries(value)) {
@@ -81,6 +89,8 @@ function normalizeTokenNode(
   pointer: JsonPointer,
   metadata: NodeMetadata
 ): TokenNode {
+  validateTokenMemberOrder(context, value, pointer);
+
   const typeField = readOptionalStringField(context, value, '$type', pointer);
   const valueField =
     '$value' in value
@@ -96,6 +106,12 @@ function normalizeTokenNode(
       span: getSourceSpan(context, pointer)
     });
   }
+
+  if (valueField) {
+    validateCanonicalValueOrdering(context, valueField.value, valueField.pointer);
+  }
+
+  emitUnknownTypeWarning(context, typeField?.value, pointer);
 
   return Object.freeze({
     kind: 'token',
@@ -140,6 +156,8 @@ function normalizeAliasNode(
     return undefined;
   }
 
+  emitUnknownTypeWarning(context, typeField.value, typeField.pointer);
+
   return Object.freeze({
     kind: 'alias',
     name,
@@ -148,6 +166,24 @@ function normalizeAliasNode(
     metadata,
     type: typeField,
     ref: refField
+  });
+}
+
+function emitUnknownTypeWarning(
+  context: NormaliserContext,
+  type: string | undefined,
+  pointer: JsonPointer
+): void {
+  if (!type || isKnownTokenType(type)) {
+    return;
+  }
+
+  context.diagnostics.push({
+    code: DiagnosticCodes.normaliser.UNKNOWN_TYPE,
+    message: `Token type "${type}" is not currently recognised by the DTIF registry.`,
+    severity: 'warning',
+    pointer,
+    span: getSourceSpan(context, pointer)
   });
 }
 

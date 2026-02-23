@@ -1,4 +1,4 @@
-import type { JsonPointer } from '../types.js';
+import type { JsonPointer } from '../domain/primitives.js';
 
 export const JSON_POINTER_ROOT: JsonPointer = '#';
 

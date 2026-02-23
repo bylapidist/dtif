@@ -42,8 +42,8 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
-    "@lapidist/dtif-schema": "^1.0.6",
-    "@lapidist/dtif-validator": "^1.0.6",
+    "@lapidist/dtif-schema": "workspace:^1.0.6",
+    "@lapidist/dtif-validator": "workspace:^1.0.6",
     "yaml": "^2.8.1"
   },
   "repository": {

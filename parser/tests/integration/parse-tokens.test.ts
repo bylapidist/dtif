@@ -1,14 +1,24 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { parseTokens, parseTokensSync } from '../../src/tokens/parse-tokens.js';
+import {
+  parseTokens,
+  parseTokensSync,
+  type ParseTokensSyncOptions
+} from '../../src/tokens/parse-tokens.js';
+import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import type { TokenCache, TokenCacheSnapshot, TokenCacheKey } from '../../src/tokens/cache.js';
 import { computeDocumentHash } from '../../src/tokens/cache.js';
 import type { DiagnosticEvent } from '../../src/domain/models.js';
+import { DefaultDocumentLoader } from '../../src/io/document-loader.js';
 import { assertNullPrototypeDeep, toSerializable } from '../helpers/json-assertions.js';
 
 const INLINE_DOCUMENT = `
 $schema: https://dtif.lapidist.net/schema/core.json
+aliases:
+  brand:
+    $type: color
+    $ref: "#/colors/primary"
 colors:
   primary:
     $type: color
@@ -21,10 +31,6 @@ colors:
         note: keep
     $deprecated:
       $replacement: "#/aliases/brand"
-aliases:
-  brand:
-    $type: color
-    $ref: "#/colors/primary"
 `;
 
 const SINGLE_LINE_INLINE_DOCUMENT =
@@ -101,6 +107,34 @@ void test('parseTokens accepts in-memory design token objects', async () => {
   assertNullPrototypeDeep(document.data);
 });
 
+void test('parseTokens rejects deprecated replacements that resolve to a mismatched token type', async () => {
+  const result = await parseTokens({
+    $schema: 'https://dtif.lapidist.net/schema/core.json',
+    color: {
+      base: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] },
+        $deprecated: { $replacement: '#/dimension/space' }
+      }
+    },
+    dimension: {
+      space: {
+        $type: 'dimension',
+        $value: { dimensionType: 'length', value: 4, unit: 'px' }
+      }
+    }
+  });
+
+  assert.ok(
+    result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === DiagnosticCodes.schemaGuard.INVALID_DOCUMENT &&
+        /deprecated replacement .* has type dimension, expected color/i.test(diagnostic.message)
+    ),
+    'expected schema-guard diagnostic for deprecated replacement type mismatch'
+  );
+});
+
 void test('parseTokens reuses cached artifacts when TokenCache entries are fresh', async () => {
   const cache = new RecordingTokenCache();
 
@@ -150,7 +184,7 @@ void test('parseTokens invokes warn callbacks for cached non-error diagnostics',
 
   const warning: DiagnosticEvent = {
     severity: 'warning',
-    code: 'cache.warning',
+    code: DiagnosticCodes.core.CACHE_FAILED,
     message: 'cached warning',
     span: {
       uri: document.identity.uri,
@@ -253,6 +287,38 @@ void test('parseTokensSync throws when provided an asynchronous cache implementa
     () => parseTokensSync(INLINE_DOCUMENT, { tokenCache: asyncCache }),
     /synchronous get\/set semantics/,
     'expected synchronous parsing to reject asynchronous caches'
+  );
+});
+
+void test('parseTokensSync rejects document caches in JavaScript callers', () => {
+  const options: ParseTokensSyncOptions = {};
+  Object.defineProperty(options, 'documentCache', {
+    value: {},
+    enumerable: true,
+    writable: false,
+    configurable: false
+  });
+
+  assert.throws(
+    () => parseTokensSync(INLINE_DOCUMENT, options),
+    /does not support document caches/,
+    'expected synchronous parsing to reject document cache options'
+  );
+});
+
+void test('parseTokensSync rejects custom loaders in JavaScript callers', () => {
+  const options: ParseTokensSyncOptions = {};
+  Object.defineProperty(options, 'loader', {
+    value: new DefaultDocumentLoader(),
+    enumerable: true,
+    writable: false,
+    configurable: false
+  });
+
+  assert.throws(
+    () => parseTokensSync(INLINE_DOCUMENT, options),
+    /does not support custom document loaders/,
+    'expected synchronous parsing to reject loader options'
   );
 });
 

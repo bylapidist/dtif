@@ -95,11 +95,11 @@ importers:
   parser:
     dependencies:
       '@lapidist/dtif-schema':
-        specifier: ^1.0.6
-        version: 1.0.6
+        specifier: workspace:^1.0.6
+        version: link:../schema
       '@lapidist/dtif-validator':
-        specifier: ^1.0.6
-        version: 1.0.6
+        specifier: workspace:^1.0.6
+        version: link:../validator
       yaml:
         specifier: ^2.8.1
         version: 2.8.2

@@ -15,8 +15,9 @@ outline: [2, 3]
 This chapter explains how extensions remain interoperable and where governance processes handle registration.
 
 Future extensions _MAY_ introduce new `$type` identifiers
-or members beginning with `$`. Implementations
-_MUST_ ignore unknown members to ensure forward compatibility.
+and additional namespaced data under `$extensions`.
+Unrecognised reserved members beginning with `$` that are not defined by this specification
+_MUST_ be treated as invalid.
 
 ## Governance {#governance}
 

@@ -25,7 +25,6 @@ import type {
   TokenFlatteningService
 } from '../domain/services.js';
 import { DiagnosticCodes } from '../diagnostics/codes.js';
-import type { TokenCacheVariantOverrides, TokenCacheSnapshot } from '../tokens/cache.js';
 import { areByteArraysEqual } from '../utils/bytes.js';
 
 export interface ParseDocumentDependencies<TAst, TGraph, TResult> {
@@ -91,7 +90,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     const rawDocument = ingestionResult.outcome;
     if (!rawDocument || hasErrors(ingestionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { diagnostics, fromCache: false }
@@ -118,7 +117,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, decodedResult.diagnostics);
 
     if (!decoded || hasErrors(decodedResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -138,7 +137,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     const validationResult = await this.#schema.validate(decoded);
     appendDiagnostics(aggregated, validationResult.diagnostics);
     if (!validationResult.outcome || hasErrors(validationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -150,7 +149,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, normalizationResult.diagnostics);
 
     if (!normalized || hasErrors(normalizationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -168,7 +167,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, graphResult.diagnostics);
 
     if (!graph || hasErrors(graphResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -191,7 +190,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, resolutionResult.diagnostics);
 
     if (!resolution || hasErrors(resolutionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -207,7 +206,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     appendDiagnostics(aggregated, resolution.diagnostics);
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     return this.#finalize({
       reportDiagnostics,
       result: {
@@ -237,7 +236,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     const rawDocument = ingestionResult.outcome;
     if (!rawDocument || hasErrors(ingestionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { diagnostics, fromCache: false }
@@ -267,7 +266,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, decodedResult.diagnostics);
 
     if (!decoded || hasErrors(decodedResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -287,7 +286,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     const validationResult = ensureSynchronous(this.#schema.validate(decoded), 'validate document');
     appendDiagnostics(aggregated, validationResult.diagnostics);
     if (!validationResult.outcome || hasErrors(validationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: { document, decoded, diagnostics, fromCache }
@@ -302,7 +301,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, normalizationResult.diagnostics);
 
     if (!normalized || hasErrors(normalizationResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -320,7 +319,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, graphResult.diagnostics);
 
     if (!graph || hasErrors(graphResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -342,7 +341,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
     appendDiagnostics(aggregated, resolutionResult.diagnostics);
 
     if (!resolution || hasErrors(resolutionResult.diagnostics)) {
-      const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+      const diagnostics = finalizeDiagnostics(aggregated);
       return this.#finalize({
         reportDiagnostics,
         result: {
@@ -358,7 +357,7 @@ export class ParseDocumentUseCase<TAst = unknown, TGraph = unknown, TResult = un
 
     appendDiagnostics(aggregated, resolution.diagnostics);
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     return this.#finalize({
       reportDiagnostics,
       result: {
@@ -413,10 +412,25 @@ function enrichDocument(document: RawDocument, decoded: DecodedDocument): RawDoc
   } satisfies RawDocument;
 }
 
-export interface ParseTokensDependencies<TAst, TGraph, TResult> {
+export interface TokenCacheVariantOverrides {
+  readonly flatten: boolean;
+  readonly includeGraphs: boolean;
+}
+
+export interface TokenCacheEntry {
+  readonly documentHash: string;
+  readonly diagnostics?: readonly DiagnosticEvent[];
+}
+
+export interface ParseTokensDependencies<
+  TAst,
+  TGraph,
+  TResult,
+  TToken extends TokenCacheEntry = TokenCacheEntry
+> {
   readonly documents: Pick<ParseDocumentUseCase<TAst, TGraph, TResult>, 'execute' | 'executeSync'>;
-  readonly flattening: TokenFlatteningService<TResult, TGraph, TokenCacheSnapshot>;
-  readonly tokenCache?: TokenCachePort<TokenCacheSnapshot>;
+  readonly flattening: TokenFlatteningService<TResult, TGraph, TToken>;
+  readonly tokenCache?: TokenCachePort<TToken>;
   readonly diagnostics?: DiagnosticPort;
   readonly hashDocument?: (document: RawDocument) => string;
   readonly resolveVariant?: (overrides: TokenCacheVariantOverrides) => string;
@@ -429,24 +443,30 @@ export interface ParseTokensInput extends ParseDocumentInput {
   readonly includeGraphs?: boolean;
 }
 
-export interface ParseTokensExecution<TAst, TGraph, TResult> extends ParseDocumentExecution<
+export interface ParseTokensExecution<
   TAst,
   TGraph,
-  TResult
-> {
-  readonly tokens?: TokenSnapshot<TokenCacheSnapshot>;
+  TResult,
+  TToken extends TokenCacheEntry = TokenCacheEntry
+> extends ParseDocumentExecution<TAst, TGraph, TResult> {
+  readonly tokens?: TokenSnapshot<TToken>;
   readonly tokensFromCache: boolean;
 }
 
-export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unknown> {
+export class ParseTokensUseCase<
+  TAst = unknown,
+  TGraph = unknown,
+  TResult = unknown,
+  TToken extends TokenCacheEntry = TokenCacheEntry
+> {
   readonly #documents: Pick<ParseDocumentUseCase<TAst, TGraph, TResult>, 'execute' | 'executeSync'>;
-  readonly #flattening: TokenFlatteningService<TResult, TGraph, TokenCacheSnapshot>;
-  readonly #tokenCache?: TokenCachePort<TokenCacheSnapshot>;
+  readonly #flattening: TokenFlatteningService<TResult, TGraph, TToken>;
+  readonly #tokenCache?: TokenCachePort<TToken>;
   readonly #diagnostics?: DiagnosticPort;
   readonly #hashDocument?: (document: RawDocument) => string;
   readonly #resolveVariant?: (overrides: TokenCacheVariantOverrides) => string;
 
-  constructor(dependencies: ParseTokensDependencies<TAst, TGraph, TResult>) {
+  constructor(dependencies: ParseTokensDependencies<TAst, TGraph, TResult, TToken>) {
     this.#documents = dependencies.documents;
     this.#flattening = dependencies.flattening;
     this.#tokenCache = dependencies.tokenCache;
@@ -455,24 +475,19 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
     this.#resolveVariant = dependencies.resolveVariant;
   }
 
-  async execute(input: ParseTokensInput): Promise<ParseTokensExecution<TAst, TGraph, TResult>> {
+  async execute(
+    input: ParseTokensInput
+  ): Promise<ParseTokensExecution<TAst, TGraph, TResult, TToken>> {
     const documentResult = await this.#documents.execute(input, {
       reportDiagnostics: false
     });
     const aggregated = [...documentResult.diagnostics];
     let tokensFromCache = false;
-    let snapshot: TokenSnapshot<TokenCacheSnapshot> | undefined;
+    let snapshot: TokenSnapshot<TToken> | undefined;
 
-    if (documentResult.resolution && documentResult.document) {
-      const variant = this.#resolveVariantValue(input);
-      const key: TokenCacheKey = {
-        document: documentResult.document.identity,
-        variant
-      };
-
-      const documentHash = this.#hashDocument
-        ? this.#hashDocument(documentResult.document)
-        : undefined;
+    const context = this.#createTokenExecutionContext(documentResult, input);
+    if (context) {
+      const { key, documentHash, flatten } = context;
 
       if (this.#tokenCache && !input.bypassTokenCache) {
         const cached = await this.#tokenCache.get(key);
@@ -481,59 +496,36 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
           tokensFromCache = true;
           appendDiagnostics(aggregated, snapshot.diagnostics);
         } else {
-          snapshot = await this.#flattenTokens(
-            documentResult,
-            aggregated,
-            documentHash,
-            input.flatten ?? true
-          );
+          snapshot = await this.#flattenTokens(documentResult, aggregated, documentHash, flatten);
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = normalizeTokenCacheEntryDiagnostics(
-              ensureDocumentHash(snapshot.token, documentHash),
-              snapshot.diagnostics
+            await this.#tokenCache.set(
+              key,
+              withTokenCacheDiagnostics(snapshot.token, snapshot.diagnostics)
             );
-            await this.#tokenCache.set(key, entry);
           }
         }
       } else {
-        snapshot = await this.#flattenTokens(
-          documentResult,
-          aggregated,
-          documentHash,
-          input.flatten ?? true
-        );
+        snapshot = await this.#flattenTokens(documentResult, aggregated, documentHash, flatten);
       }
     }
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     this.#reportDiagnostics(diagnostics);
 
-    return {
-      ...documentResult,
-      tokens: snapshot,
-      diagnostics,
-      tokensFromCache
-    } satisfies ParseTokensExecution<TAst, TGraph, TResult>;
+    return this.#createParseTokensExecution(documentResult, snapshot, diagnostics, tokensFromCache);
   }
 
-  executeSync(input: ParseTokensInput): ParseTokensExecution<TAst, TGraph, TResult> {
+  executeSync(input: ParseTokensInput): ParseTokensExecution<TAst, TGraph, TResult, TToken> {
     const documentResult = this.#documents.executeSync(input, {
       reportDiagnostics: false
     });
     const aggregated = [...documentResult.diagnostics];
     let tokensFromCache = false;
-    let snapshot: TokenSnapshot<TokenCacheSnapshot> | undefined;
+    let snapshot: TokenSnapshot<TToken> | undefined;
 
-    if (documentResult.resolution && documentResult.document) {
-      const variant = this.#resolveVariantValue(input);
-      const key: TokenCacheKey = {
-        document: documentResult.document.identity,
-        variant
-      };
-
-      const documentHash = this.#hashDocument
-        ? this.#hashDocument(documentResult.document)
-        : undefined;
+    const context = this.#createTokenExecutionContext(documentResult, input);
+    if (context) {
+      const { key, documentHash, flatten } = context;
 
       if (this.#tokenCache && !input.bypassTokenCache) {
         const cached = ensureSynchronous(this.#tokenCache.get(key), 'read token cache');
@@ -542,39 +534,26 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
           tokensFromCache = true;
           appendDiagnostics(aggregated, snapshot.diagnostics);
         } else {
-          snapshot = this.#flattenTokensSync(
-            documentResult,
-            aggregated,
-            documentHash,
-            input.flatten ?? true
-          );
+          snapshot = this.#flattenTokensSync(documentResult, aggregated, documentHash, flatten);
           if (snapshot && !hasErrors(snapshot.diagnostics)) {
-            const entry = normalizeTokenCacheEntryDiagnostics(
-              ensureDocumentHash(snapshot.token, documentHash),
-              snapshot.diagnostics
+            ensureSynchronous(
+              this.#tokenCache.set(
+                key,
+                withTokenCacheDiagnostics(snapshot.token, snapshot.diagnostics)
+              ),
+              'write token cache'
             );
-            ensureSynchronous(this.#tokenCache.set(key, entry), 'write token cache');
           }
         }
       } else {
-        snapshot = this.#flattenTokensSync(
-          documentResult,
-          aggregated,
-          documentHash,
-          input.flatten ?? true
-        );
+        snapshot = this.#flattenTokensSync(documentResult, aggregated, documentHash, flatten);
       }
     }
 
-    const diagnostics = aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+    const diagnostics = finalizeDiagnostics(aggregated);
     this.#reportDiagnostics(diagnostics);
 
-    return {
-      ...documentResult,
-      tokens: snapshot,
-      diagnostics,
-      tokensFromCache
-    } satisfies ParseTokensExecution<TAst, TGraph, TResult>;
+    return this.#createParseTokensExecution(documentResult, snapshot, diagnostics, tokensFromCache);
   }
 
   async #flattenTokens(
@@ -582,7 +561,7 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
     aggregated: DiagnosticEvent[],
     documentHash: string | undefined,
     flatten: boolean
-  ): Promise<TokenSnapshot<TokenCacheSnapshot> | undefined> {
+  ): Promise<TokenSnapshot<TToken> | undefined> {
     if (!documentResult.document || !documentResult.graph || !documentResult.resolution) {
       return undefined;
     }
@@ -601,13 +580,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       return undefined;
     }
 
-    const tokenDiagnostics = aggregated.length > 0 ? Object.freeze(aggregated.slice()) : undefined;
-    const token = ensureDocumentHash(snapshot.token, documentHash);
-
     return {
-      token: tokenDiagnostics ? { ...token, diagnostics: tokenDiagnostics } : token,
+      token: snapshot.token,
       diagnostics: snapshot.diagnostics
-    } satisfies TokenSnapshot<TokenCacheSnapshot>;
+    } satisfies TokenSnapshot<TToken>;
   }
 
   #flattenTokensSync(
@@ -615,7 +591,7 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
     aggregated: DiagnosticEvent[],
     documentHash: string | undefined,
     flatten: boolean
-  ): TokenSnapshot<TokenCacheSnapshot> | undefined {
+  ): TokenSnapshot<TToken> | undefined {
     if (!documentResult.document || !documentResult.graph || !documentResult.resolution) {
       return undefined;
     }
@@ -637,13 +613,10 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       return undefined;
     }
 
-    const tokenDiagnostics = aggregated.length > 0 ? Object.freeze(aggregated.slice()) : undefined;
-    const token = ensureDocumentHash(snapshot.token, documentHash);
-
     return {
-      token: tokenDiagnostics ? { ...token, diagnostics: tokenDiagnostics } : token,
+      token: snapshot.token,
       diagnostics: snapshot.diagnostics
-    } satisfies TokenSnapshot<TokenCacheSnapshot>;
+    } satisfies TokenSnapshot<TToken>;
   }
 
   #reportDiagnostics(events: readonly DiagnosticEvent[]): void {
@@ -668,9 +641,54 @@ export class ParseTokensUseCase<TAst = unknown, TGraph = unknown, TResult = unkn
       includeGraphs: input.includeGraphs ?? true
     });
   }
+
+  #createTokenExecutionContext(
+    documentResult: ParseDocumentExecution<TAst, TGraph, TResult>,
+    input: ParseTokensInput
+  ): TokenExecutionContext | undefined {
+    if (!documentResult.document || !documentResult.resolution) {
+      return undefined;
+    }
+
+    const variant = this.#resolveVariantValue(input);
+    const key: TokenCacheKey = {
+      document: documentResult.document.identity,
+      variant
+    };
+    const documentHash = this.#hashDocument
+      ? this.#hashDocument(documentResult.document)
+      : undefined;
+    const flatten = input.flatten ?? true;
+
+    return {
+      key,
+      documentHash,
+      flatten
+    } satisfies TokenExecutionContext;
+  }
+
+  #createParseTokensExecution(
+    documentResult: ParseDocumentExecution<TAst, TGraph, TResult>,
+    snapshot: TokenSnapshot<TToken> | undefined,
+    diagnostics: readonly DiagnosticEvent[],
+    tokensFromCache: boolean
+  ): ParseTokensExecution<TAst, TGraph, TResult, TToken> {
+    return {
+      ...documentResult,
+      tokens: snapshot,
+      diagnostics,
+      tokensFromCache
+    } satisfies ParseTokensExecution<TAst, TGraph, TResult, TToken>;
+  }
 }
 
 const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
+
+interface TokenExecutionContext {
+  readonly key: TokenCacheKey;
+  readonly documentHash: string | undefined;
+  readonly flatten: boolean;
+}
 
 function appendDiagnostics(
   target: DiagnosticEvent[],
@@ -688,6 +706,10 @@ function appendDiagnostics(
   return events.some((event) => event.severity === 'error');
 }
 
+function finalizeDiagnostics(aggregated: readonly DiagnosticEvent[]): readonly DiagnosticEvent[] {
+  return aggregated.length === 0 ? EMPTY_DIAGNOSTICS : aggregated.slice();
+}
+
 function hasErrors(diagnostics?: PipelineDiagnostics | readonly DiagnosticEvent[]): boolean {
   const events = toDiagnosticEvents(diagnostics);
   if (!events) {
@@ -697,40 +719,30 @@ function hasErrors(diagnostics?: PipelineDiagnostics | readonly DiagnosticEvent[
   return events.some((event) => event.severity === 'error');
 }
 
-function createSnapshotFromCache(entry: TokenCacheSnapshot): TokenSnapshot<TokenCacheSnapshot> {
+function createSnapshotFromCache<TToken extends TokenCacheEntry>(
+  entry: TToken
+): TokenSnapshot<TToken> {
   const diagnostics = entry.diagnostics ?? EMPTY_DIAGNOSTICS;
   return {
     token: entry,
     diagnostics
-  } satisfies TokenSnapshot<TokenCacheSnapshot>;
+  } satisfies TokenSnapshot<TToken>;
 }
 
-function ensureDocumentHash(
-  entry: TokenCacheSnapshot,
-  documentHash: string | undefined
-): TokenCacheSnapshot {
-  if (!documentHash || entry.documentHash === documentHash) {
+function withTokenCacheDiagnostics<TToken extends TokenCacheEntry>(
+  entry: TToken,
+  diagnostics: readonly DiagnosticEvent[]
+): TToken {
+  if (diagnostics.length === 0) {
     return entry;
   }
 
-  return { ...entry, documentHash } satisfies TokenCacheSnapshot;
-}
+  const updated: TToken = {
+    ...entry,
+    diagnostics
+  };
 
-function normalizeTokenCacheEntryDiagnostics(
-  entry: TokenCacheSnapshot,
-  diagnostics: readonly DiagnosticEvent[] | undefined
-): TokenCacheSnapshot {
-  const { diagnostics: existingDiagnostics, ...entryWithoutDiagnostics } = entry;
-
-  if (diagnostics && diagnostics.length > 0) {
-    return { ...entryWithoutDiagnostics, diagnostics } satisfies TokenCacheSnapshot;
-  }
-
-  if (!existingDiagnostics || existingDiagnostics.length === 0) {
-    return entry;
-  }
-
-  return entryWithoutDiagnostics satisfies TokenCacheSnapshot;
+  return updated;
 }
 
 function toDiagnosticEvents(

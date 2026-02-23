@@ -29,7 +29,7 @@ _Table: Optional metadata members and their intent._
 | `$hash`         | _MUST_ be a non-empty stable identifier for change tracking and _MUST NOT_ contain whitespace.                                                                                                         |
 
 Consumers encountering a metadata member whose value violates these requirements
-_MUST_ treat the member as absent.
+_MUST_ treat the token as invalid.
 
 ## Accessibility metadata {#accessibility-metadata}
 

@@ -14,9 +14,12 @@ export default function assertRefs(doc, opts = {}) {
     const hashIndex = pointer.indexOf('#');
     const beforeFragment = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
     const [pathBeforeQuery] = beforeFragment.split('?');
-    const normalisedPath = pathBeforeQuery.replace(/%2f/gi, '/').replace(/%2e/gi, '.');
+    const normalisedPath = pathBeforeQuery
+      .replace(/%2f/gi, '/')
+      .replace(/%5c/gi, '\\')
+      .replace(/%2e/gi, '.');
     const hasTraversal = normalisedPath
-      .split('/')
+      .split(/[\\/]/)
       .filter((segment) => segment.length > 0)
       .some((segment) => segment === '..');
     if (hasTraversal) {
@@ -28,6 +31,42 @@ export default function assertRefs(doc, opts = {}) {
       return null;
     }
     if (!pointer.startsWith('#')) {
+      const hashIndex = pointer.indexOf('#');
+      const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+      if (base.startsWith('//') || base.startsWith('\\\\')) {
+        errors.push({
+          code: 'E_REF_NETWORK_PATH',
+          path: refPath,
+          message: `network-path refs are not allowed: ${pointer}`
+        });
+        return null;
+      }
+
+      if (base.startsWith('/') || base.startsWith('\\')) {
+        errors.push({
+          code: 'E_REF_ABSOLUTE_PATH',
+          path: refPath,
+          message: `absolute-path refs are not allowed: ${pointer}`
+        });
+        return null;
+      }
+
+      const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+
+      if (!schemeMatch) {
+        return null;
+      }
+
+      const scheme = schemeMatch[1].toLowerCase();
+      if (!['http', 'https'].includes(scheme)) {
+        errors.push({
+          code: 'E_REF_UNSUPPORTED_SCHEME',
+          path: refPath,
+          message: `unsupported remote scheme ${pointer}`
+        });
+        return null;
+      }
+
       if (!allowRemote) {
         errors.push({
           code: 'E_REF_REMOTE_DISABLED',
@@ -36,37 +75,21 @@ export default function assertRefs(doc, opts = {}) {
         });
         return null;
       }
-
-      const hashIndex = pointer.indexOf('#');
-      const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
-      const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
-
-      if (schemeMatch) {
-        const scheme = schemeMatch[1].toLowerCase();
-        if (!['http', 'https'].includes(scheme)) {
+      try {
+        const url = new URL(pointer);
+        if (!['http:', 'https:'].includes(url.protocol)) {
           errors.push({
             code: 'E_REF_UNSUPPORTED_SCHEME',
             path: refPath,
             message: `unsupported remote scheme ${pointer}`
           });
-          return null;
         }
-        try {
-          const url = new URL(pointer);
-          if (!['http:', 'https:'].includes(url.protocol)) {
-            errors.push({
-              code: 'E_REF_UNSUPPORTED_SCHEME',
-              path: refPath,
-              message: `unsupported remote scheme ${pointer}`
-            });
-          }
-        } catch {
-          errors.push({
-            code: 'E_REF_INVALID_REMOTE',
-            path: refPath,
-            message: `invalid remote ref ${pointer}`
-          });
-        }
+      } catch {
+        errors.push({
+          code: 'E_REF_INVALID_REMOTE',
+          path: refPath,
+          message: `invalid remote ref ${pointer}`
+        });
       }
 
       return null;

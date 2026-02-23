@@ -1,0 +1,7 @@
+name: network path reference
+description: block schemeless network-path aliases in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security

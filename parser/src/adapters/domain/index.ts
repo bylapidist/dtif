@@ -15,14 +15,12 @@ export {
   SchemaValidationAdapter,
   DocumentNormalizationAdapter,
   GraphConstructionAdapter,
-  ResolutionAdapter,
-  TokenFlatteningAdapter
+  ResolutionAdapter
 } from './services.js';
 export type {
   DocumentDecodingAdapterOptions,
   DocumentNormalizationAdapterOptions,
-  ResolutionAdapterOptions,
-  TokenFlatteningAdapterOptions
+  ResolutionAdapterOptions
 } from './services.js';
 export {
   EMPTY_PIPELINE_DIAGNOSTICS,

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "danger": { "$type": "color", "$ref": "/secrets.json#/token" }
+}

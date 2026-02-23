@@ -1,4 +1,5 @@
 export type JsonPointer = `#${string}`;
+export type DiagnosticCode = `DTIF${number}${number}${number}${number}`;
 
 export interface SourcePosition {
   readonly offset: number;

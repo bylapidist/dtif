@@ -1,11 +1,11 @@
 import { ParseDocumentUseCase, type ParseDocumentExecution } from './application/use-cases.js';
 import type { ParseInput, DocumentAst, DocumentGraph } from './types.js';
-import { resolveOptions, type ResolvedParseSessionOptions } from './session/internal/options.js';
+import type { ResolvedParseSessionOptions } from './session/options.js';
 import type { ParseSessionOptions } from './session/types.js';
 import type { DocumentResolver } from './resolver/document-resolver.js';
-import { createParseDocumentUseCase } from './application/factory.js';
 import { createDocumentRequest } from './application/requests.js';
 import type { DiagnosticEvent } from './domain/models.js';
+import { createRuntime } from './session/runtime.js';
 export type { OverrideContext, ParseSessionOptions } from './session/types.js';
 
 type ResolverResult = DocumentResolver;
@@ -71,8 +71,9 @@ export class ParseSession {
   readonly #documents: ParseDocumentUseCase<DocumentAst, DocumentGraph, ResolverResult>;
 
   constructor(options: ParseSessionOptions = {}) {
-    this.options = resolveOptions(options);
-    this.#documents = createParseDocumentUseCase(this.options);
+    const runtime = createRuntime(options);
+    this.options = runtime.options;
+    this.#documents = runtime.documents;
   }
 
   async parseDocument(input: ParseInput): Promise<ParseDocumentResult> {

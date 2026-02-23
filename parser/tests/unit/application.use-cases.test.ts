@@ -8,7 +8,12 @@ import {
   type TokenCache,
   type TokenCacheSnapshot
 } from '../../src/tokens/cache.js';
-import { resolveOptions } from '../../src/session/internal/options.js';
+import {
+  createParseTokensUseCase,
+  createTokenCacheConfiguration
+} from '../../src/tokens/use-case-factory.js';
+import { formatDiagnosticCode } from '../../src/diagnostics/codes.js';
+import { resolveOptions } from '../../src/session/options.js';
 
 const EMPTY_DIAGNOSTICS: domain.PipelineDiagnostics = Object.freeze({ events: Object.freeze([]) });
 
@@ -19,8 +24,18 @@ function pipelineResult<T>(
   return { outcome, diagnostics };
 }
 
-function createEvent(code: string, severity: 'error' | 'warning' | 'info'): domain.DiagnosticEvent {
-  return { code, message: code, severity };
+function createEvent(seed: string, severity: 'error' | 'warning' | 'info'): domain.DiagnosticEvent {
+  const major = Math.abs(hashSeed(seed)) % 100;
+  const minor = Math.abs(hashSeed(`${seed}:${severity}`)) % 10;
+  return { code: formatDiagnosticCode('Core', major, minor), message: seed, severity };
+}
+
+function hashSeed(value: string): number {
+  let result = 0;
+  for (const char of value) {
+    result = (result * 31 + char.charCodeAt(0)) | 0;
+  }
+  return result;
 }
 
 void test('application use cases: runs document pipeline with aggregated diagnostics', async () => {
@@ -661,7 +676,7 @@ void test('application factory: createParseTokensUseCase computes cache variants
     set: () => undefined
   };
 
-  const useCase = application.createParseTokensUseCase(documents, resolvedOptions, parseCache);
+  const useCase = createParseTokensUseCase(documents, resolvedOptions, parseCache);
 
   await useCase.execute({
     request: { uri: identity.uri },
@@ -671,7 +686,7 @@ void test('application factory: createParseTokensUseCase computes cache variants
 
   assert.equal(variants.length, 1);
 
-  const configuration = application.createTokenCacheConfiguration(resolvedOptions);
+  const configuration = createTokenCacheConfiguration(resolvedOptions);
   const expectedVariant = createTokenCacheVariant(configuration, {
     flatten: false,
     includeGraphs: false

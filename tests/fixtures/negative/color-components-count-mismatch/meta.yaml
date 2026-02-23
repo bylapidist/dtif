@@ -1,0 +1,5 @@
+name: color-components-count-mismatch
+description: known color spaces must supply the expected component count
+assertions:
+  - schema
+tags: [color]

@@ -4,19 +4,21 @@
     {
       "$token": "#/button/bg",
       "$when": { "prefers-color-scheme": "dark" },
-      "$ref": "https://cdn.example.com/themes/dark.json#/color/button-bg",
-      "$fallback": {
-        "$ref": "palette.json#/colors/brand-primary"
-      }
+      "$fallback": [
+        { "$ref": "https://cdn.example.com/themes/dark.json#/color/button-bg" },
+        { "$ref": "palette.json#/colors/brand-primary" }
+      ]
     },
     {
       "$token": "#/button/spacing",
       "$when": { "platform": "ios" },
-      "$value": {
-        "fn": "calc",
-        "parameters": [{ "$ref": "#/spacing/md" }, "+", "2px"]
-      },
       "$fallback": [
+        {
+          "$value": {
+            "fn": "calc",
+            "parameters": [{ "$ref": "#/spacing/md" }, "+", "2px"]
+          }
+        },
         { "$ref": "tokens/spacing.json#/spacing/xl" },
         {
           "$value": {

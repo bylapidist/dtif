@@ -16,6 +16,7 @@
   "files": [
     "index.d.ts",
     "index.js",
+    "semantic.js",
     "README.md",
     "CHANGELOG.md"
   ],

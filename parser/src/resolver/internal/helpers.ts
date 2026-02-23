@@ -1,4 +1,3 @@
-import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import type { AstField } from '../../ast/nodes.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
 import type { JsonPointer, SourceSpan } from '../../domain/primitives.js';
@@ -6,7 +5,7 @@ import type { GraphReferenceTarget } from '../../graph/nodes.js';
 import { EMPTY_DIAGNOSTICS, EMPTY_TRANSFORM_EVALUATIONS } from './constants.js';
 import type { ResolutionResult, ResolvedToken } from '../types.js';
 import type { ResolutionSource, ResolutionTraceStep } from '../types.js';
-import type { ResolvedTokenTransformEvaluation } from '../../plugins/index.js';
+import type { ResolvedTokenTransformEvaluation } from '../../plugins/types.js';
 import type { DiagnosticCollector } from './diagnostics.js';
 
 export function finalizeResolution(
@@ -20,29 +19,6 @@ export function finalizeResolution(
     diagnostics: diagnosticArray.length === 0 ? EMPTY_DIAGNOSTICS : diagnosticArray,
     transforms: transforms.length === 0 ? EMPTY_TRANSFORM_EVALUATIONS : transforms
   };
-}
-
-export function freezeResultDiagnostics(
-  list?: readonly DiagnosticEvent[]
-): readonly DiagnosticEvent[] {
-  if (!list || list.length === 0) {
-    return EMPTY_DIAGNOSTICS;
-  }
-  return Object.freeze(Array.from(list));
-}
-
-export function createTransformFailureDiagnostic(
-  plugin: string,
-  pointer: JsonPointer,
-  error: unknown
-): DiagnosticEvent {
-  const message = error instanceof Error ? error.message : String(error);
-  return {
-    code: DiagnosticCodes.plugins.RESOLUTION_FAILED,
-    message: `Plugin "${plugin}" failed to transform resolved token: ${message}`,
-    severity: 'error',
-    pointer
-  } satisfies DiagnosticEvent;
 }
 
 export function createTraceStep(

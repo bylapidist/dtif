@@ -1,0 +1,5 @@
+name: function-parameter-object-reserved-member
+description: function parameter object literals must reject unrecognised reserved members
+assertions:
+  - schema
+tags: [functions, extensibility]

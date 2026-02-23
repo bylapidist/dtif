@@ -20,7 +20,9 @@ export function toPipelineDiagnostics(
   } satisfies PipelineDiagnostics;
 }
 
-export const toDomainDiagnostic = freezeDiagnosticEvent;
+export function toDomainDiagnostic(diagnostic: DiagnosticEvent): DiagnosticEvent {
+  return freezeDiagnosticEvent(diagnostic);
+}
 
 function freezeRelated(
   related: readonly DiagnosticEventRelatedInformation[]

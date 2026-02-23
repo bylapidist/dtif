@@ -1,16 +1,17 @@
-import type { Diagnostic, JsonPointer, SourceSpan } from '../../types.js';
+import type { DiagnosticEvent } from '../../domain/models.js';
+import type { JsonPointer, SourceSpan } from '../../domain/primitives.js';
 import type { DocumentAst, DocumentGraph, GraphNode } from '../nodes.js';
 import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import { JSON_POINTER_ROOT } from '../../utils/json-pointer.js';
 
 export interface GraphBuilderResult {
   readonly graph?: DocumentGraph;
-  readonly diagnostics: readonly Diagnostic[];
+  readonly diagnostics: readonly DiagnosticEvent[];
 }
 
 export interface GraphBuilderContext {
   readonly ast: DocumentAst;
-  readonly diagnostics: Diagnostic[];
+  readonly diagnostics: DiagnosticEvent[];
   readonly nodes: Map<JsonPointer, GraphNode>;
   readonly pendingReferences: PendingInternalReference[];
 }
@@ -23,7 +24,7 @@ export interface PendingInternalReference {
   readonly label: string;
 }
 
-const EMPTY_DIAGNOSTICS: readonly Diagnostic[] = Object.freeze([]);
+const EMPTY_DIAGNOSTICS: readonly DiagnosticEvent[] = Object.freeze([]);
 
 export function createGraphBuilderContext(ast: DocumentAst): GraphBuilderContext {
   return {

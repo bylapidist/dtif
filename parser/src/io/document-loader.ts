@@ -11,14 +11,22 @@ import type {
 } from '../types.js';
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 import { cloneJsonValue } from '../utils/clone-json.js';
-import { hashJsonValue } from '../utils/hash-json.js';
 import {
   DEFAULT_CONTENT_TYPE,
   DEFAULT_HTTP_TIMEOUT_MS,
   DEFAULT_MAX_BYTES
 } from '../config/defaults.js';
-
-const MEMORY_SCHEME = 'memory://dtif-document/';
+import {
+  isDesignTokenDocument,
+  isParseDataInputRecord,
+  isParseInputRecord
+} from '../input/contracts.js';
+import { inferContentTypeFromContent, isInlineDocumentText } from '../input/content-sniffing.js';
+import {
+  createMemoryUriFromBytes,
+  createMemoryUriFromDesignTokens,
+  createMemoryUriFromText
+} from '../input/memory-uri.js';
 
 type ReadFileFn = (path: string | URL) => Promise<Uint8Array>;
 
@@ -73,8 +81,6 @@ export class DefaultDocumentLoader implements DocumentLoader {
   readonly #cwd: string;
   readonly #defaultContentType: ContentType;
   readonly #maxBytes: number;
-  #memoryCounter = 0;
-
   constructor(options: DefaultDocumentLoaderOptions = {}) {
     this.#allowHttp = options.allowHttp ?? false;
     this.#httpAllowedHosts = resolveHttpAllowedHosts(options.httpAllowedHosts);
@@ -96,14 +102,14 @@ export class DefaultDocumentLoader implements DocumentLoader {
     }
 
     if (input instanceof Uint8Array) {
-      const uri = this.#createMemoryUri();
+      const uri = this.#createMemoryUriFromBytes(input);
       this.#assertSizeWithinLimit(uri, input.byteLength);
       return this.#createHandle(uri, input, this.#defaultContentType);
     }
 
     if (typeof input === 'string') {
-      if (looksLikeInlineDocument(input)) {
-        const uri = this.#createMemoryUri();
+      if (isInlineDocumentText(input)) {
+        const uri = this.#createMemoryUriFromText(input);
         const bytes = encodeText(input);
         this.#assertSizeWithinLimit(uri, bytes.byteLength);
         return this.#createHandle(
@@ -130,7 +136,9 @@ export class DefaultDocumentLoader implements DocumentLoader {
   }
 
   #loadFromRecord(record: ParseInputRecord, baseUri?: URL): DocumentHandle {
-    const uri = record.uri ? this.#normalizeUri(record.uri, baseUri) : this.#createMemoryUri();
+    const uri = record.uri
+      ? this.#normalizeUri(record.uri, baseUri)
+      : this.#createMemoryUriFromRecordContent(record.content);
     const contentType = record.contentType ?? detectContentType({ uri, content: record.content });
 
     if (typeof record.content === 'string') {
@@ -234,8 +242,9 @@ export class DefaultDocumentLoader implements DocumentLoader {
   }
 
   #createMemoryUriFromDesignTokens(value: DesignTokenInterchangeFormat): URL {
-    const hash = hashJsonValue(value, { algorithm: 'sha256' });
-    return new URL(`${MEMORY_SCHEME}${hash}.json`);
+    return new URL(
+      createMemoryUriFromDesignTokens(value, { namespace: 'document', extension: 'json' })
+    );
   }
 
   #assertSizeWithinLimit(uri: URL, size: number): void {
@@ -343,9 +352,20 @@ export class DefaultDocumentLoader implements DocumentLoader {
     return pathToFileURL(resolveFilePath(reference, undefined, this.#cwd));
   }
 
-  #createMemoryUri(): URL {
-    const id = this.#memoryCounter++;
-    return new URL(`${MEMORY_SCHEME}${String(id)}`);
+  #createMemoryUriFromRecordContent(content: string | Uint8Array): URL {
+    if (typeof content === 'string') {
+      return this.#createMemoryUriFromText(content);
+    }
+
+    return this.#createMemoryUriFromBytes(content);
+  }
+
+  #createMemoryUriFromText(text: string): URL {
+    return new URL(createMemoryUriFromText(text, { namespace: 'inline', extension: 'txt' }));
+  }
+
+  #createMemoryUriFromBytes(content: Uint8Array): URL {
+    return new URL(createMemoryUriFromBytes(content, { namespace: 'inline', extension: 'bin' }));
   }
 }
 
@@ -419,66 +439,8 @@ function resolveFilePath(reference: string, baseUri: URL | undefined, cwd: strin
   return path.resolve(cwd, reference);
 }
 
-interface ContentCarrier {
-  readonly content?: unknown;
-}
-
-interface DataCarrier {
-  readonly data?: unknown;
-}
-
-function hasContentProperty(value: object): value is ContentCarrier {
-  return 'content' in value;
-}
-
-function hasDataProperty(value: object): value is DataCarrier {
-  return 'data' in value;
-}
-
-function isObjectLike(value: unknown): value is object {
-  return typeof value === 'object' && value !== null;
-}
-
-function isParseInputRecord(value: ParseInput): value is ParseInputRecord {
-  if (!isObjectLike(value)) {
-    return false;
-  }
-
-  if (!hasContentProperty(value)) {
-    return false;
-  }
-
-  const { content } = value;
-  return typeof content === 'string' || content instanceof Uint8Array;
-}
-
-function isParseDataInputRecord(value: ParseInput): value is ParseDataInputRecord {
-  if (!isObjectLike(value)) {
-    return false;
-  }
-
-  if (!hasDataProperty(value)) {
-    return false;
-  }
-
-  return isDesignTokenDocument(value.data);
-}
-
 function encodeText(content: string): Uint8Array {
   return new TextEncoder().encode(content);
-}
-
-function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  if (value instanceof URL || value instanceof Uint8Array) {
-    return false;
-  }
-
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }
 
 function detectContentType(params: {
@@ -505,7 +467,7 @@ function detectContentType(params: {
   }
 
   if (typeof params.content === 'string') {
-    const fromContent = detectContentTypeFromContent(params.content);
+    const fromContent = inferContentTypeFromContent(params.content);
     if (fromContent) {
       return fromContent;
     }
@@ -523,43 +485,6 @@ function detectContentTypeFromUri(uri: URL): ContentType | undefined {
     return 'application/json';
   }
   return undefined;
-}
-
-function detectContentTypeFromContent(content: string): ContentType | undefined {
-  const trimmed = content.trimStart();
-  if (trimmed.length === 0) {
-    return undefined;
-  }
-  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-    return 'application/json';
-  }
-  if (trimmed.startsWith('---') || trimmed.startsWith('%')) {
-    return 'application/yaml';
-  }
-  if (trimmed.includes('\n')) {
-    return 'application/yaml';
-  }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
-    return 'application/yaml';
-  }
-  return undefined;
-}
-
-function looksLikeInlineDocument(value: string): boolean {
-  const trimmed = value.trimStart();
-  if (trimmed.length === 0) {
-    return true;
-  }
-  if (trimmed.startsWith('{') || trimmed.startsWith('[') || trimmed.startsWith('---')) {
-    return true;
-  }
-  if (trimmed.startsWith('%YAML') || trimmed.includes('\n')) {
-    return true;
-  }
-  if (/^[^{}\[\]\r\n]+:\s+\S/u.test(trimmed)) {
-    return true;
-  }
-  return false;
 }
 
 function noop(): void {

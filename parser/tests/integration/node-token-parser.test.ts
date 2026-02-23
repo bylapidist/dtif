@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 
 import {
   DtifTokenParseError,
@@ -65,4 +68,59 @@ void test('readTokensFile returns parsed DTIF contents', async () => {
   const tokenType = primary.$type;
   assert.equal(typeof tokenType, 'string', 'expected token type to be a string');
   assert.equal(tokenType, 'color');
+});
+
+void test('parseTokensFromFile resolves external file references', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'dtif-parser-'));
+
+  try {
+    const palettePath = path.join(root, 'palette.tokens.json');
+    const consumerPath = path.join(root, 'consumer.tokens.json');
+
+    await writeFile(
+      palettePath,
+      JSON.stringify(
+        {
+          $version: '1.0.0',
+          color: {
+            primary: {
+              $type: 'color',
+              $value: { colorSpace: 'srgb', components: [0.12, 0.34, 0.56, 1] }
+            }
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    await writeFile(
+      consumerPath,
+      JSON.stringify(
+        {
+          $version: '1.0.0',
+          color: {
+            brand: {
+              $type: 'color',
+              $ref: './palette.tokens.json#/color/primary'
+            }
+          }
+        },
+        null,
+        2
+      )
+    );
+
+    const result = await parseTokensFromFile(consumerPath);
+    const token = result.flattened.find((entry) => entry.pointer === '#/color/brand');
+    assert.ok(token, 'expected brand token to be flattened');
+    assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.12, 0.34, 0.56, 1] });
+    assert.equal(
+      result.diagnostics.filter((diagnostic) => diagnostic.severity === 'error').length,
+      0,
+      'expected external reference resolution without errors'
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

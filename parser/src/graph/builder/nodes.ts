@@ -1,6 +1,6 @@
 import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import { splitJsonPointer } from '../../utils/json-pointer.js';
-import type { JsonPointer } from '../../types.js';
+import type { JsonPointer } from '../../domain/primitives.js';
 import type {
   DocumentChildNode,
   GraphCollectionNode,

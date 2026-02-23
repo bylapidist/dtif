@@ -1,0 +1,5 @@
+name: cursor-parameters-reserved-member
+description: cursor parameters must reject unrecognised reserved members
+assertions:
+  - schema
+tags: [cursor, extensibility]

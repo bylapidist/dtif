@@ -1,0 +1,17 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "$version": "1.0.0",
+  "color": {
+    "brand": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.1, 0.1, 0.1, 1] }
+    }
+  },
+  "$overrides": [
+    {
+      "$token": "themes/dark.tokens.json#/color/brand",
+      "$when": { "platform": "web" },
+      "$value": { "colorSpace": "srgb", "components": [0.9, 0.9, 0.9, 1] }
+    }
+  ]
+}

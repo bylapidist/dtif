@@ -1,4 +1,6 @@
-export type DiagnosticCode = `DTIF${number}${number}${number}${number}`;
+import type { DiagnosticCode } from '../domain/primitives.js';
+
+export type { DiagnosticCode } from '../domain/primitives.js';
 
 const DIAGNOSTIC_CODE_PATTERN = /^DTIF\d{4}$/u;
 
@@ -80,7 +82,8 @@ export const DiagnosticCodes = {
   },
   loader: {
     FAILED: formatDiagnosticCode('Loader', 0, 0),
-    TOO_LARGE: formatDiagnosticCode('Loader', 0, 1)
+    TOO_LARGE: formatDiagnosticCode('Loader', 0, 1),
+    HOST_NOT_ALLOWED: formatDiagnosticCode('Loader', 0, 2)
   },
   decoder: {
     FAILED: formatDiagnosticCode('Decoder', 0, 0)
@@ -100,7 +103,10 @@ export const DiagnosticCodes = {
     INVALID_OVERRIDE: formatDiagnosticCode('Normaliser', 3, 0),
     MISSING_REQUIRED_MEMBER: formatDiagnosticCode('Normaliser', 3, 1),
     INVALID_EXTENSIONS: formatDiagnosticCode('Normaliser', 4, 0),
-    INVALID_METADATA_COMBINATION: formatDiagnosticCode('Normaliser', 4, 1)
+    INVALID_METADATA_COMBINATION: formatDiagnosticCode('Normaliser', 4, 1),
+    INVALID_MEMBER_ORDER: formatDiagnosticCode('Normaliser', 4, 2),
+    FUTURE_VERSION: formatDiagnosticCode('Normaliser', 4, 3),
+    UNKNOWN_TYPE: formatDiagnosticCode('Normaliser', 4, 4)
   },
   graph: {
     FAILED: formatDiagnosticCode('Graph', 0, 0),

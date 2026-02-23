@@ -1,0 +1,5 @@
+name: line-height-dimension-unknown-unit
+description: line-height dimension values must use recognised length or percentage units
+assertions:
+  - schema
+tags: [typography]

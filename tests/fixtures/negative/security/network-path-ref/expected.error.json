@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_NETWORK_PATH",
+    "path": "/danger/$ref",
+    "message": "network-path refs are not allowed: //example.com/secrets.json#/token"
+  }
+}

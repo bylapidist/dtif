@@ -1,10 +1,13 @@
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
-import { parseTokens } from '../../tokens/parse-tokens.js';
-import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/parse-tokens.js';
+import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/contracts.js';
 import { formatDiagnostic } from '../../diagnostics/format.js';
 import type { FormatDiagnosticOptions } from '../../diagnostics/format.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
+import { isDesignTokenDocument } from '../../input/contracts.js';
+import { createDocumentRequest } from '../../application/requests.js';
+import { createRuntime } from '../../session/runtime.js';
+import { toParseTokensResult } from '../../tokens/internal/parse-result.js';
 
 const SUPPORTED_EXTENSIONS = ['.tokens', '.tokens.json', '.tokens.yaml', '.tokens.yml'];
 
@@ -41,8 +44,7 @@ export async function parseTokensFromFile(
   options: NodeParseTokensOptions = {}
 ): Promise<ParseTokensResult> {
   assertSupportedFile(filePath);
-  const parseOptions = toParseTokensOptions(options);
-  const result = await parseTokens(filePath, parseOptions);
+  const result = await parseTokensWithRuntime(filePath, options);
   const errors = result.diagnostics.filter((diagnostic) => diagnostic.severity === 'error');
   if (errors.length > 0) {
     throw new DtifTokenParseError(filePath, errors, options.diagnosticFormat);
@@ -82,6 +84,36 @@ function toParseTokensOptions(options: NodeParseTokensOptions): ParseTokensOptio
   } satisfies ParseTokensOptions;
 }
 
+async function parseTokensWithRuntime(
+  input: string | URL,
+  options: NodeParseTokensOptions
+): Promise<ParseTokensResult> {
+  const parseOptions = toParseTokensOptions(options);
+  const {
+    flatten = true,
+    includeGraphs = true,
+    tokenCache,
+    onDiagnostic,
+    warn,
+    ...runtimeOptions
+  } = parseOptions;
+  const runtime = createRuntime(runtimeOptions);
+  const request = createDocumentRequest(input);
+  const useCase = runtime.createTokensUseCase(tokenCache);
+  const execution = await useCase.execute({
+    request,
+    flatten,
+    includeGraphs
+  });
+
+  return toParseTokensResult(execution, {
+    flatten,
+    includeGraphs,
+    onDiagnostic,
+    warn
+  });
+}
+
 function assertSupportedFile(filePath: string | URL): void {
   const source = toSourceString(filePath);
   if (!SUPPORTED_EXTENSIONS.some((extension) => source.endsWith(extension))) {
@@ -110,12 +142,4 @@ function assertIsDesignTokenDocument(
   if (!isDesignTokenDocument(value)) {
     throw new Error(`DTIF parser returned unexpected document contents for ${source}`);
   }
-}
-
-function isDesignTokenDocument(value: unknown): value is DesignTokenInterchangeFormat {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }

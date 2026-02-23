@@ -1,6 +1,5 @@
 import type { DecodedDocument, DiagnosticEvent } from '../domain/models.js';
 import type { JsonPointer, SourceSpan } from '../domain/primitives.js';
-import type { ResolvedToken } from '../resolver/index.js';
 
 export interface ExtensionHandlerInput {
   readonly namespace: string;
@@ -34,6 +33,46 @@ export interface ResolvedTokenTransformContext {
 export interface ResolvedTokenTransformResult {
   readonly data?: unknown;
   readonly diagnostics?: readonly DiagnosticEvent[];
+}
+
+export type AppliedOverrideKind =
+  | 'override-ref'
+  | 'override-value'
+  | 'fallback-ref'
+  | 'fallback-value';
+
+export interface ResolutionSource {
+  readonly uri: URL;
+  readonly pointer: JsonPointer;
+  readonly span?: SourceSpan;
+}
+
+export interface AppliedOverride {
+  readonly pointer: JsonPointer;
+  readonly span?: SourceSpan;
+  readonly kind: AppliedOverrideKind;
+  readonly depth: number;
+  readonly source?: ResolutionSource;
+}
+
+export type ResolutionTraceStepKind = 'token' | 'alias' | 'override' | 'fallback';
+
+export interface ResolutionTraceStep {
+  readonly pointer: JsonPointer;
+  readonly kind: ResolutionTraceStepKind;
+  readonly span?: SourceSpan;
+}
+
+export interface ResolvedToken {
+  readonly pointer: JsonPointer;
+  readonly uri: URL;
+  readonly type?: string;
+  readonly value?: unknown;
+  readonly source?: ResolutionSource;
+  readonly overridesApplied: readonly AppliedOverride[];
+  readonly warnings: readonly DiagnosticEvent[];
+  readonly trace: readonly ResolutionTraceStep[];
+  toJSON(): unknown;
 }
 
 export type ResolvedTokenTransform = (

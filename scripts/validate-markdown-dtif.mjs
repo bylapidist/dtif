@@ -68,7 +68,7 @@ for (const file of files) {
       continue;
     }
 
-    const result = validateDtif(parsed);
+    const result = validateDtif(parsed, { enforceSemanticRules: false });
     if (!result.valid) {
       failures.push({ file, index, errors: result.errors });
     } else {

@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_ABSOLUTE_PATH",
+    "path": "/danger/$ref",
+    "message": "absolute-path refs are not allowed: /secrets.json#/token"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$version": "1.0.0",
+  "component": {
+    "button": {
+      "$type": "component",
+      "$value": {
+        "$slots": {
+          "root": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [0, 0, 0, 1]
+            }
+          }
+        },
+        "$custom": true
+      }
+    }
+  }
+}

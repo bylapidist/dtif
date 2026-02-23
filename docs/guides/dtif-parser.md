@@ -348,6 +348,11 @@ const session = createSession({
 });
 ```
 
+Remote document loading and remote alias resolution are separate concerns. The
+default loader can fetch remote documents when enabled, but resolver alias
+lookups currently support only local (`#...`) targets and report diagnostics for
+external `$ref` pointers.
+
 ## Plugins {#plugins}
 
 Plugins extend the parser with `$extensions` collectors and resolution transforms.

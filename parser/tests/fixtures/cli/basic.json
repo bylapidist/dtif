@@ -3,16 +3,16 @@
   "$version": "1.0.0",
   "color": {
     "brand": {
+      "alias": {
+        "$type": "color",
+        "$ref": "#/color/brand/primary"
+      },
       "primary": {
         "$type": "color",
         "$value": {
           "colorSpace": "srgb",
           "components": [0, 82, 204]
         }
-      },
-      "alias": {
-        "$type": "color",
-        "$ref": "#/color/brand/primary"
       }
     }
   }

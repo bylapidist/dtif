@@ -1,5 +1,5 @@
 import type { DocumentAst, DocumentGraph, GraphOverrideNode } from './nodes.js';
-import type { JsonPointer } from '../types.js';
+import type { JsonPointer } from '../domain/primitives.js';
 import {
   createGraphBuilderContext,
   finalizeResult,

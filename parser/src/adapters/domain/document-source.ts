@@ -7,6 +7,7 @@ import type {
   ParseInput,
   ParseInputRecord
 } from '../../types.js';
+import { isDesignTokenDocument } from '../../input/contracts.js';
 
 export interface DocumentLoaderSourceOptions {
   readonly context?: DocumentLoaderContext;
@@ -116,17 +117,4 @@ function assertDesignTokenDocument(
   if (!isDesignTokenDocument(value)) {
     throw new TypeError('Inline data must be a design token document.');
   }
-}
-
-function isDesignTokenDocument(value: unknown): value is ParseDataInputRecord['data'] {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  if (value instanceof URL || value instanceof Uint8Array) {
-    return false;
-  }
-
-  const prototype = Reflect.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
 }
