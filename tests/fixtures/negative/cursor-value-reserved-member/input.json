@@ -1,0 +1,15 @@
+{
+  "$version": "1.0.0",
+  "cursor": {
+    "hover": {
+      "$type": "cursor",
+      "$value": {
+        "cursorType": "css.cursor",
+        "value": {
+          "shape": "beam",
+          "$custom": true
+        }
+      }
+    }
+  }
+}

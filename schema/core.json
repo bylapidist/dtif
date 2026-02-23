@@ -958,6 +958,11 @@
                     "additionalProperties": false
                   }
                 },
+                "propertyNames": {
+                  "type": "string",
+                  "pattern": "^(?:\\$slots|[^$].*)$",
+                  "$comment": "Conformance §conformance-classes and Extensibility §extensibility: only the schema-defined $slots member is permitted among reserved names."
+                },
                 "additionalProperties": true
               }
             },
@@ -1732,12 +1737,20 @@
               "type": "object",
               "minProperties": 1,
               "$comment": "Object values MAY encode structured pointer metadata (for example UIPointerStyle.shape or PointerIcon hotspots) and MUST follow the platform APIs they reference.",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^(?!\\$)"
+              },
               "additionalProperties": true
             }
           ]
         },
         "parameters": {
           "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^(?!\\$)"
+          },
           "additionalProperties": true,
           "$comment": "Optional parameters supply reusable inputs such as hotspot coordinates or referenced tokens consumed by pointer APIs."
         }
@@ -4298,6 +4311,10 @@
             "properties": {
               "$ref": {}
             }
+          },
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^(?!\\$)"
           },
           "additionalProperties": true
         }

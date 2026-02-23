@@ -1,0 +1,5 @@
+name: component-reserved-member
+description: component value objects must reject unrecognised reserved members
+assertions:
+  - schema
+tags: [component, extensibility]

@@ -1,0 +1,5 @@
+name: cursor-value-reserved-member
+description: cursor object values must reject unrecognised reserved members
+assertions:
+  - schema
+tags: [cursor, extensibility]
