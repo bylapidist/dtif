@@ -1,8 +1,8 @@
 import type { DocumentHandle } from '../../types.js';
 import type { DecodedDocument } from '../../domain/models.js';
+import { normalizeInlineYamlText } from '../../utils/inline-yaml.js';
 import { decodeBytes } from './encoding.js';
 import { buildSourceMap } from './source-map.js';
-import { normalizeInlineYamlText } from './inline-yaml.js';
 import { parseYaml, toJavaScript } from './yaml.js';
 import { cloneJsonValue } from '../../utils/clone-json.js';
 import { createSyntheticSourceMap } from './synthetic-source-map.js';

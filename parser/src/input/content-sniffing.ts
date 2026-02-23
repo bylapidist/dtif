@@ -1,5 +1,5 @@
 import type { ContentType } from '../types.js';
-import { isSingleLineInlineYaml } from '../io/decoder/inline-yaml.js';
+import { isSingleLineInlineYaml } from '../utils/inline-yaml.js';
 
 export function inferContentTypeFromContent(content: string): ContentType | undefined {
   const trimmed = content.trimStart();
