@@ -18,8 +18,11 @@ import {
 import type { DocumentAst } from '../ast/nodes.js';
 import type { DocumentGraph } from '../graph/nodes.js';
 import type { DocumentResolver } from '../resolver/document-resolver.js';
-import type { ResolvedParseSessionOptions } from '../session/options.js';
 import type { InlineDocumentRequestInput } from './requests.js';
+import type { DocumentCachePort } from '../domain/ports.js';
+import type { DocumentLoader } from '../io/document-loader.js';
+import type { SchemaGuard } from '../validation/schema-guard.js';
+import type { PluginRegistry } from '../plugins/index.js';
 import {
   computeDocumentHash,
   createTokenCacheVariant,
@@ -35,8 +38,18 @@ export type ParseDocumentOrchestrator<TAst, TGraph, TResult> = Pick<
   'execute' | 'executeSync'
 >;
 
+export interface ParserRuntimeOptions {
+  readonly loader: DocumentLoader;
+  readonly documentCache?: DocumentCachePort;
+  readonly allowHttp: boolean;
+  readonly maxDepth: number;
+  readonly overrideContext: ReadonlyMap<string, unknown>;
+  readonly schemaGuard: SchemaGuard;
+  readonly plugins?: PluginRegistry;
+}
+
 export function createParseDocumentUseCase(
-  options: ResolvedParseSessionOptions
+  options: ParserRuntimeOptions
 ): ParseDocumentUseCase<DocumentAst, DocumentGraph, ResolverResult> {
   const source = new DocumentLoaderSource(options.loader);
   const ingestion = new DocumentIngestionAdapter(source);
@@ -68,7 +81,7 @@ export function createParseDocumentUseCase(
 
 export function createInlineParseDocumentUseCase(
   input: InlineDocumentRequestInput,
-  options: ResolvedParseSessionOptions
+  options: ParserRuntimeOptions
 ): ParseDocumentUseCase<DocumentAst, DocumentGraph, ResolverResult> {
   const ingestion = new InlineDocumentIngestionAdapter(input);
   const decoding = new InlineDocumentDecodingAdapter();
@@ -97,7 +110,7 @@ export function createInlineParseDocumentUseCase(
 
 export function createParseTokensUseCase(
   documents: ParseDocumentOrchestrator<DocumentAst, DocumentGraph, ResolverResult>,
-  options: ResolvedParseSessionOptions,
+  options: ParserRuntimeOptions,
   cache?: TokenCache
 ): ParseTokensUseCase<DocumentAst, DocumentGraph, ResolverResult> {
   const flattening = new TokenFlatteningAdapter();
@@ -114,7 +127,7 @@ export function createParseTokensUseCase(
 }
 
 export function createTokenCacheConfiguration(
-  options: ResolvedParseSessionOptions
+  options: ParserRuntimeOptions
 ): TokenCacheConfiguration {
   return {
     resolutionDepth: options.maxDepth,
