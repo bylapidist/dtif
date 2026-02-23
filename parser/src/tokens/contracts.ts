@@ -1,4 +1,4 @@
-import type { ParseSessionOptions } from '../session.js';
+import type { ParseSessionOptions } from '../session/types.js';
 import type { RawDocument as DomainRawDocument } from '../domain/models.js';
 import type { DocumentGraph } from '../graph/nodes.js';
 import type { DocumentResolver } from '../resolver/index.js';
