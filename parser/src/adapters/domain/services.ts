@@ -15,8 +15,11 @@ import type { SchemaGuard } from '../../validation/schema-guard.js';
 import type { ResolvedTokenTransformEntry } from '../../plugins/registry.js';
 import type { PluginRegistry } from '../../plugins/index.js';
 import type { ExtensionEvaluation } from '../../plugins/types.js';
-import type { InlineDocumentRequestInput } from '../../application/requests.js';
-import { createInlineDocumentHandle, decodeInlineDocument } from '../../application/inline.js';
+import {
+  createInlineDocumentHandle,
+  type InlineDocumentRequestInput
+} from '../../input/inline-document.js';
+import { decodeInlineDocument } from '../../io/decoder/inline-document.js';
 import {
   EMPTY_PIPELINE_DIAGNOSTICS,
   toDomainDiagnostic,

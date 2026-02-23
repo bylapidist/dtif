@@ -9,6 +9,7 @@ import { PluginRegistry } from '../../src/plugins/index.js';
 import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { ResolvedToken } from '../../src/resolver/types.js';
 import type { TokenMetadataSnapshot, ResolvedTokenView } from '../../src/tokens/types.js';
+import { TokenFlatteningAdapter } from '../../src/tokens/token-flattening-adapter.js';
 
 const EMPTY_PIPELINE: domain.PipelineDiagnostics = Object.freeze({ events: Object.freeze([]) });
 
@@ -119,7 +120,7 @@ void test('domain adapters: token flattening adapter assembles cache entries', (
     severity: 'warning'
   } satisfies Diagnostic;
 
-  const adapter = new domainAdapters.TokenFlatteningAdapter({
+  const adapter = new TokenFlatteningAdapter({
     metadataSnapshot: () => metadata,
     resolutionSnapshot: (_graph, _resolver, options) => {
       options?.onDiagnostic?.(resolutionDiagnostic);

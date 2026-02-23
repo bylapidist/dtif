@@ -1,7 +1,6 @@
-import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
-
-import type { ContentType, ParseInput } from '../types.js';
+import type { ParseInput } from '../types.js';
 import type { DocumentRequest } from '../domain/ports.js';
+import type { InlineDocumentRequestInput } from '../input/inline-document.js';
 import {
   isDesignTokenDocument,
   isParseDataInputRecord,
@@ -43,12 +42,7 @@ export function createDocumentRequest(input: ParseInput): DocumentRequest {
   throw new TypeError('Unsupported parse input.');
 }
 
-export interface InlineDocumentRequestInput {
-  readonly uri: string;
-  readonly contentType: ContentType;
-  readonly text?: string;
-  readonly data?: DesignTokenInterchangeFormat;
-}
+export type { InlineDocumentRequestInput } from '../input/inline-document.js';
 
 export function createInlineDocumentRequest(input: InlineDocumentRequestInput): DocumentRequest {
   if (input.data !== undefined) {

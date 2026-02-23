@@ -22,8 +22,6 @@ export type {
   DocumentNormalizationAdapterOptions,
   ResolutionAdapterOptions
 } from './services.js';
-export { TokenFlatteningAdapter } from '../../tokens/token-flattening-adapter.js';
-export type { TokenFlatteningAdapterOptions } from '../../tokens/token-flattening-adapter.js';
 export {
   EMPTY_PIPELINE_DIAGNOSTICS,
   toDomainDiagnostic,

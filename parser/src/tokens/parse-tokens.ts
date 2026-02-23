@@ -1,8 +1,10 @@
-import { createInlineParseDocumentUseCase } from '../application/factory.js';
+import {
+  createInlineParseDocumentUseCase,
+  createParseDocumentUseCase
+} from '../application/factory.js';
 import { createParseTokensUseCase } from './use-case-factory.js';
 import { isRecord } from '../input/contracts.js';
-import { resolveOptions } from '../session/options.js';
-import { createRuntime } from '../session/runtime.js';
+import { resolveOptions } from '../runtime/resolve-options.js';
 import { createDocumentRequest, createInlineDocumentRequest } from '../application/requests.js';
 import { type ParseTokensInput, normalizeInput, normalizeInlineInput } from './inputs.js';
 import type { ParseTokensOptions, ParseTokensResult, ParseTokensSyncOptions } from './contracts.js';
@@ -20,12 +22,12 @@ export async function parseTokens(
     tokenCache,
     onDiagnostic,
     warn,
-    ...runtimeOptions
+    ...sessionOptions
   } = options;
-  const runtime = createRuntime(runtimeOptions);
+  const resolvedOptions = resolveOptions(sessionOptions);
+  const documents = createParseDocumentUseCase(resolvedOptions);
   const request = createDocumentRequest(normalizeInput(input));
-
-  const useCase = runtime.createTokensUseCase(tokenCache);
+  const useCase = createParseTokensUseCase(documents, resolvedOptions, tokenCache);
 
   const execution = await useCase.execute({
     request,
