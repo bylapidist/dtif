@@ -15,10 +15,6 @@ import type { SchemaGuard } from '../../validation/schema-guard.js';
 import type { ResolvedTokenTransformEntry } from '../../plugins/registry.js';
 import type { PluginRegistry } from '../../plugins/index.js';
 import type { ExtensionEvaluation } from '../../plugins/types.js';
-import { flattenTokens } from '../../tokens/flatten.js';
-import { createMetadataSnapshot, createResolutionSnapshot } from '../../tokens/snapshots.js';
-import { computeDocumentHash } from '../../tokens/cache.js';
-import type { TokenCacheSnapshot } from '../../tokens/cache.js';
 import type { InlineDocumentRequestInput } from '../../application/requests.js';
 import { createInlineDocumentHandle, decodeInlineDocument } from '../../application/inline.js';
 import {
@@ -35,8 +31,7 @@ import type {
   PipelineDiagnostics,
   PipelineResult,
   RawDocument,
-  ResolutionOutcome,
-  TokenSnapshot
+  ResolutionOutcome
 } from '../../domain/models.js';
 import type {
   DocumentDecodingService,
@@ -45,8 +40,7 @@ import type {
   GraphConstructionService,
   ResolutionContext,
   ResolutionService,
-  SchemaValidationService,
-  TokenFlatteningService
+  SchemaValidationService
 } from '../../domain/services.js';
 import type {
   DocumentRequest,
@@ -54,9 +48,7 @@ import type {
   GraphBuilderPort,
   NormalizationPort,
   ResolutionPort,
-  SchemaValidationPort,
-  TokenFlatteningPort,
-  TokenFlatteningRequest
+  SchemaValidationPort
 } from '../../domain/ports.js';
 import type { DocumentAst } from '../../ast/nodes.js';
 import type { DocumentGraph, GraphReferenceTarget } from '../../graph/nodes.js';
@@ -436,87 +428,6 @@ export class ResolutionAdapter implements ResolutionService<
         )
       } satisfies PipelineResult<ResolutionOutcome<ResolverInstance> | undefined>;
     }
-  }
-}
-
-export interface TokenFlatteningAdapterOptions {
-  readonly metadataSnapshot?: typeof createMetadataSnapshot;
-  readonly resolutionSnapshot?: typeof createResolutionSnapshot;
-  readonly flattenTokens?: typeof flattenTokens;
-  readonly clock?: () => number;
-}
-
-export class TokenFlatteningAdapter implements TokenFlatteningService<
-  ResolverInstance,
-  DocumentGraph,
-  TokenCacheSnapshot
-> {
-  readonly flattener: TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
-  readonly #metadataSnapshot: typeof createMetadataSnapshot;
-  readonly #resolutionSnapshot: typeof createResolutionSnapshot;
-  readonly #flattenTokens: typeof flattenTokens;
-  readonly #clock: () => number;
-
-  constructor(options: TokenFlatteningAdapterOptions = {}) {
-    this.#metadataSnapshot = options.metadataSnapshot ?? createMetadataSnapshot;
-    this.#resolutionSnapshot = options.resolutionSnapshot ?? createResolutionSnapshot;
-    this.#flattenTokens = options.flattenTokens ?? flattenTokens;
-    this.#clock = options.clock ?? Date.now;
-    this.flattener = {
-      flatten: (request) => this.flatten(request)
-    } satisfies TokenFlatteningPort<ResolverInstance, DocumentGraph, TokenCacheSnapshot>;
-  }
-
-  flatten(
-    request: TokenFlatteningRequest<DocumentGraph, ResolverInstance>
-  ): PipelineResult<TokenSnapshot<TokenCacheSnapshot> | undefined> {
-    const { document, graph, resolution, documentHash, flatten } = request;
-
-    const metadataIndex = this.#metadataSnapshot(graph.graph);
-    let resolutionIndex: TokenCacheSnapshot['resolutionIndex'];
-    let flattenedTokens: TokenCacheSnapshot['flattened'];
-    const resolutionDiagnostics: DiagnosticEvent[] = [];
-
-    if (flatten) {
-      resolutionIndex = this.#resolutionSnapshot(graph.graph, resolution.result, {
-        onDiagnostic: (diagnostic) => {
-          resolutionDiagnostics.push(diagnostic);
-        }
-      });
-      flattenedTokens = this.#flattenTokens(graph.graph, resolutionIndex);
-    }
-
-    const snapshotDiagnostics =
-      resolutionDiagnostics.length > 0
-        ? Object.freeze(resolutionDiagnostics.map(toDomainDiagnostic))
-        : EMPTY_RESOLUTION_EVENTS;
-
-    const entryDiagnostics =
-      resolutionDiagnostics.length > 0
-        ? Object.freeze(resolutionDiagnostics.map(toDomainDiagnostic))
-        : undefined;
-
-    const entry: TokenCacheSnapshot = {
-      documentHash: documentHash ?? computeDocumentHash(document),
-      flattened: flatten ? (flattenedTokens ?? []) : undefined,
-      metadataIndex,
-      resolutionIndex: flatten ? resolutionIndex : undefined,
-      diagnostics: entryDiagnostics,
-      timestamp: this.#clock()
-    } satisfies TokenCacheSnapshot;
-
-    const snapshot: TokenSnapshot<TokenCacheSnapshot> = {
-      token: entry,
-      diagnostics: snapshotDiagnostics
-    } satisfies TokenSnapshot<TokenCacheSnapshot>;
-
-    const diagnostics: PipelineDiagnostics = snapshotDiagnostics.length
-      ? { events: snapshotDiagnostics }
-      : EMPTY_PIPELINE_DIAGNOSTICS;
-
-    return { outcome: snapshot, diagnostics } satisfies PipelineResult<
-      TokenSnapshot<TokenCacheSnapshot> | undefined
-    >;
   }
 }
 

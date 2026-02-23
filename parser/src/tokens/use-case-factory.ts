@@ -1,10 +1,10 @@
-import { TokenFlatteningAdapter } from '../adapters/domain/services.js';
 import type { ParseDocumentUseCase, ParseTokensUseCase } from '../application/use-cases.js';
 import { ParseTokensUseCase as TokensUseCase } from '../application/use-cases.js';
 import type { DocumentAst } from '../ast/nodes.js';
 import type { DocumentGraph } from '../graph/nodes.js';
 import type { DocumentResolver } from '../resolver/document-resolver.js';
 import type { ParserRuntimeOptions } from '../application/runtime-options.js';
+import { TokenFlatteningAdapter } from './token-flattening-adapter.js';
 import {
   computeDocumentHash,
   createTokenCacheVariant,
