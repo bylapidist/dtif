@@ -1,7 +1,8 @@
 name: override-missing-ref-and-value
-description: override entry missing both $ref and $value should fail schema
+description: override entry missing $ref, $value, and $fallback is ignored
 assertions:
   - schema
   - refs
+  - type-compat
 tags:
   - override

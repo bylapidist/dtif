@@ -1,0 +1,6 @@
+name: extensions-payload-ref-literal
+description: extension payload may include literal $ref members without triggering reference validation
+assertions:
+  - schema
+  - refs
+tags: [extensions]

@@ -1,6 +1,8 @@
 name: override-ref-and-value
-description: override entry with both $ref and $value should fail schema
+description: override entry with both $ref and $value is ignored
 assertions:
   - schema
+  - refs
+  - type-compat
 tags:
   - override

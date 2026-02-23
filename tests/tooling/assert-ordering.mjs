@@ -1,5 +1,25 @@
 export default function assertOrdering(doc) {
   const errors = [];
+  const TYPOGRAPHY_KNOWN_VALUE_KEYS = new Set([
+    'typographyType',
+    'fontFamily',
+    'fontSize',
+    'lineHeight',
+    'letterSpacing',
+    'wordSpacing',
+    'fontWeight',
+    'fontStyle',
+    'fontVariant',
+    'fontStretch',
+    'textDecoration',
+    'textTransform',
+    'color',
+    'fontFeatures',
+    'underlineThickness',
+    'underlineOffset',
+    'overlineThickness',
+    'overlineOffset'
+  ]);
 
   function checkOrder(keys, expected, path) {
     let last = -1;
@@ -38,9 +58,13 @@ export default function assertOrdering(doc) {
     }
   }
 
-  function walk(node, path = '') {
+  function walk(node, path = '', context = {}) {
+    if (path.includes('/$extensions/')) {
+      return;
+    }
+
     if (Array.isArray(node)) {
-      node.forEach((val, idx) => walk(val, `${path}/${idx}`));
+      node.forEach((val, idx) => walk(val, `${path}/${idx}`, context));
       return;
     }
 
@@ -63,10 +87,30 @@ export default function assertOrdering(doc) {
         checkOrder(keys, ['colorSpace', 'components'], path);
       }
 
-      checkCollectionOrder(node, path);
+      if (context.inTypographyValue !== true) {
+        checkCollectionOrder(node, path);
+      }
 
       for (const [k, v] of Object.entries(node)) {
-        walk(v, `${path}/${k}`);
+        if (k === '$extensions') {
+          continue;
+        }
+        if (
+          context.inTypographyValue === true &&
+          !TYPOGRAPHY_KNOWN_VALUE_KEYS.has(k) &&
+          !k.startsWith('$')
+        ) {
+          continue;
+        }
+        walk(v, `${path}/${k}`, {
+          inTypographyValue:
+            typeof node.$type === 'string' &&
+            node.$type === 'typography' &&
+            k === '$value' &&
+            !!v &&
+            typeof v === 'object' &&
+            !Array.isArray(v)
+        });
       }
     }
   }

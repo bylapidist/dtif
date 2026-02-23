@@ -1,0 +1,19 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "sizing": {
+    "base": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "length", "value": 16, "unit": "px" }
+    }
+  },
+  "problem": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.rotate3d",
+      "parameters": {
+        "angle": { "$ref": "#/sizing/base" },
+        "axis": { "x": 1, "y": 0, "z": 0 }
+      }
+    }
+  }
+}

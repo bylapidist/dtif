@@ -32,6 +32,29 @@ const unresolvedRemote = {
     $ref: 'https://example.com/remote.tokens.json#/custom/token'
   }
 };
+const unresolvedRelativeExternal = {
+  $version: '1.0.0',
+  custom: {
+    $type: 'vendor.custom',
+    $ref: './local.tokens.json#/custom/token'
+  }
+};
+const unresolvedExternalOverrideTarget = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: 'themes/dark.tokens.json#/color/base',
+      $when: { platform: 'web' },
+      $ref: '#/color/base'
+    }
+  ]
+};
 const deprecatedReplacementTypeMismatch = {
   $version: '1.0.0',
   color: {
@@ -210,6 +233,271 @@ const typographyFontSizeRefTypeMismatch = {
     }
   }
 };
+const gradientStopOrderViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'gradient',
+    $value: {
+      gradientType: 'linear',
+      stops: [
+        {
+          position: 0,
+          color: { colorSpace: 'srgb', components: [1, 0, 0, 1] }
+        },
+        {
+          position: 0.5,
+          color: { colorSpace: 'srgb', components: [0, 1, 0, 1] }
+        },
+        {
+          position: 0.4,
+          color: { colorSpace: 'srgb', components: [0, 0, 1, 1] }
+        }
+      ],
+      angle: 30
+    }
+  }
+};
+const calcMixedUnitsViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'dimension',
+    $value: { fn: 'calc', parameters: ['1px', '+', '1deg'] }
+  }
+};
+const clampMinGreaterThanMaxViolation = {
+  $version: '1.0.0',
+  bad: {
+    $type: 'dimension',
+    $value: { fn: 'clamp', parameters: ['10px', '5px', '1px'] }
+  }
+};
+const motionPathStartTimeViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0.25,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathEndTimeViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 0.75,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathOrderViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 0.8,
+            position: {
+              x: { dimensionType: 'length', value: 12, unit: 'px' }
+            }
+          },
+          {
+            time: 0.5,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 20, unit: 'px' }
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const motionPathEasingTypeViolation = {
+  $version: '1.0.0',
+  palette: {
+    background: {
+      $type: 'color',
+      $value: {
+        colorSpace: 'srgb',
+        components: [0.2, 0.3, 0.4, 1]
+      }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.offset-path',
+      parameters: {
+        points: [
+          {
+            time: 0,
+            position: {
+              x: { dimensionType: 'length', value: 0, unit: 'px' }
+            }
+          },
+          {
+            time: 1,
+            position: {
+              x: { dimensionType: 'length', value: 16, unit: 'px' }
+            },
+            easing: '#/palette/background'
+          }
+        ]
+      }
+    }
+  }
+};
+const motionRotationAxisZeroViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { dimensionType: 'angle', value: 90, unit: 'deg' },
+        axis: { x: 0, y: 0, z: 0 }
+      }
+    }
+  }
+};
+const motionTranslationRefTypeViolation = {
+  $version: '1.0.0',
+  palette: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0.1, 0.2, 0.3, 1] }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate3d',
+      parameters: {
+        x: { $ref: '#/palette/base' }
+      }
+    }
+  }
+};
+const motionRotationAxisMissingComponentsViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { dimensionType: 'angle', value: 90, unit: 'deg' },
+        axis: { x: 1 }
+      }
+    }
+  }
+};
+const motionRotationAngleTypeViolation = {
+  $version: '1.0.0',
+  sizing: {
+    base: {
+      $type: 'dimension',
+      $value: { dimensionType: 'length', value: 16, unit: 'px' }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { $ref: '#/sizing/base' },
+        axis: { x: 0, y: 1, z: 0 }
+      }
+    }
+  }
+};
+const motionTranslationDimensionTypeViolation = {
+  $version: '1.0.0',
+  angles: {
+    quarterTurn: {
+      $type: 'dimension',
+      $value: { dimensionType: 'angle', value: 90, unit: 'deg' }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate',
+      parameters: {
+        x: { $ref: '#/angles/quarterTurn' }
+      }
+    }
+  }
+};
+const motionRotationAngleUnitCategoryViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate',
+      parameters: {
+        angle: { fn: 'calc', parameters: ['1px'] }
+      }
+    }
+  }
+};
+const motionTranslationUnitCategoryViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate',
+      parameters: {
+        x: { fn: 'calc', parameters: ['1deg'] }
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -313,6 +601,40 @@ export default function assertValidatorDefaults() {
     });
   }
 
+  const unresolvedRelativeExternalValid = validate(unresolvedRelativeExternal);
+  if (unresolvedRelativeExternalValid) {
+    errors.push({
+      code: 'E_VALIDATOR_EXTERNAL_RESOLUTION_MISSING',
+      path: '',
+      message:
+        'validator should reject unresolved relative external references unless explicit opt-in is provided'
+    });
+  }
+
+  const unresolvedExternalOverrideTargetValid = validate(unresolvedExternalOverrideTarget);
+  if (unresolvedExternalOverrideTargetValid) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_EXTERNAL_TARGET_RESOLUTION_MISSING',
+      path: '',
+      message:
+        'validator should reject unresolved external override targets unless explicit opt-in is provided'
+    });
+  }
+
+  const { validate: validateWithExternalOptIn } = createDtifValidator({
+    allowExternalReferences: true,
+    allowRemoteReferences: true
+  });
+  const unresolvedRemoteWithOptInValid = validateWithExternalOptIn(unresolvedRemote);
+  if (!unresolvedRemoteWithOptInValid) {
+    errors.push({
+      code: 'E_VALIDATOR_REMOTE_OPT_IN_REJECTED',
+      path: '',
+      message:
+        'validator should defer remote reference resolution when external and remote opt-ins are both enabled'
+    });
+  }
+
   const deprecatedReplacementValid = validate(deprecatedReplacementTypeMismatch);
   if (deprecatedReplacementValid) {
     errors.push({
@@ -352,19 +674,19 @@ export default function assertValidatorDefaults() {
     });
   }
 
-  if (validate(overrideWithRefAndFallback)) {
+  if (!validate(overrideWithRefAndFallback)) {
     errors.push({
-      code: 'E_VALIDATOR_OVERRIDE_REF_FALLBACK_COMBINATION',
+      code: 'E_VALIDATOR_OVERRIDE_REF_FALLBACK_ALLOWED',
       path: '',
-      message: 'validator should reject overrides that combine $ref and $fallback'
+      message: 'validator should accept overrides that combine $ref and $fallback'
     });
   }
 
-  if (validate(overrideWithValueAndFallback)) {
+  if (!validate(overrideWithValueAndFallback)) {
     errors.push({
-      code: 'E_VALIDATOR_OVERRIDE_VALUE_FALLBACK_COMBINATION',
+      code: 'E_VALIDATOR_OVERRIDE_VALUE_FALLBACK_ALLOWED',
       path: '',
-      message: 'validator should reject overrides that combine $value and $fallback'
+      message: 'validator should accept overrides that combine $value and $fallback'
     });
   }
 
@@ -401,6 +723,121 @@ export default function assertValidatorDefaults() {
       path: '',
       message:
         'validator should reject typography fontSize refs that do not resolve to dimension tokens'
+    });
+  }
+
+  if (validate(gradientStopOrderViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_GRADIENT_STOP_ORDER',
+      path: '',
+      message: 'validator should reject gradients whose stops are not sorted in ascending order'
+    });
+  }
+
+  if (validate(calcMixedUnitsViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_CALC_UNIT_MISMATCH',
+      path: '',
+      message:
+        'validator should reject calc dimension functions that mix incompatible unit families'
+    });
+  }
+
+  if (validate(clampMinGreaterThanMaxViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_CLAMP_MIN_GREATER_THAN_MAX',
+      path: '',
+      message: 'validator should reject clamp dimension functions where min is greater than max'
+    });
+  }
+
+  if (validate(motionPathStartTimeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_START',
+      path: '',
+      message: 'validator should reject motion path sequences that do not start at time 0'
+    });
+  }
+
+  if (validate(motionPathEndTimeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_END',
+      path: '',
+      message: 'validator should reject motion path sequences that do not end at time 1'
+    });
+  }
+
+  if (validate(motionPathOrderViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_ORDER',
+      path: '',
+      message: 'validator should reject motion path sequences with non-monotonic time values'
+    });
+  }
+
+  if (validate(motionPathEasingTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PATH_EASING_TYPE',
+      path: '',
+      message:
+        'validator should reject motion path keyframes whose easing pointer does not resolve to an easing token'
+    });
+  }
+
+  if (validate(motionRotationAxisZeroViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_AXIS_ZERO',
+      path: '',
+      message: 'validator should reject motion rotation axes where all components are zero'
+    });
+  }
+
+  if (validate(motionTranslationRefTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PARAMETER_TYPE',
+      path: '',
+      message: 'validator should reject motion translation refs that do not resolve to dimension'
+    });
+  }
+
+  if (validate(motionRotationAxisMissingComponentsViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_AXIS_COMPONENTS',
+      path: '',
+      message: 'validator should reject motion rotation axes missing x/y/z components'
+    });
+  }
+
+  if (validate(motionRotationAngleTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_ANGLE_DIMENSION_TYPE',
+      path: '',
+      message: 'validator should reject motion rotation angle refs that are not angle dimensions'
+    });
+  }
+
+  if (validate(motionTranslationDimensionTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_TRANSLATION_DIMENSION_TYPE',
+      path: '',
+      message: 'validator should reject motion translation refs that are not length dimensions'
+    });
+  }
+
+  if (validate(motionRotationAngleUnitCategoryViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_ANGLE_UNIT_CATEGORY',
+      path: '',
+      message: 'validator should reject motion rotation angles with non-angle units in functions'
+    });
+  }
+
+  if (validate(motionTranslationUnitCategoryViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_TRANSLATION_UNIT_CATEGORY',
+      path: '',
+      message:
+        'validator should reject motion translation coordinates with non-length units in functions'
     });
   }
 

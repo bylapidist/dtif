@@ -1,0 +1,4 @@
+name: motion-rotation-axis-missing-components
+description: rotation axes must provide numeric x y and z components
+tags:
+  - motion

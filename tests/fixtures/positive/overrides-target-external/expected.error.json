@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_EXTERNAL_UNRESOLVED",
+    "path": "/$overrides/0/$token",
+    "message": "external refs require explicit opt-in: themes/dark.tokens.json#/color/brand"
+  }
+}

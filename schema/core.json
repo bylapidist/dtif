@@ -999,82 +999,6 @@
       "allOf": [
         {
           "$ref": "#/$defs/override-core"
-        },
-        {
-          "oneOf": [
-            {
-              "required": ["$ref"],
-              "type": "object",
-              "properties": {
-                "$ref": {}
-              }
-            },
-            {
-              "required": ["$value"],
-              "type": "object",
-              "properties": {
-                "$value": {}
-              }
-            },
-            {
-              "required": ["$fallback"],
-              "type": "object",
-              "properties": {
-                "$fallback": {}
-              }
-            }
-          ],
-          "$comment": "Override entries MUST declare exactly one of $ref, $value, or $fallback.",
-          "title": "Override resolution requirement"
-        },
-        {
-          "if": {
-            "required": ["$ref"],
-            "type": "object",
-            "properties": {
-              "$ref": {}
-            }
-          },
-          "then": {
-            "properties": {
-              "$value": false
-            },
-            "$comment": "Entries using $ref MUST NOT also declare $value.",
-            "type": "object"
-          }
-        },
-        {
-          "if": {
-            "required": ["$value"],
-            "type": "object",
-            "properties": {
-              "$value": {}
-            }
-          },
-          "then": {
-            "properties": {
-              "$ref": false
-            },
-            "$comment": "Entries using inline $value MUST NOT also declare $ref.",
-            "type": "object"
-          }
-        },
-        {
-          "if": {
-            "required": ["$fallback"],
-            "type": "object",
-            "properties": {
-              "$fallback": {}
-            }
-          },
-          "then": {
-            "properties": {
-              "$ref": false,
-              "$value": false
-            },
-            "$comment": "Entries using $fallback MUST NOT also declare $ref or $value.",
-            "type": "object"
-          }
         }
       ]
     },
@@ -3937,6 +3861,7 @@
         },
         "axis": {
           "type": "object",
+          "required": ["x", "y", "z"],
           "properties": {
             "x": {
               "type": "number"
@@ -3949,7 +3874,39 @@
             }
           },
           "additionalProperties": false,
-          "minProperties": 1,
+          "allOf": [
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "x": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "y": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "z": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
           "$comment": "Components describe the rotation vector consumed by rotate3d() (css-transforms-2#funcdef-rotate3d) and CATransform3DRotate."
         },
         "origin": {
