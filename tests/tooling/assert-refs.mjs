@@ -1,6 +1,6 @@
 export default function assertRefs(doc, opts = {}) {
   const errors = [];
-  const { allowRemote = false } = opts;
+  const { allowRemote = false, allowExternal = false } = opts;
 
   function resolvePointer(root, pointer, chain = [], refPath = '') {
     if (typeof pointer !== 'string') {
@@ -54,6 +54,13 @@ export default function assertRefs(doc, opts = {}) {
       const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
 
       if (!schemeMatch) {
+        if (!allowExternal) {
+          errors.push({
+            code: 'E_REF_EXTERNAL_UNRESOLVED',
+            path: refPath,
+            message: `external refs require explicit opt-in: ${pointer}`
+          });
+        }
         return null;
       }
 
@@ -72,6 +79,15 @@ export default function assertRefs(doc, opts = {}) {
           code: 'E_REF_REMOTE_DISABLED',
           path: refPath,
           message: `remote refs not allowed: ${pointer}`
+        });
+        return null;
+      }
+
+      if (!allowExternal) {
+        errors.push({
+          code: 'E_REF_EXTERNAL_UNRESOLVED',
+          path: refPath,
+          message: `external refs require explicit opt-in: ${pointer}`
         });
         return null;
       }

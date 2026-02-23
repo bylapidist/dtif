@@ -6,6 +6,7 @@ export interface CreateDtifValidatorOptions {
   formats?: false | ((ajv: import('ajv').default) => unknown);
   schemaId?: string;
   allowRemoteReferences?: boolean;
+  allowExternalReferences?: boolean;
   enforceSemanticRules?: boolean;
 }
 

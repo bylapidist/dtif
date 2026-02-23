@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "E_REF_EXTERNAL_UNRESOLVED",
+    "path": "/$overrides/0/$fallback/0/$ref",
+    "message": "external refs require explicit opt-in: https://cdn.example.com/themes/dark.json#/color/button-bg"
+  }
+}

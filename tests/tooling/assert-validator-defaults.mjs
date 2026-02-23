@@ -32,6 +32,29 @@ const unresolvedRemote = {
     $ref: 'https://example.com/remote.tokens.json#/custom/token'
   }
 };
+const unresolvedRelativeExternal = {
+  $version: '1.0.0',
+  custom: {
+    $type: 'vendor.custom',
+    $ref: './local.tokens.json#/custom/token'
+  }
+};
+const unresolvedExternalOverrideTarget = {
+  $version: '1.0.0',
+  color: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] }
+    }
+  },
+  $overrides: [
+    {
+      $token: 'themes/dark.tokens.json#/color/base',
+      $when: { platform: 'web' },
+      $ref: '#/color/base'
+    }
+  ]
+};
 const deprecatedReplacementTypeMismatch = {
   $version: '1.0.0',
   color: {
@@ -310,6 +333,26 @@ export default function assertValidatorDefaults() {
       code: 'E_VALIDATOR_REMOTE_RESOLUTION_MISSING',
       path: '',
       message: 'validator should reject unresolved remote references even when semantic checks run'
+    });
+  }
+
+  const unresolvedRelativeExternalValid = validate(unresolvedRelativeExternal);
+  if (unresolvedRelativeExternalValid) {
+    errors.push({
+      code: 'E_VALIDATOR_EXTERNAL_RESOLUTION_MISSING',
+      path: '',
+      message:
+        'validator should reject unresolved relative external references unless explicit opt-in is provided'
+    });
+  }
+
+  const unresolvedExternalOverrideTargetValid = validate(unresolvedExternalOverrideTarget);
+  if (unresolvedExternalOverrideTargetValid) {
+    errors.push({
+      code: 'E_VALIDATOR_OVERRIDE_EXTERNAL_TARGET_RESOLUTION_MISSING',
+      path: '',
+      message:
+        'validator should reject unresolved external override targets unless explicit opt-in is provided'
     });
   }
 

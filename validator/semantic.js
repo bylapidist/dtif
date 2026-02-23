@@ -596,6 +596,7 @@ function detectOverrideCycles(root, errors) {
 export function runSemanticValidation(document, options = {}) {
   const {
     allowRemoteReferences = false,
+    allowExternalReferences = false,
     knownTypes = new Set(),
     isValueCompatible = undefined
   } = options;
@@ -707,9 +708,16 @@ export function runSemanticValidation(document, options = {}) {
         }
         const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
 
-        // Relative document references are allowed and resolved by consumers
-        // against the referencing document location.
         if (!schemeMatch) {
+          if (!allowExternalReferences) {
+            errors.push(
+              createSemanticIssue(
+                refPath,
+                `external refs require explicit opt-in: ${pointer}`,
+                'E_REF_EXTERNAL_UNRESOLVED'
+              )
+            );
+          }
           return;
         }
 
@@ -731,6 +739,17 @@ export function runSemanticValidation(document, options = {}) {
               refPath,
               `remote refs not allowed: ${pointer}`,
               'E_REF_REMOTE_DISABLED'
+            )
+          );
+          return;
+        }
+
+        if (!allowExternalReferences) {
+          errors.push(
+            createSemanticIssue(
+              refPath,
+              `external refs require explicit opt-in: ${pointer}`,
+              'E_REF_EXTERNAL_UNRESOLVED'
             )
           );
           return;
