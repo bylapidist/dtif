@@ -3937,6 +3937,7 @@
         },
         "axis": {
           "type": "object",
+          "required": ["x", "y", "z"],
           "properties": {
             "x": {
               "type": "number"
@@ -3949,7 +3950,39 @@
             }
           },
           "additionalProperties": false,
-          "minProperties": 1,
+          "allOf": [
+            {
+              "anyOf": [
+                {
+                  "properties": {
+                    "x": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "y": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "z": {
+                      "not": {
+                        "const": 0
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
           "$comment": "Components describe the rotation vector consumed by rotate3d() (css-transforms-2#funcdef-rotate3d) and CATransform3DRotate."
         },
         "origin": {

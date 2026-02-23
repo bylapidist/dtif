@@ -676,6 +676,73 @@ function validateGradientStopOrder(value, errors, path) {
   }
 }
 
+function validateMotionParameterType(root, value, errors, path, label) {
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (typeof value.$ref === 'string') {
+    const refPath = `${path}/$ref`;
+    const referenceType = resolveTokenType(root, value.$ref, errors, refPath);
+    if (!referenceType) {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `${label} ref ${value.$ref} must resolve to a token declaring $type dimension`,
+          'E_MOTION_PARAMETER_TYPE'
+        )
+      );
+    } else if (referenceType !== 'dimension') {
+      errors.push(
+        createSemanticIssue(
+          refPath,
+          `${label} ref ${value.$ref} has type ${referenceType}, expected dimension`,
+          'E_MOTION_PARAMETER_TYPE'
+        )
+      );
+    }
+  }
+
+  if (typeof value.fn === 'string' && Array.isArray(value.parameters)) {
+    validateFunctionParameterTypeCompatibility(root, value, 'dimension', errors, path);
+  }
+}
+
+function validateMotionRotationAxis(root, value, errors, path) {
+  if (
+    typeof value.motionType !== 'string' ||
+    !/\.(?:rotate(?:[-a-z0-9]*)?|rotation(?:[-a-z0-9]*)?)$/i.test(value.motionType) ||
+    !isObject(value.parameters)
+  ) {
+    return;
+  }
+
+  if (isObject(value.parameters.angle)) {
+    validateMotionParameterType(
+      root,
+      value.parameters.angle,
+      errors,
+      `${path}/parameters/angle`,
+      'motion rotation angle'
+    );
+  }
+
+  if (isObject(value.parameters.axis)) {
+    const { x, y, z } = value.parameters.axis;
+    if (typeof x === 'number' && typeof y === 'number' && typeof z === 'number') {
+      if (x === 0 && y === 0 && z === 0) {
+        errors.push(
+          createSemanticIssue(
+            `${path}/parameters/axis`,
+            'rotation axis must include at least one non-zero component',
+            'E_MOTION_ROTATION_AXIS_ZERO'
+          )
+        );
+      }
+    }
+  }
+}
+
 function validateMotionPathSemantics(root, value, errors, path) {
   if (Array.isArray(value)) {
     value.forEach((entry, index) => {
@@ -686,6 +753,24 @@ function validateMotionPathSemantics(root, value, errors, path) {
 
   if (!isObject(value)) {
     return;
+  }
+
+  if (
+    typeof value.motionType === 'string' &&
+    /\.(?:translate(?:[-a-z0-9]*)?)$/i.test(value.motionType) &&
+    isObject(value.parameters)
+  ) {
+    for (const axis of ['x', 'y', 'z']) {
+      if (isObject(value.parameters[axis])) {
+        validateMotionParameterType(
+          root,
+          value.parameters[axis],
+          errors,
+          `${path}/parameters/${axis}`,
+          `motion translation ${axis}`
+        );
+      }
+    }
   }
 
   if (
@@ -728,6 +813,20 @@ function validateMotionPathSemantics(root, value, errors, path) {
       }
 
       const pointPath = `${basePath}/${String(index)}`;
+      if (isObject(point.position)) {
+        for (const axis of ['x', 'y', 'z']) {
+          if (isObject(point.position[axis])) {
+            validateMotionParameterType(
+              root,
+              point.position[axis],
+              errors,
+              `${pointPath}/position/${axis}`,
+              `motion path position ${axis}`
+            );
+          }
+        }
+      }
+
       if (typeof point.time === 'number') {
         if (point.time < 0 || point.time > 1) {
           errors.push(
@@ -764,6 +863,8 @@ function validateMotionPathSemantics(root, value, errors, path) {
       }
     });
   }
+
+  validateMotionRotationAxis(root, value, errors, path);
 
   for (const [key, nested] of Object.entries(value)) {
     validateMotionPathSemantics(root, nested, errors, `${path}/${key}`);

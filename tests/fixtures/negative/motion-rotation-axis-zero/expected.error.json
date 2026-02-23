@@ -1,0 +1,5 @@
+{
+  "code": "E_MOTION_ROTATION_AXIS_ZERO",
+  "message": "rotation axis must include at least one non-zero component",
+  "path": "/problem/$value/parameters/axis"
+}

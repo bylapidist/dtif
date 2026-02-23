@@ -1,0 +1,15 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "problem": {
+    "$type": "motion",
+    "$value": {
+      "motionType": "css.rotate3d",
+      "parameters": {
+        "axis": {
+          "x": 1
+        },
+        "angle": { "dimensionType": "angle", "value": 45, "unit": "deg" }
+      }
+    }
+  }
+}

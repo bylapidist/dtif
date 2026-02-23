@@ -393,6 +393,50 @@ const motionPathEasingTypeViolation = {
     }
   }
 };
+const motionRotationAxisZeroViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { dimensionType: 'angle', value: 90, unit: 'deg' },
+        axis: { x: 0, y: 0, z: 0 }
+      }
+    }
+  }
+};
+const motionTranslationRefTypeViolation = {
+  $version: '1.0.0',
+  palette: {
+    base: {
+      $type: 'color',
+      $value: { colorSpace: 'srgb', components: [0.1, 0.2, 0.3, 1] }
+    }
+  },
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.translate3d',
+      parameters: {
+        x: { $ref: '#/palette/base' }
+      }
+    }
+  }
+};
+const motionRotationAxisMissingComponentsViolation = {
+  $version: '1.0.0',
+  problem: {
+    $type: 'motion',
+    $value: {
+      motionType: 'css.rotate3d',
+      parameters: {
+        angle: { dimensionType: 'angle', value: 90, unit: 'deg' },
+        axis: { x: 1 }
+      }
+    }
+  }
+};
 
 export default function assertValidatorDefaults() {
   const { ajv, validate } = createDtifValidator();
@@ -676,6 +720,30 @@ export default function assertValidatorDefaults() {
       path: '',
       message:
         'validator should reject motion path keyframes whose easing pointer does not resolve to an easing token'
+    });
+  }
+
+  if (validate(motionRotationAxisZeroViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_AXIS_ZERO',
+      path: '',
+      message: 'validator should reject motion rotation axes where all components are zero'
+    });
+  }
+
+  if (validate(motionTranslationRefTypeViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_PARAMETER_TYPE',
+      path: '',
+      message: 'validator should reject motion translation refs that do not resolve to dimension'
+    });
+  }
+
+  if (validate(motionRotationAxisMissingComponentsViolation)) {
+    errors.push({
+      code: 'E_VALIDATOR_MOTION_ROTATION_AXIS_COMPONENTS',
+      path: '',
+      message: 'validator should reject motion rotation axes missing x/y/z components'
     });
   }
 
