@@ -15,8 +15,8 @@ import {
 } from '../application/factory.js';
 import type { ParseTokensExecution } from '../application/use-cases.js';
 import { isRecord } from '../input/contracts.js';
-import { resolveOptions } from '../session/internal/options.js';
-import { createRuntime } from '../session/internal/runtime.js';
+import { resolveOptions } from '../session/options.js';
+import { createRuntime } from '../session/runtime.js';
 import { createDocumentRequest, createInlineDocumentRequest } from '../application/requests.js';
 import { type ParseTokensInput, normalizeInput, normalizeInlineInput } from './inputs.js';
 import type { DiagnosticEvent } from '../domain/models.js';

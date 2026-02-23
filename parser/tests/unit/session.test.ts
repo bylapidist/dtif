@@ -9,8 +9,8 @@ import { decodeDocument } from '../../src/io/decoder.js';
 import type { ParserPlugin } from '../../src/plugins/index.js';
 import type { DocumentCache, DocumentHandle, RawDocument } from '../../src/types.js';
 import type { DocumentLoader } from '../../src/io/document-loader.js';
-import type { DiagnosticEvent } from '../../src/domain/models.js';
 import { areByteArraysEqual } from '../../src/utils/bytes.js';
+import { findDiagnostic, hasErrors } from '../helpers/diagnostics.js';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -380,17 +380,6 @@ void test('ParseSession surfaces diagnostics when extension plugins throw', asyn
   const extensions = result.normalized?.extensions ?? [];
   assert.equal(extensions.length, 0);
 });
-
-function hasErrors(events: readonly DiagnosticEvent[]): boolean {
-  return events.some((event) => event.severity === 'error');
-}
-
-function findDiagnostic(
-  events: readonly DiagnosticEvent[],
-  code: string
-): DiagnosticEvent | undefined {
-  return events.find((event) => event.code === code);
-}
 
 class StaticLoader implements DocumentLoader {
   constructor(

@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
 import { createDocumentRequest } from '../application/requests.js';
-import { createRuntime } from '../session/internal/runtime.js';
+import { createRuntime } from '../session/runtime.js';
 import { parseArguments } from './args.js';
 import { gatherInputs } from './io.js';
 import { printPrettyOutput } from './output.js';

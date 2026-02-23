@@ -1,4 +1,4 @@
-import { DiagnosticCodes } from '../../diagnostics/codes.js';
+import { DiagnosticCodes, type DiagnosticCode } from '../../diagnostics/codes.js';
 import { normalizeDocument } from '../../ast/normaliser.js';
 import { buildDocumentGraph } from '../../graph/builder.js';
 import { createDocumentResolver } from '../../resolver/index.js';
@@ -549,7 +549,7 @@ function freezeDecodedDocument(decoded: DecodedDocument): DecodedDocument {
   });
 }
 
-function createFailureDiagnostics(code: string, message: string): PipelineDiagnostics {
+function createFailureDiagnostics(code: DiagnosticCode, message: string): PipelineDiagnostics {
   const event: DiagnosticEvent = Object.freeze({
     code,
     message,

@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { createSession } from '../../src/session.js';
 import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
-import type { DiagnosticEvent } from '../../src/domain/models.js';
+import { countErrors, hasErrors } from '../helpers/diagnostics.js';
 
 const VALID_DOCUMENT = JSON.stringify(
   {
@@ -114,11 +114,3 @@ void test('parseCollection accepts async iterables that expose asyncIterator via
   assert.ok(onlyResult.document, 'expected document to be decoded');
   assert.equal(hasErrors(onlyResult.diagnostics), false, 'expected no diagnostics for valid input');
 });
-
-function hasErrors(events: readonly DiagnosticEvent[]): boolean {
-  return events.some((event) => event.severity === 'error');
-}
-
-function countErrors(events: readonly DiagnosticEvent[]): number {
-  return events.filter((event) => event.severity === 'error').length;
-}

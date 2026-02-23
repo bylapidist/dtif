@@ -18,7 +18,7 @@ import {
 import type { DocumentAst } from '../ast/nodes.js';
 import type { DocumentGraph } from '../graph/nodes.js';
 import type { DocumentResolver } from '../resolver/document-resolver.js';
-import type { ResolvedParseSessionOptions } from '../session/internal/options.js';
+import type { ResolvedParseSessionOptions } from '../session/options.js';
 import type { InlineDocumentRequestInput } from './requests.js';
 import {
   computeDocumentHash,

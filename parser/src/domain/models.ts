@@ -1,4 +1,5 @@
 import type { DocumentContentType, JsonPointer, SourceMap, SourceSpan } from './primitives.js';
+import type { DiagnosticCode } from '../diagnostics/codes.js';
 
 export interface RawDocumentIdentity {
   readonly uri: URL;
@@ -23,7 +24,7 @@ export interface DecodedDocument {
 }
 
 export interface DiagnosticEvent {
-  readonly code: string;
+  readonly code: DiagnosticCode;
   readonly message: string;
   readonly severity: 'error' | 'warning' | 'info';
   readonly pointer?: JsonPointer;

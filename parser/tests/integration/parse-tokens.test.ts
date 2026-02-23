@@ -6,6 +6,7 @@ import {
   parseTokensSync,
   type ParseTokensSyncOptions
 } from '../../src/tokens/parse-tokens.js';
+import { DiagnosticCodes } from '../../src/diagnostics/codes.js';
 import type { TokenCache, TokenCacheSnapshot, TokenCacheKey } from '../../src/tokens/cache.js';
 import { computeDocumentHash } from '../../src/tokens/cache.js';
 import type { DiagnosticEvent } from '../../src/domain/models.js';
@@ -127,7 +128,7 @@ void test('parseTokens rejects deprecated replacements that resolve to a mismatc
   assert.ok(
     result.diagnostics.some(
       (diagnostic) =>
-        diagnostic.code === 'DTIF4010' &&
+        diagnostic.code === DiagnosticCodes.schemaGuard.INVALID_DOCUMENT &&
         /deprecated replacement .* has type dimension, expected color/i.test(diagnostic.message)
     ),
     'expected schema-guard diagnostic for deprecated replacement type mismatch'
@@ -183,7 +184,7 @@ void test('parseTokens invokes warn callbacks for cached non-error diagnostics',
 
   const warning: DiagnosticEvent = {
     severity: 'warning',
-    code: 'cache.warning',
+    code: DiagnosticCodes.core.CACHE_FAILED,
     message: 'cached warning',
     span: {
       uri: document.identity.uri,
