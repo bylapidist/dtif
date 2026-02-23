@@ -1,4 +1,3 @@
-import { DiagnosticCodes } from '../../diagnostics/codes.js';
 import type { AstField } from '../../ast/nodes.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
 import type { JsonPointer, SourceSpan } from '../../domain/primitives.js';
@@ -20,29 +19,6 @@ export function finalizeResolution(
     diagnostics: diagnosticArray.length === 0 ? EMPTY_DIAGNOSTICS : diagnosticArray,
     transforms: transforms.length === 0 ? EMPTY_TRANSFORM_EVALUATIONS : transforms
   };
-}
-
-export function freezeResultDiagnostics(
-  list?: readonly DiagnosticEvent[]
-): readonly DiagnosticEvent[] {
-  if (!list || list.length === 0) {
-    return EMPTY_DIAGNOSTICS;
-  }
-  return Object.freeze(Array.from(list));
-}
-
-export function createTransformFailureDiagnostic(
-  plugin: string,
-  pointer: JsonPointer,
-  error: unknown
-): DiagnosticEvent {
-  const message = error instanceof Error ? error.message : String(error);
-  return {
-    code: DiagnosticCodes.plugins.RESOLUTION_FAILED,
-    message: `Plugin "${plugin}" failed to transform resolved token: ${message}`,
-    severity: 'error',
-    pointer
-  } satisfies DiagnosticEvent;
 }
 
 export function createTraceStep(

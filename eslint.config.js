@@ -42,6 +42,10 @@ export default [
             {
               group: ['**/session/internal/**'],
               message: 'Import session APIs through parser/src/session/options.ts or runtime.ts.'
+            },
+            {
+              group: ['**/resolver/internal/**'],
+              message: 'Import resolver internals through parser/src/resolver/index.ts.'
             }
           ]
         }
@@ -53,7 +57,8 @@ export default [
       'parser/src/session.ts',
       'parser/src/session/options.ts',
       'parser/src/session/runtime.ts',
-      'parser/src/session/internal/**/*.ts'
+      'parser/src/session/internal/**/*.ts',
+      'parser/src/resolver/**/*.ts'
     ],
     rules: {
       'no-restricted-imports': 'off'

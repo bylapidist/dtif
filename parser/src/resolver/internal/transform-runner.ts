@@ -3,9 +3,12 @@ import type {
   ResolvedTokenTransformEntry,
   ResolvedTokenTransformEvaluation
 } from '../../plugins/types.js';
+import {
+  createTransformFailureDiagnostic,
+  freezeResultDiagnostics
+} from '../../plugins/transform-utils.js';
 import type { ResolvedToken } from '../types.js';
 import type { DiagnosticCollector } from './diagnostics.js';
-import { createTransformFailureDiagnostic, freezeResultDiagnostics } from './helpers.js';
 import { EMPTY_TRANSFORM_EVALUATIONS } from './constants.js';
 
 export function runTokenTransforms(
