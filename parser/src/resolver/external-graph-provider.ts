@@ -130,7 +130,9 @@ export function createExternalGraphProvider(
   return new DefaultExternalGraphProvider(options);
 }
 
-export function collectExternalReferenceTargets(graph: DocumentGraph): readonly GraphReferenceTarget[] {
+export function collectExternalReferenceTargets(
+  graph: DocumentGraph
+): readonly GraphReferenceTarget[] {
   const targets: GraphReferenceTarget[] = [];
 
   for (const node of graph.nodes.values()) {

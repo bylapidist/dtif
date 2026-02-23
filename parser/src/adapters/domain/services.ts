@@ -418,7 +418,8 @@ export class ResolutionAdapter implements ResolutionService<
       const outcome: ResolutionOutcome<ResolverInstance> = Object.freeze({
         identity: graph.identity,
         result: resolver,
-        diagnostics: diagnostics.length === 0 ? EMPTY_RESOLUTION_EVENTS : Object.freeze([...diagnostics])
+        diagnostics:
+          diagnostics.length === 0 ? EMPTY_RESOLUTION_EVENTS : Object.freeze([...diagnostics])
       });
 
       return {

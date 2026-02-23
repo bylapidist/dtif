@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
-import type { ContentType, ParseDataInputRecord, ParseInput, ParseInputRecord } from '../types.js';
+import type { ParseInput } from '../types.js';
 import { hashJsonValue } from '../utils/hash-json.js';
 import type { InlineDocumentRequestInput } from '../application/requests.js';
 import {
@@ -78,7 +78,8 @@ export function normalizeInlineInput(input: ParseTokensInput): InlineInput | und
         return {
           uri: resolveInlineUri(input.uri, () => createMemoryUriFromText(content)),
           text: content,
-          contentType: input.contentType ?? inferContentTypeFromContent(content) ?? 'application/json'
+          contentType:
+            input.contentType ?? inferContentTypeFromContent(content) ?? 'application/json'
         } satisfies InlineInput;
       }
 

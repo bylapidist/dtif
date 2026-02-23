@@ -22,10 +22,7 @@ import {
   isParseDataInputRecord,
   isParseInputRecord
 } from '../input/contracts.js';
-import {
-  inferContentTypeFromContent,
-  isInlineDocumentText
-} from '../input/content-sniffing.js';
+import { inferContentTypeFromContent, isInlineDocumentText } from '../input/content-sniffing.js';
 
 const MEMORY_SCHEME = 'memory://dtif-document/';
 

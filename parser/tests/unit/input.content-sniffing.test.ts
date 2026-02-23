@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { inferContentTypeFromContent, isInlineDocumentText } from '../../src/input/content-sniffing.js';
+import {
+  inferContentTypeFromContent,
+  isInlineDocumentText
+} from '../../src/input/content-sniffing.js';
 
 void test('content sniffing: infers json and yaml content types', () => {
   assert.equal(inferContentTypeFromContent('{"color":"#fff"}'), 'application/json');

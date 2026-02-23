@@ -9,8 +9,12 @@ import type {
   TokenId,
   TokenMetadataSnapshot
 } from './types.js';
-import { createInlineParseDocumentUseCase, createParseTokensUseCase } from '../application/factory.js';
+import {
+  createInlineParseDocumentUseCase,
+  createParseTokensUseCase
+} from '../application/factory.js';
 import type { ParseTokensExecution } from '../application/use-cases.js';
+import { isRecord } from '../input/contracts.js';
 import { resolveOptions } from '../session/internal/options.js';
 import { createRuntime } from '../session/internal/runtime.js';
 import { createDocumentRequest, createInlineDocumentRequest } from '../application/requests.js';
@@ -29,11 +33,13 @@ interface ParseTokensBaseOptions {
 
 export interface ParseTokensOptions extends ParseSessionOptions, ParseTokensBaseOptions {}
 
-type ParseTokensSyncSessionOptions = Omit<ParseSessionOptions, 'documentCache' | 'loader' | 'allowHttp'>;
+type ParseTokensSyncSessionOptions = Omit<
+  ParseSessionOptions,
+  'documentCache' | 'loader' | 'allowHttp'
+>;
 
 export interface ParseTokensSyncOptions
-  extends ParseTokensSyncSessionOptions,
-    ParseTokensBaseOptions {
+  extends ParseTokensSyncSessionOptions, ParseTokensBaseOptions {
   readonly documentCache?: never;
   readonly loader?: never;
   readonly allowHttp?: never;
@@ -118,19 +124,26 @@ export function parseTokensSync(
   });
 }
 
-function assertSyncCompatibleOptions(options: ParseTokensSyncOptions): void {
-  const dynamic = options as Record<string, unknown>;
-  if (dynamic.documentCache !== undefined) {
+function assertSyncCompatibleOptions(options: unknown): void {
+  if (!isRecord(options)) {
+    return;
+  }
+
+  if (hasDefinedOption(options, 'documentCache')) {
     throw new Error('parseTokensSync does not support document caches.');
   }
 
-  if (dynamic.loader !== undefined) {
+  if (hasDefinedOption(options, 'loader')) {
     throw new Error('parseTokensSync does not support custom document loaders.');
   }
 
-  if (dynamic.allowHttp !== undefined) {
+  if (hasDefinedOption(options, 'allowHttp')) {
     throw new Error('parseTokensSync does not support allowHttp because inputs must be inline.');
   }
+}
+
+function hasDefinedOption(options: Record<string, unknown>, key: string): boolean {
+  return key in options && options[key] !== undefined;
 }
 
 function assembleParseTokensResult(

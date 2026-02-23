@@ -3,21 +3,26 @@
 ## Layers
 
 1. `src/domain/*`
+
 - Pure contracts and data shapes (`models`, `ports`, `services`, `primitives`).
 - Must not depend on application, adapters, resolver internals, or CLI.
 
-2. `src/application/*`, `src/session.ts`, `src/tokens/parse-tokens.ts`
+1. `src/application/*`, `src/session.ts`, `src/tokens/parse-tokens.ts`
+
 - Use-case orchestration and runtime composition.
 - May depend on `domain`, `ast`, `graph`, `resolver`, and adapter contracts.
 
-3. `src/adapters/*`, `src/io/*`
+1. `src/adapters/*`, `src/io/*`
+
 - Boundary adapters for loader, decoding, validation bridges, node integrations.
 - Should adapt infrastructure to domain ports. Avoid embedding multi-stage orchestration.
 
-4. `src/cli/*`
+1. `src/cli/*`
+
 - Presentation and process interaction only.
 
-5. `src/index.ts`
+1. `src/index.ts`
+
 - Public package surface.
 
 ## Dependency Direction Rules
