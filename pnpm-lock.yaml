@@ -70,13 +70,13 @@ importers:
   language-server:
     dependencies:
       '@lapidist/dtif-parser':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../parser
       '@lapidist/dtif-schema':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../schema
       '@lapidist/dtif-validator':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../validator
       jsonc-parser:
         specifier: ^3.3.1
@@ -95,10 +95,10 @@ importers:
   parser:
     dependencies:
       '@lapidist/dtif-schema':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../schema
       '@lapidist/dtif-validator':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../validator
       yaml:
         specifier: ^2.8.1
@@ -109,7 +109,7 @@ importers:
   validator:
     dependencies:
       '@lapidist/dtif-schema':
-        specifier: workspace:^1.0.6
+        specifier: workspace:^2.0.0
         version: link:../schema
       ajv:
         specifier: ^8.17.1

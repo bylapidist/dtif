@@ -1,5 +1,67 @@
 # @lapidist/dtif-validator changelog
 
+## 2.0.0
+
+### Patch Changes
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce metadata and override reference type conformance in semantic validation, and stop misclassifying registered DTIF `$type` identifiers as unknown.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce DTIF semantic invariants in the validator by checking canonical ordering and reference resolution rules in addition to schema validation, and expose warning diagnostics for unknown `$type` values and future major `$version` declarations.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Align override and semantic validation behavior with the DTIF specification.
+  - Schema now permits override entries that omit `$ref`/`$value`/`$fallback` or combine `$ref` with `$value`, so consumers can ignore those entries instead of rejecting entire documents.
+  - Parser normalisation now ignores invalid override and fallback entries with warnings rather than parse-stopping errors.
+  - Semantic validation no longer applies DTIF reference/ordering checks inside arbitrary `$extensions` payloads and ignored unknown typography properties.
+  - Added conformance fixtures and parser regression tests covering ignored-invalid overrides and literal `$ref` members in extension/unknown-property payloads.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Reject absolute-path and schemeless network-path `$ref` values so only local pointers, relative document paths, and explicit HTTP(S) references are accepted.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Disallow unrecognised reserved `$*` members inside `typography.$value` while preserving unknown non-reserved properties for forward compatibility.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Reject token aliases whose `$ref` resolves to a token with a different `$type`, enforcing DTIF alias type compatibility in semantic validation.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Remove non-spec decimal precision rejection from conformance tooling and treat high-precision dimension values as valid, matching the specification’s guidance to preserve precision rather than invalidate values.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Block directory traversal attempts that use backslash separators or `%5C` encoded separators in `$ref` values.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Tighten motion conformance by requiring rotation axes to include `x`, `y`, and `z` with at least one non-zero component, and reject motion parameters that reference non-`dimension` tokens.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce additional DTIF semantic requirements in the validator by rejecting unsorted gradient stops, invalid motion path timelines (`start=0`, `end=1`, monotonic keyframe times), non-easing motion path easing references, and incompatible `dimension` function expressions (`calc` unit family mixing and `clamp` min/max inversion).
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Reject incompatible literal unit categories inside motion function parameters so rotation angles only accept angle units and translation/path coordinates only accept length units.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Permit external override `$token` pointers during semantic validation instead of incorrectly requiring local in-document targets.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Treat opt-in remote `$ref` values as invalid when they cannot be resolved, and package validator semantic helpers explicitly so published builds retain semantic conformance checks.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce DTIF conformance requirements across parser and validator:
+  - Override matching now ignores unrecognised `$when` keys instead of treating them as hard failures.
+  - `SchemaGuard` now uses the validator package's semantic checks, so unresolved `$ref` pointers are reported during validation.
+  - Semantic reference validation now treats relative external pointers as local-document references (not network refs), while still enforcing HTTP(S)-only remote schemes and remote opt-in.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce motion dimension-category semantics by rejecting rotation angles that do not resolve to `dimensionType: angle` and translation/path coordinates that do not resolve to `dimensionType: length`.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Allow deferred remote reference resolution when both external-reference and remote-reference opt-ins are enabled. Default validation remains strict and continues to reject unresolved external references.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce stricter DTIF reference conformance by rejecting unresolved external references during validation unless explicit opt-in is provided. This update adds validator checks for unresolved relative and remote external refs by default, wires parser defaults to opt in to external-reference validation deferral when a loader is available, and adds regression coverage in conformance tooling.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Align validator conformance fixtures and type-compat checks with DTIF override semantics for external `$token` references.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Enforce additional DTIF spec constraints across schema and validator.
+  - restrict `dimension` length/angle/resolution units to spec-defined grammars
+  - require `$deprecated.$replacement` to be a local JSON Pointer
+  - enforce known CSS color-space component cardinality for `color` tokens
+  - add regression fixtures for these invalid states and align parser schema-guard diagnostics tests
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Load known token types from the DTIF registry in addition to schema clauses so semantic type warnings follow registry-backed definitions.
+
+- [#188](https://github.com/bylapidist/dtif/pull/188) [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Add semantic conformance checks for override inline values, function parameter alias typing, and typography nested reference typing so spec-invalid documents are rejected by the validator.
+
+- [#190](https://github.com/bylapidist/dtif/pull/190) [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742) Thanks [@brettdorrans](https://github.com/brettdorrans)! - Align fixture conformance tooling with motion token semantics by enforcing `dimensionType` category checks for motion rotation angles and translation/path coordinates.
+
+- Updated dependencies [[`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`31b6f44`](https://github.com/bylapidist/dtif/commit/31b6f44a06680ce17c73718d2c58c1048b17c742), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559), [`10ca030`](https://github.com/bylapidist/dtif/commit/10ca0300937774e422f06e65eedc2dcb123e2559)]:
+  - @lapidist/dtif-schema@2.0.0
+
 ## 1.0.6
 
 ### Patch Changes
