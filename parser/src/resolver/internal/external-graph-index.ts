@@ -42,7 +42,9 @@ export function normalizeExternalGraphs(
   return graphs;
 }
 
-export function indexOverridesByGraph(graphs: ReadonlyMap<string, DocumentGraph>): OverridesByGraph {
+export function indexOverridesByGraph(
+  graphs: ReadonlyMap<string, DocumentGraph>
+): OverridesByGraph {
   const overridesByGraph = new Map<string, Map<JsonPointer, GraphOverrideNode[]>>();
   const seen = new Set<string>();
   const uniqueGraphs: DocumentGraph[] = [];

@@ -1,11 +1,17 @@
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
-import { parseTokens } from '../../tokens/parse-tokens.js';
 import type { ParseTokensOptions, ParseTokensResult } from '../../tokens/parse-tokens.js';
 import { formatDiagnostic } from '../../diagnostics/format.js';
 import type { FormatDiagnosticOptions } from '../../diagnostics/format.js';
 import type { DiagnosticEvent } from '../../domain/models.js';
 import { isDesignTokenDocument } from '../../input/contracts.js';
+import { createDocumentRequest } from '../../application/requests.js';
+import { createRuntime } from '../../session/runtime.js';
+import type { ParseTokensExecution } from '../../application/use-cases.js';
+import type { DocumentAst } from '../../ast/nodes.js';
+import type { DocumentGraph } from '../../graph/nodes.js';
+import type { DocumentResolver } from '../../resolver/document-resolver.js';
+import type { TokenId, TokenMetadataSnapshot, ResolvedTokenView } from '../../tokens/types.js';
 
 const SUPPORTED_EXTENSIONS = ['.tokens', '.tokens.json', '.tokens.yaml', '.tokens.yml'];
 
@@ -42,8 +48,7 @@ export async function parseTokensFromFile(
   options: NodeParseTokensOptions = {}
 ): Promise<ParseTokensResult> {
   assertSupportedFile(filePath);
-  const parseOptions = toParseTokensOptions(options);
-  const result = await parseTokens(filePath, parseOptions);
+  const result = await parseTokensWithRuntime(filePath, options);
   const errors = result.diagnostics.filter((diagnostic) => diagnostic.severity === 'error');
   if (errors.length > 0) {
     throw new DtifTokenParseError(filePath, errors, options.diagnosticFormat);
@@ -83,6 +88,36 @@ function toParseTokensOptions(options: NodeParseTokensOptions): ParseTokensOptio
   } satisfies ParseTokensOptions;
 }
 
+async function parseTokensWithRuntime(
+  input: string | URL,
+  options: NodeParseTokensOptions
+): Promise<ParseTokensResult> {
+  const parseOptions = toParseTokensOptions(options);
+  const {
+    flatten = true,
+    includeGraphs = true,
+    tokenCache,
+    onDiagnostic,
+    warn,
+    ...runtimeOptions
+  } = parseOptions;
+  const runtime = createRuntime(runtimeOptions);
+  const request = createDocumentRequest(input);
+  const useCase = runtime.createTokensUseCase(tokenCache);
+  const execution = await useCase.execute({
+    request,
+    flatten,
+    includeGraphs
+  });
+
+  return toParseTokensResult(execution, {
+    flatten,
+    includeGraphs,
+    onDiagnostic,
+    warn
+  });
+}
+
 function assertSupportedFile(filePath: string | URL): void {
   const source = toSourceString(filePath);
   if (!SUPPORTED_EXTENSIONS.some((extension) => source.endsWith(extension))) {
@@ -102,6 +137,59 @@ function createDtifErrorMessage(
 
 function toSourceString(source: string | URL): string {
   return typeof source === 'string' ? source : source.toString();
+}
+
+function toParseTokensResult(
+  execution: ParseTokensExecution<DocumentAst, DocumentGraph, DocumentResolver>,
+  options: {
+    readonly flatten: boolean;
+    readonly includeGraphs: boolean;
+    readonly onDiagnostic?: (diagnostic: DiagnosticEvent) => void;
+    readonly warn?: (diagnostic: DiagnosticEvent) => void;
+  }
+): ParseTokensResult {
+  const diagnostics = execution.diagnostics;
+  notifyDiagnostics(diagnostics, options);
+
+  const document = options.includeGraphs ? execution.document : undefined;
+  const graph = options.includeGraphs ? execution.graph?.graph : undefined;
+  const resolver = options.includeGraphs ? execution.resolution?.result : undefined;
+
+  const metadataIndex = execution.tokens?.token.metadataIndex
+    ? new Map(execution.tokens.token.metadataIndex)
+    : new Map<TokenId, TokenMetadataSnapshot>();
+  const resolutionIndex = execution.tokens?.token.resolutionIndex
+    ? new Map(execution.tokens.token.resolutionIndex)
+    : new Map<TokenId, ResolvedTokenView>();
+  const flattened =
+    options.flatten && execution.tokens?.token.flattened
+      ? [...execution.tokens.token.flattened]
+      : [];
+
+  return {
+    document,
+    graph,
+    resolver,
+    flattened,
+    metadataIndex,
+    resolutionIndex,
+    diagnostics
+  } satisfies ParseTokensResult;
+}
+
+function notifyDiagnostics(
+  diagnostics: readonly DiagnosticEvent[],
+  options: {
+    readonly onDiagnostic?: (diagnostic: DiagnosticEvent) => void;
+    readonly warn?: (diagnostic: DiagnosticEvent) => void;
+  }
+): void {
+  for (const diagnostic of diagnostics) {
+    options.onDiagnostic?.(diagnostic);
+    if (diagnostic.severity !== 'error') {
+      options.warn?.(diagnostic);
+    }
+  }
 }
 
 function assertIsDesignTokenDocument(
