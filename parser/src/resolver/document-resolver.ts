@@ -547,7 +547,7 @@ export class DocumentResolver {
 
     for (const [key, expected] of Object.entries(conditions)) {
       if (!this.context.has(key)) {
-        return false;
+        continue;
       }
 
       recognized = true;

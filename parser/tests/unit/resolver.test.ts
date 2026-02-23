@@ -106,6 +106,35 @@ void test('DocumentResolver ignores overrides when context does not match', () =
   assert.equal(result.diagnostics.length, 0);
 });
 
+void test('DocumentResolver ignores unrecognised override $when keys', () => {
+  const { resolver } = buildResolver(
+    {
+      $overrides: [
+        {
+          $token: '#/button/bg',
+          $when: { theme: 'dark', 'unknown-context': 'ignored' },
+          $ref: '#/color/dark'
+        }
+      ],
+      button: {
+        bg: { $type: 'color', $ref: '#/color/light' }
+      },
+      color: {
+        dark: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] } },
+        light: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.9, 0.9, 0.9] } }
+      }
+    },
+    { theme: 'dark' }
+  );
+
+  const result = resolver.resolve('#/button/bg');
+
+  const { token } = result;
+  assert.ok(token);
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.2, 0.2, 0.2] });
+  assert.equal(result.diagnostics.length, 0);
+});
+
 void test('DocumentResolver prefers the last matching override', () => {
   const { resolver } = buildResolver(
     {
