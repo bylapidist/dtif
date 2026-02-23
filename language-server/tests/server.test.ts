@@ -16,6 +16,7 @@ import {
   createConnection,
   type ClientCapabilities,
   type InitializeParams,
+  type InitializeResult,
   type ConfigurationParams,
   type PublishDiagnosticsParams
 } from 'vscode-languageserver/node.js';
@@ -29,6 +30,18 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { buildInitializeResult, createServer } from '../src/index.js';
 import { packageVersion } from '../src/package-metadata.js';
 import { DEFAULT_SETTINGS, type DtifLanguageServerSettings } from '../src/settings.js';
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isInitializeResult(value: unknown): value is InitializeResult {
+  return isObject(value) && isObject(value.capabilities);
+}
+
+function isPublishDiagnosticsParams(value: unknown): value is PublishDiagnosticsParams {
+  return isObject(value) && typeof value.uri === 'string' && Array.isArray(value.diagnostics);
+}
 
 function queueConfigurationResponses(
   connection: ReturnType<typeof createMessageConnection>,
@@ -100,22 +113,26 @@ void test('createServer handles the initialize handshake', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
-  const initializeResult = await initializePromise;
+  const initializeResult: unknown = await initializePromise;
+  assert.ok(isInitializeResult(initializeResult), 'expected initialize result payload');
   assert.equal(initializeResult.capabilities.textDocumentSync, TextDocumentSyncKind.Incremental);
   assert.equal(initializeResult.capabilities.hoverProvider, true);
   assert.ok(initializeResult.capabilities.completionProvider);
   assert.equal(initializeResult.capabilities.completionProvider.resolveProvider, false);
   assert.equal(initializeResult.capabilities.workspace?.configuration, true);
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();
@@ -159,13 +176,16 @@ void test('language server publishes schema diagnostics and clears them after fi
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/dtif.json';
@@ -193,16 +213,21 @@ void test('language server publishes schema diagnostics and clears them after fi
     new Promise<PublishDiagnosticsParams>((resolve) => {
       const disposable = clientConnection.onNotification(
         PublishDiagnosticsNotification.type,
-        (params) => {
-          if (predicate(params)) {
+        (params: unknown) => {
+          if (!isPublishDiagnosticsParams(params)) {
+            return;
+          }
+
+          const diagnosticsParams = params;
+          if (predicate(diagnosticsParams)) {
             disposable.dispose();
-            resolve(params);
+            resolve(diagnosticsParams);
           }
         }
       );
     });
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -244,7 +269,7 @@ void test('language server publishes schema diagnostics and clears them after fi
     2
   );
 
-  void clientConnection.sendNotification(DidChangeTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidChangeTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       version: 2
@@ -262,8 +287,8 @@ void test('language server publishes schema diagnostics and clears them after fi
 
   assert.equal(clearedDiagnostics.diagnostics.length, 0);
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();
@@ -310,13 +335,16 @@ void test('language server honours validation configuration', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/config.json';
@@ -344,16 +372,21 @@ void test('language server honours validation configuration', async () => {
     new Promise<PublishDiagnosticsParams>((resolve) => {
       const disposable = clientConnection.onNotification(
         PublishDiagnosticsNotification.type,
-        (params) => {
-          if (predicate(params)) {
+        (params: unknown) => {
+          if (!isPublishDiagnosticsParams(params)) {
+            return;
+          }
+
+          const diagnosticsParams = params;
+          if (predicate(diagnosticsParams)) {
             disposable.dispose();
-            resolve(params);
+            resolve(diagnosticsParams);
           }
         }
       );
     });
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -365,7 +398,7 @@ void test('language server honours validation configuration', async () => {
   const initialDiagnostics = await waitForDiagnostics((params) => params.uri === uri);
   assert.ok(initialDiagnostics.diagnostics.length > 0);
 
-  void clientConnection.sendNotification(DidChangeConfigurationNotification.type, {
+  void clientConnection.sendNotification(DidChangeConfigurationNotification.type.method, {
     settings: { validation: { mode: 'off' } }
   });
 
@@ -374,7 +407,7 @@ void test('language server honours validation configuration', async () => {
   );
   assert.equal(clearedDiagnostics.diagnostics.length, 0);
 
-  void clientConnection.sendNotification(DidChangeConfigurationNotification.type, {
+  void clientConnection.sendNotification(DidChangeConfigurationNotification.type.method, {
     settings: { validation: { mode: 'on' } }
   });
 
@@ -383,8 +416,8 @@ void test('language server honours validation configuration', async () => {
   );
   assert.ok(restoredDiagnostics.diagnostics.length > 0);
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();

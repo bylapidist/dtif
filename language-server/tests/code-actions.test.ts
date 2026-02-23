@@ -85,13 +85,16 @@ void test('quick fix inserts missing $type property', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/quick-fix.json';
@@ -120,7 +123,7 @@ void test('quick fix inserts missing $type property', async () => {
     );
   });
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -140,7 +143,7 @@ void test('quick fix inserts missing $type property', async () => {
   };
 
   const codeActionResult = await clientConnection.sendRequest(
-    CodeActionRequest.type,
+    CodeActionRequest.type.method,
     codeActionParams
   );
   const actions = Array.isArray(codeActionResult) ? codeActionResult : [];
@@ -155,8 +158,8 @@ void test('quick fix inserts missing $type property', async () => {
   const updatedText = applyEdits(uri, documentText, edits);
   assert.ok(updatedText.includes('"$type": ""'), 'expected $type property to be inserted');
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();

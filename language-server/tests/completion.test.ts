@@ -70,13 +70,16 @@ void test('language server returns completions for $type values, units, and $ext
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/completions.json';
@@ -119,7 +122,7 @@ void test('language server returns completions for $type values, units, and $ext
   ]
 }`;
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -137,7 +140,7 @@ void test('language server returns completions for $type values, units, and $ext
   const typeCharIndex = lines[typeLineIndex].indexOf('""');
   assert.ok(typeCharIndex >= 0, 'expected empty $type quotes');
 
-  const typeCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
+  const typeCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type.method, {
     textDocument: { uri },
     position: { line: typeLineIndex, character: typeCharIndex + 1 }
   });
@@ -157,7 +160,7 @@ void test('language server returns completions for $type values, units, and $ext
   const unitCharIndex = lines[unitLineIndex].indexOf('""');
   assert.ok(unitCharIndex >= 0, 'expected empty unit quotes');
 
-  const unitCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
+  const unitCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type.method, {
     textDocument: { uri },
     position: { line: unitLineIndex, character: unitCharIndex + 1 }
   });
@@ -173,10 +176,13 @@ void test('language server returns completions for $type values, units, and $ext
   const extensionCharIndex = lines[extensionLineIndex].indexOf('""');
   assert.ok(extensionCharIndex >= 0, 'expected empty extension key quotes');
 
-  const extensionCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
-    textDocument: { uri },
-    position: { line: extensionLineIndex, character: extensionCharIndex + 1 }
-  });
+  const extensionCompletionsResult = await clientConnection.sendRequest(
+    CompletionRequest.type.method,
+    {
+      textDocument: { uri },
+      position: { line: extensionLineIndex, character: extensionCharIndex + 1 }
+    }
+  );
 
   const extensionCompletions = ensureArray(extensionCompletionsResult);
   assert.ok(
@@ -188,8 +194,8 @@ void test('language server returns completions for $type values, units, and $ext
     'expected observed extension key completion'
   );
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();
@@ -228,13 +234,16 @@ void test('unit completions retain context when document parsing fails', async (
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/unit-completions.json';
@@ -251,7 +260,7 @@ void test('unit completions retain context when document parsing fails', async (
   }
 }`;
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -268,10 +277,13 @@ void test('unit completions retain context when document parsing fails', async (
   const unitCharIndex = lines[unitLineIndex].indexOf('""');
   assert.ok(unitCharIndex >= 0, 'expected empty unit quotes');
 
-  const initialCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
-    textDocument: { uri },
-    position: { line: unitLineIndex, character: unitCharIndex + 1 }
-  });
+  const initialCompletionsResult = await clientConnection.sendRequest(
+    CompletionRequest.type.method,
+    {
+      textDocument: { uri },
+      position: { line: unitLineIndex, character: unitCharIndex + 1 }
+    }
+  );
 
   const initialCompletions = ensureArray(initialCompletionsResult);
   const initialUnitCompletion = initialCompletions.find((item) => item.label === 'px');
@@ -280,7 +292,7 @@ void test('unit completions retain context when document parsing fails', async (
 
   const invalidDocumentText = documentText.replace('"unit": ""', '"unit": "');
 
-  void clientConnection.sendNotification(DidChangeTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidChangeTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       version: 2
@@ -300,18 +312,21 @@ void test('unit completions retain context when document parsing fails', async (
   const invalidUnitCharIndex = invalidLines[invalidUnitLineIndex].lastIndexOf('"');
   assert.ok(invalidUnitCharIndex >= 0, 'expected dangling unit quote');
 
-  const invalidCompletionsResult = await clientConnection.sendRequest(CompletionRequest.type, {
-    textDocument: { uri },
-    position: { line: invalidUnitLineIndex, character: invalidUnitCharIndex + 1 }
-  });
+  const invalidCompletionsResult = await clientConnection.sendRequest(
+    CompletionRequest.type.method,
+    {
+      textDocument: { uri },
+      position: { line: invalidUnitLineIndex, character: invalidUnitCharIndex + 1 }
+    }
+  );
 
   const invalidCompletions = ensureArray(invalidCompletionsResult);
   const invalidUnitCompletion = invalidCompletions.find((item) => item.label === 'px');
   assert.ok(invalidUnitCompletion, 'expected length unit suggestion after parse failure');
   assert.equal(invalidUnitCompletion.detail, 'Dimension unit');
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();

@@ -61,13 +61,16 @@ void test('language server returns pointer hover content', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/pointers.json';
@@ -86,7 +89,7 @@ void test('language server returns pointer hover content', async () => {
   }
 }`;
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -108,7 +111,7 @@ void test('language server returns pointer hover content', async () => {
     position: { line: refLineIndex, character: pointerIndex + 1 }
   };
 
-  const hoverResult = await clientConnection.sendRequest(HoverRequest.type, hoverParams);
+  const hoverResult = await clientConnection.sendRequest(HoverRequest.type.method, hoverParams);
   assertHover(hoverResult);
 
   assert.equal(hoverResult.range?.start.line, refLineIndex);
@@ -131,8 +134,8 @@ void test('language server returns pointer hover content', async () => {
   assert.ok(markdown.includes('```json'));
   assert.ok(markdown.includes('"colorSpace": "srgb"'));
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();
