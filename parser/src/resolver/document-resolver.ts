@@ -215,6 +215,7 @@ export class DocumentResolver {
       }
 
       const withOverrides = this.applyOverrides(graph, node.pointer, base, diagnostics, depth);
+      this.validateDeprecatedReplacement(graph, node, withOverrides, diagnostics);
       this.cache.set(cacheKey, withOverrides);
       return withOverrides;
     } finally {
@@ -367,6 +368,98 @@ export class DocumentResolver {
       warnings,
       trace
     };
+  }
+
+  private validateDeprecatedReplacement(
+    graph: DocumentGraph,
+    node: GraphTokenNode | GraphAliasNode,
+    state: ResolutionState,
+    diagnostics: DiagnosticCollector
+  ): void {
+    const replacement = node.metadata.deprecated?.value.replacement;
+    if (!replacement) {
+      return;
+    }
+
+    let resolved: URL;
+    try {
+      resolved = new URL(replacement.value, graph.uri);
+    } catch {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+        message: `Deprecated replacement "${replacement.value}" is not a valid reference URI.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const pointer = normalizeJsonPointer(resolved.hash.length > 0 ? resolved.hash : '#');
+    const targetUri = new URL(resolved.href);
+    targetUri.hash = '';
+    const target = Object.freeze({
+      uri: targetUri,
+      pointer,
+      external: targetUri.href !== graph.uri.href
+    });
+    const targetGraph = this.graphs.get(target.uri.href);
+    if (!targetGraph) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
+        message: `Deprecated replacement "${replacement.value}" points to an unavailable document.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const targetNode = targetGraph.nodes.get(target.pointer);
+    if (!targetNode || targetNode.kind === 'collection') {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.UNKNOWN_POINTER,
+        message: `Deprecated replacement "${replacement.value}" must resolve to an existing token.`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    const expectedType = state.type;
+    if (!expectedType) {
+      return;
+    }
+
+    const targetType = targetNode.type?.value;
+    if (!targetType) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Deprecated replacement "${replacement.value}" must resolve to a token declaring "$type" "${expectedType}".`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span
+      });
+      return;
+    }
+
+    if (targetType !== expectedType) {
+      diagnostics.add({
+        code: DiagnosticCodes.resolver.TARGET_TYPE_MISMATCH,
+        message: `Deprecated replacement "${replacement.value}" resolved to type "${targetType}" but expected "${expectedType}".`,
+        severity: 'error',
+        pointer: replacement.pointer,
+        span: replacement.span,
+        related: [
+          {
+            message: 'Replacement token resolved here.',
+            pointer: target.pointer,
+            span: targetNode.span
+          }
+        ]
+      });
+    }
   }
 
   private evaluateOverride(

@@ -101,6 +101,36 @@ void test('parseTokens accepts in-memory design token objects', async () => {
   assertNullPrototypeDeep(document.data);
 });
 
+void test('parseTokens rejects deprecated replacements that resolve to a mismatched token type', async () => {
+  const result = await parseTokens({
+    $schema: 'https://dtif.lapidist.net/schema/core.json',
+    color: {
+      base: {
+        $type: 'color',
+        $value: { colorSpace: 'srgb', components: [0, 0, 0, 1] },
+        $deprecated: { $replacement: '#/dimension/space' }
+      }
+    },
+    dimension: {
+      space: {
+        $type: 'dimension',
+        $value: { dimensionType: 'length', value: 4, unit: 'px' }
+      }
+    }
+  });
+
+  assert.ok(
+    result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === 'DTIF1021' &&
+        /Deprecated replacement .* resolved to type "dimension" but expected "color"\./u.test(
+          diagnostic.message
+        )
+    ),
+    'expected resolver diagnostic for deprecated replacement type mismatch'
+  );
+});
+
 void test('parseTokens reuses cached artifacts when TokenCache entries are fresh', async () => {
   const cache = new RecordingTokenCache();
 
