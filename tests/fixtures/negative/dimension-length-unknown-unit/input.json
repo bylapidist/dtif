@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "spacing": {
+    "gap": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "length", "value": 12, "unit": "furlong" }
+    }
+  }
+}

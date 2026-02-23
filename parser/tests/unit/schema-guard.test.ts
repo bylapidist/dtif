@@ -94,7 +94,7 @@ void test('SchemaGuard reports diagnostics with pointers and spans for schema vi
   assert.ok(/schema violation/i.test(diagnostic.message));
   const related = diagnostic.related ?? [];
   assert.ok(
-    related.some((info) => /at least 1 item/i.test(info.message)),
+    related.some((info) => /at least 3 item/i.test(info.message)),
     'expected related information describing the minItems violation'
   );
 });

@@ -1,0 +1,5 @@
+name: dimension-length-unknown-unit
+description: length dimensions must use a recognised length or percentage unit
+assertions:
+  - schema
+tags: [dimension]

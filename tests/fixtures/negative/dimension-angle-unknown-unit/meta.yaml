@@ -1,0 +1,5 @@
+name: dimension-angle-unknown-unit
+description: angle dimensions must use CSS angle units
+assertions:
+  - schema
+tags: [dimension]

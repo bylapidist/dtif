@@ -20,21 +20,27 @@ See [`overrides.tokens.json`](https://github.com/bylapidist/dtif/blob/main/examp
       "$when": {
         "prefers-color-scheme": "dark"
       },
-      "$ref": "#/color/brand/dark",
-      "$fallback": {
-        "$ref": "#/color/brand/mid"
-      }
+      "$fallback": [
+        {
+          "$ref": "#/color/brand/dark"
+        },
+        {
+          "$ref": "#/color/brand/mid"
+        }
+      ]
     },
     {
       "$token": "#/button/text",
       "$when": {
         "prefers-color-scheme": "dark"
       },
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [1, 1, 1, 1]
-      },
       "$fallback": [
+        {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1, 1]
+          }
+        },
         {
           "$ref": "#/color/brand/mid"
         },

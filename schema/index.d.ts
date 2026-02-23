@@ -46,7 +46,7 @@ export namespace CoreJson {
             /**
              * MUST conform to CSS <angle> production (css-values-4).
              */
-            unit: string; // ^[A-Za-z][A-Za-z0-9-]*$
+            unit: string; // ^(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])$
         }
         /**
          * Token types §dimension: angle measurements MAY be serialized inline or referenced via $ref.
@@ -804,7 +804,7 @@ export namespace CoreJson {
             /**
              * MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP).
              */
-            unit: string; // ^(?:%|[A-Za-z][A-Za-z0-9-]*)$
+            unit: string; // ^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$
             /**
              * When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP).
              * Whether the value scales with the user's font settings.
@@ -830,7 +830,7 @@ export namespace CoreJson {
             /**
              * MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP).
              */
-            unit: string; // ^(?:%|[A-Za-z][A-Za-z0-9-]*)$
+            unit: string; // ^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$
             /**
              * When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP).
              * Whether the value scales with the user's font settings.
@@ -1254,7 +1254,7 @@ export namespace CoreJson {
             /**
              * MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP).
              */
-            unit: string; // ^(?:%|[A-Za-z][A-Za-z0-9-]*)$
+            unit: string; // ^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$
             /**
              * When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP).
              * Whether the value scales with the user's font settings.
@@ -1300,7 +1300,7 @@ export namespace CoreJson {
             /**
              * MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP).
              */
-            unit: string; // ^(?:%|[A-Za-z][A-Za-z0-9-]*)$
+            unit: string; // ^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$
             /**
              * When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP).
              * Whether the value scales with the user's font settings.
@@ -1350,6 +1350,12 @@ export namespace CoreJson {
             ...LineHeightValueEntry[]
         ];
         /**
+         * Metadata §metadata: $deprecated.$replacement is a JSON Pointer and must target the current document.
+         * Local JSON Pointer reference
+         * JSON Pointer fragment that targets the current document per Metadata §metadata.
+         */
+        export type LocalPointer = void; // ^#
+        /**
          * Metadata §metadata table.
          * Metadata members
          * Optional metadata fields defined in Metadata §metadata applied to tokens and collections.
@@ -1380,11 +1386,11 @@ export namespace CoreJson {
              * Boolean indicator or replacement pointer per Metadata §metadata.
              */ boolean | {
                 /**
-                 * Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).
+                 * Metadata §metadata: $deprecated.$replacement is a JSON Pointer and must target the current document.
                  * Replacement token pointer
                  * Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.
                  */
-                $replacement: void; // ^(?:#|[^#]+#)(?:\/[^~\/]*(?:~[01][^~\/]*)*)*$
+                $replacement: void; // ^#
             };
             /**
              * Metadata table: $lastModified establishes the lower bound for $lastUsed.
@@ -1442,11 +1448,11 @@ export namespace CoreJson {
                  * Boolean indicator or replacement pointer per Metadata §metadata.
                  */ boolean | {
                     /**
-                     * Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).
+                     * Metadata §metadata: $deprecated.$replacement is a JSON Pointer and must target the current document.
                      * Replacement token pointer
                      * Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.
                      */
-                    $replacement: void; // ^(?:#|[^#]+#)(?:\/[^~\/]*(?:~[01][^~\/]*)*)*$
+                    $replacement: void; // ^#
                 };
                 /**
                  * Metadata table: $description is optional free-form text.
@@ -2034,7 +2040,7 @@ export namespace CoreJson {
                 /**
                  * MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP).
                  */
-                unit: string; // ^(?:%|[A-Za-z][A-Za-z0-9-]*)$
+                unit: string; // ^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$
                 /**
                  * When true, MUST follow Dynamic Type (IOS-DYNAMIC-TYPE) and Android scale-independent behaviour (ANDROID-DP-SP).
                  * Whether the value scales with the user's font settings.
@@ -2259,6 +2265,7 @@ export type LifecycleMetadata = CoreJson.Definitions.LifecycleMetadata;
 export type LineHeight = CoreJson.Definitions.LineHeight;
 export type LineHeightValueEntry = CoreJson.Definitions.LineHeightValueEntry;
 export type LineHeightValueFallback = CoreJson.Definitions.LineHeightValueFallback;
+export type LocalPointer = CoreJson.Definitions.LocalPointer;
 export interface MetadataMembers extends CoreJson.Definitions.MetadataMembers {
 }
 export interface Motion extends CoreJson.Definitions.Motion {

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://dtif.lapidist.net/schema/core.json",
+  "rotation": {
+    "quarter": {
+      "$type": "dimension",
+      "$value": { "dimensionType": "angle", "value": 90, "unit": "degree" }
+    }
+  }
+}

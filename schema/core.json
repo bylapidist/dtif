@@ -115,6 +115,20 @@
         }
       ]
     },
+    "local-pointer": {
+      "title": "Local JSON Pointer reference",
+      "description": "JSON Pointer fragment that targets the current document per Metadata §metadata.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/pointer"
+        },
+        {
+          "pattern": "^#",
+          "type": "string",
+          "$comment": "Metadata §metadata: $deprecated.$replacement is a JSON Pointer and must target the current document."
+        }
+      ]
+    },
     "reference": {
       "title": "Pointer alias",
       "description": "Object aliasing another token via $ref per Token types §value.",
@@ -312,7 +326,7 @@
                   "description": "Pointer to the successor token that MUST resolve to the same $type per Metadata §metadata.",
                   "allOf": [
                     {
-                      "$ref": "#/$defs/pointer"
+                      "$ref": "#/$defs/local-pointer"
                     }
                   ]
                 }
@@ -1333,7 +1347,7 @@
             "properties": {
               "unit": {
                 "type": "string",
-                "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+                "pattern": "^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$",
                 "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
               }
             },
@@ -1354,7 +1368,7 @@
             "properties": {
               "unit": {
                 "type": "string",
-                "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+                "pattern": "^(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])$",
                 "$comment": "MUST conform to CSS <angle> production (css-values-4)."
               }
             },
@@ -1382,7 +1396,7 @@
             "properties": {
               "unit": {
                 "type": "string",
-                "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+                "pattern": "^(?:[Dd][Pp][Ii]|[Dd][Pp][Cc][Mm]|[Dd][Pp][Pp][Xx]|[Xx])$",
                 "$comment": "MUST conform to CSS <resolution> production (css-values-4)."
               }
             },
@@ -1439,7 +1453,7 @@
             },
             "unit": {
               "type": "string",
-              "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+              "pattern": "^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$",
               "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
             },
             "fontScale": {
@@ -1467,7 +1481,7 @@
         },
         "unit": {
           "type": "string",
-          "pattern": "^(?:%|[A-Za-z][A-Za-z0-9-]*)$",
+          "pattern": "^(?:%|[Cc][Mm]|[Mm][Mm]|[Qq]|[Ii][Nn]|[Pp][Tt]|[Pp][Cc]|[Pp][Xx]|[Ee][Mm]|[Ee][Xx]|[Cc][Aa][Pp]|[Cc][Hh]|[Ii][Cc]|[Rr][Ee][Mm]|[Rr][Ee][Xx]|[Rr][Cc][Aa][Pp]|[Rr][Cc][Hh]|[Rr][Ii][Cc]|[Ll][Hh]|[Rr][Ll][Hh]|[Vv][Ww]|[Vv][Hh]|[Vv][Ii]|[Vv][Bb]|[Vv][Mm][Ii][Nn]|[Vv][Mm][Aa][Xx]|[Ss][Vv][Ww]|[Ss][Vv][Hh]|[Ss][Vv][Ii]|[Ss][Vv][Bb]|[Ss][Vv][Mm][Ii][Nn]|[Ss][Vv][Mm][Aa][Xx]|[Ll][Vv][Ww]|[Ll][Vv][Hh]|[Ll][Vv][Ii]|[Ll][Vv][Bb]|[Ll][Vv][Mm][Ii][Nn]|[Ll][Vv][Mm][Aa][Xx]|[Dd][Vv][Ww]|[Dd][Vv][Hh]|[Dd][Vv][Ii]|[Dd][Vv][Bb]|[Dd][Vv][Mm][Ii][Nn]|[Dd][Vv][Mm][Aa][Xx]|[Cc][Qq][Ww]|[Cc][Qq][Hh]|[Cc][Qq][Ii]|[Cc][Qq][Bb]|[Cc][Qq][Mm][Ii][Nn]|[Cc][Qq][Mm][Aa][Xx]|[Dd][Pp]|[Ss][Pp])$",
           "$comment": "MUST conform to CSS <length> or <percentage> (css-values-4) or native point/density-independent units (IOS-POINTS, ANDROID-DP-SP)."
         },
         "fontScale": {
@@ -1490,7 +1504,7 @@
         },
         "unit": {
           "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9-]*$",
+          "pattern": "^(?:[Dd][Ee][Gg]|[Gg][Rr][Aa][Dd]|[Rr][Aa][Dd]|[Tt][Uu][Rr][Nn])$",
           "$comment": "MUST conform to CSS <angle> production (css-values-4)."
         }
       },
@@ -1684,6 +1698,29 @@
               "colorSpace": {
                 "const": "srgb",
                 "$comment": "Hexadecimal strings serialize sRGB colours (css-color-4)."
+              }
+            },
+            "type": "object"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "colorSpace": {
+                "type": "string",
+                "pattern": "^(?:[Ss][Rr][Gg][Bb]|[Ss][Rr][Gg][Bb]-[Ll][Ii][Nn][Ee][Aa][Rr]|[Dd][Ii][Ss][Pp][Ll][Aa][Yy]-[Pp]3|[Aa]98-[Rr][Gg][Bb]|[Pp][Rr][Oo][Pp][Hh][Oo][Tt][Oo]-[Rr][Gg][Bb]|[Rr][Ee][Cc]2020|[Ll][Aa][Bb]|[Oo][Kk][Ll][Aa][Bb]|[Ll][Cc][Hh]|[Oo][Kk][Ll][Cc][Hh]|[Xx][Yy][Zz]|[Xx][Yy][Zz]-[Dd]50|[Xx][Yy][Zz]-[Dd]65|[Hh][Ss][Ll]|[Hh][Ww][Bb])$"
+              }
+            },
+            "required": ["colorSpace"],
+            "type": "object"
+          },
+          "then": {
+            "properties": {
+              "components": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 4,
+                "$comment": "Known CSS Color 4 spaces listed by DTIF require three channels with optional alpha."
               }
             },
             "type": "object"

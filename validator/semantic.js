@@ -1,4 +1,21 @@
 const SUPPORTED_VERSION_MAJOR = 1;
+const COLOR_COMPONENT_CHANNELS = new Map([
+  ['srgb', 3],
+  ['srgb-linear', 3],
+  ['display-p3', 3],
+  ['a98-rgb', 3],
+  ['prophoto-rgb', 3],
+  ['rec2020', 3],
+  ['lab', 3],
+  ['oklab', 3],
+  ['lch', 3],
+  ['oklch', 3],
+  ['xyz', 3],
+  ['xyz-d50', 3],
+  ['xyz-d65', 3],
+  ['hsl', 3],
+  ['hwb', 3]
+]);
 
 function createSemanticIssue(instancePath, message, code) {
   return {
@@ -423,6 +440,41 @@ function validateTypographyReferenceTypes(root, value, errors, path) {
   }
 }
 
+function validateColorComponentCounts(value, errors, path) {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      validateColorComponentCounts(entry, errors, `${path}/${String(index)}`);
+    });
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (typeof value.colorSpace === 'string' && Array.isArray(value.components)) {
+    const expectedChannels = COLOR_COMPONENT_CHANNELS.get(value.colorSpace.toLowerCase());
+    if (typeof expectedChannels === 'number') {
+      const actualChannels = value.components.length;
+      const validChannelCount =
+        actualChannels === expectedChannels || actualChannels === expectedChannels + 1;
+      if (!validChannelCount) {
+        errors.push(
+          createSemanticIssue(
+            `${path}/components`,
+            `colorSpace "${value.colorSpace}" requires ${String(expectedChannels)} channel values with optional alpha`,
+            'E_COLOR_COMPONENT_COUNT'
+          )
+        );
+      }
+    }
+  }
+
+  for (const [key, nested] of Object.entries(value)) {
+    validateColorComponentCounts(nested, errors, `${path}/${key}`);
+  }
+}
+
 function collectOverrideGraph(root) {
   const graph = new Map();
   const tokenIndex = new Map();
@@ -744,6 +796,10 @@ export function runSemanticValidation(document, options = {}) {
 
     if (node.$type === 'typography' && isObject(node.$value)) {
       validateTypographyReferenceTypes(document, node.$value, errors, `${path}/$value`);
+    }
+
+    if (node.$type === 'color') {
+      validateColorComponentCounts(node.$value, errors, `${path}/$value`);
     }
 
     if (isObject(node.$deprecated) && '$replacement' in node.$deprecated) {
