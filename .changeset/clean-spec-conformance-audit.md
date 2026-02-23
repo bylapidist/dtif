@@ -1,7 +1,7 @@
 ---
-"@lapidist/dtif-schema": patch
-"@lapidist/dtif-validator": patch
-"@lapidist/dtif-parser": patch
+'@lapidist/dtif-schema': patch
+'@lapidist/dtif-validator': patch
+'@lapidist/dtif-parser': patch
 ---
 
 Align override and semantic validation behavior with the DTIF specification.
