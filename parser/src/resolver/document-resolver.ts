@@ -27,12 +27,7 @@ import {
   mergeDiagnostics,
   conditionMatches
 } from './internal/helpers.js';
-import {
-  normalizeContext,
-  normalizeMaxDepth,
-  indexOverrides,
-  normalizeTransforms
-} from './internal/context.js';
+import { normalizeContext, normalizeMaxDepth, normalizeTransforms } from './internal/context.js';
 import { ResolvedTokenImpl } from './internal/resolved-token.js';
 import type {
   DocumentResolverOptions,
@@ -469,21 +464,6 @@ export class DocumentResolver {
   ): OverrideEvaluation {
     if (!this.doesOverrideApply(override)) {
       return { matched: false, diagnostics: EMPTY_DIAGNOSTICS };
-    }
-
-    if (override.token.value.external) {
-      return {
-        matched: true,
-        diagnostics: [
-          {
-            code: DiagnosticCodes.resolver.EXTERNAL_REFERENCE,
-            message: `Override "$token" target "${override.token.value.uri.href}${override.token.value.pointer}" is external and not yet supported.`,
-            severity: 'error',
-            pointer: override.pointer,
-            span: override.token.span
-          }
-        ]
-      };
     }
 
     const traceSteps: ResolutionTraceStep[] = [
@@ -956,21 +936,47 @@ function normalizeExternalGraphs(
 function indexOverridesByGraph(
   graphs: ReadonlyMap<string, DocumentGraph>
 ): ReadonlyMap<string, ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>> {
-  const overridesByGraph = new Map<
-    string,
-    ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>
-  >();
+  const overridesByGraph = new Map<string, Map<JsonPointer, GraphOverrideNode[]>>();
   const seen = new Set<string>();
+  const uniqueGraphs: DocumentGraph[] = [];
 
   for (const graph of graphs.values()) {
     if (seen.has(graph.uri.href)) {
       continue;
     }
     seen.add(graph.uri.href);
-    overridesByGraph.set(graph.uri.href, indexOverrides(graph.overrides));
+    overridesByGraph.set(graph.uri.href, new Map());
+    uniqueGraphs.push(graph);
   }
 
-  return overridesByGraph;
+  for (const graph of uniqueGraphs) {
+    for (const override of graph.overrides) {
+      const targetUri = override.token.value.uri.href;
+      const pointer = override.token.value.pointer;
+      const targetMap = overridesByGraph.get(targetUri);
+      if (!targetMap) {
+        continue;
+      }
+
+      const list = targetMap.get(pointer);
+      if (list) {
+        list.push(override);
+      } else {
+        targetMap.set(pointer, [override]);
+      }
+    }
+  }
+
+  const immutable = new Map<string, ReadonlyMap<JsonPointer, readonly GraphOverrideNode[]>>();
+  for (const [uri, pointerMap] of overridesByGraph.entries()) {
+    const frozenPointers = new Map<JsonPointer, readonly GraphOverrideNode[]>();
+    for (const [pointer, list] of pointerMap.entries()) {
+      frozenPointers.set(pointer, Object.freeze(list.slice()));
+    }
+    immutable.set(uri, frozenPointers);
+  }
+
+  return immutable;
 }
 
 function isExternalGraphMap(

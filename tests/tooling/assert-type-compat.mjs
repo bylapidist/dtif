@@ -394,6 +394,9 @@ export default function assertTypeCompat(doc) {
       return;
     }
     const basePath = `/$overrides/${idx}`;
+    if (!override.$token.startsWith('#')) {
+      return;
+    }
     const { node, type: targetType } = getTokenTypeInfo(doc, override.$token, new Set());
     const hasValueOrRef =
       node &&

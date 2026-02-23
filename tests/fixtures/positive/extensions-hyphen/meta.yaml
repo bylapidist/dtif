@@ -1,0 +1,7 @@
+name: extensions namespace with hyphen
+description: allow reverse-DNS extension labels that include hyphens
+assertions:
+  - schema
+  - refs
+  - roundtrip
+  - metadata

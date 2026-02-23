@@ -1,0 +1,6 @@
+name: override token external reference
+description: allow override $token pointers that target external documents
+assertions:
+  - schema
+  - refs
+  - roundtrip

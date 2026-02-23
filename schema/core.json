@@ -69,30 +69,37 @@
           "type": "string"
         },
         {
+          "$comment": "External references MUST use relative paths or HTTP(S) URIs, so absolute and network-path references are invalid (Format and serialisation §$ref).",
+          "not": {
+            "pattern": "^(?:\\/|\\\\|\\/\\/|\\\\\\\\)",
+            "type": "string"
+          }
+        },
+        {
           "$comment": "Directory traversal segments ../ at the start of the path are invalid (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^\\.\\.(?:\\/|%2[fF]|\\?|#|$)",
+            "pattern": "^\\.\\.(?:\\/|\\\\|%2[fF]|%5[cC]|\\?|#|$)",
             "type": "string"
           }
         },
         {
           "$comment": "Directory traversal segments ../ inside the path before the fragment are invalid (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^[^#]*\\/\\.\\.(?:\\/|%2[fF]|\\?|#|$)",
+            "pattern": "^[^#]*(?:\\/|\\\\)\\.\\.(?:\\/|\\\\|%2[fF]|%5[cC]|\\?|#|$)",
             "type": "string"
           }
         },
         {
           "$comment": "Percent-encoded or mixed-encoding .. segments such as %2e%2e/, %2e./, or .%2e/ are rejected (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)",
+            "pattern": "^(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|\\\\|%2[fF]|%5[cC]|\\?|#|$)",
             "type": "string"
           }
         },
         {
           "$comment": "Percent-encoded or mixed-encoding .. segments after directory boundaries are rejected (Format and serialisation §$ref step 1).",
           "not": {
-            "pattern": "^[^#]*\\/(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|%2[fF]|\\?|#|$)",
+            "pattern": "^[^#]*(?:\\/|\\\\)(?:%2[eE]%2[eE]|%2[eE]\\.|\\.%2[eE])(?:\\/|\\\\|%2[fF]|%5[cC]|\\?|#|$)",
             "type": "string"
           }
         },
@@ -4326,7 +4333,7 @@
       "$comment": "Format and serialisation §$extensions: keys MUST use lower-case reverse-DNS identifiers.",
       "type": "object",
       "propertyNames": {
-        "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)+$",
+        "pattern": "^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$",
         "$comment": "Extension identifiers MUST be lower-case reverse-DNS strings.",
         "type": "string"
       },

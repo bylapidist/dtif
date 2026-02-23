@@ -56,9 +56,12 @@ function hasPathTraversal(pointer) {
   const hashIndex = pointer.indexOf('#');
   const beforeFragment = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
   const [pathBeforeQuery] = beforeFragment.split('?');
-  const normalisedPath = pathBeforeQuery.replace(/%2f/gi, '/').replace(/%2e/gi, '.');
+  const normalisedPath = pathBeforeQuery
+    .replace(/%2f/gi, '/')
+    .replace(/%5c/gi, '\\')
+    .replace(/%2e/gi, '.');
   return normalisedPath
-    .split('/')
+    .split(/[\\/]/)
     .filter((segment) => segment.length > 0)
     .some((segment) => segment === '..');
 }
@@ -403,6 +406,26 @@ export function runSemanticValidation(document, options = {}) {
       if (!pointer.startsWith('#')) {
         const hashIndex = pointer.indexOf('#');
         const base = hashIndex === -1 ? pointer : pointer.slice(0, hashIndex);
+        if (base.startsWith('//') || base.startsWith('\\\\')) {
+          errors.push(
+            createSemanticIssue(
+              refPath,
+              `network-path refs are not allowed: ${pointer}`,
+              'E_REF_NETWORK_PATH'
+            )
+          );
+          return;
+        }
+        if (base.startsWith('/') || base.startsWith('\\')) {
+          errors.push(
+            createSemanticIssue(
+              refPath,
+              `absolute-path refs are not allowed: ${pointer}`,
+              'E_REF_ABSOLUTE_PATH'
+            )
+          );
+          return;
+        }
         const schemeMatch = base.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
 
         // Relative document references are allowed and resolved by consumers
@@ -507,7 +530,12 @@ export function runSemanticValidation(document, options = {}) {
       }
     }
 
-    if (path.startsWith('/$overrides/') && isObject(node) && typeof node.$token === 'string') {
+    if (
+      path.startsWith('/$overrides/') &&
+      isObject(node) &&
+      typeof node.$token === 'string' &&
+      node.$token.startsWith('#')
+    ) {
       const tokenPath = `${path}/$token`;
       const overrideTargetType = resolveTokenType(document, node.$token, errors, tokenPath);
       if (!overrideTargetType) {

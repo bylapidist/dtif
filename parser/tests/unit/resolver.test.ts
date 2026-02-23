@@ -278,6 +278,43 @@ void test('DocumentResolver resolves external references when graph is provided'
   assert.equal(result.diagnostics.length, 0);
 });
 
+void test('DocumentResolver applies overrides targeting external tokens', () => {
+  const external = buildGraph(
+    {
+      color: {
+        primary: { $type: 'color', $value: { colorSpace: 'srgb', components: [0.2, 0.4, 0.6, 1] } }
+      }
+    },
+    'https://example.com/tokens.json'
+  );
+  const { resolver } = buildResolver(
+    {
+      $overrides: [
+        {
+          $token: 'https://example.com/tokens.json#/color/primary',
+          $when: { theme: 'dark' },
+          $value: { colorSpace: 'srgb', components: [0.05, 0.05, 0.05, 1] }
+        }
+      ],
+      color: {
+        external: { $type: 'color', $ref: 'https://example.com/tokens.json#/color/primary' }
+      }
+    },
+    {
+      context: { theme: 'dark' },
+      allowNetworkReferences: true,
+      externalGraphs: new Map([[external.uri.href, external]])
+    }
+  );
+
+  const result = resolver.resolve('#/color/external');
+
+  const { token } = result;
+  assert.ok(token);
+  assert.deepEqual(token.value, { colorSpace: 'srgb', components: [0.05, 0.05, 0.05, 1] });
+  assert.equal(result.diagnostics.length, 0);
+});
+
 void test('DocumentResolver rejects network references without explicit opt-in', () => {
   const external = buildGraph(
     {

@@ -1,0 +1,7 @@
+name: absolute path reference
+description: block absolute path aliases in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security

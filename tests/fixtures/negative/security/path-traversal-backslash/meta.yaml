@@ -1,0 +1,7 @@
+name: path traversal with backslash
+description: block backslash directory traversal in $ref
+assertions:
+  - schema
+  - refs
+tags:
+  - security
