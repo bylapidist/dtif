@@ -12,7 +12,8 @@ import {
   createConnection,
   type ClientCapabilities,
   type InitializeParams,
-  type TextEdit
+  type TextEdit,
+  type WorkspaceEdit
 } from 'vscode-languageserver/node.js';
 import { TextDocuments } from 'vscode-languageserver/node.js';
 import {
@@ -22,6 +23,22 @@ import {
 } from 'vscode-jsonrpc/node.js';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { createServer } from '../src/index.js';
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isWorkspaceEdit(value: unknown): value is WorkspaceEdit {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  if (!('changes' in value) && !('documentChanges' in value)) {
+    return false;
+  }
+
+  return true;
+}
 
 function applyEdits(uri: string, text: string, edits: readonly TextEdit[]): string {
   const document = TextDocument.create(uri, 'json', 0, text);
@@ -77,13 +94,16 @@ void test('rename updates pointer definitions and references', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/pointers.json';
@@ -102,7 +122,7 @@ void test('rename updates pointer definitions and references', async () => {
   }
 }`;
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -125,8 +145,12 @@ void test('rename updates pointer definitions and references', async () => {
     newName: 'primary'
   };
 
-  const renameResult = await clientConnection.sendRequest(RenameRequest.type, renameParams);
+  const renameResult: unknown = await clientConnection.sendRequest(
+    RenameRequest.type.method,
+    renameParams
+  );
   assert.ok(renameResult, 'expected rename result to be returned');
+  assert.ok(isWorkspaceEdit(renameResult), 'expected rename result to be a workspace edit');
 
   const edits = renameResult.changes?.[uri] ?? [];
   assert.ok(edits.length > 0, 'expected edits to be returned');
@@ -136,8 +160,8 @@ void test('rename updates pointer definitions and references', async () => {
   assert.ok(updatedText.includes('#/primary'), 'expected pointer references to update');
   assert.ok(!updatedText.includes('"base"'), 'expected base property to be renamed');
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();

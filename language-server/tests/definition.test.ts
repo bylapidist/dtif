@@ -24,6 +24,25 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { createServer } from '../src/index.js';
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isDefinitionEntry(value: unknown): value is Location | DefinitionLink {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  const hasLocationShape = typeof value.uri === 'string' && isObject(value.range);
+  const hasDefinitionLinkShape = typeof value.targetUri === 'string' && isObject(value.targetRange);
+
+  return hasLocationShape || hasDefinitionLinkShape;
+}
+
+function isDefinitionEntries(value: unknown): value is (Location | DefinitionLink)[] {
+  return Array.isArray(value) && value.every((entry) => isDefinitionEntry(entry));
+}
+
 function assertLocation(value: Location | DefinitionLink): asserts value is Location {
   assert.ok('uri' in value, 'expected definition entry to include a uri');
   assert.ok('range' in value, 'expected definition entry to include a range');
@@ -62,13 +81,16 @@ void test('language server resolves local pointer definitions', async () => {
     workspaceFolders: null
   };
 
-  const initializePromise = clientConnection.sendRequest(InitializeRequest.type, initializeParams);
+  const initializePromise = clientConnection.sendRequest(
+    InitializeRequest.type.method,
+    initializeParams
+  );
 
   server.listen();
 
   await initializePromise;
 
-  void clientConnection.sendNotification(InitializedNotification.type, {});
+  void clientConnection.sendNotification(InitializedNotification.type.method, {});
   await new Promise((resolve) => setImmediate(resolve));
 
   const uri = 'file:///memory/pointers.json';
@@ -87,7 +109,7 @@ void test('language server resolves local pointer definitions', async () => {
   }
 }`;
 
-  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type, {
+  void clientConnection.sendNotification(DidOpenTextDocumentNotification.type.method, {
     textDocument: {
       uri,
       languageId: 'json',
@@ -109,13 +131,21 @@ void test('language server resolves local pointer definitions', async () => {
     position: { line: refLineIndex, character: refCharIndex + 1 }
   };
 
-  const definitionResult = await clientConnection.sendRequest(
-    DefinitionRequest.type,
+  const definitionResult: unknown = await clientConnection.sendRequest(
+    DefinitionRequest.type.method,
     definitionParams
   );
   assert.ok(definitionResult, 'expected definition result to be returned');
 
-  const entries = Array.isArray(definitionResult) ? definitionResult : [definitionResult];
+  let entries: (Location | DefinitionLink)[];
+  if (isDefinitionEntries(definitionResult)) {
+    entries = definitionResult;
+  } else if (isDefinitionEntry(definitionResult)) {
+    entries = [definitionResult];
+  } else {
+    assert.fail('expected definition response to contain location entries');
+  }
+
   const locations = entries.map((entry) => {
     assertLocation(entry);
     return entry;
@@ -134,8 +164,8 @@ void test('language server resolves local pointer definitions', async () => {
   assert.equal(location.range.start.line, baseLineIndex);
   assert.equal(location.range.start.character, objectStartIndex);
 
-  await clientConnection.sendRequest(ShutdownRequest.type);
-  void clientConnection.sendNotification(ExitNotification.type);
+  await clientConnection.sendRequest(ShutdownRequest.type.method);
+  void clientConnection.sendNotification(ExitNotification.type.method);
   await new Promise((resolve) => setImmediate(resolve));
 
   clientConnection.dispose();
