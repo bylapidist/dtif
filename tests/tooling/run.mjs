@@ -11,6 +11,7 @@ import assertMetadata from './assert-metadata.mjs';
 import assertRegistry from './assert-registry.mjs';
 import assertRegistryContactHttpsRegression from './assert-registry-contact-https-regression.mjs';
 import assertRegistryHttpsRegression from './assert-registry-https-regression.mjs';
+import assertRegistrySchemaSyncRegression from './assert-registry-schema-sync-regression.mjs';
 import assertPackages from './assert-packages.mjs';
 import assertValidatorDefaults from './assert-validator-defaults.mjs';
 import codegenCSS from './codegen-css.mjs';
@@ -55,6 +56,14 @@ if (!registryHttpsRes.valid) {
   failures += registryHttpsRes.errors.length || 1;
 } else {
   console.log('✔ registry spec requires https');
+}
+
+const registrySchemaSyncRes = assertRegistrySchemaSyncRegression();
+if (!registrySchemaSyncRes.valid) {
+  console.error('registry schema sync regression errors:', registrySchemaSyncRes.errors);
+  failures += registrySchemaSyncRes.errors.length || 1;
+} else {
+  console.log('✔ registry schema sync regression');
 }
 
 const packagesRes = await assertPackages();
