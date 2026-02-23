@@ -9,8 +9,8 @@ const require = createRequire(import.meta.url);
 const LOCAL_SCHEMA_PATH = fileURLToPath(new URL('../schema/core.json', import.meta.url));
 const SCHEMA_PACKAGE_PATH = '@lapidist/dtif-schema/core.json';
 const schema = require(existsSync(LOCAL_SCHEMA_PATH) ? LOCAL_SCHEMA_PATH : SCHEMA_PACKAGE_PATH);
-const LOCAL_REGISTRY_PATH = fileURLToPath(new URL('../registry/types.json', import.meta.url));
-const registryTypes = existsSync(LOCAL_REGISTRY_PATH) ? require(LOCAL_REGISTRY_PATH) : {};
+const KNOWN_TYPES_PATH = fileURLToPath(new URL('./known-types.json', import.meta.url));
+const knownRegistryTypes = require(KNOWN_TYPES_PATH);
 
 export const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,
@@ -21,7 +21,7 @@ export const DEFAULT_VALIDATOR_OPTIONS = {
 export const DEFAULT_FORMAT_REGISTRAR = addFormats;
 
 const DEFAULT_SCHEMA_ID = schema.$id ?? 'https://dtif.lapidist.net/schema/core.json';
-const KNOWN_TYPES = collectKnownTypes(schema, registryTypes);
+const KNOWN_TYPES = collectKnownTypes(schema, knownRegistryTypes);
 
 function ensureSchema(ajv, schemaId = DEFAULT_SCHEMA_ID) {
   let validate = ajv.getSchema(schemaId);
@@ -96,10 +96,10 @@ export function validateDtif(document, options = {}) {
 
 export { schema };
 
-function collectKnownTypes(value, registry = {}) {
+function collectKnownTypes(value, registry = []) {
   const known = new Set();
-  if (registry && typeof registry === 'object') {
-    for (const key of Object.keys(registry)) {
+  if (Array.isArray(registry)) {
+    for (const key of registry) {
       if (typeof key === 'string' && key.length > 0) {
         known.add(key);
       }
