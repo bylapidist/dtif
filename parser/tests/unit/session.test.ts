@@ -273,6 +273,26 @@ void test('ParseSession assigns unique URIs to inline documents for caching', as
   assert.notEqual(firstDocument.identity.uri.href, secondDocument.identity.uri.href);
 });
 
+void test('ParseSession reuses deterministic URI identity for identical inline content', async () => {
+  const cache = new RecordingCache();
+  const session = new ParseSession({ documentCache: cache });
+  const content = JSON.stringify({
+    $schema: 'https://dtif.lapidist.net/schema/core.json',
+    value: 7
+  });
+
+  const first = await session.parseDocument(content);
+  const second = await session.parseDocument(content);
+
+  assert.equal(cache.getCalls, 2, 'expected both parses to consult cache');
+  assert.equal(cache.setCalls, 1, 'expected second parse to reuse cached document');
+  const firstDocument = first.document;
+  const secondDocument = second.document;
+  assert.ok(firstDocument);
+  assert.ok(secondDocument);
+  assert.equal(firstDocument.identity.uri.href, secondDocument.identity.uri.href);
+});
+
 void test('ParseSession surfaces diagnostics when cache writes fail', async () => {
   const uri = new URL('memory://cache/failure');
   const loader = new StaticLoader(uri, VALID_DOCUMENT);

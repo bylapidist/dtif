@@ -1,9 +1,6 @@
-import { createHash } from 'node:crypto';
-
 import type { DesignTokenInterchangeFormat } from '@lapidist/dtif-schema';
 
 import type { ParseInput } from '../types.js';
-import { hashJsonValue } from '../utils/hash-json.js';
 import type { InlineDocumentRequestInput } from '../application/requests.js';
 import {
   isDesignTokenDocument,
@@ -11,6 +8,10 @@ import {
   isParseInputRecord,
   isRecord
 } from '../input/contracts.js';
+import {
+  createMemoryUriFromDesignTokens as createSharedMemoryUriFromDesignTokens,
+  createMemoryUriFromText as createSharedMemoryUriFromText
+} from '../input/memory-uri.js';
 import { inferContentTypeFromContent, isInlineDocumentText } from '../input/content-sniffing.js';
 
 export type ParseTokensInput =
@@ -125,16 +126,20 @@ export function normalizeInlineInput(input: ParseTokensInput): InlineInput | und
 }
 
 export function createMemoryUriFromText(text: string): string {
-  const hash = createHash('sha1').update(text).digest('hex');
-  return `memory://dtif-inline/${hash}.txt`;
+  return createSharedMemoryUriFromText(text, {
+    namespace: 'inline',
+    extension: 'txt'
+  });
 }
 
 export function createMemoryUriFromDesignTokens(
   value: DesignTokenInterchangeFormat,
   kind: string
 ): string {
-  const hash = hashJsonValue(value, { algorithm: 'sha1' });
-  return `memory://dtif-${kind}/${hash}.json`;
+  return createSharedMemoryUriFromDesignTokens(value, {
+    namespace: kind,
+    extension: 'json'
+  });
 }
 
 function resolveInlineUri(value: string | URL | undefined, fallback: () => string): string {
