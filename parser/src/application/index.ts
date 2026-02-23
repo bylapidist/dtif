@@ -8,11 +8,10 @@ export type {
   ParseTokensExecution,
   ParseTokensInput
 } from './use-cases.js';
+export { createParseDocumentUseCase, createInlineParseDocumentUseCase } from './factory.js';
 export {
-  createParseDocumentUseCase,
-  createInlineParseDocumentUseCase,
   createParseTokensUseCase,
   createTokenCacheConfiguration
-} from './factory.js';
+} from '../tokens/use-case-factory.js';
 export type { ParseDocumentOrchestrator } from './factory.js';
 export { createInlineDocumentHandle, decodeInlineDocument } from './inline.js';

@@ -1,7 +1,5 @@
-import {
-  createInlineParseDocumentUseCase,
-  createParseTokensUseCase
-} from '../application/factory.js';
+import { createInlineParseDocumentUseCase } from '../application/factory.js';
+import { createParseTokensUseCase } from './use-case-factory.js';
 import { isRecord } from '../input/contracts.js';
 import { resolveOptions } from '../session/options.js';
 import { createRuntime } from '../session/runtime.js';
