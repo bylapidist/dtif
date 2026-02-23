@@ -1,16 +1,14 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { runSemanticValidation } from './semantic.js';
 
 const require = createRequire(import.meta.url);
-let schema;
-try {
-  schema = require(fileURLToPath(new URL('../schema/core.json', import.meta.url)));
-} catch {
-  schema = require('@lapidist/dtif-schema/core.json');
-}
+const LOCAL_SCHEMA_PATH = fileURLToPath(new URL('../schema/core.json', import.meta.url));
+const SCHEMA_PACKAGE_PATH = '@lapidist/dtif-schema/core.json';
+const schema = require(existsSync(LOCAL_SCHEMA_PATH) ? LOCAL_SCHEMA_PATH : SCHEMA_PACKAGE_PATH);
 
 export const DEFAULT_VALIDATOR_OPTIONS = {
   allErrors: true,
