@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": ">=10"
+    "pnpm": "10.33.0"
   },
   "bin": {
     "dtif-parse": "./dist/cli/parse.js"
@@ -44,7 +44,7 @@
   "dependencies": {
     "@lapidist/dtif-schema": "workspace:^2.0.0",
     "@lapidist/dtif-validator": "workspace:^2.0.0",
-    "yaml": "^2.8.1"
+    "yaml": "2.8.3"
   },
   "repository": {
     "type": "git",
