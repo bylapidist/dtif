@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": ">=10"
+    "pnpm": "10.33.0"
   },
   "exports": {
     ".": {
@@ -33,9 +33,9 @@
     "@lapidist/dtif-parser": "workspace:^2.0.0",
     "@lapidist/dtif-schema": "workspace:^2.0.0",
     "@lapidist/dtif-validator": "workspace:^2.0.0",
-    "jsonc-parser": "^3.3.1",
-    "vscode-languageserver": "^9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.11"
+    "jsonc-parser": "3.3.1",
+    "vscode-languageserver": "9.0.1",
+    "vscode-languageserver-textdocument": "1.0.12"
   },
   "devDependencies": {
     "vscode-jsonrpc": "8.2.1"
