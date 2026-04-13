@@ -24,6 +24,9 @@ importers:
       '@dtsgenerator/replace-namespace':
         specifier: 1.7.0
         version: 1.7.0(dtsgenerator@3.19.2)(tslib@2.8.1)
+      '@lapidist/eslint-config':
+        specifier: 1.0.0
+        version: 1.0.0(@typescript-eslint/eslint-plugin@8.58.2(@typescript-eslint/parser@8.58.2(eslint@10.2.0)(typescript@5.9.3))(eslint@10.2.0)(typescript@5.9.3))(@typescript-eslint/parser@8.58.2(eslint@10.2.0)(typescript@5.9.3))(eslint@10.2.0)
       '@types/node':
         specifier: 24.12.2
         version: 24.12.2
@@ -677,6 +680,14 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@lapidist/eslint-config@1.0.0':
+    resolution: {integrity: sha512-WIBO41HOsWEeL443gCoTbp2bCkP7XXhlvR/4vzmMJ+Hw2Dh+qrMiSVS9FA5I1XIOjCvM4vrg+fMfK14Yq2fkfg==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      '@typescript-eslint/eslint-plugin': '>=8'
+      '@typescript-eslint/parser': '>=8'
+      eslint: '>=9'
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -3030,6 +3041,12 @@ snapshots:
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@lapidist/eslint-config@1.0.0(@typescript-eslint/eslint-plugin@8.58.2(@typescript-eslint/parser@8.58.2(eslint@10.2.0)(typescript@5.9.3))(eslint@10.2.0)(typescript@5.9.3))(@typescript-eslint/parser@8.58.2(eslint@10.2.0)(typescript@5.9.3))(eslint@10.2.0)':
+    dependencies:
+      '@typescript-eslint/eslint-plugin': 8.58.2(@typescript-eslint/parser@8.58.2(eslint@10.2.0)(typescript@5.9.3))(eslint@10.2.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.58.2(eslint@10.2.0)(typescript@5.9.3)
+      eslint: 10.2.0
 
   '@manypkg/find-root@1.1.0':
     dependencies:
