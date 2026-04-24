@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       ajv:
-        specifier: 8.18.0
-        version: 8.18.0
+        specifier: 8.20.0
+        version: 8.20.0
       yaml:
         specifier: 2.8.3
         version: 2.8.3
@@ -41,7 +41,7 @@ importers:
         version: 5.0.0
       ajv-formats:
         specifier: 3.0.1
-        version: 3.0.1(ajv@8.18.0)
+        version: 3.0.1(ajv@8.20.0)
       dtsgenerator:
         specifier: 3.19.2
         version: 3.19.2
@@ -115,11 +115,11 @@ importers:
         specifier: workspace:^2.0.0
         version: link:../schema
       ajv:
-        specifier: 8.18.0
-        version: 8.18.0
+        specifier: 8.20.0
+        version: 8.20.0
       ajv-formats:
         specifier: 3.0.1
-        version: 3.0.1(ajv@8.18.0)
+        version: 3.0.1(ajv@8.20.0)
 
 packages:
 
@@ -1222,8 +1222,8 @@ packages:
   ajv@6.14.0:
     resolution: {integrity: sha512-IWrosm/yrn43eiKqkfkHis7QioDleaXQHdDVPKg0FSwwd/DuvyX79TZnFOnYpB7dcsFAMmtFztZuXPDvSePkFw==}
 
-  ajv@8.18.0:
-    resolution: {integrity: sha512-PlXPeEWMXMZ7sPYOHqmDyCJzcfNrUr3fGNKtezX14ykXOEIvyK81d+qydx89KY5O71FKMPaQ2vBfBFI5NHR63A==}
+  ajv@8.20.0:
+    resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
   algoliasearch@5.49.0:
     resolution: {integrity: sha512-Tse7vx7WOvbU+kpq/L3BrBhSWTPbtMa59zIEhMn+Z2NoxZlpcCRUDCRxQ7kDFs1T3CHxDgvb+mDuILiBBpBaAA==}
@@ -3509,7 +3509,7 @@ snapshots:
 
   ajv-cli@5.0.0:
     dependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
       fast-json-patch: 2.2.1
       glob: 7.2.3
       js-yaml: 3.14.2
@@ -3517,9 +3517,9 @@ snapshots:
       json5: 2.2.3
       minimist: 1.2.8
 
-  ajv-formats@3.0.1(ajv@8.18.0):
+  ajv-formats@3.0.1(ajv@8.20.0):
     optionalDependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
 
   ajv@6.14.0:
     dependencies:
@@ -3528,7 +3528,7 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  ajv@8.18.0:
+  ajv@8.20.0:
     dependencies:
       fast-deep-equal: 3.1.3
       fast-uri: 3.1.0
@@ -4071,7 +4071,7 @@ snapshots:
 
   json-schema-migrate@2.0.0:
     dependencies:
-      ajv: 8.18.0
+      ajv: 8.20.0
 
   json-schema-traverse@0.4.1: {}
 

@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "@lapidist/dtif-schema": "workspace:^2.0.0",
-    "ajv": "8.18.0",
+    "ajv": "8.20.0",
     "ajv-formats": "3.0.1"
   },
   "repository": {
