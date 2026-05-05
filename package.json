@@ -37,7 +37,7 @@
     "yaml": "2.8.4"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "0.6.0",
+    "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.0",
     "@dtsgenerator/replace-namespace": "1.7.0",
     "@lapidist/eslint-config": "1.0.0",
