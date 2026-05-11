@@ -44,7 +44,7 @@
   "dependencies": {
     "@lapidist/dtif-schema": "workspace:^2.0.0",
     "@lapidist/dtif-validator": "workspace:^2.0.0",
-    "yaml": "2.8.4"
+    "yaml": "2.9.0"
   },
   "repository": {
     "type": "git",
