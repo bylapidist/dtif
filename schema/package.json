@@ -8,7 +8,7 @@
   "types": "index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": "10.34.0"
+    "pnpm": "10.34.1"
   },
   "exports": {
     ".": {
