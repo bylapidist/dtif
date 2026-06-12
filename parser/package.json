@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": "10.34.2"
+    "pnpm": "10.34.3"
   },
   "bin": {
     "dtif-parse": "./dist/cli/parse.js"
