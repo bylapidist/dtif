@@ -4,9 +4,9 @@
   "type": "module",
   "engines": {
     "node": ">=22",
-    "pnpm": "10.34.3"
+    "pnpm": "11.6.0"
   },
-  "packageManager": "pnpm@10.34.3",
+  "packageManager": "pnpm@11.6.0",
   "scripts": {
     "test": "node tests/tooling/snapshot-serializer.test.mjs && node tests/tooling/run.mjs && node tests/tooling/validate-examples.mjs",
     "format": "prettier -w .",
