@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": "10.34.4"
+    "pnpm": "11.9.0"
   },
   "exports": {
     ".": {
