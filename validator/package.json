@@ -8,7 +8,7 @@
   "types": "index.d.ts",
   "engines": {
     "node": ">=22",
-    "pnpm": "10.34.4"
+    "pnpm": "10.34.5"
   },
   "exports": {
     ".": "./index.js"
