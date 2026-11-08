@@ -22,8 +22,8 @@ importers:
         specifier: 3.0.3
         version: 3.0.3
       '@dtsgenerator/replace-namespace':
-        specifier: 1.7.0
-        version: 1.7.0(dtsgenerator@3.19.2)(tslib@2.8.1)
+        specifier: 2.0.0
+        version: 2.0.0(dtsgenerator@3.19.2)(tslib@2.8.1)
       '@lapidist/eslint-config':
         specifier: 1.0.0
         version: 1.0.0(@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@10.14.0)(typescript@5.9.3))(eslint@10.14.0)(typescript@5.9.3))(@typescript-eslint/parser@8.68.0(eslint@10.14.0)(typescript@5.9.3))(eslint@10.14.0)
@@ -322,10 +322,11 @@ packages:
       search-insights:
         optional: true
 
-  '@dtsgenerator/replace-namespace@1.7.0':
-    resolution: {integrity: sha512-fOS8AP/Vz4u/+etAZDFPBpsHK3JASlVAId/cf+SH2Hcv5V96wsuvihXuKUomV08dPEUQhv98pgx/o1NiFUBzmA==}
+  '@dtsgenerator/replace-namespace@2.0.0':
+    resolution: {integrity: sha512-btYUIySD3Vkwbu2ui3q05hPlyuyBnAsIHtVI9BgObWfvsJvawOthgYWod36uYTB2kyMqvDuvCpa4IhmAk8idgw==}
+    engines: {node: ^22.22.2 || >=24.15.0}
     peerDependencies:
-      dtsgenerator: ^3.19.2
+      dtsgenerator: ^4.0.0
       tslib: ^2.6.3
 
   '@esbuild/aix-ppc64@0.21.5':
@@ -2661,7 +2662,7 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
 
-  '@dtsgenerator/replace-namespace@1.7.0(dtsgenerator@3.19.2)(tslib@2.8.1)':
+  '@dtsgenerator/replace-namespace@2.0.0(dtsgenerator@3.19.2)(tslib@2.8.1)':
     dependencies:
       dtsgenerator: 3.19.2
       tslib: 2.8.1
