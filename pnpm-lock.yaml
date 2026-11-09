@@ -23,7 +23,7 @@ importers:
         version: 3.0.3
       '@dtsgenerator/replace-namespace':
         specifier: 2.0.0
-        version: 2.0.0(dtsgenerator@4.0.0)(tslib@2.8.1)
+        version: 2.0.0(dtsgenerator@4.0.1)(tslib@2.8.1)
       '@lapidist/eslint-config':
         specifier: 1.0.0
         version: 1.0.0(@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@10.14.0)(typescript@5.9.3))(eslint@10.14.0)(typescript@5.9.3))(@typescript-eslint/parser@8.68.0(eslint@10.14.0)(typescript@5.9.3))(eslint@10.14.0)
@@ -43,8 +43,8 @@ importers:
         specifier: 3.0.1
         version: 3.0.1(ajv@8.20.0)
       dtsgenerator:
-        specifier: 4.0.0
-        version: 4.0.0
+        specifier: 4.0.1
+        version: 4.0.1
       eslint:
         specifier: 10.14.0
         version: 10.14.0
@@ -1339,8 +1339,8 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  dtsgenerator@4.0.0:
-    resolution: {integrity: sha512-v6nUZQdo2Y7n76kHU503xLrYfl10cSuY9tT+RCMd8hxSJzbVDiU2910gmlk9SLKoItuRswF8yFq9z2cRzr/FyQ==}
+  dtsgenerator@4.0.1:
+    resolution: {integrity: sha512-UMOLX5of4AhVBud1q37wsRn+8SOQFLmgDM9LlZQsjfhltiZwrAG7/fQDA4TNIDwjTusLtdOOhYzpOPtzWQsAAA==}
     engines: {node: ^22.22.2 || >=24.15.0}
     hasBin: true
 
@@ -2590,9 +2590,9 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
 
-  '@dtsgenerator/replace-namespace@2.0.0(dtsgenerator@4.0.0)(tslib@2.8.1)':
+  '@dtsgenerator/replace-namespace@2.0.0(dtsgenerator@4.0.1)(tslib@2.8.1)':
     dependencies:
-      dtsgenerator: 4.0.0
+      dtsgenerator: 4.0.1
       tslib: 2.8.1
 
   '@esbuild/aix-ppc64@0.21.5':
@@ -3377,7 +3377,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  dtsgenerator@4.0.0:
+  dtsgenerator@4.0.1:
     dependencies:
       commander: 15.0.0
       cross-fetch: 4.1.0
