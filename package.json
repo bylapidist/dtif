@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",
-    "@changesets/cli": "3.0.3",
+    "@changesets/cli": "3.1.0",
     "@dtsgenerator/replace-namespace": "2.0.0",
     "@lapidist/eslint-config": "1.0.0",
     "@types/node": "26.6.11",
